@@ -13,7 +13,7 @@ type VolumeInterface interface {
 	CreateVolume(clientInterface ClientInterface, hostURL string, vol VolRequest) (string, error)
 }
 
-// GetVolume - Returns a specific volume
+// GetVolume - Returns a specific volume details
 func (c *Client) GetVolume(clientInterface ClientInterface, hostURL string, volumeID string) (*Volume, error) {
 
 	reqType := http.MethodGet
