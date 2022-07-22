@@ -13,7 +13,7 @@ vendor:
 	go mod vendor
 
 dependencies: 
-	GO111MODULE=on go get github.com/golang/mock/mockgen@v1.4.4
+	go install github.com/golang/mock/mockgen@v1.6.0
 
 build: vendor
 	echo "Building terraform-provider-powerstore"
