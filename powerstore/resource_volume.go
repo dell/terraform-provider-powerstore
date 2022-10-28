@@ -1,257 +1,364 @@
 package powerstore
 
 import (
+	"context"
+	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"log"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"terraform-provider-powerstore/models"
 )
 
-func resourceVolume() *schema.Resource {
-	return &schema.Resource{
-		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+type resourceVolumeType struct{}
+
+// GetSchema returns the schema for this resource.
+func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return tfsdk.Schema{
+		Attributes: map[string]tfsdk.Attribute{
+			"id": {
+				Type:                types.StringType,
+				Computed:            true,
+				Description:         "The ID of the volume.",
+				MarkdownDescription: "The ID of the volume.",
+			},
+			"name": {
+				Type:                types.StringType,
+				Required:            true,
+				Description:         "The name of the volume.",
+				MarkdownDescription: "The name of the volume.",
+			},
+			"size": {
+				Type:                types.Int64Type,
+				Required:            true,
+				Description:         "The size of the volume.",
+				MarkdownDescription: "The size of the volume.",
+			},
+			"host_id": {
+				Type: types.StringType,
+
+				Optional:            true,
+				Computed:            true,
+				Description:         "The host id of the volume.",
+				MarkdownDescription: "The host id of the volume.",
+			},
+			"host_group_id": {
+				Type: types.StringType,
+
+				Optional:            true,
+				Computed:            true,
+				Description:         "The host group id of the volume.",
+				MarkdownDescription: "The host group id of the volume.",
+			},
+			"logical_unit_number": {
+				Type:                types.Int64Type,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The current amount of data written to the volume.",
+				MarkdownDescription: "The current amount of data written to the volume.",
+			},
+			"volume_group_id": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The volume group id of the volume.",
+				MarkdownDescription: "The volume group id of the volume.",
+			},
+			"min_size": {
+				Type:                types.Int64Type,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The minimum size  of the volume.",
+				MarkdownDescription: "The minimum size of the volume.",
+			},
+			"sector_size": {
+				Type:                types.Int64Type,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The sector size of the volume.",
+				MarkdownDescription: "The sector size of the volume.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.Int64{Value: 512}),
+				},
+			},
+			"description": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The description of the volume.",
+				MarkdownDescription: "The description of the volume.",
+			},
+			"appliance_id": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The appliance_id of the volume.",
+				MarkdownDescription: "The appliance_id of the volume.",
+			},
+			"protection_policy_id": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The protection_policy_id of the volume.",
+				MarkdownDescription: "The protection_policy_id of the volume.",
+			},
+			"performance_policy_id": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The performance_policy_id of the volume.",
+				MarkdownDescription: "The performance_policy_id of the volume.",
+			},
+			"creation_timestamp": {
+				Type:                types.StringType,
+				Computed:            true,
+				Description:         "The creation_timestamp of the volume.",
+				MarkdownDescription: "The creation_timestamp of the volume.",
+			},
+			"is_replication_destination": {
+				Type:                types.BoolType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The is_replication_destination of the volume.",
+				MarkdownDescription: "The is_replication_destination of the volume.",
+			},
+			"node_affinity": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The node_affinity of the volume.",
+				MarkdownDescription: "The node_affinity of the volume.",
+			},
+			"type": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The type of the volume.",
+				MarkdownDescription: "The type of the volume.",
+			},
+			"app_type": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The app type of the volume.",
+				MarkdownDescription: "The app type of the volume.",
+			},
+			"app_type_other": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The app type other of the volume.",
+				MarkdownDescription: "The app type other of the volume.",
+			},
+			"wwn": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The wwn of the volume.",
+				MarkdownDescription: "The wwn of the volume.",
+			},
+			"state": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The state of the volume.",
+				MarkdownDescription: "The state of the volume.",
+			},
+			"nguid": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The nguid of the volume.",
+				MarkdownDescription: "The nguid of the volume.",
+			},
+			"nsid": {
+				Type:                types.Int64Type,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The nsid of the volume.",
+				MarkdownDescription: "The nsid of the volume.",
+			},
+			"logical_used": {
+				Type:                types.Int64Type,
+				Computed:            true,
+				Optional:            true,
+				Description:         "Current amount of data used by the volume.",
+				MarkdownDescription: "Current amount of data used by the volume.",
+			},
 		},
-		Create: resourceVolumeCreate,
-		Read:   resourceVolumeRead,
-		Update: resourceVolumeUpdate,
-		Delete: resourceVolumeDelete,
-		Schema: map[string]*schema.Schema{
-			"resource_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"wwn": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"nsid": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"appliance_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"state": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"size": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"node_affinity": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"creation_timestamp": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"protection_policy_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"performance_policy_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"is_replication_destination": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"migration_session_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"location_history": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"type_l10n": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"state_l10n": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"node_affinity_l10n": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-
-			"family_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"parent_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"source_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"creator_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"copy_signature": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"source_timestamp": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"creator_type_l10n": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"is_app_consistent": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"created_by_rule_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"created_by_rule_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"expiration_timestamp": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-		},
-	}
+	}, nil
 }
 
-func resourceVolumeRead(d *schema.ResourceData, meta interface{}) error {
-
-	c := meta.(*Client)
-
-	//getting volume id from resource data
-	volumeID := d.Id()
-
-	vol, err := c.GetVolume(c, c.HostURL, volumeID)
-	if err != nil {
-		return err
-	}
-
-	//addming the unmarshalled json to resource data
-	d.Set("resource_id", vol.ID)
-	d.Set("name", vol.Name)
-	d.Set("description", vol.Description)
-	d.Set("type", vol.Type)
-	d.Set("wwn", vol.WWN)
-	d.Set("nsid", vol.NSID)
-	d.Set("appliance_id", vol.ApplianceID)
-	d.Set("state", vol.State)
-	d.Set("size", vol.Size)
-	d.Set("node_affinity", vol.NodeAffinity)
-	d.Set("creation_timestamp", vol.CreationTimeStamp)
-	d.Set("protection_policy_id", vol.ProtectionPolicyID)
-	d.Set("is_replication_destination", vol.IsReplicationDestination)
-	d.Set("migration_session_id", vol.MigrationSessionID)
-	d.Set("location_history", vol.LocationHistory)
-	d.Set("type_l10n", vol.TypeL10N)
-	d.Set("state_l10n", vol.StateL10N)
-	d.Set("node_affinity_l10n", vol.NodeAffinityL10N)
-
-	d.Set("family_id", vol.ProtectionData.FamilyID)
-	d.Set("parent_id", vol.ProtectionData.ParentID)
-	d.Set("source_id", vol.ProtectionData.SoruceID)
-	d.Set("creator_type", vol.ProtectionData.CreatorType)
-	d.Set("copy_signature", vol.ProtectionData.CopySignature)
-	d.Set("source_timestamp", vol.ProtectionData.SourceTimeStamp)
-	d.Set("creator_type_l10n", vol.ProtectionData.CreatorTypeL10N)
-	d.Set("is_app_consistent", vol.ProtectionData.IsAppConsistent)
-	d.Set("created_by_rule_id", vol.ProtectionData.CreatedByRuleID)
-	d.Set("created_by_rule_name", vol.ProtectionData.CreatedByRuleName)
-	d.Set("expiration_timestamp", vol.ProtectionData.ExpirationTimestamp)
-
-	d.SetId(volumeID)
-
-	return nil
-
+// NewResource is a wrapper around provider
+func (r resourceVolumeType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+	return resourceVolume{
+		p: *(p.(*Pstoreprovider)),
+	}, nil
 }
 
-//placeholder for resource volume create
-func resourceVolumeCreate(d *schema.ResourceData, meta interface{}) error {
-
-	c := meta.(*Client)
-
-	vol := VolRequest{}
-
-	//reading the resource data
-	vol.Name = d.Get("name").(string)
-	vol.Description = d.Get("description").(string)
-	vol.ApplianceID = d.Get("appliance_id").(string)
-	vol.Size = d.Get("size").(int)
-	vol.IsReplicationDestination = d.Get("is_replication_destination").(bool)
-
-	id, err := c.CreateVolume(c, c.HostURL, vol)
-	if err != nil {
-		return err
-	}
-
-	d.SetId(id)
-
-	return resourceVolumeRead(d, meta)
+type resourceVolume struct {
+	p Pstoreprovider
 }
 
-//placeholder for resource volume update
-func resourceVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*Client)
-
-	vol := VolRequest{}
-	volumeID := d.Id()
-
-	//reading the resource data
-	vol.Name = d.Get("name").(string)
-	vol.Description = d.Get("description").(string)
-	vol.Size = d.Get("size").(int)
-	vol.IsReplicationDestination = d.Get("is_replication_destination").(bool)
-
-	err := c.UpdateVolume(c, c.HostURL, vol, volumeID)
-	if err != nil {
-		return err
+func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+	if !r.p.configured {
+		resp.Diagnostics.AddError(
+			"Provider not configured",
+			"The provider hasn't been configured before apply, likely because it depends on an unknown value from another resource. This leads to weird stuff happening, so we'd prefer if you didn't do that. Thanks!",
+		)
+		return
 	}
 
-	return resourceVolumeRead(d, meta)
+	log.Printf("Started Creating Volume")
+	var plan models.Volume
+
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	
+	volumeCreate := &gopowerstore.VolumeCreate{
+		Name:                &plan.Name.Value,
+		Description:         plan.Description.Value,
+		Size:                &plan.Size.Value,
+		ApplianceID:         plan.ApplianceID.Value,
+		VolumeGroupID:       plan.VolumeGroupID.Value,
+		SectorSize:          &plan.SectorSize.Value,
+		ProtectionPolicyID:  plan.ProtectionPolicyID.Value,
+		PerformancePolicyID: plan.PerformancePolicyID.Value,
+		AppType:             plan.AppType.Value,
+		AppTypeOther:        plan.AppTypeOther.Value,
+		MinimumSize:         plan.MinimumSize.Value,
+		HostID:              plan.HostID.Value,
+		HostGroupID:         plan.HostGroupID.Value,
+		LogicalUnitNumber:   plan.LogicalUnitNumber.Value,
+	}
+
+	// Add validation
+	if volumeCreate.HostID != "" && volumeCreate.HostGroupID != "" {
+		resp.Diagnostics.AddError(
+			"Error creating volume",
+			"Could not create volume, since either HostID or HostGroupID can be present ",
+		)
+		return
+	}
+
+	// Create New Volume
+	// The function returns only ID of the newly created Volume
+	volCreateResponse, err := r.p.client.PStoreClient.CreateVolume(context.Background(), volumeCreate)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error creating volume",
+			"Could not create volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	// Get Volume Details using ID retrieved above
+	volResponse, err1 := r.p.client.PStoreClient.GetVolume(context.Background(), volCreateResponse.ID)
+	if err1 != nil {
+		resp.Diagnostics.AddError(
+			"Error getting volume after creation",
+			"Could not get volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
+	// Get Host Mapping from volume ID
+	hostMapping, err1 := r.p.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volCreateResponse.ID)
+	if err1 != nil {
+		resp.Diagnostics.AddError(
+			"Error fetching volume host mapping",
+			"Could not create volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
+	log.Printf("After Volume create call")
+
+	result := models.Volume{}
+	updateVolState(&result, volResponse, hostMapping, &plan, "Create")
+
+	log.Printf("Added to result: %v", result)
+
+	diags = resp.State.Set(ctx, result)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	log.Printf("Done with Create")
 }
 
-//placeholder for resource volume delete
-func resourceVolumeDelete(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*Client)
+// Read resource information
+func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
 
-	//reading the resource data
-	id := d.Id()
-
-	err := c.DeleteVolume(c, c.HostURL, id)
-	if err != nil {
-		log.Println("Delete volume error:", err.Error())
-		return err
+	var state models.Volume
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	d.SetId("")
+	// Get volume details from API and then update what is in state from what the API returns
+	volID := state.ID.Value
+	volResponse, err := r.p.client.PStoreClient.GetVolume(context.Background(), volID)
 
-	log.Println("deleted")
-	return nil
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading volume",
+			"Could not read volume with error "+volID+": "+err.Error(),
+		)
+		return
+	}
+	// Get Host Mapping details from API
+	hostMapping, err := r.p.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error fetching volume host mapping",
+			"Could not create volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	updateVolState(&state, volResponse, hostMapping, nil, "Read")
+
+	// Set state
+	diags = resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Done with Read")
+}
+
+// Update resource
+func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {}
+
+// Delete resource
+func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+	log.Printf("Started with Delete")
+
+	var state models.Volume
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get vg ID from state
+	volID := state.ID.Value
+
+	// Delete volume by calling API
+	_, err := r.p.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error deleting volume",
+			"Could not delete volID "+volID+": "+err.Error(),
+		)
+		return
+	}
+
+	// Remove resource from state
+	resp.State.RemoveResource(ctx)
+	log.Printf("Done with Delete")
 }
