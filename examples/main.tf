@@ -26,6 +26,13 @@ provider "powerstore" {
   insecure = true
 }
 
+
+resource "powerstore_snapshotrule" "test" {
+  name = "test_snapshotrule_1"
+  interval = "Four_Hours"
+  desired_retention = 8
+}
+
 resource "powerstore_volume" "test" {
   name = "test_vol"
   size = 7516192768
