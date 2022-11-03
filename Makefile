@@ -10,7 +10,7 @@ vet:
 	go vet
 
 fmt:
-	go fmt
+	gofmt -w -s .
 
 code-check: lint vet fmt
 
