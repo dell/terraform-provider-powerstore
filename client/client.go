@@ -29,4 +29,3 @@ func NewClient(endpoint string, username string, password string, insecure bool)
 	}
 	return &client, nil
 }
-

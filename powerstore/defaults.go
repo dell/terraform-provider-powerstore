@@ -50,4 +50,3 @@ func (m DefaultAttributePlanModifier) Description(ctx context.Context) string {
 func (m DefaultAttributePlanModifier) MarkdownDescription(ctx context.Context) string {
 	return m.Description(ctx)
 }
-
