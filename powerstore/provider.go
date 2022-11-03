@@ -13,7 +13,8 @@ import (
 // Ensure provider defined types fully satisfy framework interfaces
 var _ tfsdk.Provider = &Pstoreprovider{}
 
-// Provider -
+// Pstoreprovider satisfies the tfsdk.Provider interface and usually is included
+//// with all Resource and DataSource implementations.
 type Pstoreprovider struct {
 	// client can contain the upstream provider SDK or HTTP client used to
 	// communicate with the upstream service. Resource and DataSource
@@ -39,6 +40,7 @@ type ProviderData struct {
 	Username types.String `tfsdk:"username"`
 }
 
+// Configure method to configure shared clients for data source and resource implementations.
 func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProviderRequest, resp *tfsdk.ConfigureProviderResponse) {
 	// If the upstream provider SDK or HTTP client requires configuration, such
 	// as authentication or logging, this is a great opportunity to do so.
@@ -129,15 +131,18 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProvi
 	p.configured = true
 }
 
+// GetResources method to define the provider's resources.
 func (p *Pstoreprovider) GetResources(ctx context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
 	return map[string]tfsdk.ResourceType{
 		"powerstore_volume": resourceVolumeType{}}, nil
 }
 
+// GetDataSources method to define the provider's data sources.
 func (p *Pstoreprovider) GetDataSources(ctx context.Context) (map[string]tfsdk.DataSourceType, diag.Diagnostics) {
 	return map[string]tfsdk.DataSourceType{}, nil
 }
 
+//GetSchema method to define the schema for provider-level configuration.
 func (p *Pstoreprovider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 

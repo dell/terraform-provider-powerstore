@@ -336,7 +336,8 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 }
 
 // Update resource
-func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {}
+func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+}
 
 // Delete resource
 func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
