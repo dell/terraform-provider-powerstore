@@ -6,7 +6,6 @@
 #5. Generate
 #6. Malware Scanner
 
-
 name: Terraform-dev-CI
 
 # Controls when the workflow will run
@@ -39,7 +38,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Run the formatter, linter, and vetter
-        uses: dell/common-github-actions/go-code-formatter-linter-vetter@dev
+        uses: dell/common-github-actions/go-code-formatter-linter-vetter@refs/heads/dev
         with:
           directories: ./...
   sanitize:
@@ -49,7 +48,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Run the forbidden words scan
-        uses: dell/common-github-actions/code-sanitizer@dev
+        uses: dell/common-github-actions/code-sanitizer@refs/heads/dev
         with:
           args: /github/workspace
 
@@ -72,7 +71,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Run Go Security
-        uses: securego/gosec@master
+        uses: securego/gosec@refs/heads/dev
 
   generate:
     runs-on: ubuntu-latest
@@ -95,7 +94,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Malware Scanner
-        uses: dell/common-github-actions/malware-scanner@dev
+        uses: dell/common-github-actions/malware-scanner@refs/heads/dev
         with:
           directories: .
           options: -ri

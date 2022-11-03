@@ -18,7 +18,6 @@ type Pstoreprovider struct {
 	// client can contain the upstream provider SDK or HTTP client used to
 	// communicate with the upstream service. Resource and DataSource
 	// implementations can then make calls using this client.
-	//
 	client client.Client
 
 	// configured is set to true at the end of the Configure method.
