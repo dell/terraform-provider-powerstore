@@ -24,4 +24,4 @@ build: download
 	mkdir -p out
 	go build -v -o ./out
 
-all: download code-check test compile
+all: download code-check
