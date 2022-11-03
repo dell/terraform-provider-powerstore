@@ -15,5 +15,5 @@ type SnapshotRule struct {
 	NASAccessType    types.String `tfsdk:"nas_access_type"`
 	IsReadOnly       types.Bool   `tfsdk:"is_read_only"`
 	ManagedBy        types.String `tfsdk:"managed_by"`
-	ManagedById      types.String `tfsdk:"managed_by_id"`
+	ManagedByID      types.String `tfsdk:"managed_by_id"`
 }
