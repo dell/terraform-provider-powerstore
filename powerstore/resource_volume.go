@@ -108,6 +108,9 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Optional:            true,
 				Description:         "The performance_policy_id of the volume.",
 				MarkdownDescription: "The performance_policy_id of the volume.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.String{Value: "default_medium"}),
+				},
 			},
 			"creation_timestamp": {
 				Type:                types.StringType,
@@ -217,7 +220,7 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	
+
 	volumeCreate := &gopowerstore.VolumeCreate{
 		Name:                &plan.Name.Value,
 		Description:         plan.Description.Value,
@@ -236,10 +239,11 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	}
 
 	// Add validation
-	if volumeCreate.HostID != "" && volumeCreate.HostGroupID != "" {
+	valid, validErr := creationValidation(context.Background(), plan)
+	if !valid {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
-			"Could not create volume, since either HostID or HostGroupID can be present ",
+			"Could not create volume "+validErr,
 		)
 		return
 	}

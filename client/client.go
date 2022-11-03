@@ -13,7 +13,7 @@ var (
 	newClientWithArgs = pstore.NewClientWithArgs
 )
 
-// NewClient returns the gopowermax client
+// NewClient returns the gopowerstore client
 func NewClient(endpoint string, username string, password string, insecure bool) (*Client, error) {
 
 	clientOptions := pstore.NewClientOptions()

@@ -3,8 +3,6 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	"os"
-	"strconv"
 	client "terraform-provider-powerstore/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -62,10 +60,6 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProvi
 	}
 
 	if config.Username.Value == "" {
-		config.Username.Value = os.Getenv("UNISPHERE_USERNAME")
-	}
-
-	if config.Username.Value == "" {
 		// Error vs warning - empty value must stop execution
 		resp.Diagnostics.AddError(
 			"Unable to find username",
@@ -82,10 +76,6 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProvi
 			"Cannot use unknown value as password",
 		)
 		return
-	}
-
-	if config.Password.Value == "" {
-		config.Password.Value = os.Getenv("UNISPHERE_PASSWORD")
 	}
 
 	if config.Password.Value == "" {
@@ -108,10 +98,6 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProvi
 	}
 
 	if config.Endpoint.Value == "" {
-		config.Endpoint.Value = os.Getenv("UNISPHERE_HOST")
-	}
-
-	if config.Endpoint.Value == "" {
 		// Error vs warning - empty value must stop execution
 		resp.Diagnostics.AddError(
 			"Unable to find endpoint",
@@ -128,12 +114,6 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProvi
 			"Cannot use unknown value as insecure flag",
 		)
 		return
-	}
-
-	if !config.Insecure.Value {
-		// config.Insecure.Value
-		insecure, _ := strconv.ParseBool(os.Getenv("UNISPHERE_INSECURE"))
-		config.Insecure.Value = insecure
 	}
 
 	pstoreClient, err := client.NewClient(config.Endpoint.Value, config.Username.Value, config.Password.Value, config.Insecure.Value)
@@ -162,11 +142,11 @@ func (p *Pstoreprovider) GetDataSources(ctx context.Context) (map[string]tfsdk.D
 func (p *Pstoreprovider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 
-		MarkdownDescription: "Provider for PowerMax",
+		MarkdownDescription: "Provider for PowerStore",
 		Attributes: map[string]tfsdk.Attribute{
 			"endpoint": {
-				MarkdownDescription: "IP or FQDN of the Unisphere host",
-				Description:         "IP or FQDN of the Unisphere host",
+				MarkdownDescription: "IP or FQDN of the PowerStore host",
+				Description:         "IP or FQDN of the PowerStore host",
 				Type:                types.StringType,
 				Required:            true,
 			},
@@ -180,15 +160,15 @@ func (p *Pstoreprovider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 				},
 			},
 			"password": {
-				MarkdownDescription: "The password of the Unisphere host.",
-				Description:         "The password of the Unisphere host.",
+				MarkdownDescription: "The password of the PowerStore host.",
+				Description:         "The password of the PowerStore host.",
 				Type:                types.StringType,
 				Required:            true,
 				Sensitive:           true,
 			},
 			"username": {
-				MarkdownDescription: "The username of the Unisphere host.",
-				Description:         "The username of the Unisphere host.",
+				MarkdownDescription: "The username of the PowerStore host.",
+				Description:         "The username of the PowerStore host.",
 				Type:                types.StringType,
 				Required:            true,
 			},
