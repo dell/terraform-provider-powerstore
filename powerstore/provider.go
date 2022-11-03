@@ -218,4 +218,3 @@ func New(version string) func() tfsdk.Provider {
 		}
 	}
 }
-
