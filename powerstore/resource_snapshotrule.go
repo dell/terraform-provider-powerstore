@@ -250,5 +250,5 @@ func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.S
 	state.NASAccessType.Value = string(response.NASAccessType)
 	state.IsReadOnly.Value = response.IsReadOnly
 	state.ManagedBy.Value = string(response.ManagedBy)
-	state.ManagedById.Value = response.ManagedById
+	state.ManagedByID.Value = response.ManagedById
 }
