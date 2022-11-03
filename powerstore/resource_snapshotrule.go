@@ -34,14 +34,14 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Type:                types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Description:         "The interval between snapshots taken by a snapshot rule.",
+				Description:         "The interval between snapshots taken by a snapshot rule, mutually exclusive with time_of_day parameter.",
 				MarkdownDescription: "The interval between snapshots taken by a snapshot rule.",
 			},
 			"time_of_day": {
 				Type:                types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Description:         "The time of the day to take a daily snapshot, with format hh:mm.",
+				Description:         "The time of the day to take a daily snapshot, with format hh:mm, mutually exclusive with interval parameter.",
 				MarkdownDescription: "The time of the day to take a daily snapshot, with format hh:mm.",
 			},
 			"timezone": {
@@ -146,16 +146,6 @@ func (r resourceSnapshot) Create(ctx context.Context, req tfsdk.CreateResourceRe
 		}
 	}
 
-	// Add validation
-	if snapshotRuleCreate.Interval != "" && snapshotRuleCreate.TimeOfDay != "" ||
-		snapshotRuleCreate.Interval == "" && snapshotRuleCreate.TimeOfDay == "" {
-		resp.Diagnostics.AddError(
-			"Error creating snapshot rule",
-			"Could not create snapshot rule, since either the interval or the time_of_day may be set, but not both.",
-		)
-		return
-	}
-
 	log.Printf("Calling api to create snapshotrule")
 
 	// Create New SnapshotRule
@@ -184,17 +174,15 @@ func (r resourceSnapshot) Create(ctx context.Context, req tfsdk.CreateResourceRe
 	state := models.SnapshotRule{}
 	updateSnapshotRuleState(&state, getRes)
 
-	log.Printf("Added to result: %v", state)
-
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	log.Printf("Done with Create")
+	log.Printf("Successfully done with Create")
 }
 
-// Read resource information
+// Read fetch info about asked snapshot rule
 func (r resourceSnapshot) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
 
 	var state models.SnapshotRule
