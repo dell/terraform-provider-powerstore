@@ -1,57 +1,27 @@
-TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=dell.com
-NAMESPACE=incubation
-NAME=powerstore
-BINARY=terraform-provider-${NAME}
-VERSION=0.0.1
-OS_ARCH=linux_amd64
 
-default: install
+lint:
+	echo "Running staticcheck"
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+	staticcheck ./...
+	golint ./...
 
-vendor:
-	echo "Getting dependencies"
-	go mod vendor
+vet:
+	echo "running go vet"
+	go vet
 
-dependencies: 
-	go install github.com/golang/mock/mockgen@v1.6.0
+fmt:
+	gofmt -w -s .
 
-build: vendor
-	echo "Building terraform-provider-powerstore"
-	go build -o ${BINARY}
+code-check: lint vet fmt
 
-release:
-	GOOS=darwin GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_darwin_amd64
-	GOOS=freebsd GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_freebsd_386
-	GOOS=freebsd GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_freebsd_amd64
-	GOOS=freebsd GOARCH=arm go build -o ./bin/${BINARY}_${VERSION}_freebsd_arm
-	GOOS=linux GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_linux_386
-	GOOS=linux GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_linux_amd64
-	GOOS=linux GOARCH=arm go build -o ./bin/${BINARY}_${VERSION}_linux_arm
-	GOOS=openbsd GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_openbsd_386
-	GOOS=openbsd GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_openbsd_amd64
-	GOOS=solaris GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_solaris_amd64
-	GOOS=windows GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_windows_386
-	GOOS=windows GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_windows_amd64
+generate:
+	go generate
 
-install: build
-	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	cp ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+download:
+	go mod download
 
-mockgen: build
-	echo "creating mock files"
-	mockgen -source=powerstore/client.go -destination=powerstore/mock_client.go -package=powerstore ClientInterface
+build: download
+	mkdir -p out
+	go build -v -o ./out
 
-
-test: mockgen
-	echo "Running the Tests"
-	go test -i $(TEST) || exit 1                                                   
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
-
-testacc: 
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m  
-
-coverage: mockgen
-	echo "Running the Tests with coverage report"
-	go test $(TEST) -v -coverprofile cover.out || exit 1
-	go tool cover -html=cover.out -o cover.html                                                
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+all: download code-check
