@@ -30,7 +30,12 @@ provider "powerstore" {
 resource "powerstore_snapshotrule" "test" {
   name = "test_snapshotrule_1"
   interval = "Four_Hours"
+  time_of_day = "21:00"
+  timezone = "UTC"
+  days_of_week = ["Monday"]
   desired_retention = 8
+  is_read_only = true
+  nas_access_type = "Snapshot"
 }
 
 resource "powerstore_volume" "test" {

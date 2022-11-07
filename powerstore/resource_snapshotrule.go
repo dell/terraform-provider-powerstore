@@ -102,16 +102,16 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 
 // NewResource is a wrapper around provider
 func (r resourceSnapshotRuleType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceSnapshot{
+	return resourceSnapshotRule{
 		p: *(p.(*Pstoreprovider)),
 	}, nil
 }
 
-type resourceSnapshot struct {
+type resourceSnapshotRule struct {
 	p Pstoreprovider
 }
 
-func (r resourceSnapshot) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
 	if !r.p.configured {
 		resp.Diagnostics.AddError(
 			"Provider not configured",
@@ -183,7 +183,7 @@ func (r resourceSnapshot) Create(ctx context.Context, req tfsdk.CreateResourceRe
 }
 
 // Read fetch info about asked snapshot rule
-func (r resourceSnapshot) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
+func (r resourceSnapshotRule) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
 
 	var state models.SnapshotRule
 	diags := req.State.Get(ctx, &state)
@@ -220,11 +220,11 @@ func (r resourceSnapshot) Read(ctx context.Context, req tfsdk.ReadResourceReques
 }
 
 // Update resource
-func (r resourceSnapshot) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
 }
 
 // Delete resource
-func (r resourceSnapshot) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
 }
 
 func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.SnapshotRule) {
