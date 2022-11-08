@@ -3,6 +3,7 @@ package powerstore
 import (
 	"context"
 	"log"
+	"strings"
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
@@ -129,22 +130,7 @@ func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResour
 		return
 	}
 
-	snapshotRuleCreate := &gopowerstore.SnapshotRuleCreate{
-		Name:             plan.Name.Value,
-		Interval:         gopowerstore.SnapshotRuleIntervalEnum(plan.Interval.Value),
-		TimeOfDay:        plan.TimeOfDay.Value,
-		TimeZone:         gopowerstore.TimeZoneEnum(plan.TimeZone.Value),
-		DesiredRetention: int32(plan.DesiredRetention.Value),
-		NASAccessType:    gopowerstore.NASAccessTypeEnum(plan.NASAccessType.Value),
-		IsReadOnly:       plan.IsReadOnly.Value,
-	}
-
-	if len(plan.DaysOfWeek.Elems) > 0 {
-		snapshotRuleCreate.DaysOfWeek = []gopowerstore.DaysOfWeekEnum{}
-		for _, d := range plan.DaysOfWeek.Elems {
-			snapshotRuleCreate.DaysOfWeek = append(snapshotRuleCreate.DaysOfWeek, gopowerstore.DaysOfWeekEnum(d.String()))
-		}
-	}
+	snapshotRuleCreate := planToSnapshotRuleParam(plan)
 
 	log.Printf("Calling api to create snapshotrule")
 
@@ -219,12 +205,91 @@ func (r resourceSnapshotRule) Read(ctx context.Context, req tfsdk.ReadResourceRe
 	log.Printf("Done with Read")
 }
 
-// Update resource
+// Update updates snapshotRule
 func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+
+	log.Printf("Started Update")
+
+	// Get plan values
+	var plan models.SnapshotRule
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get current state
+	var state models.SnapshotRule
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	snapshotRuleUpdate := planToSnapshotRuleParam(plan)
+
+	// Get snapshotRule ID from state
+	snapshotRuleID := state.ID.Value
+
+	// Update snapshotRule by calling API
+	_, err := r.p.client.PStoreClient.ModifySnapshotRule(context.Background(), snapshotRuleUpdate, snapshotRuleID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating snapshotRule",
+			"Could not update snapshotRuleID "+snapshotRuleID+": "+err.Error(),
+		)
+		return
+	}
+
+	// Get SnapshotRule Details
+	getRes, err := r.p.client.PStoreClient.GetSnapshotRule(context.Background(), snapshotRuleID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting snapshot rule after update",
+			"Could not get snapshot rule, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	updateSnapshotRuleState(&state, getRes)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
-// Delete resource
+// Delete deletes snapshotRule
 func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+
+	log.Printf("Started with Delete")
+
+	var state models.SnapshotRule
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get snapshot rule ID from state
+	snapshotRuleID := state.ID.Value
+
+	// Delete snapshotRule by calling API
+	_, err := r.p.client.PStoreClient.DeleteSnapshotRule(context.Background(), nil, snapshotRuleID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error deleting snapshotRule",
+			"Could not delete snapshotRuleID "+snapshotRuleID+": "+err.Error(),
+		)
+		return
+	}
+
+	// Remove resource from state
+	resp.State.RemoveResource(ctx)
+	log.Printf("Done with Delete")
 }
 
 func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.SnapshotRule) {
@@ -233,6 +298,12 @@ func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.S
 	state.Name.Value = response.Name
 	state.Interval.Value = string(response.Interval)
 	state.TimeOfDay.Value = response.TimeOfDay
+
+	// converting hh:mm:ss to hh:mm in case server returns hh:mm:ss
+	if len(strings.Split(response.TimeOfDay, ":")) == 3 {
+		state.TimeOfDay.Value = strings.TrimSuffix(response.TimeOfDay, ":00")
+	}
+
 	state.TimeZone.Value = string(response.TimeZone)
 
 	attributeList := []attr.Value{}
@@ -251,4 +322,31 @@ func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.S
 	state.IsReadOnly.Value = response.IsReadOnly
 	state.ManagedBy.Value = string(response.ManagedBy)
 	state.ManagedByID.Value = response.ManagedById
+}
+
+func planToSnapshotRuleParam(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
+
+	snapshotRuleCreate := &gopowerstore.SnapshotRuleCreate{
+		Name:             plan.Name.Value,
+		Interval:         gopowerstore.SnapshotRuleIntervalEnum(plan.Interval.Value),
+		TimeOfDay:        plan.TimeOfDay.Value,
+		TimeZone:         gopowerstore.TimeZoneEnum(plan.TimeZone.Value),
+		DesiredRetention: int32(plan.DesiredRetention.Value),
+		NASAccessType:    gopowerstore.NASAccessTypeEnum(plan.NASAccessType.Value),
+	}
+
+	if len(plan.DaysOfWeek.Elems) > 0 {
+		snapshotRuleCreate.DaysOfWeek = []gopowerstore.DaysOfWeekEnum{}
+
+		for _, d := range plan.DaysOfWeek.Elems {
+			snapshotRuleCreate.DaysOfWeek = append(
+				snapshotRuleCreate.DaysOfWeek,
+				gopowerstore.DaysOfWeekEnum(
+					strings.Trim(d.String(), "\""),
+				),
+			)
+		}
+	}
+
+	return snapshotRuleCreate
 }
