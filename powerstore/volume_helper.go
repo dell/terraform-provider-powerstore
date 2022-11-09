@@ -9,8 +9,11 @@ import (
 )
 
 const (
+	// MiB to convert size in megabytes
 	MiB = 1024 * 1024
+	// GiB to convert size in gigabytes
 	GiB = 1024 * MiB
+	// TiB to convert size in terabytes
 	TiB = 1024 * GiB
 )
 
@@ -199,8 +202,7 @@ func convertFromBytes(bytes int64) (float64, string) {
 	var newSize float64
 	var unit int
 	var units = []string{"KB", "MB", "GB", "TB"}
-	for newSize = float64(bytes); newSize >= 1024 && unit < len(units); {
-		unit += 1
+	for newSize = float64(bytes); newSize >= 1024 && unit < len(units); unit++ {
 		newSize = newSize / 1024
 	}
 	return newSize, units[unit-1]
