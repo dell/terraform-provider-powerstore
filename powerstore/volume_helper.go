@@ -8,11 +8,19 @@ import (
 	"terraform-provider-powerstore/models"
 )
 
+const (
+	MiB = 1024 * 1024
+	GiB = 1024 * MiB
+	TiB = 1024 * GiB
+)
+
 func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapping []pstore.HostVolumeMapping, volPlan *models.Volume, operation string) {
 	// Update value from Volume Response to State
 	volState.ID.Value = volResponse.ID
 	volState.Name.Value = volResponse.Name
-	volState.Size.Value = volResponse.Size
+	size, unit := convertFromBytes(volResponse.Size)
+	volState.Size.Value = size
+	volState.CapacityUnit.Value = unit
 	volState.Type.Value = string(volResponse.Type)
 	volState.WWN.Value = volResponse.Wwn
 	volState.Description.Value = volResponse.Description
@@ -62,12 +70,20 @@ func updateVol(ctx context.Context, client client.Client, planVol, stateVol mode
 		return updatedParameters, updateFailedParameters, errorMessages
 	}
 
+	valInBytes, errmsg := convertToBytes(ctx, planVol)
+	if len(errmsg) > 0 {
+		updateFailedParameters = append(updateFailedParameters, "Validation Failed")
+		errorMessages = append(errorMessages, fmt.Sprintf("Validation Failed: %s", errmsg))
+		return updatedParameters, updateFailedParameters, errorMessages
+	}
+
 	vgModify := &pstore.VolumeModify{
 		Name:                planVol.Name.Value,
-		Size:                planVol.Size.Value,
+		Size:                valInBytes,
 		ProtectionPolicyID:  planVol.ProtectionPolicyID.Value,
 		PerformancePolicyID: planVol.PerformancePolicyID.Value,
 	}
+
 	_, err := client.PStoreClient.ModifyVolume(context.Background(), vgModify, volID)
 	if err != nil {
 		updateFailedParameters = append(updateFailedParameters, "name,size,protection policy,performance policy")
@@ -162,4 +178,30 @@ func creationValidation(ctx context.Context, plan models.Volume) (bool, string) 
 		return false, "Performance Policy if present cannot be empty. Either remove the field or set desired value"
 	}
 	return true, ""
+}
+
+func convertToBytes(ctx context.Context, plan models.Volume) (int64, string) {
+	var valInBytes float64
+	switch plan.CapacityUnit.Value {
+	case "MB":
+		valInBytes = plan.Size.Value * MiB
+	case "TB":
+		valInBytes = plan.Size.Value * TiB
+	case "GB":
+		valInBytes = plan.Size.Value * GiB
+	default:
+		return 0, "Invalid Capacity unit"
+	}
+	return int64(valInBytes), ""
+}
+
+func convertFromBytes(bytes int64) (float64, string) {
+	var newSize float64
+	var unit int
+	var units = []string{"KB", "MB", "GB", "TB"}
+	for newSize = float64(bytes); newSize >= 1024 && unit < len(units); {
+		unit += 1
+		newSize = newSize / 1024
+	}
+	return newSize, units[unit-1]
 }
