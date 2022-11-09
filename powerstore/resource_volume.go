@@ -31,14 +31,20 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				MarkdownDescription: "The name of the volume.",
 			},
 			"size": {
-				Type:                types.Int64Type,
+				Type:                types.Float64Type,
 				Required:            true,
 				Description:         "The size of the volume.",
 				MarkdownDescription: "The size of the volume.",
 			},
+			"capacity_unit": {
+				Type:                types.StringType,
+				Optional:            true,
+				Computed:            true,
+				Description:         "The Capacity Unit corresponding to the size.",
+				MarkdownDescription: "The Capacity Unit corresponding to the size.",
+			},
 			"host_id": {
-				Type: types.StringType,
-
+				Type:                types.StringType,
 				Optional:            true,
 				Computed:            true,
 				Description:         "The host id of the volume.",
@@ -213,6 +219,7 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		)
 		return
 	}
+	var valInBytes int64
 
 	log.Printf("Started Creating Volume")
 	var plan models.Volume
@@ -223,10 +230,19 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		return
 	}
 
+	valInBytes, errmsg := convertToBytes(ctx, plan)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error creating volume",
+			"Could not create volume "+errmsg,
+		)
+		return
+	}
+
 	volumeCreate := &gopowerstore.VolumeCreate{
 		Name:                &plan.Name.Value,
 		Description:         plan.Description.Value,
-		Size:                &plan.Size.Value,
+		Size:                &valInBytes,
 		ApplianceID:         plan.ApplianceID.Value,
 		VolumeGroupID:       plan.VolumeGroupID.Value,
 		SectorSize:          &plan.SectorSize.Value,
