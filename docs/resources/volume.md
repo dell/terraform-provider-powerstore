@@ -11,9 +11,8 @@ Create and manage volumes
 - **name** (String) Name of the volume. This value must contain 128 or fewer
   printable Unicode characters. This property supports case-insensitive filtering
   Maximal length : 128
-- **size** (Number) Size of the volume in bytes. Minimum volume size is 1MB. Maximum volume size is 256TB. Size must be a multiple of 8192.
-  **Minimum value** : 1048576
-  **Maximum value** : 281474976710656
+- **size** (Number) Size of the volume in number. Minimum volume size is 1MB. Maximum volume size is 256TB. Size must be a multiple of 8192.
+- **capacity_unit** : Capacity unit can be MB, GB or TB. Default unit is GB
 - **host_id** (String) Unique identifier of the host to be attached to the volume. 
 If not specified, an unmapped volume is created. Only one of host_id or host_group_id can be supplied.
 - **host_group_id** (String) Unique identifier of the host group to be attached to the volume. 
