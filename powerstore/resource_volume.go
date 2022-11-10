@@ -42,6 +42,9 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Computed:            true,
 				Description:         "The Capacity Unit corresponding to the size.",
 				MarkdownDescription: "The Capacity Unit corresponding to the size.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.String{Value: "GB"}),
+				},
 			},
 			"host_id": {
 				Type:                types.StringType,
