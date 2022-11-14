@@ -35,6 +35,7 @@ resource "powerstore_snapshotrule" "test" {
   days_of_week = ["Monday"]
   desired_retention = 56
   nas_access_type = "Snapshot"
+  is_read_only = false
 }
 
 resource "powerstore_volume" "test" {

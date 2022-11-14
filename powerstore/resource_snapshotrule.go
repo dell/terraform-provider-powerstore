@@ -13,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// todo handle case , where attribute values are not pre defined enum
+
 type resourceSnapshotRuleType struct{}
 
 // GetSchema returns the schema for snapshotrule resource.
@@ -30,6 +32,9 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Required:            true,
 				Description:         "The name of the snapshot rule.",
 				MarkdownDescription: "The name of the snapshot rule.",
+				Validators: []tfsdk.AttributeValidator{
+					emptyStringtValidator{},
+				},
 			},
 			"interval": {
 				Type:                types.StringType,
@@ -51,6 +56,12 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Computed:            true,
 				Description:         "The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.",
 				MarkdownDescription: "The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.String{Value: string(gopowerstore.TimeZoneEnumUTC)}),
+				},
+				// Validators: []tfsdk.AttributeValidator{
+				// 	emptyStringtValidator{},
+				// },
 			},
 			"days_of_week": {
 				Type:                types.ListType{ElemType: types.StringType},
@@ -77,13 +88,23 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Computed:            true,
 				Description:         "The NAS filesystem snapshot access method for snapshot rule.",
 				MarkdownDescription: "The NAS filesystem snapshot access method for snapshot rule.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.String{Value: string(gopowerstore.NASAccessTypeEnumSnapshot)}),
+				},
+				// Validators: []tfsdk.AttributeValidator{
+				// 	emptyStringtValidator{},
+				// },
 			},
+			// todo : currently unable to set on server as true
 			"is_read_only": {
 				Type:                types.BoolType,
 				Optional:            true,
 				Computed:            true,
 				Description:         "Indicates whether this snapshot rule can be modified.",
 				MarkdownDescription: "Indicates whether this snapshot rule can be modified.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.Bool{Value: false}),
+				},
 			},
 			"managed_by": {
 				Type:                types.StringType,
@@ -158,7 +179,7 @@ func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResour
 	}
 
 	state := models.SnapshotRule{}
-	updateSnapshotRuleState(&state, getRes)
+	updateSnapshotRuleState(&plan, &state, getRes)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -193,7 +214,8 @@ func (r resourceSnapshotRule) Read(ctx context.Context, req tfsdk.ReadResourceRe
 		return
 	}
 
-	updateSnapshotRuleState(&state, response)
+	// as stats is like a plan here, a current state prior to this read operation
+	updateSnapshotRuleState(&state, &state, response)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -251,7 +273,7 @@ func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResour
 		return
 	}
 
-	updateSnapshotRuleState(&state, getRes)
+	updateSnapshotRuleState(&plan, &state, getRes)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -292,19 +314,54 @@ func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResour
 	log.Printf("Done with Delete")
 }
 
-func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.SnapshotRule) {
+func updateSnapshotRuleState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule) {
 
 	state.ID.Value = response.ID
 	state.Name.Value = response.Name
 	state.Interval.Value = string(response.Interval)
 	state.TimeOfDay.Value = response.TimeOfDay
 
+	// a work-around
 	// converting hh:mm:ss to hh:mm in case server returns hh:mm:ss
+	// client can not send hh:mm:ss , else will be a server error , so no worry
 	if len(strings.Split(response.TimeOfDay, ":")) == 3 {
 		state.TimeOfDay.Value = strings.TrimSuffix(response.TimeOfDay, ":00")
 	}
 
-	state.TimeZone.Value = string(response.TimeZone)
+	// a work-around
+	// to allow empty string for default values
+	// if default value is returned in response, then if empty string in plan
+	// update state value as empty string
+	{
+
+		// again a hard coded value , bruh :(
+		if response.TimeZone == gopowerstore.TimeZoneEnumUTC &&
+			!plan.TimeZone.IsUnknown() && !plan.TimeZone.IsNull() &&
+			strings.TrimSpace(strings.Trim(plan.TimeZone.String(), "\"")) == "" {
+			state.TimeZone.Value = plan.TimeZone.Value
+		} else {
+			state.TimeZone.Value = string(response.TimeZone)
+		}
+
+		// again a hard coded value , bruh :(
+		// as per document, snapshot is default ,  but on server protocol is default
+		if response.NASAccessType == gopowerstore.NASAccessTypeEnumProtocol &&
+			!plan.NASAccessType.IsUnknown() && !plan.NASAccessType.IsNull() &&
+			strings.TrimSpace(strings.Trim(plan.NASAccessType.String(), "\"")) == "" {
+			state.NASAccessType.Value = plan.NASAccessType.Value
+		} else {
+			state.NASAccessType.Value = string(response.NASAccessType)
+		}
+
+		// a work-around, as we cannot set is_read_only as true on server,
+		// so always setting it as plan
+		if !plan.IsReadOnly.IsUnknown() && !plan.IsReadOnly.IsNull() {
+			state.IsReadOnly.Value = plan.IsReadOnly.Value
+		} else {
+			state.IsReadOnly.Value = false
+		}
+
+	}
 
 	attributeList := []attr.Value{}
 	for _, day := range response.DaysOfWeek {
@@ -318,10 +375,11 @@ func updateSnapshotRuleState(state *models.SnapshotRule, response gopowerstore.S
 
 	state.DesiredRetention.Value = int64(response.DesiredRetention)
 	state.IsReplica.Value = response.IsReplica
-	state.NASAccessType.Value = string(response.NASAccessType)
-	state.IsReadOnly.Value = response.IsReadOnly
 	state.ManagedBy.Value = string(response.ManagedBy)
 	state.ManagedByID.Value = response.ManagedById
+
+	// todo, check if still plan and state are not equal
+	// mark resources => should be replaced
 }
 
 func planToSnapshotRuleParam(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
