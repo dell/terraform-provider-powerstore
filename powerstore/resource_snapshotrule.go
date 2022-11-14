@@ -460,8 +460,6 @@ func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResour
 		return
 	}
 
-	// Remove resource from state
-	resp.State.RemoveResource(ctx)
 	log.Printf("Done with Delete")
 }
 
