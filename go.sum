@@ -23,6 +23,8 @@ github.com/dell/gopowerstore v1.9.1-0.20221028100510-1080a45e9953 h1:Oa0VxCeOQpg
 github.com/dell/gopowerstore v1.9.1-0.20221028100510-1080a45e9953/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
 github.com/dell/gopowerstore v1.9.1-0.20221107105409-fc93e33a4f9b h1:DxjGAUk4mH35uUW8FUzExIsN9iMdYK4RiB9waUZmOO0=
 github.com/dell/gopowerstore v1.9.1-0.20221107105409-fc93e33a4f9b/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
+github.com/dell/gopowerstore v1.9.1-0.20221114103611-79aa72d97d55 h1:y8C79Km7uKg9fkBwDIOZbkMsRnXFErd4PExIE3RlRQ8=
+github.com/dell/gopowerstore v1.9.1-0.20221114103611-79aa72d97d55/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
