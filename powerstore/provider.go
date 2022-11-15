@@ -134,7 +134,9 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req tfsdk.ConfigureProvi
 // GetResources method to define the provider's resources.
 func (p *Pstoreprovider) GetResources(ctx context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
 	return map[string]tfsdk.ResourceType{
-		"powerstore_volume": resourceVolumeType{}}, nil
+		"powerstore_volume":       resourceVolumeType{},
+		"powerstore_snapshotrule": resourceSnapshotRuleType{},
+	}, nil
 }
 
 // GetDataSources method to define the provider's data sources.
@@ -185,6 +187,7 @@ func (p *Pstoreprovider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 // this helper can be skipped and the provider type can be directly type
 // asserted (e.g. provider: in.(*provider)), however using this can prevent
 // potential panics.
+//
 //lint:ignore U1000 used by the internal provider, to be checked
 func convertProviderType(in tfsdk.Provider) (Pstoreprovider, diag.Diagnostics) {
 	var diags diag.Diagnostics

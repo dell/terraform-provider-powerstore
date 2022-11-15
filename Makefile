@@ -15,7 +15,7 @@ fmt:
 code-check: lint vet fmt
 
 generate:
-	go generate
+	go generate ./...
 
 download:
 	go mod download
@@ -24,4 +24,4 @@ build: download
 	mkdir -p out
 	go build -v -o ./out
 
-all: download code-check
+all: download code-check generate

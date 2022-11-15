@@ -26,6 +26,18 @@ provider "powerstore" {
   insecure = true
 }
 
+
+resource "powerstore_snapshotrule" "test" {
+  name = "test_snapshotrule_1"
+  # interval = "Four_Hours"
+  time_of_day = "21:00"
+  timezone = "UTC"
+  days_of_week = ["Monday"]
+  desired_retention = 56
+  nas_access_type = "Snapshot"
+  is_read_only = false
+}
+
 resource "powerstore_volume" "test" {
   name = "test_vol"
   size = 7516192768
