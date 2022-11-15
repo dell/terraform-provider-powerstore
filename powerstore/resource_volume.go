@@ -2,11 +2,13 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"log"
+	"strings"
 	"terraform-provider-powerstore/models"
 )
 
@@ -29,14 +31,23 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				MarkdownDescription: "The name of the volume.",
 			},
 			"size": {
-				Type:                types.Int64Type,
+				Type:                types.Float64Type,
 				Required:            true,
 				Description:         "The size of the volume.",
 				MarkdownDescription: "The size of the volume.",
 			},
+			"capacity_unit": {
+				Type:                types.StringType,
+				Optional:            true,
+				Computed:            true,
+				Description:         "The Capacity Unit corresponding to the size.",
+				MarkdownDescription: "The Capacity Unit corresponding to the size.",
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					DefaultAttribute(types.String{Value: "GB"}),
+				},
+			},
 			"host_id": {
-				Type: types.StringType,
-
+				Type:                types.StringType,
 				Optional:            true,
 				Computed:            true,
 				Description:         "The host id of the volume.",
@@ -211,6 +222,7 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		)
 		return
 	}
+	var valInBytes int64
 
 	log.Printf("Started Creating Volume")
 	var plan models.Volume
@@ -221,10 +233,19 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		return
 	}
 
+	valInBytes, errmsg := convertToBytes(ctx, plan)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error creating volume",
+			"Could not create volume "+errmsg,
+		)
+		return
+	}
+
 	volumeCreate := &gopowerstore.VolumeCreate{
 		Name:                &plan.Name.Value,
 		Description:         plan.Description.Value,
-		Size:                &plan.Size.Value,
+		Size:                &valInBytes,
 		ApplianceID:         plan.ApplianceID.Value,
 		VolumeGroupID:       plan.VolumeGroupID.Value,
 		SectorSize:          &plan.SectorSize.Value,
@@ -337,6 +358,74 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 
 // Update resource
 func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+
+	log.Printf("Started Update")
+
+	// Get plan values
+	var plan models.Volume
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get current state
+	var state models.Volume
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Update volume parameters. In case of validation failure, return
+	updatedParams, updateFailedParameters, errMessages := updateVol(ctx, r.p.client, plan, state)
+	if len(updateFailedParameters) > 0 && updateFailedParameters[0] == "Validation Failed" {
+		resp.Diagnostics.AddError(
+			"Validation Check Failed",
+			errMessages[0],
+		)
+		return
+	}
+	// Get vg ID from state
+	volID := state.ID.Value
+
+	if len(errMessages) > 0 || len(updateFailedParameters) > 0 {
+		errMessage := strings.Join(errMessages, ",\n")
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("Failed to update all parameters of Volume, updated parameters are %v and parameters failed to update are %v", updatedParams, updateFailedParameters),
+			errMessage)
+	}
+
+	// Get volume details from volume ID
+	volResponse, err := r.p.client.PStoreClient.GetVolume(context.Background(), volID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting volume after update",
+			"Could not get after update volID "+volID+": "+err.Error(),
+		)
+		return
+	}
+
+	// Get Host Mapping from volume ID
+	hostMapping, err := r.p.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error fetching volume host mapping",
+			"Could not create volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	updateVolState(&state, volResponse, hostMapping, &plan, "Update")
+
+	//Set State
+	diags = resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Done with Update")
 }
 
 // Delete resource
