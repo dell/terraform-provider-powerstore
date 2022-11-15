@@ -45,6 +45,7 @@ resource "powerstore_volume" "test" {
 - `app_type` (String) The app type of the volume.
 - `app_type_other` (String) The app type other of the volume.
 - `appliance_id` (String) The appliance_id of the volume.
+- `capacity_unit` (String) The Capacity Unit corresponding to the size.
 - `description` (String) The description of the volume.
 - `host_group_id` (String) The host group id of the volume.
 - `host_id` (String) The host id of the volume.
@@ -67,3 +68,5 @@ resource "powerstore_volume" "test" {
 
 - `creation_timestamp` (String) The creation_timestamp of the volume.
 - `id` (String) The ID of the volume.
+
+
