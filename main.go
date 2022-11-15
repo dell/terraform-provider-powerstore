@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"log"
 	"terraform-provider-powerstore/powerstore"
+
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-name powerstore
 var (
 	version string = "dev"
 )
