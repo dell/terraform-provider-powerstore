@@ -3,19 +3,18 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	"os"
-	"regexp"
-	"testing"
-
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"os"
+	"regexp"
+	"testing"
 )
 
 const (
-	hostID        = "022c3fbc-4e92-48b6-928b-18565c803d0e"
-	hostGroupID   = "80c4c618-cf91-4b67-9df3-b2c0f0d6564c"
-	volumeGroupID = "069b594c-6f68-4485-ab56-1c10b6230d71"
+	hostId        = "022c3fbc-4e92-48b6-928b-18565c803d0e"
+	hostGroupId   = "80c4c618-cf91-4b67-9df3-b2c0f0d6564c"
+	volumeGroupId = "069b594c-6f68-4485-ab56-1c10b6230d71"
 )
 
 // Test to Create Volume
@@ -296,6 +295,32 @@ func TestAccVolume_AddVolumeGroupID(t *testing.T) {
 	})
 }
 
+// Test to update Volume Group ID in volume resource
+func TestAccVolume_UpdateVolumeGroupID(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: VolumeParams,
+			},
+			{
+				Config: VolumeParamsWithVolumeGroupID,
+				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
+					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
+					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
+			},
+			{
+				Config: VolumeParams,
+			},
+		},
+	})
+}
+
 // Test to Add Host ID in volume resource
 func TestAccVolume_AddHostID(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
@@ -345,6 +370,30 @@ func TestAccVolume_UpdateHostID(t *testing.T) {
 	})
 }
 
+// Test to update Host and HostGroup ID in volume resource
+func TestAccVolume_UpdateHostAndHostGroupID(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: VolumeParams,
+			},
+			{
+				Config: VolumeParamsWithHostAndHostGroupID,
+				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
+					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
+					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
+				ExpectError: regexp.MustCompile("Either of HostID and Host GroupID should be present."),
+			},
+		},
+	})
+}
+
 // Test to update Host Group ID in volume resource
 func TestAccVolume_AddHostGroupID(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
@@ -369,7 +418,7 @@ func TestAccVolume_AddHostGroupID(t *testing.T) {
 }
 
 // Test to update Host as well as Host Group ID in volume resource. Only 1 can be present at a time.
-func TestAccVolume_UpdateHostAndHostGroupID(t *testing.T) {
+func TestAccVolume_AddHostAndHostGroupID(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -602,7 +651,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	volume_group_id = "` + volumeGroupID + `"
+	volume_group_id = "` + volumeGroupId + `"
 }
 `
 
@@ -618,7 +667,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_id = "` + hostID + `"
+	host_id = "` + hostId + `"
 }
 `
 var VolumeParamsWithHostGroupID = `
@@ -633,7 +682,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_id = "` + hostGroupID + `"
+	host_group_id = "` + hostGroupId + `"
 }
 `
 var VolumeParamsWithHostAndHostGroupID = `
@@ -648,7 +697,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_id = "` + hostGroupID + `"
-	host_id =  "` + hostID + `"
+	host_group_id = "` + hostGroupId + `"
+	host_id =  "` + hostId + `"
 }
 `
