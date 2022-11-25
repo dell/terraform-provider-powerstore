@@ -96,7 +96,7 @@ func (r resourceStorageContainer) Create(ctx context.Context, req tfsdk.CreateRe
 		return
 	}
 
-	// Get Volume Details using ID retrieved above
+	// Get Storage Container Details using ID retrieved above
 	storageContainerResponse, err1 := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerCreateResponse.ID)
 	if err1 != nil {
 		resp.Diagnostics.AddError(
@@ -128,9 +128,9 @@ func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResour
 		return
 	}
 
-	// Get volume details from API and then update what is in state from what the API returns
+	// Get Storage Container details from API and then update what is in state from what the API returns
 	storageContainerID := state.ID.Value
-	volResponse, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
+	storageContainerResponse, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -140,7 +140,7 @@ func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResour
 		return
 	}
 
-	updateStorageContainerState(&state, volResponse, nil, "Read")
+	updateStorageContainerState(&state, storageContainerResponse, nil, "Read")
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -168,10 +168,10 @@ func (r resourceStorageContainer) Delete(ctx context.Context, req tfsdk.DeleteRe
 		return
 	}
 
-	// Get vg ID from state
+	// Get storage container ID from state
 	storageContainerID := state.ID.Value
 
-	// Delete volume by calling API
+	// Delete Storage Container by calling API
 	_, err := r.p.client.PStoreClient.DeleteStorageContainer(context.Background(), storageContainerID)
 	if err != nil {
 		resp.Diagnostics.AddError(
