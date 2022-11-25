@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	hostId        = "022c3fbc-4e92-48b6-928b-18565c803d0e"
-	hostGroupId   = "80c4c618-cf91-4b67-9df3-b2c0f0d6564c"
-	volumeGroupId = "069b594c-6f68-4485-ab56-1c10b6230d71"
+	hostID        = "022c3fbc-4e92-48b6-928b-18565c803d0e"
+	hostGroupID   = "80c4c618-cf91-4b67-9df3-b2c0f0d6564c"
+	volumeGroupID = "069b594c-6f68-4485-ab56-1c10b6230d71"
 )
 
 // Test to Create Volume
@@ -651,7 +651,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	volume_group_id = "` + volumeGroupId + `"
+	volume_group_id = "` + volumeGroupID + `"
 }
 `
 
@@ -667,7 +667,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_id = "` + hostId + `"
+	host_id = "` + hostID + `"
 }
 `
 var VolumeParamsWithHostGroupID = `
@@ -682,7 +682,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_id = "` + hostGroupId + `"
+	host_group_id = "` + hostGroupID + `"
 }
 `
 var VolumeParamsWithHostAndHostGroupID = `
@@ -697,7 +697,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_id = "` + hostGroupId + `"
-	host_id =  "` + hostId + `"
+	host_group_id = "` + hostGroupID + `"
+	host_id =  "` + hostID + `"
 }
 `
