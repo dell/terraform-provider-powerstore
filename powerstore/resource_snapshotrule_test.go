@@ -217,7 +217,7 @@ func TestAccSnapshotRule_ReadSnapShotRuleUnavailable(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		// PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
