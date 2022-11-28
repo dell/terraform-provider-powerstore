@@ -181,7 +181,5 @@ func (r resourceStorageContainer) Delete(ctx context.Context, req tfsdk.DeleteRe
 		return
 	}
 
-	// Remove resource from state
-	resp.State.RemoveResource(ctx)
 	log.Printf("Done with Delete")
 }
