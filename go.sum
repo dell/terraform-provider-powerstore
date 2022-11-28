@@ -44,6 +44,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dell/gopowerstore v1.9.1-0.20221124092908-67dbb6801870 h1:e8jOlkYzyQ7Ys9KniURXBQj82oaJtBWAWwGKZufTo5I=
 github.com/dell/gopowerstore v1.9.1-0.20221124092908-67dbb6801870/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
+github.com/dell/gopowerstore v1.9.1-0.20221128090006-36f94fe69cca h1:Iw3yarSml6+z8fmqqXLxmIJILS0/7e+lqj68XVo0vs4=
+github.com/dell/gopowerstore v1.9.1-0.20221128090006-36f94fe69cca/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
 github.com/emirpasic/gods v1.12.0 h1:QAUIPSaCu4G+POclxeqb3F+WPpdKqFGlw36+yOzGlrg=
 github.com/emirpasic/gods v1.12.0/go.mod h1:YfzfFFoVP/catgzJb4IKIqXjX78Ha8FMSDh3ymbK86o=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
