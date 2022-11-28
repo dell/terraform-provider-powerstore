@@ -3,21 +3,22 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	"os"
-	"testing"
 )
 
 // var testAccProviders map[string]func() tfsdk.Provider
 var testProvider tfsdk.Provider
 var testProviderFactory map[string]func() (tfprotov6.ProviderServer, error)
-var endpoint = os.Getenv("ENDPOINT")
-var username = os.Getenv("USERNAME")
-var password = os.Getenv("PASSWORD")
+var endpoint = os.Getenv("POWERSTORE_ENDPOINT")
+var username = os.Getenv("POWERSTORE_USERNAME")
+var password = os.Getenv("POWERSTORE_PASSWORD")
 
 func init() {
 	testProvider = New("test")()
@@ -43,16 +44,16 @@ func testAccProvider(t *testing.T, p tfsdk.Provider) resource.TestCheckFunc {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("USERNAME"); v == "" {
-		t.Fatal("USERNAME must be set for acceptance tests")
+	if v := os.Getenv("POWERSTORE_USERNAME"); v == "" {
+		t.Fatal("POWERSTORE_USERNAME must be set for acceptance tests")
 	}
 
-	if v := os.Getenv("PASSWORD"); v == "" {
-		t.Fatal("PASSWORD must be set for acceptance tests")
+	if v := os.Getenv("POWERSTORE_PASSWORD"); v == "" {
+		t.Fatal("POWERSTORE_PASSWORD must be set for acceptance tests")
 	}
 
-	if v := os.Getenv("ENDPOINT"); v == "" {
-		t.Fatal("ENDPOINT must be set for acceptance tests")
+	if v := os.Getenv("POWERSTORE_ENDPOINT"); v == "" {
+		t.Fatal("POWERSTORE_ENDPOINT must be set for acceptance tests")
 	}
 
 }
