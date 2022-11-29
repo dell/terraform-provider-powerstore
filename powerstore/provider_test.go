@@ -57,10 +57,3 @@ func testAccPreCheck(t *testing.T) {
 	}
 
 }
-
-const EmptyEndpointConfig = `
-provider "powerstore" {
-	username = "username"
-	password = "password"
-}
-`
