@@ -71,8 +71,9 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Computed:            true,
 				Description:         "The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.",
 				MarkdownDescription: "The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					DefaultAttribute(types.String{Value: string(gopowerstore.TimeZoneEnumUTC)}),
+				PlanModifiers:       tfsdk.AttributePlanModifiers{
+					// DefaultAttribute(types.String{Value: string(gopowerstore.TimeZoneEnumUTC)}),
+					// as default cannot be set for the case when interval is specified,  timezone cannot be specified else server's error
 				},
 				Validators: []tfsdk.AttributeValidator{
 					oneOfStringtValidator{
