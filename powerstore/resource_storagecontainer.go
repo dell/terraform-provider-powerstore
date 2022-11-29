@@ -2,12 +2,13 @@ package powerstore
 
 import (
 	"context"
+	"log"
+	"terraform-provider-powerstore/models"
+
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"log"
-	"terraform-provider-powerstore/models"
 )
 
 type resourceStorageContainerType struct{}
@@ -41,6 +42,14 @@ func (r resourceStorageContainerType) GetSchema(_ context.Context) (tfsdk.Schema
 				Computed:            true,
 				Description:         "The storage protocol of Storage Container.",
 				MarkdownDescription: "The storage protocol of Storage Container. eg: SCSI, NVME",
+				Validators: []tfsdk.AttributeValidator{
+					oneOfStringtValidator{
+						acceptableStringValues: []string{
+							string(gopowerstore.StorageContainerStorageProtocolEnumNVME),
+							string(gopowerstore.StorageContainerStorageProtocolEnumSCSI),
+						},
+					},
+				},
 			},
 			"high_water_mark": {
 				Type:                types.Int64Type,
@@ -154,7 +163,73 @@ func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResour
 
 // Update resource
 func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+	log.Printf("Started Update")
 
+	// Get plan values
+	var plan models.StorageContainer
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get current state
+	var state models.StorageContainer
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// a worksround
+	// currently a bug on powerstore, not accepting PATCH call for same values
+
+	storageContainerUpdate := &gopowerstore.StorageContainer{}
+
+	if plan.Name.Value != state.Name.Value {
+		storageContainerUpdate.Name = plan.Name.Value
+	}
+
+	if plan.Quota.Value != state.Quota.Value {
+		storageContainerUpdate.Quota = plan.Quota.Value
+	}
+
+	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
+		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
+	}
+
+	// Get storageContainer ID from state
+	storageContainerID := state.ID.Value
+
+	// Update storageContainer by calling API
+	_, err := r.p.client.PStoreClient.ModifyStorageContainer(context.Background(), storageContainerUpdate, storageContainerID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating storageContainer",
+			"Could not update storageContainerID "+storageContainerID+": "+err.Error(),
+		)
+		return
+	}
+
+	// Get StorageContainer Details
+	storageContainerResponse, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting storage container after update",
+			"Could not get storage container after update, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	updateStorageContainerState(&state, storageContainerResponse, nil, "Update")
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
 // Delete resource
