@@ -181,29 +181,15 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 		return
 	}
 
-	// a worksround
-	// currently powerstore not accepting PATCH call for same values
-	// so sending only updated values
-
-	storageContainerUpdate := &gopowerstore.StorageContainer{}
-
-	if plan.Name.Value != state.Name.Value {
-		storageContainerUpdate.Name = plan.Name.Value
-	}
-
-	if plan.Quota.Value != state.Quota.Value {
-		storageContainerUpdate.Quota = plan.Quota.Value
-	}
-
-	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
-		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
-	}
-
 	// Get storageContainer ID from state
 	storageContainerID := state.ID.Value
 
 	// Update storageContainer by calling API
-	_, err := r.p.client.PStoreClient.ModifyStorageContainer(context.Background(), storageContainerUpdate, storageContainerID)
+	_, err := r.p.client.PStoreClient.ModifyStorageContainer(
+		context.Background(),
+		r.updateRequestPayload(plan, state),
+		storageContainerID,
+	)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating storageContainer",
