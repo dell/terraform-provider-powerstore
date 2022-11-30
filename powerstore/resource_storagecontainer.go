@@ -182,7 +182,8 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 	}
 
 	// a worksround
-	// currently a bug on powerstore, not accepting PATCH call for same values
+	// currently powerstore not accepting PATCH call for same values
+	// so sending only updated values
 
 	storageContainerUpdate := &gopowerstore.StorageContainer{}
 
