@@ -1,8 +1,10 @@
 package powerstore
 
 import (
-	pstore "github.com/dell/gopowerstore"
 	"terraform-provider-powerstore/models"
+
+	"github.com/dell/gopowerstore"
+	pstore "github.com/dell/gopowerstore"
 )
 
 func updateStorageContainerState(scState *models.StorageContainer, scResponse pstore.StorageContainer, plan *models.StorageContainer, operation string) {
@@ -13,4 +15,27 @@ func updateStorageContainerState(scState *models.StorageContainer, scResponse ps
 	if operation == "Create" {
 		scState.HighWaterMark.Value = plan.HighWaterMark.Value
 	}
+}
+
+func (r resourceStorageContainer) updateRequestPayload(plan, state models.StorageContainer) *gopowerstore.StorageContainer {
+
+	// a workaround
+	// currently PowerStore not accepting PATCH call for same values
+	// so sending only updated values
+
+	storageContainerUpdate := &gopowerstore.StorageContainer{}
+
+	if plan.Name.Value != state.Name.Value {
+		storageContainerUpdate.Name = plan.Name.Value
+	}
+
+	if plan.Quota.Value != state.Quota.Value {
+		storageContainerUpdate.Quota = plan.Quota.Value
+	}
+
+	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
+		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
+	}
+
+	return storageContainerUpdate
 }
