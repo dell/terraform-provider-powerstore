@@ -19,6 +19,9 @@ var testProviderFactory map[string]func() (tfprotov6.ProviderServer, error)
 var endpoint = os.Getenv("POWERSTORE_ENDPOINT")
 var username = os.Getenv("POWERSTORE_USERNAME")
 var password = os.Getenv("POWERSTORE_PASSWORD")
+var hostID = os.Getenv("HOST_ID")
+var hostGroupID = os.Getenv("HOST_GROUP_ID")
+var volumeGroupID = os.Getenv("VOLUME_GROUP_ID")
 
 func init() {
 	testProvider = New("test")()
