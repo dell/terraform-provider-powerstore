@@ -41,7 +41,7 @@ func (r resourceStorageContainerType) GetSchema(_ context.Context) (tfsdk.Schema
 				Optional:            true,
 				Computed:            true,
 				Description:         "The storage protocol of Storage Container.",
-				MarkdownDescription: "The storage protocol of Storage Container. eg: SCSI, NVME",
+				MarkdownDescription: "The storage protocol of Storage Container. eg: SCSI, NVMe",
 				Validators: []tfsdk.AttributeValidator{
 					oneOfStringtValidator{
 						acceptableStringValues: []string{

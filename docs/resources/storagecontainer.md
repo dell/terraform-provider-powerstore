@@ -32,7 +32,7 @@ resource "powerstore_storagecontainer" "test" {
 
 - `high_water_mark` (Number) The percentage of the quota that can be consumed before an alert is raised
 - `quota` (Number) The total number of bytes that can be provisioned/reserved against this storage container. A value of 0 means there is no limit.
-- `storage_protocol` (String) The storage protocol of Storage Container. eg: SCSI, NVME
+- `storage_protocol` (String) The storage protocol of Storage Container. eg: SCSI, NVMe
 
 ### Read-Only
 
