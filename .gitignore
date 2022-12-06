@@ -36,3 +36,4 @@ testlogfile
 
 # Coverage Test Files
 cover.*
+c.out
