@@ -11,12 +11,6 @@ import (
 	"testing"
 )
 
-const (
-	hostID        = "022c3fbc-4e92-48b6-928b-18565c803d0e"
-	hostGroupID   = "80c4c618-cf91-4b67-9df3-b2c0f0d6564c"
-	volumeGroupID = "069b594c-6f68-4485-ab56-1c10b6230d71"
-)
-
 // Test to Create Volume
 func TestAccVolume_CreateVolume(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
