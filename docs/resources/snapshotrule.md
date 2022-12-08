@@ -24,6 +24,7 @@ resource "powerstore_snapshotrule" "test" {
   desired_retention = 56
   nas_access_type = "Snapshot"
   is_read_only = false
+  delete_snaps = true
 }
 ```
 
@@ -38,6 +39,7 @@ resource "powerstore_snapshotrule" "test" {
 ### Optional
 
 - `days_of_week` (List of String) The days of the week when the snapshot rule should be applied.
+- `delete_snaps` (Boolean) Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.
 - `interval` (String) The interval between snapshots taken by a snapshot rule.
 - `is_read_only` (Boolean) Indicates whether this snapshot rule can be modified.
 - `nas_access_type` (String) The NAS filesystem snapshot access method for snapshot rule.

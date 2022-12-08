@@ -270,6 +270,12 @@ func (r resourceSnapshotRuleType) GetSchema(_ context.Context) (tfsdk.Schema, di
 				Description:         "The unique id of the managing entity.",
 				MarkdownDescription: "The unique id of the managing entity.",
 			},
+			"delete_snaps": {
+				Type:                types.BoolType,
+				Optional:            true,
+				Description:         "Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.",
+				MarkdownDescription: "Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.",
+			},
 		},
 	}, nil
 }
@@ -303,7 +309,7 @@ func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResour
 		return
 	}
 
-	snapshotRuleCreate := planToSnapshotRuleParam(plan)
+	snapshotRuleCreate := r.planToServerParams(plan)
 
 	log.Printf("Calling api to create snapshotrule")
 
@@ -331,7 +337,7 @@ func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResour
 	}
 
 	state := models.SnapshotRule{}
-	updateSnapshotRuleState(&plan, &state, getRes)
+	r.updateState(&plan, &state, getRes, operationCreate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -367,7 +373,7 @@ func (r resourceSnapshotRule) Read(ctx context.Context, req tfsdk.ReadResourceRe
 	}
 
 	// as stats is like a plan here, a current state prior to this read operation
-	updateSnapshotRuleState(&state, &state, response)
+	r.updateState(&state, &state, response, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -400,7 +406,7 @@ func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResour
 		return
 	}
 
-	snapshotRuleUpdate := planToSnapshotRuleParam(plan)
+	snapshotRuleUpdate := r.planToServerParams(plan)
 
 	// Get snapshotRule ID from state
 	snapshotRuleID := state.ID.Value
@@ -425,7 +431,7 @@ func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResour
 		return
 	}
 
-	updateSnapshotRuleState(&plan, &state, getRes)
+	r.updateState(&plan, &state, getRes, operationUpdate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -451,8 +457,14 @@ func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResour
 	// Get snapshot rule ID from state
 	snapshotRuleID := state.ID.Value
 
+	deleteParams := &gopowerstore.SnapshotRuleDelete{}
+
+	if !state.DeleteSnaps.IsUnknown() && !state.DeleteSnaps.IsNull() {
+		deleteParams.DeleteSnaps = state.DeleteSnaps.Value
+	}
+
 	// Delete snapshotRule by calling API
-	_, err := r.p.client.PStoreClient.DeleteSnapshotRule(context.Background(), nil, snapshotRuleID)
+	_, err := r.p.client.PStoreClient.DeleteSnapshotRule(context.Background(), deleteParams, snapshotRuleID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting snapshotRule",
@@ -460,11 +472,14 @@ func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResour
 		)
 		return
 	}
+	// todo: instead of returning error , we should check if snapshotRuleID really exists on server
+	// and if not , we must return success
+	// scenerio - changes from outside of terraform
 
 	log.Printf("Done with Delete")
 }
 
-func updateSnapshotRuleState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule) {
+func (r resourceSnapshotRule) updateState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule, operation operation) {
 
 	state.ID.Value = response.ID
 	state.Name.Value = response.Name
@@ -510,7 +525,6 @@ func updateSnapshotRuleState(plan, state *models.SnapshotRule, response gopowers
 		} else {
 			state.IsReadOnly.Value = false
 		}
-
 	}
 
 	attributeList := []attr.Value{}
@@ -528,11 +542,17 @@ func updateSnapshotRuleState(plan, state *models.SnapshotRule, response gopowers
 	state.ManagedBy.Value = string(response.ManagedBy)
 	state.ManagedByID.Value = response.ManagedById
 
+	if operation != operationRead {
+		// we are saving delete_snaps value in state from plan
+		// for future deleteion, if required
+		state.DeleteSnaps = plan.DeleteSnaps
+	}
+
 	// todo, check if still plan and state are not equal
 	// mark resources => should be replaced
 }
 
-func planToSnapshotRuleParam(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
+func (r resourceSnapshotRule) planToServerParams(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
 
 	snapshotRuleCreate := &gopowerstore.SnapshotRuleCreate{
 		Name:             plan.Name.Value,
