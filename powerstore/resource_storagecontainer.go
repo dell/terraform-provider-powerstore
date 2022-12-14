@@ -2,10 +2,12 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
+	pstore "github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -117,7 +119,7 @@ func (r resourceStorageContainer) Create(ctx context.Context, req tfsdk.CreateRe
 
 	result := models.StorageContainer{}
 
-	updateStorageContainerState(&result, storageContainerResponse, &plan, "Create")
+	r.serverToState(&plan, &result, storageContainerResponse, operationCreate)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -149,7 +151,7 @@ func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResour
 		return
 	}
 
-	updateStorageContainerState(&state, storageContainerResponse, nil, "Read")
+	r.serverToState(nil, &state, storageContainerResponse, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -187,7 +189,7 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 	// Update storageContainer by calling API
 	_, err := r.p.client.PStoreClient.ModifyStorageContainer(
 		context.Background(),
-		r.updateRequestPayload(plan, state),
+		r.planToServer(plan, state),
 		storageContainerID,
 	)
 	if err != nil {
@@ -208,7 +210,7 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 		return
 	}
 
-	updateStorageContainerState(&state, storageContainerResponse, nil, "Update")
+	r.serverToState(nil, &state, storageContainerResponse, operationUpdate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -244,4 +246,68 @@ func (r resourceStorageContainer) Delete(ctx context.Context, req tfsdk.DeleteRe
 	}
 
 	log.Printf("Done with Delete")
+}
+
+// ImportState import state for existing infrastructure
+func (r resourceStorageContainer) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+
+	log.Printf("Started with Import")
+
+	// fetching asked storage container ID's information
+	response, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), req.ID)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error importing storage container",
+			fmt.Sprintf("Could not import storage container ID: %s with error: %s", req.ID, err.Error()),
+		)
+		return
+	}
+
+	state := models.StorageContainer{}
+
+	// as state is like a plan here, a current state prior to this import operation
+	r.serverToState(&state, &state, response, operationImport)
+
+	// Set state
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Done with Import")
+}
+
+func (r resourceStorageContainer) serverToState(plan, state *models.StorageContainer, response pstore.StorageContainer, operation operation) {
+	state.ID.Value = response.ID
+	state.Name.Value = response.Name
+	state.Quota.Value = response.Quota
+	state.StorageProtocol.Value = string(response.StorageProtocol)
+	if operation == operationCreate {
+		state.HighWaterMark.Value = plan.HighWaterMark.Value
+	}
+}
+
+func (r resourceStorageContainer) planToServer(plan, state models.StorageContainer) *pstore.StorageContainer {
+
+	// a workaround
+	// currently PowerStore not accepting PATCH call for same values
+	// so sending only updated values
+
+	storageContainerUpdate := &pstore.StorageContainer{}
+
+	if plan.Name.Value != state.Name.Value {
+		storageContainerUpdate.Name = plan.Name.Value
+	}
+
+	if plan.Quota.Value != state.Quota.Value {
+		storageContainerUpdate.Quota = plan.Quota.Value
+	}
+
+	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
+		storageContainerUpdate.StorageProtocol = pstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
+	}
+
+	return storageContainerUpdate
 }

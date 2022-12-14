@@ -254,8 +254,8 @@ func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        SnapshotRuleImport,
-				ResourceName:  "powerstore_snapshotrule.import_test",
+				Config:        SnapshotRuleParamsWithTimeOfDay,
+				ResourceName:  "powerstore_snapshotrule.test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile("Could not import snapshot rule"),
 				ImportStateId: "invalid-id",
@@ -511,17 +511,5 @@ resource "powerstore_snapshotrule" "test" {
 	desired_retention = 56
 	nas_access_type = "Snapshot"
 	is_read_only = false
-}
-`
-var SnapshotRuleImport = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
-resource "powerstore_snapshotrule" "import_test" {
-	name = "test_snapshotrule"
 }
 `
