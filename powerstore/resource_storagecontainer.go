@@ -7,7 +7,6 @@ import (
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
-	pstore "github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -279,7 +278,7 @@ func (r resourceStorageContainer) ImportState(ctx context.Context, req tfsdk.Imp
 	log.Printf("Done with Import")
 }
 
-func (r resourceStorageContainer) serverToState(plan, state *models.StorageContainer, response pstore.StorageContainer, operation operation) {
+func (r resourceStorageContainer) serverToState(plan, state *models.StorageContainer, response gopowerstore.StorageContainer, operation operation) {
 	state.ID.Value = response.ID
 	state.Name.Value = response.Name
 	state.Quota.Value = response.Quota
@@ -289,13 +288,13 @@ func (r resourceStorageContainer) serverToState(plan, state *models.StorageConta
 	}
 }
 
-func (r resourceStorageContainer) planToServer(plan, state models.StorageContainer) *pstore.StorageContainer {
+func (r resourceStorageContainer) planToServer(plan, state models.StorageContainer) *gopowerstore.StorageContainer {
 
 	// a workaround
 	// currently PowerStore not accepting PATCH call for same values
 	// so sending only updated values
 
-	storageContainerUpdate := &pstore.StorageContainer{}
+	storageContainerUpdate := &gopowerstore.StorageContainer{}
 
 	if plan.Name.Value != state.Name.Value {
 		storageContainerUpdate.Name = plan.Name.Value
@@ -306,7 +305,7 @@ func (r resourceStorageContainer) planToServer(plan, state models.StorageContain
 	}
 
 	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
-		storageContainerUpdate.StorageProtocol = pstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
+		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
 	}
 
 	return storageContainerUpdate
