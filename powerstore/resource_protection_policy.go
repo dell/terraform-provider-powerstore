@@ -119,7 +119,7 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 		return
 	}
 
-	protectionPolicyCreate := planToProtectionPolicyParam(plan)
+	protectionPolicyCreate := r.planToProtectionPolicyParam(plan)
 
 	//Create New ProtectionPolicy
 	polCreateResponse, err := r.p.client.PStoreClient.CreateProtectionPolicy(context.Background(), protectionPolicyCreate)
@@ -142,7 +142,7 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 	}
 
 	result := models.ProtectionPolicy{}
-	updatePolicyState(&result, polResponse, &plan)
+	r.updatePolicyState(&result, polResponse, &plan)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -201,22 +201,30 @@ func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResour
 		return
 	}
 
-	updatePolicyState(&state, response, &state)
+	r.updatePolicyState(&state, response, &state)
+
+	//Set state
+	diags = resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	log.Printf("Done with Read")
 }
 
 // Update updates protection policy
 func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
 }
 
-func planToProtectionPolicyParam(plan models.ProtectionPolicy) *gopowerstore.ProtectionPolicyCreate {
+func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) *gopowerstore.ProtectionPolicyCreate {
 
 	var replicationRuleIds []string
-	for _, replicationRule := range plan.ReplicationRuleIds.Elems {
+	for _, replicationRule := range plan.ReplicationRuleIDs.Elems {
 		replicationRuleIds = append(replicationRuleIds, strings.Trim(replicationRule.String(), "\""))
 	}
 
 	var snapshotRuleIds []string
-	for _, snapshotRule := range plan.SnapshotRuleIds.Elems {
+	for _, snapshotRule := range plan.SnapshotRuleIDs.Elems {
 		snapshotRuleIds = append(snapshotRuleIds, strings.Trim(snapshotRule.String(), "\""))
 	}
 
@@ -229,7 +237,7 @@ func planToProtectionPolicyParam(plan models.ProtectionPolicy) *gopowerstore.Pro
 	return protectionPolicyCreate
 }
 
-func updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowerstore.ProtectionPolicy, polPlan *models.ProtectionPolicy) {
+func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowerstore.ProtectionPolicy, polPlan *models.ProtectionPolicy) {
 	// Update value from Protection Policy Response to State
 	polState.ID.Value = polResponse.ID
 	polState.Name.Value = polResponse.Name
@@ -242,7 +250,7 @@ func updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowersto
 	for i := 0; i < len(replicationRuleIds); i++ {
 		replicationList = append(replicationList, types.String{Value: string(replicationRuleIds[i])})
 	}
-	polState.ReplicationRuleIds = types.List{
+	polState.ReplicationRuleIDs = types.List{
 		ElemType: types.StringType,
 		Elems:    replicationList,
 	}
@@ -255,7 +263,7 @@ func updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowersto
 	for i := 0; i < len(snapshotRuleIds); i++ {
 		snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleIds[i])})
 	}
-	polState.SnapshotRuleIds = types.List{
+	polState.SnapshotRuleIDs = types.List{
 		ElemType: types.StringType,
 		Elems:    snapshotList,
 	}

@@ -14,6 +14,6 @@ type ProtectionPolicy struct {
 	ManagedByID        types.String `tfsdk:"managed_by_id"`
 	IsReadOnly         types.Bool   `tfsdk:"is_read_only"`
 	IsReplica          types.Bool   `tfsdk:"is_replica"`
-	SnapshotRuleIds    types.List   `tfsdk:"snapshot_rule_ids"`
-	ReplicationRuleIds types.List   `tfsdk:"replication_rule_ids"`
+	SnapshotRuleIDs    types.List   `tfsdk:"snapshot_rule_ids"`
+	ReplicationRuleIDs types.List   `tfsdk:"replication_rule_ids"`
 }
