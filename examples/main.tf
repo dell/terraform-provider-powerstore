@@ -82,3 +82,11 @@ resource "powerstore_storagecontainer" "test" {
   storage_protocol = "SCSI"
   high_water_mark = 70
 }
+
+resource "powerstore_protectionpolicy" "terraform-provider-test" {
+  # (resource arguments)
+  description = "Creating Protection Policy"
+  name = "test_protection_policy"
+  #replication_rule_ids = ["a50a222f-3ac6-4168-b3d7-6c14b5874c61"]
+  snapshot_rule_ids = ["153df6eb-3433-4b5e-942e-ecf90348df20"]
+}

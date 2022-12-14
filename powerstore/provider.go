@@ -136,6 +136,7 @@ func (p *Pstoreprovider) GetResources(ctx context.Context) (map[string]tfsdk.Res
 	return map[string]tfsdk.ResourceType{
 		"powerstore_volume":           resourceVolumeType{},
 		"powerstore_snapshotrule":     resourceSnapshotRuleType{},
+		"powerstore_protectionpolicy": resourceProtectionPolicyType{},
 		"powerstore_storagecontainer": resourceStorageContainerType{},
 	}, nil
 }
