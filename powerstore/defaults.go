@@ -15,6 +15,7 @@ const (
 	operationCreate
 	operationUpdate
 	operationDelete
+	operationImport
 )
 
 // DefaultAttributePlanModifier is to set default value for an attribute

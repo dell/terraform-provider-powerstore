@@ -2,6 +2,7 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 	"terraform-provider-powerstore/models"
@@ -309,7 +310,7 @@ func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResour
 		return
 	}
 
-	snapshotRuleCreate := r.planToServerParams(plan)
+	snapshotRuleCreate := r.planToServer(plan)
 
 	log.Printf("Calling api to create snapshotrule")
 
@@ -337,7 +338,7 @@ func (r resourceSnapshotRule) Create(ctx context.Context, req tfsdk.CreateResour
 	}
 
 	state := models.SnapshotRule{}
-	r.updateState(&plan, &state, getRes, operationCreate)
+	r.serverToState(&plan, &state, getRes, operationCreate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -372,8 +373,8 @@ func (r resourceSnapshotRule) Read(ctx context.Context, req tfsdk.ReadResourceRe
 		return
 	}
 
-	// as stats is like a plan here, a current state prior to this read operation
-	r.updateState(&state, &state, response, operationRead)
+	// as state is like a plan here, a current state prior to this read operation
+	r.serverToState(&state, &state, response, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -406,7 +407,7 @@ func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResour
 		return
 	}
 
-	snapshotRuleUpdate := r.planToServerParams(plan)
+	snapshotRuleUpdate := r.planToServer(plan)
 
 	// Get snapshotRule ID from state
 	snapshotRuleID := state.ID.Value
@@ -431,7 +432,7 @@ func (r resourceSnapshotRule) Update(ctx context.Context, req tfsdk.UpdateResour
 		return
 	}
 
-	r.updateState(&plan, &state, getRes, operationUpdate)
+	r.serverToState(&plan, &state, getRes, operationUpdate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -479,7 +480,38 @@ func (r resourceSnapshotRule) Delete(ctx context.Context, req tfsdk.DeleteResour
 	log.Printf("Done with Delete")
 }
 
-func (r resourceSnapshotRule) updateState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule, operation operation) {
+// ImportState import state for existing infrastructure
+func (r resourceSnapshotRule) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+
+	log.Printf("Started with Import")
+
+	// fetching asked snapshot rule ID's information
+	response, err := r.p.client.PStoreClient.GetSnapshotRule(context.Background(), req.ID)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error importing snapshot rule",
+			fmt.Sprintf("Could not import snapshot rule ID: %s with error: %s", req.ID, err.Error()),
+		)
+		return
+	}
+
+	state := models.SnapshotRule{}
+
+	// as state is like a plan here, a current state prior to this import operation
+	r.serverToState(&state, &state, response, operationImport)
+
+	// Set state
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Done with Import")
+}
+
+func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule, operation operation) {
 
 	state.ID.Value = response.ID
 	state.Name.Value = response.Name
@@ -552,7 +584,7 @@ func (r resourceSnapshotRule) updateState(plan, state *models.SnapshotRule, resp
 	// mark resources => should be replaced
 }
 
-func (r resourceSnapshotRule) planToServerParams(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
+func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
 
 	snapshotRuleCreate := &gopowerstore.SnapshotRuleCreate{
 		Name:             plan.Name.Value,
