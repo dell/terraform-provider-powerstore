@@ -25,6 +25,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
+				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "delete_snaps", "true"),
 			),
 		},
 		{
@@ -36,6 +37,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
+				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "delete_snaps", "false"),
 			),
 		},
 	}
@@ -255,6 +257,7 @@ resource "powerstore_snapshotrule" "test" {
 	desired_retention = 56
 	nas_access_type = "Snapshot"
 	is_read_only = false
+	delete_snaps = true
 }
 `
 
@@ -273,6 +276,7 @@ resource "powerstore_snapshotrule" "test" {
 	desired_retention = 56
 	nas_access_type = "Snapshot"
 	is_read_only = false
+	delete_snaps = false
 }
 `
 
