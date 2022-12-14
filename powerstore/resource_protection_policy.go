@@ -23,13 +23,13 @@ func (r resourceProtectionPolicyType) GetSchema(_ context.Context) (tfsdk.Schema
 			"id": {
 				Type:                types.StringType,
 				Computed:            true,
-				Description:         "The ID of the protection policy,",
-				MarkdownDescription: "The ID of the protection policy",
+				Description:         "Unique identifier of the policy.",
+				MarkdownDescription: "Unique identifier of the policy.",
 			},
 			"name": {
 				Type:                types.StringType,
 				Required:            true,
-				Description:         "The name of the protectio policy.",
+				Description:         "The name of the protection policy.",
 				MarkdownDescription: "The name of the protection policy.",
 			},
 			"description": {
@@ -64,29 +64,29 @@ func (r resourceProtectionPolicyType) GetSchema(_ context.Context) (tfsdk.Schema
 				Type:                types.BoolType,
 				Computed:            true,
 				Optional:            true,
-				Description:         "The is_read_only of the protection policy.",
-				MarkdownDescription: "The is_read_only of the protection policy.",
+				Description:         "Indicates whether this policy can be modified.",
+				MarkdownDescription: "Indicates whether this policy can be modified.",
 			},
 			"is_replica": {
 				Type:                types.BoolType,
 				Computed:            true,
 				Optional:            true,
-				Description:         "The is_replica of the protection policy.",
-				MarkdownDescription: "The is_replica of the protection policy.",
+				Description:         "Indicates if this is a replica of a policy.",
+				MarkdownDescription: "Indicates if this is a replica of a policy.",
 			},
 			"snapshot_rule_ids": {
 				Type:                types.ListType{ElemType: types.StringType},
 				Computed:            true,
 				Optional:            true,
-				Description:         "The snapshot_rule_ids of the protection policy.",
-				MarkdownDescription: "The snapshot_rule_ids of the protection policy.",
+				Description:         "List of the snapshot_rule IDs that are associated with this policy.",
+				MarkdownDescription: "List of the snapshot_rule IDs that are associated with this policy.",
 			},
 			"replication_rule_ids": {
 				Type:                types.ListType{ElemType: types.StringType},
 				Computed:            true,
 				Optional:            true,
-				Description:         "The replication_rule_ids of the protection policy.",
-				MarkdownDescription: "The replication_rule_ids of the protection policy.",
+				Description:         "List of the replication_rule IDs that are associated with this policy.",
+				MarkdownDescription: "List of the replication_rule IDs that are associated with this policy.",
 			},
 		},
 	}, nil
@@ -103,6 +103,7 @@ type resourceProtectionPolicy struct {
 	p Pstoreprovider
 }
 
+// Creates the protection policy
 func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
 	if !r.p.configured {
 		resp.Diagnostics.AddError(
@@ -152,7 +153,7 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 	log.Printf("Done with Create")
 }
 
-// Delete deletes the protection policy
+// Deletes the protection policy
 func (r resourceProtectionPolicy) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
 	log.Printf("Started with the Delete")
 
@@ -179,7 +180,7 @@ func (r resourceProtectionPolicy) Delete(ctx context.Context, req tfsdk.DeleteRe
 	log.Printf("Done with Delete")
 }
 
-// Read fetch info about asked protection policy
+// Reads info about the asked protection policy
 func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
 	log.Printf("Reading Protection Policy")
 	var state models.ProtectionPolicy
@@ -212,7 +213,7 @@ func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResour
 	log.Printf("Done with Read")
 }
 
-// Update updates protection policy
+// Updates the protection policy
 func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
 }
 
