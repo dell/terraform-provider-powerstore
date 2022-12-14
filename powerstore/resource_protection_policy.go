@@ -241,6 +241,7 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 	// Update value from Protection Policy Response to State
 	polState.ID.Value = polResponse.ID
 	polState.Name.Value = polResponse.Name
+	polState.Description.Value = polResponse.Description
 
 	var replicationRuleIds []string
 	for _, replicationRule := range polResponse.ReplicationRules {
