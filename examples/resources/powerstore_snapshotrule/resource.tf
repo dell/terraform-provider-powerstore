@@ -9,4 +9,5 @@ resource "powerstore_snapshotrule" "test" {
   desired_retention = 56
   nas_access_type = "Snapshot"
   is_read_only = false
+  delete_snaps = true
 }

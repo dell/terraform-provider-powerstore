@@ -16,4 +16,5 @@ type SnapshotRule struct {
 	IsReadOnly       types.Bool   `tfsdk:"is_read_only"`
 	ManagedBy        types.String `tfsdk:"managed_by"`
 	ManagedByID      types.String `tfsdk:"managed_by_id"`
+	DeleteSnaps      types.Bool   `tfsdk:"delete_snaps"`
 }

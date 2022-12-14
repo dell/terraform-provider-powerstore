@@ -2,8 +2,19 @@ package powerstore
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+)
+
+// this defines the operation being executed on resource via terraform
+type operation uint8
+
+const (
+	operationRead operation = iota + 1
+	operationCreate
+	operationUpdate
+	operationDelete
 )
 
 // DefaultAttributePlanModifier is to set default value for an attribute
