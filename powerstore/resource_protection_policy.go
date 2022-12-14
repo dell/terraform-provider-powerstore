@@ -239,8 +239,8 @@ func updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowersto
 		replicationRuleIds = append(replicationRuleIds, replicationRule.ID)
 	}
 	replicationList := []attr.Value{}
-	for replication_rule := range replicationRuleIds {
-		replicationList = append(replicationList, types.String{Value: string(replication_rule)})
+	for i := 0; i < len(replicationRuleIds); i++ {
+		replicationList = append(replicationList, types.String{Value: string(replicationRuleIds[i])})
 	}
 	polState.ReplicationRuleIds = types.List{
 		ElemType: types.StringType,
@@ -252,8 +252,8 @@ func updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowersto
 		snapshotRuleIds = append(snapshotRuleIds, snapshotRule.ID)
 	}
 	snapshotList := []attr.Value{}
-	for snapshot_rule := range snapshotRuleIds {
-		snapshotList = append(snapshotList, types.String{Value: string(snapshot_rule)})
+	for i := 0; i < len(snapshotRuleIds); i++ {
+		snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleIds[i])})
 	}
 	polState.SnapshotRuleIds = types.List{
 		ElemType: types.StringType,
