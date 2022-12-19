@@ -215,6 +215,58 @@ func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResour
 
 // Updates the protection policy
 func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+	log.Printf("Started Update")
+
+	//Get plan values
+	var plan models.ProtectionPolicy
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get current state
+	var state models.ProtectionPolicy
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	protectionPolicyUpdate := r.planToProtectionPolicyParam(plan)
+
+	//Get Protection Policy ID from state
+	protectionPolicyID := state.ID.Value
+
+	//Update Protection Policy by calling API
+	_, err := r.p.client.PStoreClient.ModifyProtectionPolicy(context.Background(), protectionPolicyUpdate, protectionPolicyID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating protection policy",
+			"Could not update protectionPolicyID "+protectionPolicyID+": "+err.Error(),
+		)
+		return
+	}
+
+	//Get Protection Policy details
+	getRes, err := r.p.client.PStoreClient.GetProtectionPolicy(context.Background(), protectionPolicyID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting protection policy after update",
+			"Could not get protection policy, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	r.updatePolicyState(&state, getRes, &plan)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
 func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) *gopowerstore.ProtectionPolicyCreate {
