@@ -276,11 +276,10 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: SnapshotRuleParamsWithTimeOfDay,
+				Config: SnapshotRuleParamsWithInterval,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "timezone", "UTC"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
 					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
@@ -288,13 +287,14 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 				),
 			},
 			{
-				Config:       SnapshotRuleParamsWithTimeOfDay,
-				ResourceName: "powerstore_snapshotrule.test",
-				ImportState:  true,
-				ExpectError:  nil,
+				Config:            SnapshotRuleParamsWithInterval,
+				ResourceName:      "powerstore_snapshotrule.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "test_snapshotrule", s[0].Attributes["name"])
-					assert.Equal(t, "21:00", s[0].Attributes["time_of_day"])
+					assert.Equal(t, "Four_Hours", s[0].Attributes["interval"])
 					assert.Equal(t, "56", s[0].Attributes["desired_retention"])
 					return nil
 				},
