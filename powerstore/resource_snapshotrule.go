@@ -557,6 +557,13 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 		} else {
 			state.IsReadOnly.Value = false
 		}
+
+		// as for import we don't have pre plan so let the imported value save in state
+		if operation == operationImport {
+			state.TimeZone.Value = string(response.TimeZone)
+			state.NASAccessType.Value = string(response.NASAccessType)
+			state.IsReadOnly.Value = false
+		}
 	}
 
 	attributeList := []attr.Value{}

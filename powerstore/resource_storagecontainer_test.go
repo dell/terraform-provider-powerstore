@@ -163,6 +163,10 @@ func TestAccStorageContainer_ImportSuccess(t *testing.T) {
 				ResourceName: "powerstore_storagecontainer.test",
 				ImportState:  true,
 				ExpectError:  nil,
+				// todo, currently ImportStateVerify will result in error for high_water_mark
+				// as we are not getting high_water_mark value in response from server
+				// once fixed, will remove below comment
+				// ImportStateVerify: true,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "scterraform_acc", s[0].Attributes["name"])
 					assert.Equal(t, "10737418240", s[0].Attributes["quota"])
