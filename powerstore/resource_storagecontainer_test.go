@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test to Create StorageContainer
@@ -113,6 +115,68 @@ func TestAccStorageContainer_UpdateError(t *testing.T) {
 			},
 		},
 	})
+}
+
+// Test to import resource but resulting in errora
+func TestAccStorageContainer_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        StorageContainerParamsCreate,
+				ResourceName:  "powerstore_storagecontainer.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile("Could not import storage container"),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
+// Test to import successfully
+func TestAccStorageContainer_ImportSuccess(t *testing.T) {
+
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: StorageContainerParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
+					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
+					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "storage_protocol", "SCSI"),
+					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "high_water_mark", "70"),
+				),
+			},
+			{
+				Config:       StorageContainerParamsCreate,
+				ResourceName: "powerstore_storagecontainer.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				// todo, currently ImportStateVerify will result in error for high_water_mark
+				// as we are not getting high_water_mark value in response from server
+				// once fixed, will remove below comment
+				// ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "scterraform_acc", s[0].Attributes["name"])
+					assert.Equal(t, "10737418240", s[0].Attributes["quota"])
+					assert.Equal(t, "SCSI", s[0].Attributes["storage_protocol"])
+					return nil
+				},
+			},
+		},
+	})
+
 }
 
 var StorageContainerParamsCreate = `
