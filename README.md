@@ -47,12 +47,13 @@ provider_installation {
 3. run example
 ```bash
 $ cd $DIR/examples
-# create a .tfvars file with variables and value
-$ cat ~/.tfvars
+# create a .auto.tfvars file with variables and value
+# this var file will be auto loaded
+$ cat $DIR/examples/.auto.tfvars
 username=""
 password=""
 endpoint=""
-$ terraform apply -var-file=.tfvars
+$ terraform apply
 ...
 ^C
 ```
