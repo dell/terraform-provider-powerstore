@@ -76,6 +76,22 @@ resource "powerstore_volume" "test2" {
   app_type_other="db1"
 }
 
+resource "powerstore_volume" "test3" {
+  name = "test_vol3"
+  size =  3
+  capacity_unit= "GB"
+  description = "Creating volume"
+  host_group_name="tf_hostgroup1"
+  appliance_name="server"
+  volume_group_name="tf_volumegroup"
+  min_size=1048576
+  sector_size=512
+  protection_policy_name="snap_policy"
+  performance_policy_id="default_medium"
+  app_type="Relational_Databases_Other"
+  app_type_other="db1"
+}
+
 resource "powerstore_storagecontainer" "test" {
   name = "scterraform"
   quota = 10737418240
