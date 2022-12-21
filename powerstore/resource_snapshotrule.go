@@ -525,13 +525,18 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 		state.TimeOfDay.Value = strings.TrimSuffix(response.TimeOfDay, ":00")
 	}
 
-	// a work-around
-	// to allow empty string for default values
-	// if default value is returned in response, then if empty string in plan
-	// update state value as empty string
-	{
+	// this if-else will be removed once things got fixed on powerstore side
+	// as for import we don't have pre plan so let the imported value save in state
+	if operation == operationImport {
+		state.TimeZone.Value = string(response.TimeZone)
+		state.NASAccessType.Value = string(response.NASAccessType)
+		state.IsReadOnly.Value = false
+	} else {
+		// a work-around
+		// to allow empty string for default values
+		// if default value is returned in response, then if empty string in plan
+		// update state value as empty string
 
-		// again a hard coded value , bruh :(
 		if response.TimeZone == gopowerstore.TimeZoneEnumUTC &&
 			!plan.TimeZone.IsUnknown() && !plan.TimeZone.IsNull() &&
 			strings.TrimSpace(strings.Trim(plan.TimeZone.String(), "\"")) == "" {
@@ -540,7 +545,6 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 			state.TimeZone.Value = string(response.TimeZone)
 		}
 
-		// again a hard coded value , bruh :(
 		// as per document, snapshot is default ,  but on server protocol is default
 		if response.NASAccessType == gopowerstore.NASAccessTypeEnumProtocol &&
 			!plan.NASAccessType.IsUnknown() && !plan.NASAccessType.IsNull() &&
@@ -555,13 +559,6 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 		if !plan.IsReadOnly.IsUnknown() && !plan.IsReadOnly.IsNull() {
 			state.IsReadOnly.Value = plan.IsReadOnly.Value
 		} else {
-			state.IsReadOnly.Value = false
-		}
-
-		// as for import we don't have pre plan so let the imported value save in state
-		if operation == operationImport {
-			state.TimeZone.Value = string(response.TimeZone)
-			state.NASAccessType.Value = string(response.NASAccessType)
 			state.IsReadOnly.Value = false
 		}
 	}
