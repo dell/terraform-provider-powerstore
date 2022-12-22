@@ -58,6 +58,7 @@ func TestAccStorageContainer_Update(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418242"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "storage_protocol", "NVMe"),
+					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "high_water_mark", "60"),
 				),
 			},
 		},
@@ -117,7 +118,7 @@ func TestAccStorageContainer_UpdateError(t *testing.T) {
 	})
 }
 
-// Test to import resource but resulting in errora
+// Test to import resource but resulting in error
 func TestAccStorageContainer_ImportFailure(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
@@ -159,14 +160,11 @@ func TestAccStorageContainer_ImportSuccess(t *testing.T) {
 				),
 			},
 			{
-				Config:       StorageContainerParamsCreate,
-				ResourceName: "powerstore_storagecontainer.test",
-				ImportState:  true,
-				ExpectError:  nil,
-				// todo, currently ImportStateVerify will result in error for high_water_mark
-				// as we are not getting high_water_mark value in response from server
-				// once fixed, will remove below comment
-				// ImportStateVerify: true,
+				Config:            StorageContainerParamsCreate,
+				ResourceName:      "powerstore_storagecontainer.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "scterraform_acc", s[0].Attributes["name"])
 					assert.Equal(t, "10737418240", s[0].Attributes["quota"])
@@ -207,6 +205,7 @@ resource "powerstore_storagecontainer" "test" {
 	name = "scterraform_acc_new"
 	quota = 10737418242
 	storage_protocol = "NVMe"	
+	high_water_mark = 60
 }
 `
 
