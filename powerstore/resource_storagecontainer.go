@@ -283,12 +283,7 @@ func (r resourceStorageContainer) serverToState(plan, state *models.StorageConta
 	state.Name.Value = response.Name
 	state.Quota.Value = response.Quota
 	state.StorageProtocol.Value = string(response.StorageProtocol)
-
-	// todo, a bug on powerstore side, we are not getting highwatermark in response
-	// once fixed on there side, we will set state value from response
-	if operation == operationCreate {
-		state.HighWaterMark.Value = plan.HighWaterMark.Value
-	}
+	state.HighWaterMark.Value = int64(response.HighWaterMark)
 }
 
 func (r resourceStorageContainer) planToServer(plan, state models.StorageContainer) *gopowerstore.StorageContainer {
@@ -309,6 +304,10 @@ func (r resourceStorageContainer) planToServer(plan, state models.StorageContain
 
 	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
 		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
+	}
+
+	if plan.HighWaterMark.Value != state.HighWaterMark.Value {
+		storageContainerUpdate.HighWaterMark = int16(plan.HighWaterMark.Value)
 	}
 
 	return storageContainerUpdate
