@@ -3,7 +3,7 @@ module terraform-provider-powerstore
 go 1.19
 
 require (
-	github.com/dell/gopowerstore v1.9.1-0.20221214032651-fd8afd60ae81
+	github.com/dell/gopowerstore v1.9.1-0.20221223042201-2bf82a3e1a6f
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
 	github.com/hashicorp/terraform-plugin-framework v0.10.0
 	github.com/hashicorp/terraform-plugin-go v0.14.0
