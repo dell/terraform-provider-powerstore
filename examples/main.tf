@@ -88,5 +88,7 @@ resource "powerstore_protectionpolicy" "terraform-provider-test" {
   description = "Creating Protection Policy"
   name = "test_protection_policy"
   #replication_rule_ids = ["a50a222f-3ac6-4168-b3d7-6c14b5874c61"]
-  snapshot_rule_ids = ["153df6eb-3433-4b5e-942e-ecf90348df20"]
+  #snapshot_rule_ids = ["153df6eb-3433-4b5e-942e-ecf90348df20"]
+  snapshot_rule_names = ["snapshot_test_emi"]
+  replication_rule_names = ["Emalee-SRA-7416-Rep"]
 }
