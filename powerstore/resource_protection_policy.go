@@ -75,7 +75,7 @@ func (r resourceProtectionPolicyType) GetSchema(_ context.Context) (tfsdk.Schema
 				MarkdownDescription: "Indicates if this is a replica of a policy.",
 			},
 			"snapshot_rule_ids": {
-				Type:                types.ListType{ElemType: types.StringType},
+				Type:                types.SetType{ElemType: types.StringType},
 				Computed:            true,
 				Optional:            true,
 				Description:         "List of the snapshot_rule IDs that are associated with this policy.",
@@ -301,8 +301,8 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 		replicationRuleIds = append(replicationRuleIds, replicationRule.ID)
 	}
 	replicationList := []attr.Value{}
-	for i := 0; i < len(replicationRuleIds); i++ {
-		replicationList = append(replicationList, types.String{Value: string(replicationRuleIds[i])})
+	for _, replicationRuleID := range replicationRuleIds {
+		replicationList = append(replicationList, types.String{Value: string(replicationRuleID)})
 	}
 	polState.ReplicationRuleIDs = types.List{
 		ElemType: types.StringType,
@@ -314,10 +314,10 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 		snapshotRuleIds = append(snapshotRuleIds, snapshotRule.ID)
 	}
 	snapshotList := []attr.Value{}
-	for i := 0; i < len(snapshotRuleIds); i++ {
-		snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleIds[i])})
+	for _, snapshotRuleID := range snapshotRuleIds {
+		snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleID)})
 	}
-	polState.SnapshotRuleIDs = types.List{
+	polState.SnapshotRuleIDs = types.Set{
 		ElemType: types.StringType,
 		Elems:    snapshotList,
 	}

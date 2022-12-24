@@ -87,6 +87,6 @@ resource "powerstore_protectionpolicy" "terraform-provider-test" {
   # (resource arguments)
   description = "Creating Protection Policy"
   name = "test_protection_policy"
-  #replication_rule_ids = ["a50a222f-3ac6-4168-b3d7-6c14b5874c61"]
-  snapshot_rule_ids = ["153df6eb-3433-4b5e-942e-ecf90348df20"]
+  replication_rule_ids = ["5d45b173-9a85-473e-8ab8-e107f8b8085e"]
+  snapshot_rule_ids = ["4be81573-c0e6-4956-a32f-a0e396a9b86d","cafb7709-8368-4363-bb1e-a60765b05e1e","2023295c-7098-4794-87ff-413d9c8386a0","153df6eb-3433-4b5e-942e-ecf90348df20"]
 }
