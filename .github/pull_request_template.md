@@ -22,5 +22,4 @@ List the GitHub issues impacted by this PR:
 # How Has This Been Tested?
 Please describe the tests that you ran to verify your changes. Please also list any relevant details for your test configuration
 
-- [ ] Test A
-- [ ] Test B
+- [ ] Acceptance tests
