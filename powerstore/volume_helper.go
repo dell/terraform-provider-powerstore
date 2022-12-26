@@ -17,7 +17,7 @@ const (
 	TiB = 1024 * GiB
 )
 
-func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapping []pstore.HostVolumeMapping, volGroupMapping pstore.VolumeGroups, volPlan *models.Volume, operation string) {
+func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapping []pstore.HostVolumeMapping, volGroupMapping pstore.VolumeGroups, volPlan *models.Volume, operation operation) {
 	// Update value from Volume Response to State
 	volState.ID.Value = volResponse.ID
 	volState.Name.Value = volResponse.Name
@@ -36,6 +36,8 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 
 	if len(volGroupMapping.VolumeGroup) > 0 {
 		volState.VolumeGroupID.Value = volGroupMapping.VolumeGroup[0].ID
+	} else {
+		volState.VolumeGroupID.Value = ""
 	}
 
 	// Only if Host is mapped to the volume then update host details
@@ -49,13 +51,15 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 		volState.LogicalUnitNumber.Value = 0
 	}
 
-	if operation == "Create" || operation == "Update" {
+	if operation == operationCreate || operation == operationUpdate {
 		volState.MinimumSize.Value = volPlan.MinimumSize.Value
 		volState.SectorSize.Value = volPlan.SectorSize.Value
 		volState.ApplianceName.Value = volPlan.ApplianceName.Value
 		volState.HostName.Value = volPlan.HostName.Value
 		volState.HostGroupName.Value = volPlan.HostGroupName.Value
 		volState.VolumeGroupName.Value = volPlan.VolumeGroupName.Value
+	} else if operation == operationImport {
+		volState.SectorSize.Value = defaultSectorSize
 	}
 
 	volState.AppType.Value = volResponse.AppType
@@ -118,21 +122,22 @@ func updateVol(ctx context.Context, client client.Client, planVol, stateVol mode
 
 	// If there's any mismatch between planned and state value of VolumeGroup ID then either Mapping or UnMapping of Volume Group is performed
 	if planVol.VolumeGroupID.Value != stateVol.VolumeGroupID.Value {
-		if stateVol.VolumeGroupID.Value == "" {
+		if stateVol.VolumeGroupID.Value != "" {
+			detachVolumeGroup(ctx, stateVol, client, volID)
+			if err != nil {
+				updateFailedParameters = append(updateFailedParameters, "Unmap volume group ID")
+				errorMessages = append(errorMessages, fmt.Sprintf("Failed to unmap volume group ID: %s", err.Error()))
+			} else {
+				updatedParameters = append(updatedParameters, "unmapped volume group ID")
+			}
+		}
+		if planVol.VolumeGroupID.Value != "" {
 			attachVolumeGroup(ctx, planVol, client, volID)
 			if err != nil {
 				updateFailedParameters = append(updateFailedParameters, "Map volume group ID")
 				errorMessages = append(errorMessages, fmt.Sprintf("Failed to Map volume group ID : %s", err.Error()))
 			} else {
 				updatedParameters = append(updatedParameters, "Mapped volume group ID")
-			}
-		} else {
-			detachVolumeGroup(ctx, planVol, client, volID)
-			if err != nil {
-				updateFailedParameters = append(updateFailedParameters, "Unmap volume group ID")
-				errorMessages = append(errorMessages, fmt.Sprintf("Failed to unmap volume group ID: %s", err.Error()))
-			} else {
-				updatedParameters = append(updatedParameters, "unmapped volume group ID")
 			}
 		}
 	}
