@@ -12,6 +12,8 @@ import (
 	"terraform-provider-powerstore/models"
 )
 
+const defaultSectorSize = 512
+
 type resourceVolumeType struct{}
 
 // GetSchema returns the schema for this resource.
@@ -109,7 +111,7 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Description:         "The sector size of the volume.",
 				MarkdownDescription: "The sector size of the volume.",
 				PlanModifiers: tfsdk.AttributePlanModifiers{
-					DefaultAttribute(types.Int64{Value: 512}),
+					DefaultAttribute(types.Int64{Value: defaultSectorSize}),
 				},
 			},
 			"description": {
@@ -353,7 +355,7 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	log.Printf("After Volume create call")
 
 	result := models.Volume{}
-	updateVolState(&result, volResponse, hostMapping, volGroupMapping, &plan, "Create")
+	updateVolState(&result, volResponse, hostMapping, volGroupMapping, &plan, operationCreate)
 
 	log.Printf("Added to result: %v", result)
 
@@ -405,7 +407,7 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 		return
 	}
 
-	updateVolState(&state, volResponse, hostMapping, volGroupMapping, nil, "Read")
+	updateVolState(&state, volResponse, hostMapping, volGroupMapping, nil, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -496,7 +498,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 		return
 	}
 
-	updateVolState(&state, volResponse, hostMapping, volGroupMapping, &plan, "Update")
+	updateVolState(&state, volResponse, hostMapping, volGroupMapping, &plan, operationUpdate)
 
 	//Set State
 	diags = resp.State.Set(ctx, &state)
@@ -583,7 +585,7 @@ func (r resourceVolume) ImportState(ctx context.Context, req tfsdk.ImportResourc
 	state := models.Volume{}
 
 	// as state is like a plan here, a current state prior to this import operation
-	updateVolState(&state, response, nil, gopowerstore.VolumeGroups{}, &state, "import")
+	updateVolState(&state, response, nil, gopowerstore.VolumeGroups{}, &state, operationImport)
 
 	// Set state
 	diags := resp.State.Set(ctx, &state)
