@@ -15,10 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type RequestError struct {
-	Err error
-}
-
 type resourceProtectionPolicyType struct{}
 
 // GetSchema returns the schema for this resource.
