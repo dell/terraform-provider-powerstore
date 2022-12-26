@@ -47,6 +47,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dell/gopowerstore v1.9.1-0.20221224085259-d4e1fa4b07a3 h1:H2Z4PlwbBG5Z3/HzpVJwlxHDAERA+yV39htbEH4/8M8=
+github.com/dell/gopowerstore v1.9.1-0.20221224085259-d4e1fa4b07a3/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
 github.com/dell/gopowerstore v1.9.1-0.20221214032651-fd8afd60ae81 h1:K9W564nOwmEbA9KQ8JMrRbP7hrqNc4bS3dWT4Eg+aX4=
 github.com/dell/gopowerstore v1.9.1-0.20221214032651-fd8afd60ae81/go.mod h1:lRtAas+0ZNx97T8nC8b5uPrxrIc1qYIzX6ORjb7J8mQ=
 github.com/dell/gopowerstore v1.9.1-0.20221221112257-34ee03c024ea h1:Xct62ZUeeqO3MPJzPbgOhUfObuvK8slteOcnyJmzieU=
