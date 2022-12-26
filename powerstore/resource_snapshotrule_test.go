@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test to Create SnapShotRule
@@ -239,6 +241,67 @@ func TestAccSnapshotRule_ReadSnapShotRuleUnavailable(t *testing.T) {
 			},
 		},
 	})
+}
+
+// Test to import resource but resulting in error
+func TestAccSnapshotRule_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        SnapshotRuleParamsWithTimeOfDay,
+				ResourceName:  "powerstore_snapshotrule.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile("Could not import snapshot rule"),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
+// Test to import successfully
+func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
+
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: SnapshotRuleParamsWithInterval,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
+					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
+				),
+			},
+			{
+				Config:            SnapshotRuleParamsWithInterval,
+				ResourceName:      "powerstore_snapshotrule.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_snapshotrule", s[0].Attributes["name"])
+					assert.Equal(t, "Four_Hours", s[0].Attributes["interval"])
+					assert.Equal(t, "56", s[0].Attributes["desired_retention"])
+					return nil
+				},
+			},
+		},
+	})
+
 }
 
 var SnapshotRuleParamsWithTimeOfDay = `
