@@ -2,6 +2,7 @@ package powerstore
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"strings"
@@ -13,6 +14,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+type RequestError struct {
+	Err error
+}
 
 type resourceProtectionPolicyType struct{}
 
@@ -134,11 +139,11 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 		return
 	}
 
-	protectionPolicyCreate, errmsg := r.planToProtectionPolicyParam(plan)
-	if errmsg != "" {
+	protectionPolicyCreate, err := r.planToProtectionPolicyParam(plan)
+	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating protection policy",
-			"Either of "+errmsg+" should be present",
+			err.Error(),
 		)
 		return
 	}
@@ -254,11 +259,11 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 		return
 	}
 
-	protectionPolicyUpdate, errmsg := r.planToProtectionPolicyParam(plan)
-	if errmsg != "" {
+	protectionPolicyUpdate, err := r.planToProtectionPolicyParam(plan)
+	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating protection policy",
-			"Either of "+errmsg+" should be present",
+			err.Error(),
 		)
 		return
 	}
@@ -267,7 +272,7 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 	protectionPolicyID := state.ID.Value
 
 	//Update Protection Policy by calling API
-	_, err := r.p.client.PStoreClient.ModifyProtectionPolicy(context.Background(), protectionPolicyUpdate, protectionPolicyID)
+	_, err = r.p.client.PStoreClient.ModifyProtectionPolicy(context.Background(), protectionPolicyUpdate, protectionPolicyID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating protection policy",
@@ -297,10 +302,10 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 	log.Printf("Successfully done with Update")
 }
 
-func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) (protectionPolicyCreate *gopowerstore.ProtectionPolicyCreate, errmsg string) {
-	valid, errmsg := r.fetchByName(&plan)
+func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) (*gopowerstore.ProtectionPolicyCreate, error) {
+	valid, err := r.fetchByName(&plan)
 	if !valid {
-		return nil, errmsg
+		return nil, err
 	}
 
 	var replicationRuleIds []string
@@ -313,13 +318,13 @@ func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.Protec
 		snapshotRuleIds = append(snapshotRuleIds, strings.Trim(snapshotRule.String(), "\""))
 	}
 
-	protectionPolicyCreate = &gopowerstore.ProtectionPolicyCreate{
+	protectionPolicyCreate := &gopowerstore.ProtectionPolicyCreate{
 		Name:               plan.Name.Value,
 		Description:        plan.Description.Value,
 		ReplicationRuleIds: replicationRuleIds,
 		SnapshotRuleIds:    snapshotRuleIds,
 	}
-	return protectionPolicyCreate, ""
+	return protectionPolicyCreate, nil
 }
 
 func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowerstore.ProtectionPolicy, polPlan *models.ProtectionPolicy) {
@@ -385,10 +390,10 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 	}
 }
 
-func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (valid bool, err string) {
+func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (valid bool, err error) {
 	var snapshotRuleIds []string
 	if len(plan.SnapshotRuleIDs.Elems) != 0 && len(plan.SnapshotRuleNames.Elems) != 0 {
-		return false, "Snapshot Rule ID or Snapshot Rule Name"
+		return false, errors.New("either of snapshot rule id or snapshot rule name should be present")
 	} else if len(plan.SnapshotRuleNames.Elems) != 0 {
 		for _, snapshotRuleName := range plan.SnapshotRuleNames.Elems {
 			snapshotRule, _ := r.p.client.PStoreClient.GetSnapshotRuleByName(context.Background(), strings.Trim(snapshotRuleName.String(), "\""))
@@ -408,7 +413,7 @@ func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (va
 
 	var replicationRuleIds []string
 	if len(plan.ReplicationRuleIDs.Elems) != 0 && len(plan.ReplicationRuleNames.Elems) != 0 {
-		return false, "Replication Rule ID or Replication Rule Name"
+		return false, errors.New("either of replication rule id or replication rule name should be present")
 	} else if len(plan.ReplicationRuleNames.Elems) != 0 {
 		for _, replicationRuleName := range plan.ReplicationRuleNames.Elems {
 			replicationRule, _ := r.p.client.PStoreClient.GetReplicationRuleByName(context.Background(), strings.Trim(replicationRuleName.String(), "\""))
@@ -426,5 +431,5 @@ func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (va
 		}
 	}
 
-	return true, ""
+	return true, nil
 }
