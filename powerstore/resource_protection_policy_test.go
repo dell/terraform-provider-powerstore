@@ -21,10 +21,10 @@ func TestAccProtectionPolicy_Create(t *testing.T) {
 			{
 				Config: ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "protectionpolicy_acc_new"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "replication_rule_ids.*", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "snapshot_rule_ids.*", "153df6eb-3433-4b5e-942e-ecf90348df20"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.*", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.*", "153df6eb-3433-4b5e-942e-ecf90348df20"),
 				),
 			},
 		},
@@ -44,19 +44,19 @@ func TestAccProtectionPolicy_Update(t *testing.T) {
 			{
 				Config: ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "protectionpolicy_acc_new"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "replication_rule_ids.*", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "snapshot_rule_ids.*", "153df6eb-3433-4b5e-942e-ecf90348df20"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.*", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.*", "153df6eb-3433-4b5e-942e-ecf90348df20"),
 				),
 			},
 			{
 				Config: ProtectionPolicyParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "protectionpolicy_acc_new"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "description", "Test UpdateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "replication_rule_ids.*", "5520daa7-aedb-4966-93c5-f0ae82b040ee"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "snapshot_rule_ids.*", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test UpdateProtectionPolicy"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.*", "5520daa7-aedb-4966-93c5-f0ae82b040ee"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.*", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
 				),
 			},
 		},
@@ -145,7 +145,7 @@ provider "powerstore" {
 	endpoint = "` + endpoint + `"
 	insecure = true
 }
-resource "powerstore_storagecontainer" "test" {
+resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
 }
@@ -158,7 +158,7 @@ provider "powerstore" {
 	endpoint = "` + endpoint + `"
 	insecure = true
 }
-resource "powerstore_storagecontainer" "test" {
+resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
 	snapshot_rule_names = ["test_snapshotrule_1"]
@@ -172,7 +172,7 @@ provider "powerstore" {
 	endpoint = "` + endpoint + `"
 	insecure = true
 }
-resource "powerstore_storagecontainer" "test" {
+resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
 	replication_rule_names = ["rr-llau-csi-test2-RT-D8337-Five_Minutes"]
