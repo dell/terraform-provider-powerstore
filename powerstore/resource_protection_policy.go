@@ -92,15 +92,15 @@ func (r resourceProtectionPolicyType) GetSchema(_ context.Context) (tfsdk.Schema
 				Type:                types.ListType{ElemType: types.StringType},
 				Computed:            true,
 				Optional:            true,
-				Description:         "List of the snapshot_rule Names that are associated with this policy.",
-				MarkdownDescription: "List of the snapshot_rule Names that are associated with this policy.",
+				Description:         "List of the snapshot_rule names that are associated with this policy.",
+				MarkdownDescription: "List of the snapshot_rule names that are associated with this policy.",
 			},
 			"replication_rule_names": {
 				Type:                types.ListType{ElemType: types.StringType},
 				Computed:            true,
 				Optional:            true,
-				Description:         "List of the replication_rule Names that are associated with this policy.",
-				MarkdownDescription: "List of the replication_rule Names that are associated with this policy.",
+				Description:         "List of the replication_rule names that are associated with this policy.",
+				MarkdownDescription: "List of the replication_rule names that are associated with this policy.",
 			},
 		},
 	}, nil
@@ -134,7 +134,14 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 		return
 	}
 
-	protectionPolicyCreate := r.planToProtectionPolicyParam(plan)
+	protectionPolicyCreate, errmsg := r.planToProtectionPolicyParam(plan)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error creating protection policy",
+			"Either of "+errmsg+" should be present",
+		)
+		return
+	}
 
 	//Create New ProtectionPolicy
 	polCreateResponse, err := r.p.client.PStoreClient.CreateProtectionPolicy(context.Background(), protectionPolicyCreate)
@@ -247,7 +254,14 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 		return
 	}
 
-	protectionPolicyUpdate := r.planToProtectionPolicyParam(plan)
+	protectionPolicyUpdate, errmsg := r.planToProtectionPolicyParam(plan)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error updating protection policy",
+			"Either of "+errmsg+" should be present",
+		)
+		return
+	}
 
 	//Get Protection Policy ID from state
 	protectionPolicyID := state.ID.Value
@@ -283,11 +297,12 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 	log.Printf("Successfully done with Update")
 }
 
-func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) *gopowerstore.ProtectionPolicyCreate {
+func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) (protectionPolicyCreate *gopowerstore.ProtectionPolicyCreate, errmsg string) {
 	valid, errmsg := r.fetchByName(&plan)
 	if !valid {
-		log.Fatalf("Either of " + errmsg + "should be present")
+		return nil, errmsg
 	}
+
 	var replicationRuleIds []string
 	for _, replicationRule := range plan.ReplicationRuleIDs.Elems {
 		replicationRuleIds = append(replicationRuleIds, strings.Trim(replicationRule.String(), "\""))
@@ -298,13 +313,13 @@ func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.Protec
 		snapshotRuleIds = append(snapshotRuleIds, strings.Trim(snapshotRule.String(), "\""))
 	}
 
-	protectionPolicyCreate := &gopowerstore.ProtectionPolicyCreate{
+	protectionPolicyCreate = &gopowerstore.ProtectionPolicyCreate{
 		Name:               plan.Name.Value,
 		Description:        plan.Description.Value,
 		ReplicationRuleIds: replicationRuleIds,
 		SnapshotRuleIds:    snapshotRuleIds,
 	}
-	return protectionPolicyCreate
+	return protectionPolicyCreate, ""
 }
 
 func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowerstore.ProtectionPolicy, polPlan *models.ProtectionPolicy) {
@@ -313,15 +328,11 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 	polState.Name.Value = polResponse.Name
 	polState.Description.Value = polResponse.Description
 
+	//Update ReplicationRuleIDs value from Response to State
 	var replicationRuleIds []string
-	var replicationRuleNames []string
 	for _, replicationRule := range polResponse.ReplicationRules {
 		replicationRuleIds = append(replicationRuleIds, replicationRule.ID)
 	}
-	for _, replicationRuleName := range polPlan.ReplicationRuleNames.Elems {
-		replicationRuleNames = append(replicationRuleNames, strings.Trim(replicationRuleName.String(), "\""))
-	}
-
 	replicationIDList := []attr.Value{}
 	for _, replicationRuleID := range replicationRuleIds {
 		replicationIDList = append(replicationIDList, types.String{Value: string(replicationRuleID)})
@@ -331,6 +342,11 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 		Elems:    replicationIDList,
 	}
 
+	//Update ReplicationRuleNames value from Plan to State
+	var replicationRuleNames []string
+	for _, replicationRuleName := range polPlan.ReplicationRuleNames.Elems {
+		replicationRuleNames = append(replicationRuleNames, strings.Trim(replicationRuleName.String(), "\""))
+	}
 	replicationNameList := []attr.Value{}
 	for _, replicationRuleName := range replicationRuleNames {
 		replicationNameList = append(replicationNameList, types.String{Value: string(replicationRuleName)})
@@ -340,16 +356,11 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 		Elems:    replicationNameList,
 	}
 
+	//Update SnapshotRuleIDs value from Response to State
 	var snapshotRuleIds []string
-	var snapshotRuleNames []string
 	for _, snapshotRule := range polResponse.SnapshotRules {
 		snapshotRuleIds = append(snapshotRuleIds, snapshotRule.ID)
 	}
-
-	for _, snapshotRuleName := range polPlan.SnapshotRuleNames.Elems {
-		snapshotRuleNames = append(snapshotRuleNames, strings.Trim(snapshotRuleName.String(), "\""))
-	}
-
 	snapshotIDList := []attr.Value{}
 	for _, snapshotRuleID := range snapshotRuleIds {
 		snapshotIDList = append(snapshotIDList, types.String{Value: string(snapshotRuleID)})
@@ -359,6 +370,11 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 		Elems:    snapshotIDList,
 	}
 
+	//Update SnapshotRuleNames value from Plan to State
+	var snapshotRuleNames []string
+	for _, snapshotRuleName := range polPlan.SnapshotRuleNames.Elems {
+		snapshotRuleNames = append(snapshotRuleNames, strings.Trim(snapshotRuleName.String(), "\""))
+	}
 	snapshotNameList := []attr.Value{}
 	for _, snapshotRuleName := range snapshotRuleNames {
 		snapshotNameList = append(snapshotNameList, types.String{Value: string(snapshotRuleName)})
@@ -371,21 +387,22 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 
 func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (valid bool, err string) {
 	var snapshotRuleIds []string
-
 	if len(plan.SnapshotRuleIDs.Elems) != 0 && len(plan.SnapshotRuleNames.Elems) != 0 {
 		return false, "Snapshot Rule ID or Snapshot Rule Name"
 	} else if len(plan.SnapshotRuleNames.Elems) != 0 {
 		for _, snapshotRuleName := range plan.SnapshotRuleNames.Elems {
 			snapshotRule, _ := r.p.client.PStoreClient.GetSnapshotRuleByName(context.Background(), strings.Trim(snapshotRuleName.String(), "\""))
 			snapshotRuleIds = append(snapshotRuleIds, strings.Trim(snapshotRule.ID, "\""))
-		}
-		snapshotList := []attr.Value{}
-		for i := 0; i < len(snapshotRuleIds); i++ {
-			snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleIds[i])})
-		}
-		plan.SnapshotRuleIDs = types.List{
-			ElemType: types.StringType,
-			Elems:    snapshotList,
+
+			snapshotList := []attr.Value{}
+			for i := 0; i < len(snapshotRuleIds); i++ {
+				snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleIds[i])})
+			}
+
+			plan.SnapshotRuleIDs = types.Set{
+				ElemType: types.StringType,
+				Elems:    snapshotList,
+			}
 		}
 	}
 
@@ -397,14 +414,17 @@ func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (va
 			replicationRule, _ := r.p.client.PStoreClient.GetReplicationRuleByName(context.Background(), strings.Trim(replicationRuleName.String(), "\""))
 			replicationRuleIds = append(replicationRuleIds, strings.Trim(replicationRule.ID, "\""))
 		}
+
 		replicationList := []attr.Value{}
 		for i := 0; i < len(replicationRuleIds); i++ {
 			replicationList = append(replicationList, types.String{Value: string(replicationRuleIds[i])})
 		}
+
 		plan.ReplicationRuleIDs = types.List{
 			ElemType: types.StringType,
 			Elems:    replicationList,
 		}
 	}
+
 	return true, ""
 }
