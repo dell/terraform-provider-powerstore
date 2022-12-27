@@ -22,6 +22,8 @@ var password = os.Getenv("POWERSTORE_PASSWORD")
 var hostID = os.Getenv("HOST_ID")
 var hostGroupID = os.Getenv("HOST_GROUP_ID")
 var volumeGroupID = os.Getenv("VOLUME_GROUP_ID")
+var hostName = os.Getenv("HOST_NAME")
+var hostGroupName = os.Getenv("HOST_GROUP_NAME")
 
 func init() {
 	testProvider = New("test")()

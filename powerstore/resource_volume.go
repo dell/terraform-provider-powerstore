@@ -12,6 +12,8 @@ import (
 	"terraform-provider-powerstore/models"
 )
 
+const defaultSectorSize = 512
+
 type resourceVolumeType struct{}
 
 // GetSchema returns the schema for this resource.
@@ -53,13 +55,26 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Description:         "The host id of the volume.",
 				MarkdownDescription: "The host id of the volume.",
 			},
+			"host_name": {
+				Type:                types.StringType,
+				Optional:            true,
+				Computed:            true,
+				Description:         "The host name of the volume.",
+				MarkdownDescription: "The host name of the volume.",
+			},
 			"host_group_id": {
-				Type: types.StringType,
-
+				Type:                types.StringType,
 				Optional:            true,
 				Computed:            true,
 				Description:         "The host group id of the volume.",
 				MarkdownDescription: "The host group id of the volume.",
+			},
+			"host_group_name": {
+				Type:                types.StringType,
+				Optional:            true,
+				Computed:            true,
+				Description:         "The host group name of the volume.",
+				MarkdownDescription: "The host group name of the volume.",
 			},
 			"logical_unit_number": {
 				Type:                types.Int64Type,
@@ -75,6 +90,13 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Description:         "The volume group id of the volume.",
 				MarkdownDescription: "The volume group id of the volume.",
 			},
+			"volume_group_name": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The volume group name of the volume.",
+				MarkdownDescription: "The volume group name of the volume.",
+			},
 			"min_size": {
 				Type:                types.Int64Type,
 				Computed:            true,
@@ -89,7 +111,7 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Description:         "The sector size of the volume.",
 				MarkdownDescription: "The sector size of the volume.",
 				PlanModifiers: tfsdk.AttributePlanModifiers{
-					DefaultAttribute(types.Int64{Value: 512}),
+					DefaultAttribute(types.Int64{Value: defaultSectorSize}),
 				},
 			},
 			"description": {
@@ -106,12 +128,26 @@ func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 				Description:         "The appliance_id of the volume.",
 				MarkdownDescription: "The appliance_id of the volume.",
 			},
+			"appliance_name": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The appliance name of the volume.",
+				MarkdownDescription: "The appliance name of the volume.",
+			},
 			"protection_policy_id": {
 				Type:                types.StringType,
 				Computed:            true,
 				Optional:            true,
 				Description:         "The protection_policy_id of the volume.",
 				MarkdownDescription: "The protection_policy_id of the volume.",
+			},
+			"protection_policy_name": {
+				Type:                types.StringType,
+				Computed:            true,
+				Optional:            true,
+				Description:         "The protection policy name of the volume.",
+				MarkdownDescription: "The protection policy name of the volume.",
 			},
 			"performance_policy_id": {
 				Type:                types.StringType,
@@ -242,6 +278,15 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		return
 	}
 
+	valid, errmsg := fetchByName(r.p.client, &plan)
+	if !valid {
+		resp.Diagnostics.AddError(
+			"Error creating volume",
+			"Could not create volume, either of "+errmsg+" should be present",
+		)
+		return
+	}
+
 	volumeCreate := &gopowerstore.VolumeCreate{
 		Name:                &plan.Name.Value,
 		Description:         plan.Description.Value,
@@ -298,10 +343,19 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		)
 		return
 	}
+	// Get Volume Group Mapping details from API
+	volGroupMapping, err := r.p.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volCreateResponse.ID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error fetching volume host mapping",
+			"Could not create volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
 	log.Printf("After Volume create call")
 
 	result := models.Volume{}
-	updateVolState(&result, volResponse, hostMapping, &plan, "Create")
+	updateVolState(&result, volResponse, hostMapping, volGroupMapping, &plan, operationCreate)
 
 	log.Printf("Added to result: %v", result)
 
@@ -343,8 +397,17 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 		)
 		return
 	}
+	// Get Volume Group Mapping details from API
+	volGroupMapping, err := r.p.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error fetching volume host mapping",
+			"Could not create volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
 
-	updateVolState(&state, volResponse, hostMapping, nil, "Read")
+	updateVolState(&state, volResponse, hostMapping, volGroupMapping, nil, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -374,6 +437,15 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	valid, errmsg := fetchByName(r.p.client, &plan)
+	if !valid {
+		resp.Diagnostics.AddError(
+			"Error creating volume",
+			"Could not Update volume, either of "+errmsg+" should be present",
+		)
 		return
 	}
 
@@ -411,12 +483,22 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
+			"Could not update volume, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	// Get Volume Group Mapping details from API
+	volGroupMapping, err := r.p.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error fetching volume host mapping",
 			"Could not create volume, unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	updateVolState(&state, volResponse, hostMapping, &plan, "Update")
+	updateVolState(&state, volResponse, hostMapping, volGroupMapping, &plan, operationUpdate)
 
 	//Set State
 	diags = resp.State.Set(ctx, &state)
@@ -441,6 +523,33 @@ func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequ
 
 	// Get vg ID from state
 	volID := state.ID.Value
+	if state.ProtectionPolicyID.Value != "" {
+		state.ProtectionPolicyID.Value = ""
+		modifyVolume(state, 0, volID, r.p.client)
+	}
+
+	if state.HostID.Value != "" || state.HostGroupID.Value != "" {
+		err := detachHostFromVolume(state, models.Volume{}, r.p.client, volID)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Cannot detach volume host mapping",
+				"Could not delete volume, unexpected error: "+err.Error(),
+			)
+			return
+		}
+	}
+
+	if state.VolumeGroupID.Value != "" {
+		err := detachVolumeGroup(ctx, state, r.p.client, volID)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error detaching volume Group",
+				"Could not delete volume, unexpected error: "+err.Error(),
+			)
+			return
+
+		}
+	}
 
 	// Delete volume by calling API
 	_, err := r.p.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
@@ -455,4 +564,35 @@ func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequ
 	// Remove resource from state
 	resp.State.RemoveResource(ctx)
 	log.Printf("Done with Delete")
+}
+
+// ImportState import state for existing infrastructure
+func (r resourceVolume) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+
+	log.Printf("Started with Import")
+
+	// fetching Volume information
+	response, err := r.p.client.PStoreClient.GetVolume(context.Background(), req.ID)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error importing Volume",
+			fmt.Sprintf("Could not import volume: %s with error: %s", req.ID, err.Error()),
+		)
+		return
+	}
+
+	state := models.Volume{}
+
+	// as state is like a plan here, a current state prior to this import operation
+	updateVolState(&state, response, nil, gopowerstore.VolumeGroups{}, &state, operationImport)
+
+	// Set state
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Done with Import")
 }
