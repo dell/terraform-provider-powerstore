@@ -2,8 +2,8 @@ package provider
 
 import (
 	"context"
-	"log"
-	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/internal/powerstore"
+	"terraform-provider-powerstore/internal/resources/snapshotrule"
 	"terraform-provider-powerstore/internal/validators"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -15,20 +15,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// Ensure PowerStorPprovider satsisfies various provider framework
+// Ensure PowerStore satsisfies provider.Provider interface
 var _ provider.Provider = &PowerStore{}
 
 // PowerStore defines the provider implementaion
 type PowerStore struct {
-	// client can contain the upstream provider SDK or HTTP client used to
-	// communicate with the upstream service. Resource and DataSource
-	// implementations can then make calls using this client.
-	client client.Client
-
-	// configured is set to true at the end of the Configure method.
-	// This can be used in Resource and DataSource implementations to verify
-	// that the provider was previously configured.
-	configured bool
 
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
@@ -45,13 +36,11 @@ type ProviderData struct {
 }
 
 func (p *PowerStore) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	log.Printf("mayank metadata")
 	resp.TypeName = "powerstore"
 	resp.Version = p.version
 }
 
 func (p *PowerStore) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
-	log.Printf("mayank schema")
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provider for PowerStore",
 		Attributes: map[string]schema.Attribute{
@@ -91,8 +80,6 @@ func (p *PowerStore) Schema(ctx context.Context, req provider.SchemaRequest, res
 
 func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 
-	log.Printf("mayank configure")
-
 	config := ProviderData{}
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
@@ -102,7 +89,7 @@ func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureReques
 	}
 
 	// initializing powerstore client
-	pstoreClient, err := client.NewClient(
+	pstoreClient, err := powerstore.NewClient(
 		config.Endpoint.ValueString(),
 		config.Username.ValueString(),
 		config.Password.ValueString(),
@@ -111,7 +98,6 @@ func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureReques
 		config.Insecure.ValueBool(),
 	)
 	if err != nil {
-		p.configured = false
 		resp.Diagnostics.AddError(
 			"Unable to create powerstore client",
 			"Unable to authenticate user for authenticated powerstore client",
@@ -119,22 +105,21 @@ func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureReques
 		return
 	}
 
-	p.client = *pstoreClient
-	p.configured = true
+	resp.ResourceData = pstoreClient
+	resp.DataSourceData = pstoreClient
 }
 
 func (p *PowerStore) Resources(ctx context.Context) []func() resource.Resource {
-	log.Printf("mayank Resources")
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		snapshotrule.NewResource,
+	}
 }
 
 func (p *PowerStore) DataSources(ctx context.Context) []func() datasource.DataSource {
-	log.Printf("mayank DataSources")
 	return []func() datasource.DataSource{}
 }
 
 func New(version string) func() provider.Provider {
-	log.Printf("mayank New")
 	return func() provider.Provider {
 		return &PowerStore{
 			version: version,

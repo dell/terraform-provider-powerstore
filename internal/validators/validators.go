@@ -3,7 +3,7 @@ package validators
 import (
 	"context"
 	"fmt"
-	"log"
+	"net/url"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
@@ -22,6 +22,16 @@ func (u UrlString) MarkdownDescription(context.Context) string {
 }
 
 func (u UrlString) ValidateString(ctx context.Context, req validator.StringRequest, res *validator.StringResponse) {
-	log.Printf("mayank %+v", req)
-	fmt.Println(req)
+
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+
+	_, err := url.ParseRequestURI(req.ConfigValue.ValueString())
+	if err != nil {
+		res.Diagnostics.AddError(
+			fmt.Sprintf("%s: invalid url", req.PathExpression),
+			fmt.Sprintf("%s: invalid uri, %s", req.PathExpression, err.Error()),
+		)
+	}
 }

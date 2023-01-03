@@ -1,4 +1,4 @@
-package client
+package powerstore
 
 import (
 	pstore "github.com/dell/gopowerstore"
