@@ -18,7 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// Ensure PowerStore satsisfies provider.Provider interface
+// Ensure Resource satsisfies resource.Resource interface
 var _ resource.Resource = &Resource{}
 var _ resource.ResourceWithImportState = &Resource{}
 
@@ -26,7 +26,7 @@ func NewResource() resource.Resource {
 	return &Resource{}
 }
 
-// ExampleResource defines the resource implementation.
+// Resource defines the resource implementation.
 type Resource struct {
 	client *powerstore.Client
 }
@@ -372,9 +372,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	// Get snapshot details from API and then update what is in state from what the API returns
-	id := state.ID.ValueString()
-	serverResponse, err := r.client.PStoreClient.GetSnapshotRule(context.Background(), id)
+	serverResponse, err := r.client.PStoreClient.GetSnapshotRule(context.Background(), state.ID.ValueString())
 
 	// todo distnguish whether error is for resource presence, in case resource is not present
 	// we should inform it like resource should be created

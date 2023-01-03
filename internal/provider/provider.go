@@ -4,6 +4,7 @@ import (
 	"context"
 	"terraform-provider-powerstore/internal/powerstore"
 	"terraform-provider-powerstore/internal/resources/snapshotrule"
+	"terraform-provider-powerstore/internal/resources/storagecontainer"
 	"terraform-provider-powerstore/internal/validators"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -112,6 +113,7 @@ func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureReques
 func (p *PowerStore) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		snapshotrule.NewResource,
+		storagecontainer.NewResource,
 	}
 }
 
