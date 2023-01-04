@@ -3,12 +3,12 @@
 page_title: "powerstore_snapshotrule Resource - powerstore"
 subcategory: ""
 description: |-
-  
+  SnapshotRule resource
 ---
 
 # powerstore_snapshotrule (Resource)
 
-
+SnapshotRule resource
 
 ## Example Usage
 
@@ -41,7 +41,6 @@ resource "powerstore_snapshotrule" "test" {
 - `days_of_week` (List of String) The days of the week when the snapshot rule should be applied.
 - `delete_snaps` (Boolean) Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.
 - `interval` (String) The interval between snapshots taken by a snapshot rule.
-- `is_read_only` (Boolean) Indicates whether this snapshot rule can be modified.
 - `nas_access_type` (String) The NAS filesystem snapshot access method for snapshot rule.
 - `time_of_day` (String) The time of the day to take a daily snapshot, with format hh:mm.
 - `timezone` (String) The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.
@@ -49,6 +48,7 @@ resource "powerstore_snapshotrule" "test" {
 ### Read-Only
 
 - `id` (String) The ID of the snapshot rule.
+- `is_read_only` (Boolean) Indicates whether this snapshot rule can be modified.
 - `is_replica` (Boolean) Indicates whether this is a replica of a snapshot rule on a remote system.
 - `managed_by` (String) The entity that owns and manages the instance.
 - `managed_by_id` (String) The unique id of the managing entity.
