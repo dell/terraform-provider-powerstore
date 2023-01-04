@@ -14,7 +14,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config: ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
+			Config: providerConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
 			Check: resource.ComposeTestCheckFunc(
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "random_name_xcfgdfg"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
@@ -26,7 +26,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 			),
 		},
 		{
-			Config: ProviderConfigForTesting + SnapshotRuleParamsWithInterval,
+			Config: providerConfigForTesting + SnapshotRuleParamsWithInterval,
 			Check: resource.ComposeTestCheckFunc(
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "random_name_xcfgdfg"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
@@ -40,8 +40,8 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 
 	for i := range tests {
 		resource.Test(t, resource.TestCase{
-			PreCheck:                 func() { TestAccPreCheck(t) },
-			ProtoV6ProviderFactories: TestProviderFactory,
+			PreCheck:                 func() { testAccPreCheck(t) },
+			ProtoV6ProviderFactories: testProviderFactory,
 			Steps:                    []resource.TestStep{tests[i]},
 		})
 	}
@@ -51,11 +51,11 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
+				Config: providerConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "random_name_xcfgdfg"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
@@ -66,7 +66,7 @@ func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 				),
 			},
 			{
-				Config: ProviderConfigForTesting + SnapshotRuleParamsUpdate,
+				Config: providerConfigForTesting + SnapshotRuleParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "random_name_xcfgdfg_updated"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "22:00"),
@@ -85,27 +85,27 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidInterval,
+			Config:      providerConfigForTesting + SnapshotRuleParamsWithInvalidInterval,
 			ExpectError: regexp.MustCompile("Attribute interval value must be one of"),
 		},
 		{
-			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidTimezone,
+			Config:      providerConfigForTesting + SnapshotRuleParamsWithInvalidTimezone,
 			ExpectError: regexp.MustCompile("Attribute timezone value must be one of"),
 		},
 		{
-			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidDaysOfWeek,
+			Config:      providerConfigForTesting + SnapshotRuleParamsWithInvalidDaysOfWeek,
 			ExpectError: regexp.MustCompile("Attribute days_of_week[^ ]* value must be one of"),
 		},
 		{
-			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidNasAccessType,
+			Config:      providerConfigForTesting + SnapshotRuleParamsWithInvalidNasAccessType,
 			ExpectError: regexp.MustCompile("Attribute nas_access_type value must be one of"),
 		},
 	}
 
 	for i := range tests {
 		resource.Test(t, resource.TestCase{
-			PreCheck:                 func() { TestAccPreCheck(t) },
-			ProtoV6ProviderFactories: TestProviderFactory,
+			PreCheck:                 func() { testAccPreCheck(t) },
+			ProtoV6ProviderFactories: testProviderFactory,
 			Steps:                    []resource.TestStep{tests[i]},
 		})
 	}
@@ -115,11 +115,11 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 func TestAccSnapshotRule_CreateSnapShotRuleWithTimeOfdayandInterval(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDayAndInterval,
+				Config:      providerConfigForTesting + SnapshotRuleParamsWithTimeOfDayAndInterval,
 				ExpectError: regexp.MustCompile("Attribute \"time_of_day\" cannot be specified when \"interval\" is specified"),
 			},
 		},
@@ -130,11 +130,11 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithTimeOfdayandInterval(t *testing.T
 func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
+				Config:        providerConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
 				ResourceName:  "powerstore_snapshotrule.test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile("Could not import snapshot rule"),
@@ -148,11 +148,11 @@ func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + SnapshotRuleParamsWithInterval,
+				Config: providerConfigForTesting + SnapshotRuleParamsWithInterval,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "random_name_xcfgdfg"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
@@ -162,7 +162,7 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 				),
 			},
 			{
-				Config:            ProviderConfigForTesting + SnapshotRuleParamsWithInterval,
+				Config:            providerConfigForTesting + SnapshotRuleParamsWithInterval,
 				ResourceName:      "powerstore_snapshotrule.test",
 				ImportState:       true,
 				ExpectError:       nil,

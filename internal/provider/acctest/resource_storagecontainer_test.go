@@ -17,11 +17,11 @@ func TestAccStorageContainer_Create(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + StorageContainerParamsCreate,
+				Config: providerConfigForTesting + StorageContainerParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
@@ -40,11 +40,11 @@ func TestAccStorageContainer_Update(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + StorageContainerParamsCreate,
+				Config: providerConfigForTesting + StorageContainerParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
@@ -53,7 +53,7 @@ func TestAccStorageContainer_Update(t *testing.T) {
 				),
 			},
 			{
-				Config: ProviderConfigForTesting + StorageContainerParamsUpdate,
+				Config: providerConfigForTesting + StorageContainerParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418242"),
@@ -73,19 +73,19 @@ func TestAccStorageContainer_CreateWithInvalidValues(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config:      ProviderConfigForTesting + StorageContainerParamsInvalidStorageProtocol,
+			Config:      providerConfigForTesting + StorageContainerParamsInvalidStorageProtocol,
 			ExpectError: regexp.MustCompile("Attribute storage_protocol value must be one of"),
 		},
 		{
-			Config:      ProviderConfigForTesting + StorageContainerParamsCreateServerError,
+			Config:      providerConfigForTesting + StorageContainerParamsCreateServerError,
 			ExpectError: regexp.MustCompile("Could not create Storage Container"),
 		},
 	}
 
 	for i := range tests {
 		resource.Test(t, resource.TestCase{
-			PreCheck:                 func() { TestAccPreCheck(t) },
-			ProtoV6ProviderFactories: TestProviderFactory,
+			PreCheck:                 func() { testAccPreCheck(t) },
+			ProtoV6ProviderFactories: testProviderFactory,
 			Steps:                    []resource.TestStep{tests[i]},
 		})
 	}
@@ -98,11 +98,11 @@ func TestAccStorageContainer_UpdateError(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + StorageContainerParamsCreate,
+				Config: providerConfigForTesting + StorageContainerParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
@@ -111,7 +111,7 @@ func TestAccStorageContainer_UpdateError(t *testing.T) {
 				),
 			},
 			{
-				Config:      ProviderConfigForTesting + StorageContainerParamsCreateServerError,
+				Config:      providerConfigForTesting + StorageContainerParamsCreateServerError,
 				ExpectError: regexp.MustCompile("Could not update"),
 			},
 		},
@@ -125,11 +125,11 @@ func TestAccStorageContainer_ImportFailure(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        ProviderConfigForTesting + StorageContainerParamsCreate,
+				Config:        providerConfigForTesting + StorageContainerParamsCreate,
 				ResourceName:  "powerstore_storagecontainer.test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile("Could not import storage container"),
@@ -147,11 +147,11 @@ func TestAccStorageContainer_ImportSuccess(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + StorageContainerParamsCreate,
+				Config: providerConfigForTesting + StorageContainerParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
@@ -160,7 +160,7 @@ func TestAccStorageContainer_ImportSuccess(t *testing.T) {
 				),
 			},
 			{
-				Config:            ProviderConfigForTesting + StorageContainerParamsCreate,
+				Config:            providerConfigForTesting + StorageContainerParamsCreate,
 				ResourceName:      "powerstore_storagecontainer.test",
 				ImportState:       true,
 				ExpectError:       nil,

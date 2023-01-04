@@ -15,11 +15,11 @@ func TestAccProtectionPolicy_Create(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ProtectionPolicyParamsCreate,
+				Config: providerConfigForTesting + ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
@@ -38,11 +38,11 @@ func TestAccProtectionPolicy_Update(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ProtectionPolicyParamsCreate,
+				Config: providerConfigForTesting + ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
@@ -51,7 +51,7 @@ func TestAccProtectionPolicy_Update(t *testing.T) {
 				),
 			},
 			{
-				Config: ProviderConfigForTesting + ProtectionPolicyParamsUpdate,
+				Config: providerConfigForTesting + ProtectionPolicyParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test UpdateProtectionPolicy"),
@@ -70,11 +70,11 @@ func TestAccProtectionPolicy_CreateWithInvalidValues(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + ProtectionPoliycParamsCreateServerError,
+				Config:      providerConfigForTesting + ProtectionPoliycParamsCreateServerError,
 				ExpectError: regexp.MustCompile("Could not create protection policy"),
 			},
 		},
@@ -88,11 +88,11 @@ func TestAccProtectionPolicy_UpdateError(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ProtectionPolicyParamsCreate,
+				Config: providerConfigForTesting + ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
@@ -101,7 +101,7 @@ func TestAccProtectionPolicy_UpdateError(t *testing.T) {
 				),
 			},
 			{
-				Config:      ProviderConfigForTesting + ProtectionPoliycParamsCreateServerError,
+				Config:      providerConfigForTesting + ProtectionPoliycParamsCreateServerError,
 				ExpectError: regexp.MustCompile("Could not update"),
 			},
 		},
@@ -116,19 +116,19 @@ func TestAccProtectionPolicy_CreateWithMutuallyExclusiveParams(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config:      ProviderConfigForTesting + ProtectionPolicyParamsWithSnapshotIDAndName,
+			Config:      providerConfigForTesting + ProtectionPolicyParamsWithSnapshotIDAndName,
 			ExpectError: regexp.MustCompile("either of snapshot rule id or snapshot rule name should be present"),
 		},
 		{
-			Config:      ProviderConfigForTesting + ProtectionPolicyParamsWithReplicationIDAndName,
+			Config:      providerConfigForTesting + ProtectionPolicyParamsWithReplicationIDAndName,
 			ExpectError: regexp.MustCompile("either of replication rule id or replication rule name should be present"),
 		},
 	}
 
 	for i := range tests {
 		resource.Test(t, resource.TestCase{
-			PreCheck:                 func() { TestAccPreCheck(t) },
-			ProtoV6ProviderFactories: TestProviderFactory,
+			PreCheck:                 func() { testAccPreCheck(t) },
+			ProtoV6ProviderFactories: testProviderFactory,
 			Steps:                    []resource.TestStep{tests[i]},
 		})
 	}
@@ -141,11 +141,11 @@ func TestAccProtectionPolicy_CreateWithSnapshotRuleName(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ProtectionPolicyParamsWithSnapshotRuleName,
+				Config: providerConfigForTesting + ProtectionPolicyParamsWithSnapshotRuleName,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
@@ -164,11 +164,11 @@ func TestAccProtectionPolicy_CreateWithReplicationRuleName(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: TestProviderFactory,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ProtectionPolicyParamsWithReplicationRuleName,
+				Config: providerConfigForTesting + ProtectionPolicyParamsWithReplicationRuleName,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),

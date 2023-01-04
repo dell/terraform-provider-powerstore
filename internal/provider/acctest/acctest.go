@@ -10,20 +10,20 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )
 
-var TestProvider = provider.New("test")()
+var testProvider = provider.New("test")()
 
-var TestProviderFactory = map[string]func() (tfprotov6.ProviderServer, error){
-	"powerstore": providerserver.NewProtocol6WithError(TestProvider),
+var testProviderFactory = map[string]func() (tfprotov6.ProviderServer, error){
+	"powerstore": providerserver.NewProtocol6WithError(testProvider),
 }
 
 var (
-	HostID        string
-	HostGroupID   string
-	VolumeGroupID string
-	HostName      string
-	HostGroupName string
+	hostID        string
+	hostGroupID   string
+	volumeGroupID string
+	hostName      string
+	hostGroupName string
 
-	ProviderConfigForTesting string
+	providerConfigForTesting string
 )
 
 func init() {
@@ -31,13 +31,13 @@ func init() {
 	var username = os.Getenv("POWERSTORE_USERNAME")
 	var password = os.Getenv("POWERSTORE_PASSWORD")
 
-	HostID = os.Getenv("HOST_ID")
-	HostGroupID = os.Getenv("HOST_GROUP_ID")
-	VolumeGroupID = os.Getenv("VOLUME_GROUP_ID")
-	HostName = os.Getenv("HOST_NAME")
-	HostGroupName = os.Getenv("HOST_GROUP_NAME")
+	hostID = os.Getenv("HOST_ID")
+	hostGroupID = os.Getenv("HOST_GROUP_ID")
+	volumeGroupID = os.Getenv("VOLUME_GROUP_ID")
+	hostName = os.Getenv("HOST_NAME")
+	hostGroupName = os.Getenv("HOST_GROUP_NAME")
 
-	ProviderConfigForTesting = fmt.Sprintf(`
+	providerConfigForTesting = fmt.Sprintf(`
 		provider "powerstore" {
 			username = "%s"
 			password = "%s"
@@ -47,7 +47,7 @@ func init() {
 	`, username, password, endpoint)
 }
 
-func TestAccPreCheck(t *testing.T) {
+func testAccPreCheck(t *testing.T) {
 
 	mustEnvVariables := []string{
 		"POWERSTORE_ENDPOINT",

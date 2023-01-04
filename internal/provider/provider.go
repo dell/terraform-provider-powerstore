@@ -33,19 +33,20 @@ type PowerStore struct {
 	Client *powerstore.Client
 }
 
-// ProviderData describes the provider data model.
-type ProviderData struct {
+type model struct {
 	Endpoint types.String `tfsdk:"endpoint"`
 	Insecure types.Bool   `tfsdk:"insecure"`
 	Password types.String `tfsdk:"password"`
 	Username types.String `tfsdk:"username"`
 }
 
+// Metadata defines provider interface Metadata method
 func (p *PowerStore) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "powerstore"
 	resp.Version = p.version
 }
 
+// Schema defines provider interface Schema method
 func (p *PowerStore) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provider for PowerStore",
@@ -84,9 +85,10 @@ func (p *PowerStore) Schema(ctx context.Context, req provider.SchemaRequest, res
 	}
 }
 
+// Configure defines provider interface Configure method
 func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 
-	config := ProviderData{}
+	config := model{}
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
 
@@ -116,6 +118,7 @@ func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureReques
 	resp.DataSourceData = pstoreClient
 }
 
+// Resources defines provider interface Resources method
 func (p *PowerStore) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		snapshotrule.NewResource,
@@ -125,10 +128,12 @@ func (p *PowerStore) Resources(ctx context.Context) []func() resource.Resource {
 	}
 }
 
+// DataSources defines provider interface DataSources method
 func (p *PowerStore) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{}
 }
 
+// New returns instance of provider
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
 		return &PowerStore{

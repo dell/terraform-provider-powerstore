@@ -18,6 +18,7 @@ import (
 var _ resource.Resource = &Resource{}
 var _ resource.ResourceWithImportState = &Resource{}
 
+// NewResource returns protectionpolicy new resource instance
 func NewResource() resource.Resource {
 	return &Resource{}
 }
@@ -27,10 +28,12 @@ type Resource struct {
 	client *powerstore.Client
 }
 
+// Metadata defines resource interface Metadata method
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_protectionpolicy"
 }
 
+// Schema defines resource interface Schema method
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
@@ -169,6 +172,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	}
 }
 
+// Configure defines resource interface Configure method
 func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
@@ -189,6 +193,7 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.client = client
 }
 
+// Create defines resource interface Create method
 func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan model
 
@@ -225,6 +230,7 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 }
 
+// Read defines resource interface Read method
 func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
 	var state model
@@ -255,6 +261,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
+// Update defines resource interface Update method
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 
 	var plan, state model
@@ -298,6 +305,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 }
 
+// Delete defines resource interface Delete method
 func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
 	var state model
@@ -321,6 +329,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	// scenerio - changes from outside of terraform
 }
 
+// ImportState defines resource interface ImportState method
 func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
