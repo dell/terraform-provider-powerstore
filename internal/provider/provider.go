@@ -28,6 +28,9 @@ type PowerStore struct {
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
+
+	// currently being used only in test case of volume resource
+	Client *powerstore.Client
 }
 
 // ProviderData describes the provider data model.
@@ -108,6 +111,7 @@ func (p *PowerStore) Configure(ctx context.Context, req provider.ConfigureReques
 		return
 	}
 
+	p.Client = pstoreClient
 	resp.ResourceData = pstoreClient
 	resp.DataSourceData = pstoreClient
 }
