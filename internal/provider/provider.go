@@ -3,10 +3,11 @@ package provider
 import (
 	"context"
 	"terraform-provider-powerstore/internal/powerstore"
-	"terraform-provider-powerstore/internal/resources/protectionpolicy"
-	"terraform-provider-powerstore/internal/resources/snapshotrule"
-	"terraform-provider-powerstore/internal/resources/storagecontainer"
-	"terraform-provider-powerstore/internal/validators"
+	"terraform-provider-powerstore/internal/provider/resources/protectionpolicy"
+	"terraform-provider-powerstore/internal/provider/resources/snapshotrule"
+	"terraform-provider-powerstore/internal/provider/resources/storagecontainer"
+	"terraform-provider-powerstore/internal/provider/resources/volume"
+	"terraform-provider-powerstore/internal/provider/validators"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -116,6 +117,7 @@ func (p *PowerStore) Resources(ctx context.Context) []func() resource.Resource {
 		snapshotrule.NewResource,
 		storagecontainer.NewResource,
 		protectionpolicy.NewResource,
+		volume.NewResource,
 	}
 }
 
