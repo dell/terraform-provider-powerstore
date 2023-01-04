@@ -20,7 +20,7 @@ func DefaultAttribute(value interface{}) DefaultAttributePlanModifier {
 	return DefaultAttributePlanModifier{value: value}
 }
 
-// Modify is used to set default value
+// PlanModifyString sets string default value
 func (m DefaultAttributePlanModifier) PlanModifyString(
 	ctx context.Context,
 	req planmodifier.StringRequest,
@@ -31,7 +31,7 @@ func (m DefaultAttributePlanModifier) PlanModifyString(
 	}
 }
 
-// Modify is used to set default value
+// PlanModifyInt64 sets int64 default value
 func (m DefaultAttributePlanModifier) PlanModifyInt64(
 	ctx context.Context,
 	req planmodifier.Int64Request,

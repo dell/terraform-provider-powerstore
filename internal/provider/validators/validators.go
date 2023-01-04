@@ -9,23 +9,23 @@ import (
 )
 
 // Ensure UrlString satsisfies validator.String
-var _ validator.String = UrlString{}
+var _ validator.String = URLString{}
 
 // UrlString validates if given string is url
-type UrlString struct{}
+type URLString struct{}
 
 // Description satisfies validator.String interface
-func (u UrlString) Description(context.Context) string {
+func (u URLString) Description(context.Context) string {
 	return "string must be valid uri"
 }
 
 // MarkdownDescription satisfies validator.String interface
-func (u UrlString) MarkdownDescription(context.Context) string {
+func (u URLString) MarkdownDescription(context.Context) string {
 	return "string must be valid uri"
 }
 
 // ValidateString validates if string is url
-func (u UrlString) ValidateString(ctx context.Context, req validator.StringRequest, res *validator.StringResponse) {
+func (u URLString) ValidateString(ctx context.Context, req validator.StringRequest, res *validator.StringResponse) {
 
 	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
 		return

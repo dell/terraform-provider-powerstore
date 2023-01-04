@@ -56,7 +56,7 @@ func (p *PowerStore) Schema(ctx context.Context, req provider.SchemaRequest, res
 				Description:         "IP or FQDN of the PowerStore host",
 				Required:            true,
 				Validators: []validator.String{
-					validators.UrlString{},
+					validators.URLString{},
 				},
 			},
 			"insecure": schema.BoolAttribute{
