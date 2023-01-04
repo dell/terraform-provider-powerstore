@@ -342,7 +342,7 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating snapshot rule",
-			"Could not create snapshot rule, unexpected error: "+err.Error(),
+			fmt.Sprintf("Could not create snapshot rule, unexpected error: %s", err.Error()),
 		)
 		return
 	}
@@ -380,7 +380,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading snapshot rule",
-			fmt.Sprintf("Could not read snapshot rule id: %s, error: %s"+state.ID.ValueString(), err.Error()),
+			fmt.Sprintf("Could not read snapshot rule id: %s, error: %s", state.ID.ValueString(), err.Error()),
 		)
 		return
 	}
@@ -411,7 +411,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating snapshotRule",
-			fmt.Sprintf("Could not update snapshotRuleID %s, error: %s"+state.ID.ValueString(), err.Error()),
+			fmt.Sprintf("Could not update snapshotRuleID %s, error: %s", state.ID.ValueString(), err.Error()),
 		)
 		return
 	}
