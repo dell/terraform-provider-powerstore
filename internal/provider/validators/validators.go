@@ -11,7 +11,7 @@ import (
 // Ensure UrlString satsisfies validator.String
 var _ validator.String = URLString{}
 
-// UrlString validates if given string is url
+// URLString validates if given string is url
 type URLString struct{}
 
 // Description satisfies validator.String interface
