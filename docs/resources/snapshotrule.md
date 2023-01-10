@@ -3,12 +3,12 @@
 page_title: "powerstore_snapshotrule Resource - powerstore"
 subcategory: ""
 description: |-
-  
+  SnapshotRule resource
 ---
 
 # powerstore_snapshotrule (Resource)
 
-
+SnapshotRule resource
 
 ## Example Usage
 
