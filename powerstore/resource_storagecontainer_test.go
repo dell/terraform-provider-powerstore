@@ -74,7 +74,7 @@ func TestAccStorageContainer_CreateWithInvalidValues(t *testing.T) {
 	tests := []resource.TestStep{
 		{
 			Config:      StorageContainerParamsInvalidStorageProtocol,
-			ExpectError: regexp.MustCompile("Attribute storage_protocol must be one of these"),
+			ExpectError: regexp.MustCompile("Attribute storage_protocol value must be one of"),
 		},
 		{
 			Config:      StorageContainerParamsCreateServerError,

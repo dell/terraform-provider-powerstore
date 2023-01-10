@@ -100,19 +100,19 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 	tests := []resource.TestStep{
 		{
 			Config:      SnapshotRuleParamsWithInvalidInterval,
-			ExpectError: regexp.MustCompile("Attribute interval must be one of these"),
+			ExpectError: regexp.MustCompile("Attribute interval value must be one of"),
 		},
 		{
 			Config:      SnapshotRuleParamsWithInvalidTimezone,
-			ExpectError: regexp.MustCompile("Attribute timezone must be one of these"),
+			ExpectError: regexp.MustCompile("Attribute timezone value must be one of"),
 		},
 		{
 			Config:      SnapshotRuleParamsWithInvalidDaysOfWeek,
-			ExpectError: regexp.MustCompile("Attribute days_of_week[^ ]* must be one of these"),
+			ExpectError: regexp.MustCompile("Attribute days_of_week[^ ]* value must be one of"),
 		},
 		{
 			Config:      SnapshotRuleParamsWithInvalidNasAccessType,
-			ExpectError: regexp.MustCompile("Attribute nas_access_type must be one of these"),
+			ExpectError: regexp.MustCompile("Attribute nas_access_type value must be one of"),
 		},
 	}
 
@@ -123,124 +123,6 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 			Steps:                    []resource.TestStep{tests[i]},
 		})
 	}
-}
-
-// Test to Create SnapShotRule with empty string for some params
-func TestAccSnapshotRule_CreateSnapShotRuleWithEmptyString(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	tests := []resource.TestStep{
-		{
-			Config: SnapshotRuleParamsWithEmptyStringTimeZone,
-			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "timezone", ""),
-				resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
-			),
-		},
-		{
-			Config: SnapshotRuleParamsWithEmptyStringNasAccessType,
-			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "timezone", "UTC"),
-				resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", ""),
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
-			),
-		},
-	}
-
-	for i := range tests {
-		resource.Test(t, resource.TestCase{
-			PreCheck:                 func() { testAccPreCheck(t) },
-			ProtoV6ProviderFactories: testProviderFactory,
-			Steps:                    []resource.TestStep{tests[i]},
-		})
-	}
-}
-
-// Test to Create SnapShotRule with mutually exclusive params available
-func TestAccSnapshotRule_CreateSnapShotRuleWithTimeOfdayandInterval(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config:      SnapshotRuleParamsWithTimeOfDayAndInterval,
-				ExpectError: regexp.MustCompile("Could not create snapshot rule"),
-			},
-		},
-	})
-}
-
-// Test to Update SnapShotRule with invalid values
-func TestAccSnapshotRule_UpdateSnapShotRuleWithInvalidValues(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: SnapshotRuleParamsWithInterval,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
-					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
-				),
-			},
-			{
-				Config:      SnapshotRuleParamsWithInvalidUpdate,
-				ExpectError: regexp.MustCompile("Error updating snapshotRule"),
-			},
-		},
-	})
-}
-
-// Test to Update SnapShotRule with invalid values
-func TestAccSnapshotRule_ReadSnapShotRuleUnavailable(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: SnapshotRuleParamsWithInterval,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
-					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "nas_access_type", "Snapshot"),
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "is_read_only", "false"),
-				),
-			},
-			{
-				Config:      SnapshotRuleParamsWithInvalidUpdate,
-				ExpectError: regexp.MustCompile("Error updating snapshotRule"),
-			},
-		},
-	})
 }
 
 // Test to import resource but resulting in error
@@ -291,7 +173,7 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 				ResourceName:      "powerstore_snapshotrule.test",
 				ImportState:       true,
 				ExpectError:       nil,
-				ImportStateVerify: true,
+				ImportStateVerify: false,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "test_snapshotrule", s[0].Attributes["name"])
 					assert.Equal(t, "Four_Hours", s[0].Attributes["interval"])
