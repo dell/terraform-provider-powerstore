@@ -3,130 +3,201 @@ package powerstore
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"strings"
+	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceProtectionPolicyType struct{}
+// newProtectionPolicyResource returns protection policy new resource instance
+func newProtectionPolicyResource() resource.Resource {
+	return &resourceProtectionPolicy{}
+}
 
-// GetSchema returns the schema for this resource.
-func (r resourceProtectionPolicyType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
-				Type:                types.StringType,
+type resourceProtectionPolicy struct {
+	client *client.Client
+}
+
+// Metadata defines resource interface Metadata method
+func (r *resourceProtectionPolicy) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_protectionpolicy"
+}
+
+// Schema defines resource interface Schema method
+func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+
+		MarkdownDescription: "ProtectionPolicy resource",
+
+		Attributes: map[string]schema.Attribute{
+
+			"id": schema.StringAttribute{
 				Computed:            true,
 				Description:         "Unique identifier of the policy.",
 				MarkdownDescription: "Unique identifier of the policy.",
 			},
-			"name": {
-				Type:                types.StringType,
+
+			"name": schema.StringAttribute{
 				Required:            true,
 				Description:         "The name of the protection policy.",
 				MarkdownDescription: "The name of the protection policy.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
-			"description": {
-				Type:                types.StringType,
-				Computed:            true,
+
+			"description": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "The description of the protection policy.",
 				MarkdownDescription: "The description of the protection policy.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
-			"type": {
-				Type:                types.StringType,
-				Computed:            true,
+
+			"snapshot_rule_ids": schema.SetAttribute{
+				ElementType:         types.StringType,
 				Optional:            true,
-				Description:         "The type of the protection policy.",
-				MarkdownDescription: "The type of the protection policy.",
-			},
-			"managed_by": {
-				Type:                types.StringType,
 				Computed:            true,
-				Optional:            true,
-				Description:         "Entity that owns and manages this instance.",
-				MarkdownDescription: "Entity that owns and manages this instance.",
+				Description:         "List of the snapshot rule IDs that are associated with this policy.",
+				MarkdownDescription: "List of the snapshot rule IDs that are associated with this policy.",
+				Validators: []validator.Set{
+
+					setvalidator.SizeAtLeast(1),
+
+					setvalidator.ValueStringsAre(
+						stringvalidator.LengthAtLeast(1),
+					),
+
+					setvalidator.AtLeastOneOf(path.Expressions{
+						path.MatchRoot("snapshot_rule_names"),
+						path.MatchRoot("replication_rule_ids"),
+						path.MatchRoot("replication_rule_names"),
+					}...),
+				},
 			},
-			"managed_by_id": {
-				Type:                types.StringType,
+
+			"snapshot_rule_names": schema.SetAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
 				Computed:            true,
-				Optional:            true,
-				Description:         "ID of the managing entity.",
-				MarkdownDescription: "ID of the managing entity.",
+				Description:         "List of the snapshot rule names that are associated with this policy.",
+				MarkdownDescription: "List of the snapshot rule names that are associated with this policy.",
+				Validators: []validator.Set{
+
+					setvalidator.SizeAtLeast(1),
+
+					setvalidator.ValueStringsAre(
+						stringvalidator.LengthAtLeast(1),
+					),
+				},
 			},
-			"is_read_only": {
-				Type:                types.BoolType,
+
+			"replication_rule_ids": schema.SetAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
 				Computed:            true,
-				Optional:            true,
-				Description:         "Indicates whether this policy can be modified.",
-				MarkdownDescription: "Indicates whether this policy can be modified.",
+				Description:         "List of the replication rule IDs that are associated with this policy.",
+				MarkdownDescription: "List of the replication rule IDs that are associated with this policy.",
+				Validators: []validator.Set{
+
+					setvalidator.SizeAtLeast(1),
+
+					setvalidator.ValueStringsAre(
+						stringvalidator.LengthAtLeast(1),
+					),
+				},
 			},
-			"is_replica": {
-				Type:                types.BoolType,
+
+			"replication_rule_names": schema.SetAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
 				Computed:            true,
-				Optional:            true,
-				Description:         "Indicates if this is a replica of a policy.",
-				MarkdownDescription: "Indicates if this is a replica of a policy.",
+				Description:         "List of the replication rule names that are associated with this policy.",
+				MarkdownDescription: "List of the replication rule names that are associated with this policy.",
+				Validators: []validator.Set{
+
+					setvalidator.SizeAtLeast(1),
+
+					setvalidator.ValueStringsAre(
+						stringvalidator.LengthAtLeast(1),
+					),
+				},
 			},
-			"snapshot_rule_ids": {
-				Type:                types.SetType{ElemType: types.StringType},
-				Computed:            true,
-				Optional:            true,
-				Description:         "List of the snapshot_rule IDs that are associated with this policy.",
-				MarkdownDescription: "List of the snapshot_rule IDs that are associated with this policy.",
-			},
-			"replication_rule_ids": {
-				Type:                types.ListType{ElemType: types.StringType},
-				Computed:            true,
-				Optional:            true,
-				Description:         "List of the replication_rule IDs that are associated with this policy.",
-				MarkdownDescription: "List of the replication_rule IDs that are associated with this policy.",
-			},
-			"snapshot_rule_names": {
-				Type:                types.ListType{ElemType: types.StringType},
-				Computed:            true,
-				Optional:            true,
-				Description:         "List of the snapshot_rule names that are associated with this policy.",
-				MarkdownDescription: "List of the snapshot_rule names that are associated with this policy.",
-			},
-			"replication_rule_names": {
-				Type:                types.ListType{ElemType: types.StringType},
-				Computed:            true,
-				Optional:            true,
-				Description:         "List of the replication_rule names that are associated with this policy.",
-				MarkdownDescription: "List of the replication_rule names that are associated with this policy.",
-			},
+
+			// todo, once thse fields are added in gopowerstore
+			// then these will be picked up
+
+			// "type": schema.StringAttribute{
+			// 	Computed:            true,
+			// 	Description:         "The type of the protection policy.",
+			// 	MarkdownDescription: "The type of the protection policy.",
+			// },
+
+			// "managed_by": schema.StringAttribute{
+			// 	Computed:            true,
+			// 	Description:         "The entity that owns and manages the instance.",
+			// 	MarkdownDescription: "The entity that owns and manages the instance.",
+			// },
+
+			// "managed_by_id": schema.StringAttribute{
+			// 	Computed:            true,
+			// 	Description:         "The unique id of the managing entity.",
+			// 	MarkdownDescription: "The unique id of the managing entity.",
+			// },
+
+			// "is_replica": schema.BoolAttribute{
+			// 	Computed:            true,
+			// 	Description:         "Indicates if this is a replica of a policy.",
+			// 	MarkdownDescription: "Indicates if this is a replica of a policy.",
+			// },
+
+			// "is_read_only": schema.BoolAttribute{
+			// 	Computed:            true,
+			// 	Description:         "Indicates whether this policy can be modified.",
+			// 	MarkdownDescription: "Indicates whether this policy can be modified.",
+			// },
 		},
-	}, nil
+	}
 }
 
-// NewResource is a wrapper around provider
-func (r resourceProtectionPolicyType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceProtectionPolicy{
-		p: *(p.(*Pstoreprovider)),
-	}, nil
-}
-
-type resourceProtectionPolicy struct {
-	p Pstoreprovider
-}
-
-// Creates the protection policy
-func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
-	if !r.p.configured {
-		resp.Diagnostics.AddError(
-			"Provider not configured",
-			"The provider hasn't been configured before apply, likely because it depends on an unknown value from another resource. This leads to weird stuff happening, so we'd prefer if you didn't do that. Thanks!",
-		)
+// Configure defines resource interface Configure method
+func (r *resourceProtectionPolicy) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
 		return
 	}
+
+	client, ok := req.ProviderData.(*client.Client)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.client = client
+}
+
+// Create defines resource interface Create method
+func (r *resourceProtectionPolicy) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
 	var plan models.ProtectionPolicy
 
 	diags := req.Plan.Get(ctx, &plan)
@@ -145,7 +216,7 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 	}
 
 	//Create New ProtectionPolicy
-	polCreateResponse, err := r.p.client.PStoreClient.CreateProtectionPolicy(context.Background(), protectionPolicyCreate)
+	polCreateResponse, err := r.client.PStoreClient.CreateProtectionPolicy(context.Background(), protectionPolicyCreate)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating protection policy",
@@ -155,7 +226,7 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 	}
 
 	//Get Protection Policy details using ID retrived above
-	polResponse, err := r.p.client.PStoreClient.GetProtectionPolicy(context.Background(), polCreateResponse.ID)
+	polResponse, err := r.client.PStoreClient.GetProtectionPolicy(context.Background(), polCreateResponse.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting protection policy after creation",
@@ -175,8 +246,8 @@ func (r resourceProtectionPolicy) Create(ctx context.Context, req tfsdk.CreateRe
 	log.Printf("Done with Create")
 }
 
-// Deletes the protection policy
-func (r resourceProtectionPolicy) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+// Delete defines resource interface Delete method
+func (r *resourceProtectionPolicy) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with the Delete")
 
 	var state models.ProtectionPolicy
@@ -187,10 +258,10 @@ func (r resourceProtectionPolicy) Delete(ctx context.Context, req tfsdk.DeleteRe
 	}
 
 	//Get Protection Policy ID from state
-	protectionPolicyID := state.ID.Value
+	protectionPolicyID := state.ID.ValueString()
 
 	//Delete Protection Policy by calling API
-	_, err := r.p.client.PStoreClient.DeleteProtectionPolicy(context.Background(), protectionPolicyID)
+	_, err := r.client.PStoreClient.DeleteProtectionPolicy(context.Background(), protectionPolicyID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting protection policy",
@@ -202,8 +273,8 @@ func (r resourceProtectionPolicy) Delete(ctx context.Context, req tfsdk.DeleteRe
 	log.Printf("Done with Delete")
 }
 
-// Reads info about the asked protection policy
-func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
+// Read defines resource interface Read method
+func (r *resourceProtectionPolicy) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	log.Printf("Reading Protection Policy")
 	var state models.ProtectionPolicy
 	diags := req.State.Get(ctx, &state)
@@ -213,8 +284,8 @@ func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResour
 	}
 
 	//Get protection policy details from API and update what is in state from what the API returns
-	id := state.ID.Value
-	response, err := r.p.client.PStoreClient.GetProtectionPolicy(context.Background(), id)
+	id := state.ID.ValueString()
+	response, err := r.client.PStoreClient.GetProtectionPolicy(context.Background(), id)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -235,8 +306,8 @@ func (r resourceProtectionPolicy) Read(ctx context.Context, req tfsdk.ReadResour
 	log.Printf("Done with Read")
 }
 
-// Updates the protection policy
-func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+// Update defines resource interface Update method
+func (r *resourceProtectionPolicy) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
 	//Get plan values
@@ -265,10 +336,10 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 	}
 
 	//Get Protection Policy ID from state
-	protectionPolicyID := state.ID.Value
+	protectionPolicyID := state.ID.ValueString()
 
 	//Update Protection Policy by calling API
-	_, err = r.p.client.PStoreClient.ModifyProtectionPolicy(context.Background(), protectionPolicyUpdate, protectionPolicyID)
+	_, err = r.client.PStoreClient.ModifyProtectionPolicy(context.Background(), protectionPolicyUpdate, protectionPolicyID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating protection policy",
@@ -278,7 +349,7 @@ func (r resourceProtectionPolicy) Update(ctx context.Context, req tfsdk.UpdateRe
 	}
 
 	//Get Protection Policy details
-	getRes, err := r.p.client.PStoreClient.GetProtectionPolicy(context.Background(), protectionPolicyID)
+	getRes, err := r.client.PStoreClient.GetProtectionPolicy(context.Background(), protectionPolicyID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting protection policy after update",
@@ -305,18 +376,18 @@ func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.Protec
 	}
 
 	var replicationRuleIds []string
-	for _, replicationRule := range plan.ReplicationRuleIDs.Elems {
+	for _, replicationRule := range plan.ReplicationRuleIDs.Elements() {
 		replicationRuleIds = append(replicationRuleIds, strings.Trim(replicationRule.String(), "\""))
 	}
 
 	var snapshotRuleIds []string
-	for _, snapshotRule := range plan.SnapshotRuleIDs.Elems {
+	for _, snapshotRule := range plan.SnapshotRuleIDs.Elements() {
 		snapshotRuleIds = append(snapshotRuleIds, strings.Trim(snapshotRule.String(), "\""))
 	}
 
 	protectionPolicyCreate := &gopowerstore.ProtectionPolicyCreate{
-		Name:               plan.Name.Value,
-		Description:        plan.Description.Value,
+		Name:               plan.Name.ValueString(),
+		Description:        plan.Description.ValueString(),
 		ReplicationRuleIds: replicationRuleIds,
 		SnapshotRuleIds:    snapshotRuleIds,
 	}
@@ -325,9 +396,9 @@ func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.Protec
 
 func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionPolicy, polResponse gopowerstore.ProtectionPolicy, polPlan *models.ProtectionPolicy) {
 	// Update value from Protection Policy Response to State
-	polState.ID.Value = polResponse.ID
-	polState.Name.Value = polResponse.Name
-	polState.Description.Value = polResponse.Description
+	polState.ID = types.StringValue(polResponse.ID)
+	polState.Name = types.StringValue(polResponse.Name)
+	polState.Description = types.StringValue(polResponse.Description)
 
 	//Update ReplicationRuleIDs value from Response to State
 	var replicationRuleIds []string
@@ -336,26 +407,21 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 	}
 	replicationIDList := []attr.Value{}
 	for _, replicationRuleID := range replicationRuleIds {
-		replicationIDList = append(replicationIDList, types.String{Value: string(replicationRuleID)})
+		replicationIDList = append(replicationIDList, types.StringValue(string(replicationRuleID)))
 	}
-	polState.ReplicationRuleIDs = types.List{
-		ElemType: types.StringType,
-		Elems:    replicationIDList,
-	}
+	polState.ReplicationRuleIDs, _ = types.SetValue(types.StringType, replicationIDList)
 
 	//Update ReplicationRuleNames value from Plan to State
 	var replicationRuleNames []string
-	for _, replicationRuleName := range polPlan.ReplicationRuleNames.Elems {
+	for _, replicationRuleName := range polPlan.ReplicationRuleNames.Elements() {
 		replicationRuleNames = append(replicationRuleNames, strings.Trim(replicationRuleName.String(), "\""))
 	}
 	replicationNameList := []attr.Value{}
 	for _, replicationRuleName := range replicationRuleNames {
-		replicationNameList = append(replicationNameList, types.String{Value: string(replicationRuleName)})
+		replicationNameList = append(replicationNameList, types.StringValue(string(replicationRuleName)))
 	}
-	polState.ReplicationRuleNames = types.List{
-		ElemType: types.StringType,
-		Elems:    replicationNameList,
-	}
+
+	polState.ReplicationRuleNames, _ = types.SetValue(types.StringType, replicationNameList)
 
 	//Update SnapshotRuleIDs value from Response to State
 	var snapshotRuleIds []string
@@ -364,67 +430,55 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 	}
 	snapshotIDList := []attr.Value{}
 	for _, snapshotRuleID := range snapshotRuleIds {
-		snapshotIDList = append(snapshotIDList, types.String{Value: string(snapshotRuleID)})
+		snapshotIDList = append(snapshotIDList, types.StringValue(string(snapshotRuleID)))
 	}
-	polState.SnapshotRuleIDs = types.Set{
-		ElemType: types.StringType,
-		Elems:    snapshotIDList,
-	}
+	polState.SnapshotRuleIDs, _ = types.SetValue(types.StringType, snapshotIDList)
 
 	//Update SnapshotRuleNames value from Plan to State
 	var snapshotRuleNames []string
-	for _, snapshotRuleName := range polPlan.SnapshotRuleNames.Elems {
+	for _, snapshotRuleName := range polPlan.SnapshotRuleNames.Elements() {
 		snapshotRuleNames = append(snapshotRuleNames, strings.Trim(snapshotRuleName.String(), "\""))
 	}
 	snapshotNameList := []attr.Value{}
 	for _, snapshotRuleName := range snapshotRuleNames {
-		snapshotNameList = append(snapshotNameList, types.String{Value: string(snapshotRuleName)})
+		snapshotNameList = append(snapshotNameList, types.StringValue(string(snapshotRuleName)))
 	}
-	polState.SnapshotRuleNames = types.List{
-		ElemType: types.StringType,
-		Elems:    snapshotNameList,
-	}
+	polState.SnapshotRuleNames, _ = types.SetValue(types.StringType, snapshotNameList)
 }
 
 func (r resourceProtectionPolicy) fetchByName(plan *models.ProtectionPolicy) (valid bool, err error) {
 	var snapshotRuleIds []string
-	if len(plan.SnapshotRuleIDs.Elems) != 0 && len(plan.SnapshotRuleNames.Elems) != 0 {
+	if len(plan.SnapshotRuleIDs.Elements()) != 0 && len(plan.SnapshotRuleNames.Elements()) != 0 {
 		return false, errors.New("either of snapshot rule id or snapshot rule name should be present")
-	} else if len(plan.SnapshotRuleNames.Elems) != 0 {
-		for _, snapshotRuleName := range plan.SnapshotRuleNames.Elems {
-			snapshotRule, _ := r.p.client.PStoreClient.GetSnapshotRuleByName(context.Background(), strings.Trim(snapshotRuleName.String(), "\""))
+	} else if len(plan.SnapshotRuleNames.Elements()) != 0 {
+		for _, snapshotRuleName := range plan.SnapshotRuleNames.Elements() {
+			snapshotRule, _ := r.client.PStoreClient.GetSnapshotRuleByName(context.Background(), strings.Trim(snapshotRuleName.String(), "\""))
 			snapshotRuleIds = append(snapshotRuleIds, strings.Trim(snapshotRule.ID, "\""))
 
 			snapshotList := []attr.Value{}
 			for i := 0; i < len(snapshotRuleIds); i++ {
-				snapshotList = append(snapshotList, types.String{Value: string(snapshotRuleIds[i])})
+				snapshotList = append(snapshotList, types.StringValue(string(snapshotRuleIds[i])))
 			}
 
-			plan.SnapshotRuleIDs = types.Set{
-				ElemType: types.StringType,
-				Elems:    snapshotList,
-			}
+			plan.SnapshotRuleIDs, _ = types.SetValue(types.StringType, snapshotList)
 		}
 	}
 
 	var replicationRuleIds []string
-	if len(plan.ReplicationRuleIDs.Elems) != 0 && len(plan.ReplicationRuleNames.Elems) != 0 {
+	if len(plan.ReplicationRuleIDs.Elements()) != 0 && len(plan.ReplicationRuleNames.Elements()) != 0 {
 		return false, errors.New("either of replication rule id or replication rule name should be present")
-	} else if len(plan.ReplicationRuleNames.Elems) != 0 {
-		for _, replicationRuleName := range plan.ReplicationRuleNames.Elems {
-			replicationRule, _ := r.p.client.PStoreClient.GetReplicationRuleByName(context.Background(), strings.Trim(replicationRuleName.String(), "\""))
+	} else if len(plan.ReplicationRuleNames.Elements()) != 0 {
+		for _, replicationRuleName := range plan.ReplicationRuleNames.Elements() {
+			replicationRule, _ := r.client.PStoreClient.GetReplicationRuleByName(context.Background(), strings.Trim(replicationRuleName.String(), "\""))
 			replicationRuleIds = append(replicationRuleIds, strings.Trim(replicationRule.ID, "\""))
 		}
 
 		replicationList := []attr.Value{}
 		for i := 0; i < len(replicationRuleIds); i++ {
-			replicationList = append(replicationList, types.String{Value: string(replicationRuleIds[i])})
+			replicationList = append(replicationList, types.StringValue(string(replicationRuleIds[i])))
 		}
 
-		plan.ReplicationRuleIDs = types.List{
-			ElemType: types.StringType,
-			Elems:    replicationList,
-		}
+		plan.ReplicationRuleIDs, _ = types.SetValue(types.StringType, replicationList)
 	}
 
 	return true, nil
