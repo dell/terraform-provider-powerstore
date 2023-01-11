@@ -34,6 +34,15 @@ func (m DefaultAttributePlanModifier) PlanModifyString(
 	req planmodifier.StringRequest,
 	resp *planmodifier.StringResponse,
 ) {
+	// if configuration was provided, then don't use the default
+	if !req.ConfigValue.IsNull() {
+		return
+	}
+	// If the plan is known and not null (for example due to another plan modifier),
+	// don't set the default value
+	if !resp.PlanValue.IsUnknown() && !resp.PlanValue.IsNull() {
+		return
+	}
 	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
 		resp.PlanValue = types.StringValue(m.value.(string))
 	}
