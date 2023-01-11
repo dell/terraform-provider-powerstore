@@ -121,6 +121,7 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 // Resources defines provider interface Resources method
 func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		newVolumeResource,
 		newSnapshotRuleResource,
 		newStorageContainerResource,
 		newProtectionPolicyResource,
