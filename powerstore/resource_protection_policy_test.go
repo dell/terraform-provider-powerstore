@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test to Create ProtectionPolicy
@@ -175,6 +177,58 @@ func TestAccProtectionPolicy_CreateWithReplicationRuleName(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_names.0", "Emalee-SRA-7416-Rep"),
 				),
+			},
+		},
+	})
+}
+
+// Negative - Test to import protection policy
+func TestAccProtectionPolicy_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        ProtectionPolicyParamsCreate,
+				ResourceName:  "powerstore_protectionpolicy.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile("Could not import protection policy"),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
+// Test to import protection policy successfully
+func TestAccProtectionPolicy_ImportSuccess(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProtectionPolicyParamsCreate,
+			},
+			{
+				Config:       ProtectionPolicyParamsCreate,
+				ResourceName: "powerstore_protectionpolicy.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "protectionpolicy_acc_new", s[0].Attributes["name"])
+					assert.Equal(t, "Test CreateProtectionPolicy", s[0].Attributes["description"])
+					assert.Equal(t, "Protection", s[0].Attributes["type"])
+					assert.Equal(t, "5d45b173-9a85-473e-8ab8-e107f8b8085e", s[0].Attributes["replication_rule_ids.0"])
+					assert.Equal(t, "4be81573-c0e6-4956-a32f-a0e396a9b86d", s[0].Attributes["snapshot_rule_ids.0"])
+					return nil
+				},
 			},
 		},
 	})
