@@ -22,10 +22,12 @@ ProtectionPolicy resource
 ### Optional
 
 - `description` (String) The description of the protection policy.
+- `is_read_only` (Boolean) Indicates whether this policy can be modified.
 - `replication_rule_ids` (Set of String) List of the replication rule IDs that are associated with this policy.
 - `replication_rule_names` (Set of String) List of the replication rule names that are associated with this policy.
 - `snapshot_rule_ids` (Set of String) List of the snapshot rule IDs that are associated with this policy.
 - `snapshot_rule_names` (Set of String) List of the snapshot rule names that are associated with this policy.
+- `type` (String) The type of the protection policy.
 
 ### Read-Only
 
