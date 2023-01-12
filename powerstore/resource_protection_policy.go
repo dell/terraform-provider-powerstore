@@ -67,6 +67,23 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 				},
 			},
 
+			"type": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "The type of the protection policy.",
+				MarkdownDescription: "The type of the protection policy.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
+			},
+
+			"is_read_only": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether this policy can be modified.",
+				MarkdownDescription: "Indicates whether this policy can be modified.",
+			},
+
 			"snapshot_rule_ids": schema.SetAttribute{
 				ElementType:         types.StringType,
 				Optional:            true,
@@ -338,6 +355,36 @@ func (r *resourceProtectionPolicy) Update(ctx context.Context, req resource.Upda
 	log.Printf("Successfully done with Update")
 }
 
+// ImportState import state for existing protection policy
+func (r *resourceProtectionPolicy) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	log.Printf("Started with import")
+
+	//fetch asked protection policy ID's information
+	response, err := r.client.PStoreClient.GetProtectionPolicy(context.Background(), req.ID)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error importing protection policy",
+			fmt.Sprintf("Could not import protection policy ID: %s with error: %s", req.ID, err.Error()),
+		)
+		return
+	}
+
+	state := models.ProtectionPolicy{}
+
+	// as state is like a plan here, a current state prior to this import operation
+	r.updatePolicyState(&state, response, &state)
+
+	// Set state
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Done with Import")
+}
+
 func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) (*gopowerstore.ProtectionPolicyCreate, error) {
 	valid, err := r.fetchByName(&plan)
 	if !valid {
@@ -368,6 +415,8 @@ func (r resourceProtectionPolicy) updatePolicyState(polState *models.ProtectionP
 	polState.ID = types.StringValue(polResponse.ID)
 	polState.Name = types.StringValue(polResponse.Name)
 	polState.Description = types.StringValue(polResponse.Description)
+	polState.Type = types.StringValue(polResponse.Type)
+	polState.IsReadOnly = types.BoolValue(polResponse.IsReadOnly)
 
 	//Update ReplicationRuleIDs value from Response to State
 	var replicationRuleIds []string
