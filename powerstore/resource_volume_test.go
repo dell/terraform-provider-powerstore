@@ -282,7 +282,7 @@ func TestAccVolume_UpdateVolumePerformancePolicyID(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-				ExpectError: regexp.MustCompile("Performance Policy if present cannot be empty"),
+				ExpectError: regexp.MustCompile("Invalid Attribute Value Match"),
 			},
 		},
 	})

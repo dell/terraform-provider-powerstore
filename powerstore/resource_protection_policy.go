@@ -14,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -81,12 +80,6 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
 					),
-
-					setvalidator.AtLeastOneOf(path.Expressions{
-						path.MatchRoot("snapshot_rule_names"),
-						path.MatchRoot("replication_rule_ids"),
-						path.MatchRoot("replication_rule_names"),
-					}...),
 				},
 			},
 
@@ -145,30 +138,6 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 			// 	Computed:            true,
 			// 	Description:         "The type of the protection policy.",
 			// 	MarkdownDescription: "The type of the protection policy.",
-			// },
-
-			// "managed_by": schema.StringAttribute{
-			// 	Computed:            true,
-			// 	Description:         "The entity that owns and manages the instance.",
-			// 	MarkdownDescription: "The entity that owns and manages the instance.",
-			// },
-
-			// "managed_by_id": schema.StringAttribute{
-			// 	Computed:            true,
-			// 	Description:         "The unique id of the managing entity.",
-			// 	MarkdownDescription: "The unique id of the managing entity.",
-			// },
-
-			// "is_replica": schema.BoolAttribute{
-			// 	Computed:            true,
-			// 	Description:         "Indicates if this is a replica of a policy.",
-			// 	MarkdownDescription: "Indicates if this is a replica of a policy.",
-			// },
-
-			// "is_read_only": schema.BoolAttribute{
-			// 	Computed:            true,
-			// 	Description:         "Indicates whether this policy can be modified.",
-			// 	MarkdownDescription: "Indicates whether this policy can be modified.",
 			// },
 		},
 	}
