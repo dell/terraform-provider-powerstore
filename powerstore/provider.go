@@ -13,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+const defaultTimeoutValue = 120
+
 // Ensure provider defined types fully satisfy framework interfaces
 var _ provider.Provider = &Pstoreprovider{}
 
@@ -23,11 +25,6 @@ type Pstoreprovider struct {
 	// communicate with the upstream service. Resource and DataSource
 	// implementations can then make calls using this client.
 	client *client.Client
-
-	// configured is set to true at the end of the Configure method.
-	// This can be used in Resource and DataSource implementations to verify
-	// that the provider was previously configured.
-	configured bool
 
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
@@ -41,6 +38,7 @@ type ProviderData struct {
 	Insecure types.Bool   `tfsdk:"insecure"`
 	Password types.String `tfsdk:"password"`
 	Username types.String `tfsdk:"username"`
+	Timeout  types.Int64  `tfsdk:"timeout"`
 }
 
 // Metadata defines provider interface Metadata method
@@ -81,6 +79,11 @@ func (p *Pstoreprovider) Schema(ctx context.Context, req provider.SchemaRequest,
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
+			"timeout": schema.Int64Attribute{
+				MarkdownDescription: "The default timeout value for the Powerstore host.",
+				Description:         "The default timeout value for the Powerstore host.",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -91,6 +94,10 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 	config := ProviderData{}
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+
+	if config.Timeout.IsNull() {
+		config.Timeout = types.Int64Value(defaultTimeoutValue)
+	}
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -104,6 +111,7 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 		// as false is default value, so even if insecure parameter is not provided
 		// value will be false
 		config.Insecure.ValueBool(),
+		config.Timeout.ValueInt64(),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(

@@ -63,10 +63,10 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 		volState.SectorSize = types.Int64Value(defaultSectorSize)
 	}
 
-	volState.AppType = types.StringValue(volResponse.AppType)
+	volState.AppType = types.StringValue(string(volResponse.AppType))
 	volState.AppTypeOther = types.StringValue(volResponse.AppTypeOther)
 	volState.IsReplicationDestination = types.BoolValue(volResponse.IsReplicationDestination)
-	volState.NodeAffinity = types.StringValue(volResponse.NodeAffinity)
+	volState.NodeAffinity = types.StringValue(string(volResponse.NodeAffinity))
 	volState.LogicalUsed = types.Int64Value(volResponse.LogicalUsed)
 	volState.Nsid = types.Int64Value(volResponse.Nsid)
 	volState.Nguid = types.StringValue(volResponse.Nguid)

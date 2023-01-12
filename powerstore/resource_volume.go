@@ -3,6 +3,11 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
+
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -11,10 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"log"
-	"strings"
-	client "terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 )
 
 const defaultSectorSize = 512
@@ -177,6 +178,13 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				PlanModifiers: []planmodifier.String{
 					DefaultAttribute("default_medium"),
 				},
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						"default_medium",
+						"default_low",
+						"default_high",
+					}...),
+				},
 			},
 			"creation_timestamp": schema.StringAttribute{
 				Computed:            true,
@@ -194,18 +202,66 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Description:         "The node_affinity of the volume.",
 				MarkdownDescription: "The node_affinity of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.NodeAffinityEnumSelectAtAttach),
+						string(gopowerstore.NodeAffinityEnumSelectNodeA),
+						string(gopowerstore.NodeAffinityEnumSelectNodeB),
+						string(gopowerstore.NodeAffinityEnumPreferredNodeA),
+						string(gopowerstore.NodeAffinityEnumPreferredNodeB),
+					}...),
+				},
 			},
 			"type": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The type of the volume.",
 				MarkdownDescription: "The type of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.VolumeTypeEnumPrimary),
+						string(gopowerstore.VolumeTypeEnumSnapshot),
+						string(gopowerstore.VolumeTypeEnumClone),
+					}...),
+				},
 			},
 			"app_type": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The app type of the volume.",
 				MarkdownDescription: "The app type of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.AppTypeEnumRelationDB),
+						string(gopowerstore.AppTypeEnumOracle),
+						string(gopowerstore.AppTypeEnumSQLServer),
+						string(gopowerstore.AppTypeEnumPostgreSQL),
+						string(gopowerstore.AppTypeEnumMySQL),
+						string(gopowerstore.AppTypeEnumIBMDB2),
+						string(gopowerstore.AppTypeEnumBigData),
+						string(gopowerstore.AppTypeEnumMongoDB),
+						string(gopowerstore.AppTypeEnumCassandra),
+						string(gopowerstore.AppTypeEnumSAPHANA),
+						string(gopowerstore.AppTypeEnumSpark),
+						string(gopowerstore.AppTypeEnumSplunk),
+						string(gopowerstore.AppTypeEnumElasticSearch),
+						string(gopowerstore.AppTypeEnumExchange),
+						string(gopowerstore.AppTypeEnumSharepoint),
+						string(gopowerstore.AppTypeEnumRBusinessApplicationsOther),
+						string(gopowerstore.AppTypeEnumRelationERPSAP),
+						string(gopowerstore.AppTypeEnumCRM),
+						string(gopowerstore.AppTypeEnumHealthcareOther),
+						string(gopowerstore.AppTypeEnumEpic),
+						string(gopowerstore.AppTypeEnumMEDITECH),
+						string(gopowerstore.AppTypeEnumAllscripts),
+						string(gopowerstore.AppTypeEnumCerner),
+						string(gopowerstore.AppTypeEnumVirtualization),
+						string(gopowerstore.AppTypeEnumVirtualServers),
+						string(gopowerstore.AppTypeEnumContainers),
+						string(gopowerstore.AppTypeEnumVirtualDesktops),
+						string(gopowerstore.AppTypeEnumRelationOther),
+					}...),
+				},
 			},
 			"app_type_other": schema.StringAttribute{
 				Computed:            true,
@@ -224,6 +280,14 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Description:         "The state of the volume.",
 				MarkdownDescription: "The state of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.VolumeStateEnumReady),
+						string(gopowerstore.VolumeStateEnumInitializing),
+						string(gopowerstore.VolumeStateEnumOffline),
+						string(gopowerstore.VolumeStateEnumDestroying),
+					}...),
+				},
 			},
 			"nguid": schema.StringAttribute{
 				Computed:            true,
@@ -252,8 +316,8 @@ func (r *volumeResource) Configure(_ context.Context, req resource.ConfigureRequ
 	if req.ProviderData == nil {
 		return
 	}
-	client, err := req.ProviderData.(*client.Client)
-	if err {
+	client, ok := req.ProviderData.(*client.Client)
+	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
@@ -307,7 +371,7 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 		SectorSize:          &sectorSize,
 		ProtectionPolicyID:  plan.ProtectionPolicyID.ValueString(),
 		PerformancePolicyID: plan.PerformancePolicyID.ValueString(),
-		AppType:             plan.AppType.ValueString(),
+		AppType:             gopowerstore.AppTypeEnum(plan.AppType.ValueString()),
 		AppTypeOther:        plan.AppTypeOther.ValueString(),
 		MinimumSize:         plan.MinimumSize.ValueInt64(),
 		HostID:              plan.HostID.ValueString(),
