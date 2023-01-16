@@ -388,6 +388,13 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 	state.Volumes, err = updateVolumeState(volumes, d.client)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Failed to update volume state",
+			err.Error(),
+		)
+		return
+	}
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -405,6 +412,9 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 		var logicalUnit int64
 		size, unit := convertFromBytes(volumeValue.Size)
 		hostMapping, err := p.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volumeValue.ID)
+		if err != nil {
+			return nil, err
+		}
 		if len(hostMapping) > 0 {
 			hostID, hostGroupID, logicalUnit = hostMapping[0].HostID, hostMapping[0].HostGroupID, hostMapping[0].LogicalUnitNumber
 		}
