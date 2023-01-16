@@ -138,7 +138,9 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 
 // DataSources defines provider interface DataSources method
 func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		newVolumeDataSource,
+	}
 }
 
 // New returns instance of provider
