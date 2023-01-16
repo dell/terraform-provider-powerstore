@@ -43,36 +43,52 @@ type VolumeDataSource struct {
 	VolumeGroup               []VolumeGroup       `tfsdk:"volume_groups"`
 	Datastores                []Datastores        `tfsdk:"datastores"`
 }
+
+// VolumeGroup - details of volume group for volume data source
 type VolumeGroup struct {
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
 }
+
+// Datastores - list of datastores for a volume in the volume data source
 type Datastores struct {
 	ID           types.String `tfsdk:"id"`
 	InstanceUUID types.String `tfsdk:"istance_uuid"`
 	Name         types.String `tfsdk:"name"`
 }
+
+// MappedVolumes - list of volume IDs mapped to a volume
 type MappedVolumes struct {
 	ID types.String `tfsdk:"id"`
 }
+
+// MigrationSession - details of migration session for a volume
 type MigrationSession struct {
 	ID   types.String `tfsdk:"id"`
 	Name types.String `tfsdk:"name"`
 }
+
+// Appliance - details of appliance attached to a volume
 type Appliance struct {
 	ID         types.String `tfsdk:"id"`
 	Name       types.String `tfsdk:"name"`
 	ServiceTag types.String `tfsdk:"service_tag"`
 }
+
+// LocationHistory - details of location history for volume
 type LocationHistory struct {
 	FromApplianceID types.String `tfsdk:"from_appliance_id"`
 	ToApplianceID   types.String `tfsdk:"to_appliance_id"`
 	MigratedOn      types.String `tfsdk:"migrated_on"`
 }
+
+// ProtectionData - details of Protection data for volume
 type ProtectionData struct {
 	SourceID types.String `tfsdk:"source_id"`
 }
+
+// VolProtectionPolicy - details of protection policy associated with volume
 type VolProtectionPolicy struct {
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
