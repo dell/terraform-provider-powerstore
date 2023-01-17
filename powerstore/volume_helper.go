@@ -59,7 +59,7 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 		volState.HostName = volPlan.HostName
 		volState.HostGroupName = volPlan.HostGroupName
 		volState.VolumeGroupName = volPlan.VolumeGroupName
-	} else if operation == operationImport {
+	} else if operation == operationImport || operation == operationRead {
 		volState.SectorSize = types.Int64Value(defaultSectorSize)
 	}
 
@@ -194,7 +194,10 @@ func convertFromBytes(bytes int64) (float64, string) {
 	for newSize = float64(bytes); newSize >= 1024 && unit < len(units); unit++ {
 		newSize = newSize / 1024
 	}
-	return newSize, units[unit-1]
+	if unit > 0 {
+		return newSize, units[unit-1]
+	}
+	return newSize, units[unit]
 }
 
 // fetchByName updates IDs of the corresponding name present in plan

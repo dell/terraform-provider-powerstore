@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"log"
 
 	"strings"
@@ -68,7 +69,6 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 			},
 
 			"type": schema.StringAttribute{
-				Optional:            true,
 				Computed:            true,
 				Description:         "The type of the protection policy.",
 				MarkdownDescription: "The type of the protection policy.",
@@ -78,7 +78,6 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 			},
 
 			"is_read_only": schema.BoolAttribute{
-				Optional:            true,
 				Computed:            true,
 				Description:         "Indicates whether this policy can be modified.",
 				MarkdownDescription: "Indicates whether this policy can be modified.",
@@ -147,20 +146,11 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 					),
 				},
 			},
-
-			// todo, once thse fields are added in gopowerstore
-			// then these will be picked up
-
-			// "type": schema.StringAttribute{
-			// 	Computed:            true,
-			// 	Description:         "The type of the protection policy.",
-			// 	MarkdownDescription: "The type of the protection policy.",
-			// },
 		},
 	}
 }
 
-// Configure defines resource interface Configure method
+// Configure - defines configuration for protection policy resource
 func (r *resourceProtectionPolicy) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
@@ -181,7 +171,7 @@ func (r *resourceProtectionPolicy) Configure(ctx context.Context, req resource.C
 	r.client = client
 }
 
-// Create defines resource interface Create method
+// Create - method to create protection policy resource
 func (r *resourceProtectionPolicy) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 
 	var plan models.ProtectionPolicy
@@ -232,7 +222,7 @@ func (r *resourceProtectionPolicy) Create(ctx context.Context, req resource.Crea
 	log.Printf("Done with Create")
 }
 
-// Delete defines resource interface Delete method
+// Delete - method to delete protection policy resource
 func (r *resourceProtectionPolicy) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with the Delete")
 
@@ -259,7 +249,7 @@ func (r *resourceProtectionPolicy) Delete(ctx context.Context, req resource.Dele
 	log.Printf("Done with Delete")
 }
 
-// Read defines resource interface Read method
+// Read - reads protection policy resource information
 func (r *resourceProtectionPolicy) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	log.Printf("Reading Protection Policy")
 	var state models.ProtectionPolicy
@@ -292,7 +282,7 @@ func (r *resourceProtectionPolicy) Read(ctx context.Context, req resource.ReadRe
 	log.Printf("Done with Read")
 }
 
-// Update defines resource interface Update method
+// Update - updates protection policy resource
 func (r *resourceProtectionPolicy) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
@@ -357,32 +347,8 @@ func (r *resourceProtectionPolicy) Update(ctx context.Context, req resource.Upda
 
 // ImportState import state for existing protection policy
 func (r *resourceProtectionPolicy) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	log.Printf("Started with import")
 
-	//fetch asked protection policy ID's information
-	response, err := r.client.PStoreClient.GetProtectionPolicy(context.Background(), req.ID)
-
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error importing protection policy",
-			fmt.Sprintf("Could not import protection policy ID: %s with error: %s", req.ID, err.Error()),
-		)
-		return
-	}
-
-	state := models.ProtectionPolicy{}
-
-	// as state is like a plan here, a current state prior to this import operation
-	r.updatePolicyState(&state, response, &state)
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	log.Printf("Done with Import")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.ProtectionPolicy) (*gopowerstore.ProtectionPolicyCreate, error) {
