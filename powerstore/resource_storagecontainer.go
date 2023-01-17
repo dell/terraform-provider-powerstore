@@ -3,6 +3,7 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"log"
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
@@ -82,7 +83,7 @@ func (r *resourceStorageContainer) Schema(ctx context.Context, req resource.Sche
 	}
 }
 
-// Configure defines resource interface Configure method
+// Configure - defines configuration for storage container resource
 func (r *resourceStorageContainer) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
@@ -103,7 +104,7 @@ func (r *resourceStorageContainer) Configure(ctx context.Context, req resource.C
 	r.client = client
 }
 
-// Create defines resource interface Create method
+// Create - method to create storage container resource
 func (r *resourceStorageContainer) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 
 	var plan models.StorageContainer
@@ -152,7 +153,7 @@ func (r *resourceStorageContainer) Create(ctx context.Context, req resource.Crea
 	log.Printf("Done with Create")
 }
 
-// Read resource information
+// Read - reads storage container resource information
 func (r *resourceStorageContainer) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
 	var state models.StorageContainer
@@ -186,7 +187,7 @@ func (r *resourceStorageContainer) Read(ctx context.Context, req resource.ReadRe
 	log.Printf("Done with Read")
 }
 
-// Update resource
+// Update - updates storage container resource
 func (r *resourceStorageContainer) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
@@ -244,7 +245,7 @@ func (r *resourceStorageContainer) Update(ctx context.Context, req resource.Upda
 	log.Printf("Successfully done with Update")
 }
 
-// Delete defines resource interface Delete method
+// Delete - method to delete storage container resource
 func (r *resourceStorageContainer) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with Delete")
 
@@ -271,35 +272,10 @@ func (r *resourceStorageContainer) Delete(ctx context.Context, req resource.Dele
 	log.Printf("Done with Delete")
 }
 
-// ImportState import state for existing infrastructure
+// ImportState - imports state for existing storage container
 func (r *resourceStorageContainer) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
-	log.Printf("Started with Import")
-
-	// fetching asked storage container ID's information
-	response, err := r.client.PStoreClient.GetStorageContainer(context.Background(), req.ID)
-
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error importing storage container",
-			fmt.Sprintf("Could not import storage container ID: %s with error: %s", req.ID, err.Error()),
-		)
-		return
-	}
-
-	state := models.StorageContainer{}
-
-	// as state is like a plan here, a current state prior to this import operation
-	r.serverToState(&state, &state, response, operationImport)
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	log.Printf("Done with Import")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 func (r resourceStorageContainer) serverToState(plan, state *models.StorageContainer, response gopowerstore.StorageContainer, operation operation) {

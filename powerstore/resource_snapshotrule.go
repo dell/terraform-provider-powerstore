@@ -308,7 +308,7 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 	}
 }
 
-// Configure defines resource interface Configure method
+// Configure - defines configuration for snapshot rule resource
 func (r *resourceSnapshotRule) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
@@ -329,7 +329,7 @@ func (r *resourceSnapshotRule) Configure(ctx context.Context, req resource.Confi
 	r.client = client
 }
 
-// Create defines resource interface Create method
+// Create - method to create Snapshot rule resource
 func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 
 	log.Printf("Started Creating Snapshot Rule")
@@ -379,7 +379,7 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 	log.Printf("Successfully done with Create")
 }
 
-// Read fetch info about asked snapshot rule
+// Read - fetch info about asked snapshot rule
 func (r *resourceSnapshotRule) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
 	var state models.SnapshotRule
@@ -417,7 +417,7 @@ func (r *resourceSnapshotRule) Read(ctx context.Context, req resource.ReadReques
 	log.Printf("Done with Read")
 }
 
-// Update updates snapshotRule
+// Update - updates snapshotRule
 func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 
 	log.Printf("Started Update")
@@ -474,7 +474,7 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 	log.Printf("Successfully done with Update")
 }
 
-// Delete deletes snapshotRule
+// Delete - deletes snapshotRule
 func (r *resourceSnapshotRule) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
 	log.Printf("Started with Delete")
@@ -511,35 +511,10 @@ func (r *resourceSnapshotRule) Delete(ctx context.Context, req resource.DeleteRe
 	log.Printf("Done with Delete")
 }
 
-// ImportState import state for existing infrastructure
+// ImportState import states for existing snapshot rule
 func (r *resourceSnapshotRule) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
-	log.Printf("Started with Import")
-
-	// fetching asked snapshot rule ID's information
-	response, err := r.client.PStoreClient.GetSnapshotRule(context.Background(), req.ID)
-
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error importing snapshot rule",
-			fmt.Sprintf("Could not import snapshot rule ID: %s with error: %s", req.ID, err.Error()),
-		)
-		return
-	}
-
-	state := models.SnapshotRule{}
-
-	// as state is like a plan here, a current state prior to this import operation
-	r.serverToState(&state, &state, response, operationImport)
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	log.Printf("Done with Import")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule, operation operation) {
