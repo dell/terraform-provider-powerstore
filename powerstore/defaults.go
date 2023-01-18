@@ -3,8 +3,8 @@ package powerstore
 import (
 	"context"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // this defines the operation being executed on resource via terraform
@@ -19,38 +19,44 @@ const (
 )
 
 // DefaultAttributePlanModifier is to set default value for an attribute
-// https://github.com/hashicorp/terraform-plugin-framework/issues/285
 type DefaultAttributePlanModifier struct {
-	value attr.Value
+	value interface{}
 }
 
 // DefaultAttribute is used to set the default value
-func DefaultAttribute(value attr.Value) DefaultAttributePlanModifier {
+func DefaultAttribute(value interface{}) DefaultAttributePlanModifier {
 	return DefaultAttributePlanModifier{value: value}
 }
 
-// Modify is used to modify default value
-func (m DefaultAttributePlanModifier) Modify(
+// PlanModifyString sets string default value
+func (m DefaultAttributePlanModifier) PlanModifyString(
 	ctx context.Context,
-	req tfsdk.ModifyAttributePlanRequest,
-	resp *tfsdk.ModifyAttributePlanResponse,
+	req planmodifier.StringRequest,
+	resp *planmodifier.StringResponse,
 ) {
-	if req.AttributeConfig == nil || resp.AttributePlan == nil {
-		return
-	}
-
 	// if configuration was provided, then don't use the default
-	if !req.AttributeConfig.IsNull() {
+	if !req.ConfigValue.IsNull() {
 		return
 	}
-
 	// If the plan is known and not null (for example due to another plan modifier),
 	// don't set the default value
-	if !resp.AttributePlan.IsUnknown() && !resp.AttributePlan.IsNull() {
+	if !resp.PlanValue.IsUnknown() && !resp.PlanValue.IsNull() {
 		return
 	}
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		resp.PlanValue = types.StringValue(m.value.(string))
+	}
+}
 
-	resp.AttributePlan = m.value
+// PlanModifyInt64 sets int64 default value
+func (m DefaultAttributePlanModifier) PlanModifyInt64(
+	ctx context.Context,
+	req planmodifier.Int64Request,
+	resp *planmodifier.Int64Response,
+) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		resp.PlanValue = types.Int64Value(m.value.(int64))
+	}
 }
 
 // Description of default parameter

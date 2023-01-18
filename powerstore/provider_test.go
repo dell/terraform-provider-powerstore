@@ -1,20 +1,16 @@
 package powerstore
 
 import (
-	"context"
-	"fmt"
 	"os"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 // var testAccProviders map[string]func() tfsdk.Provider
-var testProvider tfsdk.Provider
+var testProvider provider.Provider
 var testProviderFactory map[string]func() (tfprotov6.ProviderServer, error)
 var endpoint = os.Getenv("POWERSTORE_ENDPOINT")
 var username = os.Getenv("POWERSTORE_USERNAME")
@@ -27,24 +23,8 @@ var hostGroupName = os.Getenv("HOST_GROUP_NAME")
 
 func init() {
 	testProvider = New("test")()
-	testProvider.Configure(context.Background(), tfsdk.ConfigureProviderRequest{}, &tfsdk.ConfigureProviderResponse{})
 	testProviderFactory = map[string]func() (tfprotov6.ProviderServer, error){
 		"powerstore": providerserver.NewProtocol6WithError(testProvider),
-	}
-}
-
-//lint:ignore U1000 used by the internal provider, to be checked
-func testAccProvider(t *testing.T, p tfsdk.Provider) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		providers := p.(*Pstoreprovider)
-		if !providers.configured {
-			return fmt.Errorf("provider not configured")
-		}
-
-		if providers.client.PStoreClient == nil {
-			return fmt.Errorf("provider not configured")
-		}
-		return nil
 	}
 }
 

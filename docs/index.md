@@ -45,3 +45,4 @@ provider "powerstore" {
 ### Optional
 
 - `insecure` (Boolean) Boolean variable to specify whether to validate SSL certificate or not.
+- `timeout` (Number) The default timeout value for the Powerstore host.
