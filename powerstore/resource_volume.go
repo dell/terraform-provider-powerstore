@@ -70,6 +70,14 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				PlanModifiers: []planmodifier.String{
 					DefaultAttribute("GB"),
 				},
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						"KB",
+						"MB",
+						"GB",
+						"TB",
+					}...),
+				},
 			},
 			"host_id": schema.StringAttribute{
 				Description:         "The host id of the volume.",
@@ -193,13 +201,11 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"is_replication_destination": schema.BoolAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The is_replication_destination of the volume.",
 				MarkdownDescription: "The is_replication_destination of the volume.",
 			},
 			"node_affinity": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The node_affinity of the volume.",
 				MarkdownDescription: "The node_affinity of the volume.",
 				Validators: []validator.String{
@@ -214,7 +220,6 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"type": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The type of the volume.",
 				MarkdownDescription: "The type of the volume.",
 				Validators: []validator.String{
@@ -271,13 +276,11 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"wwn": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The wwn of the volume.",
 				MarkdownDescription: "The wwn of the volume.",
 			},
 			"state": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The state of the volume.",
 				MarkdownDescription: "The state of the volume.",
 				Validators: []validator.String{
@@ -291,19 +294,16 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"nguid": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The nguid of the volume.",
 				MarkdownDescription: "The nguid of the volume.",
 			},
 			"nsid": schema.Int64Attribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The nsid of the volume.",
 				MarkdownDescription: "The nsid of the volume.",
 			},
 			"logical_used": schema.Int64Attribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "Current amount of data used by the volume.",
 				MarkdownDescription: "Current amount of data used by the volume.",
 			},
@@ -311,7 +311,7 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 	}
 }
 
-// Configure adds the provider configured client to the data source.
+// Configure - defines configuration for volume resource.
 func (r *volumeResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -329,6 +329,7 @@ func (r *volumeResource) Configure(_ context.Context, req resource.ConfigureRequ
 	r.client = client
 }
 
+// Create - method to create volume resource
 func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 
 	var valInBytes int64
@@ -442,6 +443,7 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 	log.Printf("Done with Create")
 }
 
+// Read - reads volume resource
 func (r volumeResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state models.Volume
 	diags := req.State.Get(ctx, &state)
@@ -492,6 +494,7 @@ func (r volumeResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	log.Printf("Done with Read")
 }
 
+// Update - updates volume resource
 func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
@@ -581,6 +584,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	log.Printf("Done with Update")
 }
 
+// Delete - method to delete volume resource
 func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with Delete")
 
@@ -636,33 +640,8 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	log.Printf("Done with Delete")
 }
 
-// ImportState import state for existing infrastructure
+// ImportState import state for existing volume
 func (r volumeResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
-	log.Printf("Started with Import")
-
-	// fetching Volume information
-	response, err := r.client.PStoreClient.GetVolume(context.Background(), req.ID)
-
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error importing Volume",
-			fmt.Sprintf("Could not import volume: %s with error: %s", req.ID, err.Error()),
-		)
-		return
-	}
-
-	state := models.Volume{}
-
-	// as state is like a plan here, a current state prior to this import operation
-	updateVolState(&state, response, nil, gopowerstore.VolumeGroups{}, &state, operationImport)
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	log.Printf("Done with Import")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

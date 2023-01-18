@@ -132,7 +132,7 @@ func TestAccStorageContainer_ImportFailure(t *testing.T) {
 				Config:        StorageContainerParamsCreate,
 				ResourceName:  "powerstore_storagecontainer.test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not import storage container"),
+				ExpectError:   regexp.MustCompile("Could not read storageContainerID with error invalid-id"),
 				ImportStateId: "invalid-id",
 			},
 		},

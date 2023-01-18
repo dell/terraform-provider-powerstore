@@ -18,6 +18,9 @@ func NewClient(endpoint string, username string, password string, insecure bool,
 
 	clientOptions := pstore.NewClientOptions()
 	clientOptions.SetInsecure(insecure)
+	if timeout == 0 {
+		timeout = int64(clientOptions.DefaultTimeout())
+	}
 	clientOptions.SetDefaultTimeout(uint64(timeout))
 
 	pstoreClient, err := newClientWithArgs(endpoint, username, password, clientOptions)

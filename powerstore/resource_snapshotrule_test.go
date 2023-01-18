@@ -139,7 +139,7 @@ func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 				Config:        SnapshotRuleParamsWithTimeOfDay,
 				ResourceName:  "powerstore_snapshotrule.test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not import snapshot rule"),
+				ExpectError:   regexp.MustCompile("Could not read snapshot rule with error invalid-id"),
 				ImportStateId: "invalid-id",
 			},
 		},
