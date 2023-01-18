@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// Test to Create Volume
+// Test to Fetch Volume
 func TestAccVolume_FetchVolume(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
