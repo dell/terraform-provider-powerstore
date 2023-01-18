@@ -3,12 +3,12 @@
 page_title: "powerstore_storagecontainer Resource - powerstore"
 subcategory: ""
 description: |-
-  
+  StorageContainer resource
 ---
 
 # powerstore_storagecontainer (Resource)
 
-
+StorageContainer resource
 
 ## Example Usage
 

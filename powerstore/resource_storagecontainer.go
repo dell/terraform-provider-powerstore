@@ -3,85 +3,110 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"log"
+	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceStorageContainerType struct{}
+// newStorageContainerResource returns storagecontainer new resource instance
+func newStorageContainerResource() resource.Resource {
+	return &resourceStorageContainer{}
+}
 
-// GetSchema returns the schema for this resource.
-func (r resourceStorageContainerType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
-				Type:                types.StringType,
+type resourceStorageContainer struct {
+	client *client.Client
+}
+
+// Metadata defines resource interface Metadata method
+func (r *resourceStorageContainer) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_storagecontainer"
+}
+
+// Schema defines resource interface Schema method
+func (r *resourceStorageContainer) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+
+		MarkdownDescription: "StorageContainer resource",
+
+		Attributes: map[string]schema.Attribute{
+
+			"id": schema.StringAttribute{
 				Computed:            true,
 				Description:         "The unique identifier of the storage container.",
 				MarkdownDescription: "The unique identifier of the storage container.",
 			},
-			"name": {
-				Type:                types.StringType,
+
+			"name": schema.StringAttribute{
 				Required:            true,
 				Description:         "Name for the storage container.",
 				MarkdownDescription: "Name for the storage container. This should be unique across all storage containers in the cluster.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
-			"quota": {
-				Type:                types.Int64Type,
+
+			"quota": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "The total number of bytes that can be provisioned/reserved against this storage container.",
 				MarkdownDescription: "The total number of bytes that can be provisioned/reserved against this storage container. A value of 0 means there is no limit. ",
 			},
-			"storage_protocol": {
-				Type:                types.StringType,
+
+			"storage_protocol": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "The storage protocol of Storage Container.",
 				MarkdownDescription: "The storage protocol of Storage Container. eg: SCSI, NVMe",
-				Validators: []tfsdk.AttributeValidator{
-					oneOfStringtValidator{
-						acceptableStringValues: []string{
-							string(gopowerstore.StorageContainerStorageProtocolEnumNVME),
-							string(gopowerstore.StorageContainerStorageProtocolEnumSCSI),
-						},
-					},
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.StorageContainerStorageProtocolEnumNVME),
+						string(gopowerstore.StorageContainerStorageProtocolEnumSCSI),
+					}...),
 				},
 			},
-			"high_water_mark": {
-				Type:                types.Int64Type,
+
+			"high_water_mark": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "The percentage of the quota that can be consumed before an alert is raised.",
 				MarkdownDescription: "The percentage of the quota that can be consumed before an alert is raised",
 			},
 		},
-	}, nil
+	}
 }
 
-// NewResource is a wrapper around provider
-func (r resourceStorageContainerType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceStorageContainer{
-		p: *(p.(*Pstoreprovider)),
-	}, nil
-}
-
-type resourceStorageContainer struct {
-	p Pstoreprovider
-}
-
-func (r resourceStorageContainer) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
-	if !r.p.configured {
-		resp.Diagnostics.AddError(
-			"Provider not configured",
-			"The provider hasn't been configured before apply, likely because it depends on an unknown value from another resource. This leads to weird stuff happening, so we'd prefer if you didn't do that. Thanks!",
-		)
+// Configure - defines configuration for storage container resource
+func (r *resourceStorageContainer) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
 		return
 	}
+
+	client, ok := req.ProviderData.(*client.Client)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.client = client
+}
+
+// Create - method to create storage container resource
+func (r *resourceStorageContainer) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
 	var plan models.StorageContainer
 
 	diags := req.Plan.Get(ctx, &plan)
@@ -91,13 +116,13 @@ func (r resourceStorageContainer) Create(ctx context.Context, req tfsdk.CreateRe
 	}
 
 	storageContainerCreate := &gopowerstore.StorageContainer{
-		Name:            plan.Name.Value,
-		Quota:           plan.Quota.Value,
-		StorageProtocol: gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value),
-		HighWaterMark:   int16(plan.HighWaterMark.Value),
+		Name:            plan.Name.ValueString(),
+		Quota:           plan.Quota.ValueInt64(),
+		StorageProtocol: gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.ValueString()),
+		HighWaterMark:   int16(plan.HighWaterMark.ValueInt64()),
 	}
 
-	storageContainerCreateResponse, err := r.p.client.PStoreClient.CreateStorageContainer(context.Background(), storageContainerCreate)
+	storageContainerCreateResponse, err := r.client.PStoreClient.CreateStorageContainer(context.Background(), storageContainerCreate)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating Storage Container",
@@ -107,7 +132,7 @@ func (r resourceStorageContainer) Create(ctx context.Context, req tfsdk.CreateRe
 	}
 
 	// Get Storage Container Details using ID retrieved above
-	storageContainerResponse, err1 := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerCreateResponse.ID)
+	storageContainerResponse, err1 := r.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerCreateResponse.ID)
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error getting Storage Container after creation",
@@ -128,8 +153,8 @@ func (r resourceStorageContainer) Create(ctx context.Context, req tfsdk.CreateRe
 	log.Printf("Done with Create")
 }
 
-// Read resource information
-func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
+// Read - reads storage container resource information
+func (r *resourceStorageContainer) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
 	var state models.StorageContainer
 	diags := req.State.Get(ctx, &state)
@@ -139,8 +164,8 @@ func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResour
 	}
 
 	// Get Storage Container details from API and then update what is in state from what the API returns
-	storageContainerID := state.ID.Value
-	storageContainerResponse, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
+	storageContainerID := state.ID.ValueString()
+	storageContainerResponse, err := r.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -162,8 +187,8 @@ func (r resourceStorageContainer) Read(ctx context.Context, req tfsdk.ReadResour
 	log.Printf("Done with Read")
 }
 
-// Update resource
-func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+// Update - updates storage container resource
+func (r *resourceStorageContainer) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
 	// Get plan values
@@ -183,10 +208,10 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 	}
 
 	// Get storageContainer ID from state
-	storageContainerID := state.ID.Value
+	storageContainerID := state.ID.ValueString()
 
 	// Update storageContainer by calling API
-	_, err := r.p.client.PStoreClient.ModifyStorageContainer(
+	_, err := r.client.PStoreClient.ModifyStorageContainer(
 		context.Background(),
 		r.planToServer(plan, state),
 		storageContainerID,
@@ -200,7 +225,7 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 	}
 
 	// Get StorageContainer Details
-	storageContainerResponse, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
+	storageContainerResponse, err := r.client.PStoreClient.GetStorageContainer(context.Background(), storageContainerID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting storage container after update",
@@ -220,8 +245,8 @@ func (r resourceStorageContainer) Update(ctx context.Context, req tfsdk.UpdateRe
 	log.Printf("Successfully done with Update")
 }
 
-// Delete resource
-func (r resourceStorageContainer) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+// Delete - method to delete storage container resource
+func (r *resourceStorageContainer) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with Delete")
 
 	var state models.StorageContainer
@@ -232,10 +257,10 @@ func (r resourceStorageContainer) Delete(ctx context.Context, req tfsdk.DeleteRe
 	}
 
 	// Get storage container ID from state
-	storageContainerID := state.ID.Value
+	storageContainerID := state.ID.ValueString()
 
 	// Delete Storage Container by calling API
-	_, err := r.p.client.PStoreClient.DeleteStorageContainer(context.Background(), storageContainerID)
+	_, err := r.client.PStoreClient.DeleteStorageContainer(context.Background(), storageContainerID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting storage container",
@@ -247,43 +272,18 @@ func (r resourceStorageContainer) Delete(ctx context.Context, req tfsdk.DeleteRe
 	log.Printf("Done with Delete")
 }
 
-// ImportState import state for existing infrastructure
-func (r resourceStorageContainer) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+// ImportState - imports state for existing storage container
+func (r *resourceStorageContainer) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
-	log.Printf("Started with Import")
-
-	// fetching asked storage container ID's information
-	response, err := r.p.client.PStoreClient.GetStorageContainer(context.Background(), req.ID)
-
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error importing storage container",
-			fmt.Sprintf("Could not import storage container ID: %s with error: %s", req.ID, err.Error()),
-		)
-		return
-	}
-
-	state := models.StorageContainer{}
-
-	// as state is like a plan here, a current state prior to this import operation
-	r.serverToState(&state, &state, response, operationImport)
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	log.Printf("Done with Import")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 func (r resourceStorageContainer) serverToState(plan, state *models.StorageContainer, response gopowerstore.StorageContainer, operation operation) {
-	state.ID.Value = response.ID
-	state.Name.Value = response.Name
-	state.Quota.Value = response.Quota
-	state.StorageProtocol.Value = string(response.StorageProtocol)
-	state.HighWaterMark.Value = int64(response.HighWaterMark)
+	state.ID = types.StringValue(response.ID)
+	state.Name = types.StringValue(response.Name)
+	state.Quota = types.Int64Value(response.Quota)
+	state.StorageProtocol = types.StringValue(string(response.StorageProtocol))
+	state.HighWaterMark = types.Int64Value(int64(response.HighWaterMark))
 }
 
 func (r resourceStorageContainer) planToServer(plan, state models.StorageContainer) *gopowerstore.StorageContainer {
@@ -294,20 +294,20 @@ func (r resourceStorageContainer) planToServer(plan, state models.StorageContain
 
 	storageContainerUpdate := &gopowerstore.StorageContainer{}
 
-	if plan.Name.Value != state.Name.Value {
-		storageContainerUpdate.Name = plan.Name.Value
+	if plan.Name.ValueString() != state.Name.ValueString() {
+		storageContainerUpdate.Name = plan.Name.ValueString()
 	}
 
-	if plan.Quota.Value != state.Quota.Value {
-		storageContainerUpdate.Quota = plan.Quota.Value
+	if plan.Quota.ValueInt64() != state.Quota.ValueInt64() {
+		storageContainerUpdate.Quota = plan.Quota.ValueInt64()
 	}
 
-	if plan.StorageProtocol.Value != state.StorageProtocol.Value {
-		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.Value)
+	if plan.StorageProtocol.ValueString() != state.StorageProtocol.ValueString() {
+		storageContainerUpdate.StorageProtocol = gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.ValueString())
 	}
 
-	if plan.HighWaterMark.Value != state.HighWaterMark.Value {
-		storageContainerUpdate.HighWaterMark = int16(plan.HighWaterMark.Value)
+	if plan.HighWaterMark.ValueInt64() != state.HighWaterMark.ValueInt64() {
+		storageContainerUpdate.HighWaterMark = int16(plan.HighWaterMark.ValueInt64())
 	}
 
 	return storageContainerUpdate

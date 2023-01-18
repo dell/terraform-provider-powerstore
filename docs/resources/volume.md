@@ -3,12 +3,12 @@
 page_title: "powerstore_volume Resource - powerstore"
 subcategory: ""
 description: |-
-  
+  .
 ---
 
 # powerstore_volume (Resource)
 
-
+.
 
 ## Example Usage
 
@@ -52,26 +52,26 @@ resource "powerstore_volume" "test" {
 - `host_group_name` (String) The host group name of the volume.
 - `host_id` (String) The host id of the volume.
 - `host_name` (String) The host name of the volume.
-- `is_replication_destination` (Boolean) The is_replication_destination of the volume.
 - `logical_unit_number` (Number) The current amount of data written to the volume.
-- `logical_used` (Number) Current amount of data used by the volume.
 - `min_size` (Number) The minimum size of the volume.
-- `nguid` (String) The nguid of the volume.
-- `node_affinity` (String) The node_affinity of the volume.
-- `nsid` (Number) The nsid of the volume.
 - `performance_policy_id` (String) The performance_policy_id of the volume.
 - `protection_policy_id` (String) The protection_policy_id of the volume.
 - `protection_policy_name` (String) The protection policy name of the volume.
 - `sector_size` (Number) The sector size of the volume.
-- `state` (String) The state of the volume.
-- `type` (String) The type of the volume.
 - `volume_group_id` (String) The volume group id of the volume.
 - `volume_group_name` (String) The volume group name of the volume.
-- `wwn` (String) The wwn of the volume.
 
 ### Read-Only
 
 - `creation_timestamp` (String) The creation_timestamp of the volume.
 - `id` (String) The ID of the volume.
+- `is_replication_destination` (Boolean) The is_replication_destination of the volume.
+- `logical_used` (Number) Current amount of data used by the volume.
+- `nguid` (String) The nguid of the volume.
+- `node_affinity` (String) The node_affinity of the volume.
+- `nsid` (Number) The nsid of the volume.
+- `state` (String) The state of the volume.
+- `type` (String) The type of the volume.
+- `wwn` (String) The wwn of the volume.
 
 

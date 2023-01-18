@@ -14,10 +14,14 @@ var (
 )
 
 // NewClient returns the gopowerstore client
-func NewClient(endpoint string, username string, password string, insecure bool) (*Client, error) {
+func NewClient(endpoint string, username string, password string, insecure bool, timeout int64) (*Client, error) {
 
 	clientOptions := pstore.NewClientOptions()
 	clientOptions.SetInsecure(insecure)
+	if timeout == 0 {
+		timeout = int64(clientOptions.DefaultTimeout())
+	}
+	clientOptions.SetDefaultTimeout(uint64(timeout))
 
 	pstoreClient, err := newClientWithArgs(endpoint, username, password, clientOptions)
 	if err != nil {

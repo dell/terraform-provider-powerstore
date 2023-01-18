@@ -3,261 +3,335 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	"github.com/dell/gopowerstore"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"log"
 	"strings"
+	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+
+	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 const defaultSectorSize = 512
 
-type resourceVolumeType struct{}
+type volumeResource struct {
+	client *client.Client
+}
 
-// GetSchema returns the schema for this resource.
-func (r resourceVolumeType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
-				Type:                types.StringType,
-				Computed:            true,
+// Ensure the implementation satisfies the expected interfaces.
+var (
+	_ resource.Resource                = &volumeResource{}
+	_ resource.ResourceWithConfigure   = &volumeResource{}
+	_ resource.ResourceWithImportState = &volumeResource{}
+)
+
+// NewVolumeResource is a helper function to simplify the provider implementation.
+func newVolumeResource() resource.Resource {
+	return &volumeResource{}
+}
+
+func (r volumeResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_volume"
+}
+
+func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: ".",
+		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
 				Description:         "The ID of the volume.",
 				MarkdownDescription: "The ID of the volume.",
+				Computed:            true,
 			},
-			"name": {
-				Type:                types.StringType,
-				Required:            true,
+			"name": schema.StringAttribute{
 				Description:         "The name of the volume.",
 				MarkdownDescription: "The name of the volume.",
-			},
-			"size": {
-				Type:                types.Float64Type,
 				Required:            true,
-				Description:         "The size of the volume.",
-				MarkdownDescription: "The size of the volume.",
-			},
-			"capacity_unit": {
-				Type:                types.StringType,
-				Optional:            true,
-				Computed:            true,
-				Description:         "The Capacity Unit corresponding to the size.",
-				MarkdownDescription: "The Capacity Unit corresponding to the size.",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					DefaultAttribute(types.String{Value: "GB"}),
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 				},
 			},
-			"host_id": {
-				Type:                types.StringType,
-				Optional:            true,
+			"size": schema.Float64Attribute{
+				Description:         "The size of the volume.",
+				MarkdownDescription: "The size of the volume.",
+				Required:            true,
+			},
+			"capacity_unit": schema.StringAttribute{
+				Description:         "The Capacity Unit corresponding to the size.",
+				MarkdownDescription: "The Capacity Unit corresponding to the size.",
 				Computed:            true,
+				Optional:            true,
+				PlanModifiers: []planmodifier.String{
+					DefaultAttribute("GB"),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						"KB",
+						"MB",
+						"GB",
+						"TB",
+					}...),
+				},
+			},
+			"host_id": schema.StringAttribute{
 				Description:         "The host id of the volume.",
 				MarkdownDescription: "The host id of the volume.",
-			},
-			"host_name": {
-				Type:                types.StringType,
-				Optional:            true,
 				Computed:            true,
+				Optional:            true,
+			},
+
+			"host_name": schema.StringAttribute{
+				Optional:            true,
 				Description:         "The host name of the volume.",
 				MarkdownDescription: "The host name of the volume.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("host_id")),
+				},
 			},
-			"host_group_id": {
-				Type:                types.StringType,
+
+			"host_group_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "The host group id of the volume.",
 				MarkdownDescription: "The host group id of the volume.",
 			},
-			"host_group_name": {
-				Type:                types.StringType,
+			"host_group_name": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
 				Description:         "The host group name of the volume.",
 				MarkdownDescription: "The host group name of the volume.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("host_group_id")),
+				},
 			},
-			"logical_unit_number": {
-				Type:                types.Int64Type,
+			"logical_unit_number": schema.Int64Attribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The current amount of data written to the volume.",
 				MarkdownDescription: "The current amount of data written to the volume.",
 			},
-			"volume_group_id": {
-				Type:                types.StringType,
+			"volume_group_id": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The volume group id of the volume.",
 				MarkdownDescription: "The volume group id of the volume.",
 			},
-			"volume_group_name": {
-				Type:                types.StringType,
-				Computed:            true,
+			"volume_group_name": schema.StringAttribute{
 				Optional:            true,
 				Description:         "The volume group name of the volume.",
 				MarkdownDescription: "The volume group name of the volume.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("volume_group_id")),
+				},
 			},
-			"min_size": {
-				Type:                types.Int64Type,
-				Computed:            true,
+			"min_size": schema.Int64Attribute{
 				Optional:            true,
 				Description:         "The minimum size  of the volume.",
 				MarkdownDescription: "The minimum size of the volume.",
 			},
-			"sector_size": {
-				Type:                types.Int64Type,
-				Computed:            true,
+			"sector_size": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "The sector size of the volume.",
 				MarkdownDescription: "The sector size of the volume.",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					DefaultAttribute(types.Int64{Value: defaultSectorSize}),
+				PlanModifiers: []planmodifier.Int64{
+					DefaultAttribute(int64(defaultSectorSize)),
 				},
 			},
-			"description": {
-				Type:                types.StringType,
+			"description": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The description of the volume.",
 				MarkdownDescription: "The description of the volume.",
 			},
-			"appliance_id": {
-				Type:                types.StringType,
+			"appliance_id": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The appliance_id of the volume.",
 				MarkdownDescription: "The appliance_id of the volume.",
 			},
-			"appliance_name": {
-				Type:                types.StringType,
-				Computed:            true,
+			"appliance_name": schema.StringAttribute{
 				Optional:            true,
 				Description:         "The appliance name of the volume.",
 				MarkdownDescription: "The appliance name of the volume.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("appliance_id")),
+				},
 			},
-			"protection_policy_id": {
-				Type:                types.StringType,
+			"protection_policy_id": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The protection_policy_id of the volume.",
 				MarkdownDescription: "The protection_policy_id of the volume.",
 			},
-			"protection_policy_name": {
-				Type:                types.StringType,
+			"protection_policy_name": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The protection policy name of the volume.",
 				MarkdownDescription: "The protection policy name of the volume.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("protection_policy_id")),
+				},
 			},
-			"performance_policy_id": {
-				Type:                types.StringType,
+			"performance_policy_id": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The performance_policy_id of the volume.",
 				MarkdownDescription: "The performance_policy_id of the volume.",
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					DefaultAttribute(types.String{Value: "default_medium"}),
+				PlanModifiers: []planmodifier.String{
+					DefaultAttribute("default_medium"),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						"default_medium",
+						"default_low",
+						"default_high",
+					}...),
 				},
 			},
-			"creation_timestamp": {
-				Type:                types.StringType,
+			"creation_timestamp": schema.StringAttribute{
 				Computed:            true,
 				Description:         "The creation_timestamp of the volume.",
 				MarkdownDescription: "The creation_timestamp of the volume.",
 			},
-			"is_replication_destination": {
-				Type:                types.BoolType,
+			"is_replication_destination": schema.BoolAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The is_replication_destination of the volume.",
 				MarkdownDescription: "The is_replication_destination of the volume.",
 			},
-			"node_affinity": {
-				Type:                types.StringType,
+			"node_affinity": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The node_affinity of the volume.",
 				MarkdownDescription: "The node_affinity of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.NodeAffinityEnumSelectAtAttach),
+						string(gopowerstore.NodeAffinityEnumSelectNodeA),
+						string(gopowerstore.NodeAffinityEnumSelectNodeB),
+						string(gopowerstore.NodeAffinityEnumPreferredNodeA),
+						string(gopowerstore.NodeAffinityEnumPreferredNodeB),
+					}...),
+				},
 			},
-			"type": {
-				Type:                types.StringType,
+			"type": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The type of the volume.",
 				MarkdownDescription: "The type of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.VolumeTypeEnumPrimary),
+						string(gopowerstore.VolumeTypeEnumSnapshot),
+						string(gopowerstore.VolumeTypeEnumClone),
+					}...),
+				},
 			},
-			"app_type": {
-				Type:                types.StringType,
+			"app_type": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The app type of the volume.",
 				MarkdownDescription: "The app type of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.AppTypeEnumRelationDB),
+						string(gopowerstore.AppTypeEnumOracle),
+						string(gopowerstore.AppTypeEnumSQLServer),
+						string(gopowerstore.AppTypeEnumPostgreSQL),
+						string(gopowerstore.AppTypeEnumMySQL),
+						string(gopowerstore.AppTypeEnumIBMDB2),
+						string(gopowerstore.AppTypeEnumBigData),
+						string(gopowerstore.AppTypeEnumMongoDB),
+						string(gopowerstore.AppTypeEnumCassandra),
+						string(gopowerstore.AppTypeEnumSAPHANA),
+						string(gopowerstore.AppTypeEnumSpark),
+						string(gopowerstore.AppTypeEnumSplunk),
+						string(gopowerstore.AppTypeEnumElasticSearch),
+						string(gopowerstore.AppTypeEnumExchange),
+						string(gopowerstore.AppTypeEnumSharepoint),
+						string(gopowerstore.AppTypeEnumRBusinessApplicationsOther),
+						string(gopowerstore.AppTypeEnumRelationERPSAP),
+						string(gopowerstore.AppTypeEnumCRM),
+						string(gopowerstore.AppTypeEnumHealthcareOther),
+						string(gopowerstore.AppTypeEnumEpic),
+						string(gopowerstore.AppTypeEnumMEDITECH),
+						string(gopowerstore.AppTypeEnumAllscripts),
+						string(gopowerstore.AppTypeEnumCerner),
+						string(gopowerstore.AppTypeEnumVirtualization),
+						string(gopowerstore.AppTypeEnumVirtualServers),
+						string(gopowerstore.AppTypeEnumContainers),
+						string(gopowerstore.AppTypeEnumVirtualDesktops),
+						string(gopowerstore.AppTypeEnumRelationOther),
+					}...),
+				},
 			},
-			"app_type_other": {
-				Type:                types.StringType,
+			"app_type_other": schema.StringAttribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The app type other of the volume.",
 				MarkdownDescription: "The app type other of the volume.",
 			},
-			"wwn": {
-				Type:                types.StringType,
+			"wwn": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The wwn of the volume.",
 				MarkdownDescription: "The wwn of the volume.",
 			},
-			"state": {
-				Type:                types.StringType,
+			"state": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The state of the volume.",
 				MarkdownDescription: "The state of the volume.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.VolumeStateEnumReady),
+						string(gopowerstore.VolumeStateEnumInitializing),
+						string(gopowerstore.VolumeStateEnumOffline),
+						string(gopowerstore.VolumeStateEnumDestroying),
+					}...),
+				},
 			},
-			"nguid": {
-				Type:                types.StringType,
+			"nguid": schema.StringAttribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The nguid of the volume.",
 				MarkdownDescription: "The nguid of the volume.",
 			},
-			"nsid": {
-				Type:                types.Int64Type,
+			"nsid": schema.Int64Attribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "The nsid of the volume.",
 				MarkdownDescription: "The nsid of the volume.",
 			},
-			"logical_used": {
-				Type:                types.Int64Type,
+			"logical_used": schema.Int64Attribute{
 				Computed:            true,
-				Optional:            true,
 				Description:         "Current amount of data used by the volume.",
 				MarkdownDescription: "Current amount of data used by the volume.",
 			},
 		},
-	}, nil
+	}
 }
 
-// NewResource is a wrapper around provider
-func (r resourceVolumeType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceVolume{
-		p: *(p.(*Pstoreprovider)),
-	}, nil
-}
-
-type resourceVolume struct {
-	p Pstoreprovider
-}
-
-func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
-	if !r.p.configured {
-		resp.Diagnostics.AddError(
-			"Provider not configured",
-			"The provider hasn't been configured before apply, likely because it depends on an unknown value from another resource. This leads to weird stuff happening, so we'd prefer if you didn't do that. Thanks!",
-		)
+// Configure - defines configuration for volume resource.
+func (r *volumeResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	if req.ProviderData == nil {
 		return
 	}
+	client, ok := req.ProviderData.(*client.Client)
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.client = client
+}
+
+// Create - method to create volume resource
+func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
 	var valInBytes int64
 
 	log.Printf("Started Creating Volume")
@@ -278,7 +352,7 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		return
 	}
 
-	valid, errmsg := fetchByName(r.p.client, &plan)
+	valid, errmsg := fetchByName(*r.client, &plan)
 	if !valid {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
@@ -286,22 +360,24 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 		)
 		return
 	}
+	name := plan.Name.ValueString()
+	sectorSize := plan.SectorSize.ValueInt64()
 
 	volumeCreate := &gopowerstore.VolumeCreate{
-		Name:                &plan.Name.Value,
-		Description:         plan.Description.Value,
+		Name:                &name,
+		Description:         plan.Description.ValueString(),
 		Size:                &valInBytes,
-		ApplianceID:         plan.ApplianceID.Value,
-		VolumeGroupID:       plan.VolumeGroupID.Value,
-		SectorSize:          &plan.SectorSize.Value,
-		ProtectionPolicyID:  plan.ProtectionPolicyID.Value,
-		PerformancePolicyID: plan.PerformancePolicyID.Value,
-		AppType:             plan.AppType.Value,
-		AppTypeOther:        plan.AppTypeOther.Value,
-		MinimumSize:         plan.MinimumSize.Value,
-		HostID:              plan.HostID.Value,
-		HostGroupID:         plan.HostGroupID.Value,
-		LogicalUnitNumber:   plan.LogicalUnitNumber.Value,
+		ApplianceID:         plan.ApplianceID.ValueString(),
+		VolumeGroupID:       plan.VolumeGroupID.ValueString(),
+		SectorSize:          &sectorSize,
+		ProtectionPolicyID:  plan.ProtectionPolicyID.ValueString(),
+		PerformancePolicyID: plan.PerformancePolicyID.ValueString(),
+		AppType:             gopowerstore.AppTypeEnum(plan.AppType.ValueString()),
+		AppTypeOther:        plan.AppTypeOther.ValueString(),
+		MinimumSize:         plan.MinimumSize.ValueInt64(),
+		HostID:              plan.HostID.ValueString(),
+		HostGroupID:         plan.HostGroupID.ValueString(),
+		LogicalUnitNumber:   plan.LogicalUnitNumber.ValueInt64(),
 	}
 
 	// Add validation
@@ -316,7 +392,7 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 
 	// Create New Volume
 	// The function returns only ID of the newly created Volume
-	volCreateResponse, err := r.p.client.PStoreClient.CreateVolume(context.Background(), volumeCreate)
+	volCreateResponse, err := r.client.PStoreClient.CreateVolume(context.Background(), volumeCreate)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
@@ -326,25 +402,25 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	}
 
 	// Get Volume Details using ID retrieved above
-	volResponse, err1 := r.p.client.PStoreClient.GetVolume(context.Background(), volCreateResponse.ID)
+	volResponse, err1 := r.client.PStoreClient.GetVolume(context.Background(), volCreateResponse.ID)
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume after creation",
-			"Could not get volume, unexpected error: "+err.Error(),
+			"Could not get volume, unexpected error: "+err1.Error(),
 		)
 		return
 	}
 	// Get Host Mapping from volume ID
-	hostMapping, err1 := r.p.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volCreateResponse.ID)
+	hostMapping, err1 := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volCreateResponse.ID)
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
-			"Could not create volume, unexpected error: "+err.Error(),
+			"Could not create volume, unexpected error: "+err1.Error(),
 		)
 		return
 	}
 	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.p.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volCreateResponse.ID)
+	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volCreateResponse.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
@@ -367,9 +443,8 @@ func (r resourceVolume) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	log.Printf("Done with Create")
 }
 
-// Read resource information
-func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest, resp *tfsdk.ReadResourceResponse) {
-
+// Read - reads volume resource
+func (r volumeResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state models.Volume
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -378,8 +453,8 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 	}
 
 	// Get volume details from API and then update what is in state from what the API returns
-	volID := state.ID.Value
-	volResponse, err := r.p.client.PStoreClient.GetVolume(context.Background(), volID)
+	volID := state.ID.ValueString()
+	volResponse, err := r.client.PStoreClient.GetVolume(context.Background(), volID)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -389,7 +464,7 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 		return
 	}
 	// Get Host Mapping details from API
-	hostMapping, err := r.p.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
+	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
@@ -398,7 +473,7 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 		return
 	}
 	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.p.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
+	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
@@ -419,9 +494,8 @@ func (r resourceVolume) Read(ctx context.Context, req tfsdk.ReadResourceRequest,
 	log.Printf("Done with Read")
 }
 
-// Update resource
-func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
-
+// Update - updates volume resource
+func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
 	// Get plan values
@@ -440,7 +514,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 		return
 	}
 
-	valid, errmsg := fetchByName(r.p.client, &plan)
+	valid, errmsg := fetchByName(*r.client, &plan)
 	if !valid {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
@@ -450,7 +524,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	}
 
 	// Update volume parameters. In case of validation failure, return
-	updatedParams, updateFailedParameters, errMessages := updateVol(ctx, r.p.client, plan, state)
+	updatedParams, updateFailedParameters, errMessages := updateVol(ctx, *r.client, plan, state)
 	if len(updateFailedParameters) > 0 && updateFailedParameters[0] == "Validation Failed" {
 		resp.Diagnostics.AddError(
 			"Validation Check Failed",
@@ -459,7 +533,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 		return
 	}
 	// Get vg ID from state
-	volID := state.ID.Value
+	volID := state.ID.ValueString()
 
 	if len(errMessages) > 0 || len(updateFailedParameters) > 0 {
 		errMessage := strings.Join(errMessages, ",\n")
@@ -469,7 +543,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	}
 
 	// Get volume details from volume ID
-	volResponse, err := r.p.client.PStoreClient.GetVolume(context.Background(), volID)
+	volResponse, err := r.client.PStoreClient.GetVolume(context.Background(), volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume after update",
@@ -479,7 +553,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	}
 
 	// Get Host Mapping from volume ID
-	hostMapping, err := r.p.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
+	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
@@ -489,7 +563,7 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	}
 
 	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.p.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
+	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
@@ -510,8 +584,8 @@ func (r resourceVolume) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	log.Printf("Done with Update")
 }
 
-// Delete resource
-func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+// Delete - method to delete volume resource
+func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with Delete")
 
 	var state models.Volume
@@ -522,14 +596,14 @@ func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequ
 	}
 
 	// Get vg ID from state
-	volID := state.ID.Value
-	if state.ProtectionPolicyID.Value != "" {
-		state.ProtectionPolicyID.Value = ""
-		modifyVolume(state, 0, volID, r.p.client)
+	volID := state.ID.ValueString()
+	if state.ProtectionPolicyID.ValueString() != "" {
+		state.ProtectionPolicyID = types.StringValue("")
+		modifyVolume(state, 0, volID, *r.client)
 	}
 
-	if state.HostID.Value != "" || state.HostGroupID.Value != "" {
-		err := detachHostFromVolume(state, models.Volume{}, r.p.client, volID)
+	if state.HostID.ValueString() != "" || state.HostGroupID.ValueString() != "" {
+		err := detachHostFromVolume(state, models.Volume{}, *r.client, volID)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Cannot detach volume host mapping",
@@ -539,8 +613,8 @@ func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequ
 		}
 	}
 
-	if state.VolumeGroupID.Value != "" {
-		err := detachVolumeGroup(ctx, state, r.p.client, volID)
+	if state.VolumeGroupID.ValueString() != "" {
+		err := detachVolumeGroup(ctx, state, *r.client, volID)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error detaching volume Group",
@@ -552,7 +626,7 @@ func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequ
 	}
 
 	// Delete volume by calling API
-	_, err := r.p.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
+	_, err := r.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting volume",
@@ -566,33 +640,8 @@ func (r resourceVolume) Delete(ctx context.Context, req tfsdk.DeleteResourceRequ
 	log.Printf("Done with Delete")
 }
 
-// ImportState import state for existing infrastructure
-func (r resourceVolume) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+// ImportState import state for existing volume
+func (r volumeResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
-	log.Printf("Started with Import")
-
-	// fetching Volume information
-	response, err := r.p.client.PStoreClient.GetVolume(context.Background(), req.ID)
-
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error importing Volume",
-			fmt.Sprintf("Could not import volume: %s with error: %s", req.ID, err.Error()),
-		)
-		return
-	}
-
-	state := models.Volume{}
-
-	// as state is like a plan here, a current state prior to this import operation
-	updateVolState(&state, response, nil, gopowerstore.VolumeGroups{}, &state, operationImport)
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	log.Printf("Done with Import")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
