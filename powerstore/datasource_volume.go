@@ -55,9 +55,6 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Description:         "Name of the volume.",
 				MarkdownDescription: "Name of the volume.",
 				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.MatchRoot("id")),
-				},
 			},
 			"volumes": schema.ListNestedAttribute{
 				Description:         "List of volumes.",
@@ -296,7 +293,7 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 										MarkdownDescription: "User-assigned name of the datastore in vCenter.",
 										Computed:            true,
 									},
-									"istance_uuid": schema.StringAttribute{
+									"instance_uuid": schema.StringAttribute{
 										Description:         "UUID instance of the datastore in vCenter.",
 										MarkdownDescription: "UUID instance of the datastore in vCenter.",
 										Computed:            true,
@@ -380,13 +377,7 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 	volumes = append(volumes, volume)
-	if len(volumes) == 0 {
-		resp.Diagnostics.AddError(
-			"No Volume found corresponding to the given name/ID",
-			err.Error(),
-		)
-		return
-	}
+
 	state.Volumes, err = updateVolumeState(volumes, d.client)
 	if err != nil {
 		resp.Diagnostics.AddError(

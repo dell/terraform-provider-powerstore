@@ -54,7 +54,7 @@ type VolumeGroup struct {
 // Datastores - list of datastores for a volume in the volume data source
 type Datastores struct {
 	ID           types.String `tfsdk:"id"`
-	InstanceUUID types.String `tfsdk:"istance_uuid"`
+	InstanceUUID types.String `tfsdk:"instance_uuid"`
 	Name         types.String `tfsdk:"name"`
 }
 
