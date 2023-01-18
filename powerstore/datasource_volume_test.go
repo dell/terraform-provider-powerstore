@@ -3,6 +3,7 @@ package powerstore
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"os"
+	"regexp"
 	"testing"
 )
 
@@ -25,6 +26,10 @@ func TestAccVolume_FetchVolume(t *testing.T) {
 			{
 				Config: VolumeDataSourceparamsAll,
 			},
+			{
+				Config:      VolumeDataSourceparamsNameNegative,
+				ExpectError: regexp.MustCompile("nable to Read PowerStore Volumes"),
+			},
 		},
 	})
 }
@@ -39,6 +44,18 @@ provider "powerstore" {
 
 data "powerstore_volume" "test1" {
 	name = "tf_vol"
+}
+`
+var VolumeDataSourceparamsNameNegative = `
+provider "powerstore" {
+	username = "` + username + `"
+	password = "` + password + `"
+	endpoint = "` + endpoint + `"
+	insecure = true
+}
+
+data "powerstore_volume" "test1" {
+	name = "tf"
 }
 `
 

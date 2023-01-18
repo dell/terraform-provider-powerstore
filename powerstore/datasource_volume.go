@@ -363,8 +363,10 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	//Read the volumes based on volume id/name and if nothing is mentioned, then it returns all the volumes
 	if state.Name.ValueString() != "" {
 		volume, err = d.client.PStoreClient.GetVolumeByName(context.Background(), state.Name.ValueString())
+		volumes = append(volumes, volume)
 	} else if state.ID.ValueString() != "" {
 		volume, err = d.client.PStoreClient.GetVolume(context.Background(), state.ID.ValueString())
+		volumes = append(volumes, volume)
 	} else {
 		volumes, err = d.client.PStoreClient.GetVolumes(context.Background())
 	}
@@ -376,7 +378,6 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		)
 		return
 	}
-	volumes = append(volumes, volume)
 
 	state.Volumes, err = updateVolumeState(volumes, d.client)
 	if err != nil {
