@@ -106,3 +106,7 @@ resource "powerstore_protectionpolicy" "terraform-provider-test" {
   snapshot_rule_names = ["vsi_aut_snaprule","snapshot_test_emi","test_snapshotrule_1","snap-use-for-nfs-test"]
   replication_rule_names = ["Emalee-SRA-7416-Rep"]
 }
+
+data "powerstore_volume" "test1" {
+        name = "tf_vol"
+}
