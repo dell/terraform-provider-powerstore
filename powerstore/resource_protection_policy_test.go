@@ -196,7 +196,7 @@ func TestAccProtectionPolicy_ImportFailure(t *testing.T) {
 				Config:        ProtectionPolicyParamsCreate,
 				ResourceName:  "powerstore_protectionpolicy.test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not import protection policy"),
+				ExpectError:   regexp.MustCompile("Could not read protection policy with error invalid-id"),
 				ImportStateId: "invalid-id",
 			},
 		},

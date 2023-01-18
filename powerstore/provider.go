@@ -13,8 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-const defaultTimeoutValue = 120
-
 // Ensure provider defined types fully satisfy framework interfaces
 var _ provider.Provider = &Pstoreprovider{}
 
@@ -94,11 +92,6 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 	config := ProviderData{}
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
-
-	if config.Timeout.IsNull() {
-		config.Timeout = types.Int64Value(defaultTimeoutValue)
-	}
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
