@@ -128,33 +128,6 @@ func TestAccVolume_CreateVolumeWithInvalidCapUnit(t *testing.T) {
 	})
 }
 
-// todo fix this test case, since it is not working with validation on capacity unit
-// Test to create volume with invalid capacity unit, valid are MB, TB, GB
-/*
-func TestAccVolume_CreateVolumeWithInvalidCapUnit2(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: VolumeParams,
-				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
-					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
-					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-			},
-			{
-				Config:      VolumeParamsWithInvalidCapUnit,
-				ExpectError: regexp.MustCompile("Attribute capacity_unit value must be one of"),
-			},
-		},
-	})
-}
-*/
-
 // Test to Update Volume size
 func TestAccVolume_UpdateVolumeGb(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
