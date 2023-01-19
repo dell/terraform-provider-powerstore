@@ -2,68 +2,145 @@ package powerstore
 
 import (
 	"context"
+	client "terraform-provider-powerstore/client"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// Provider -
-func Provider() *schema.Provider {
-	return &schema.Provider{
-		Schema: map[string]*schema.Schema{
-			"host": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("POWERSTORE_HOST", nil),
+// Ensure provider defined types fully satisfy framework interfaces
+var _ provider.Provider = &Pstoreprovider{}
+
+// Pstoreprovider satisfies the tfsdk.Provider interface and usually is included
+// // with all Resource and DataSource implementations.
+type Pstoreprovider struct {
+	// client can contain the upstream provider SDK or HTTP client used to
+	// communicate with the upstream service. Resource and DataSource
+	// implementations can then make calls using this client.
+	client *client.Client
+
+	// version is set to the provider version on release, "dev" when the
+	// provider is built and ran locally, and "test" when running acceptance
+	// testing.
+	version string
+}
+
+// ProviderData can be used to store data from the Terraform configuration.
+type ProviderData struct {
+	Endpoint types.String `tfsdk:"endpoint"`
+	Insecure types.Bool   `tfsdk:"insecure"`
+	Password types.String `tfsdk:"password"`
+	Username types.String `tfsdk:"username"`
+	Timeout  types.Int64  `tfsdk:"timeout"`
+}
+
+// Metadata defines provider interface Metadata method
+func (p *Pstoreprovider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+	resp.TypeName = "powerstore"
+	resp.Version = p.version
+}
+
+// Schema defines provider interface Schema method
+func (p *Pstoreprovider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		MarkdownDescription: "Provider for PowerStore",
+		Attributes: map[string]schema.Attribute{
+			"endpoint": schema.StringAttribute{
+				MarkdownDescription: "IP or FQDN of the PowerStore host",
+				Description:         "IP or FQDN of the PowerStore host",
+				Required:            true,
 			},
-			"username": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("POWERSTORE_USERNAME", nil),
+			"insecure": schema.BoolAttribute{
+				MarkdownDescription: "Boolean variable to specify whether to validate SSL certificate or not.",
+				Description:         "Boolean variable to specify whether to validate SSL certificate or not.",
+				Optional:            true,
 			},
-			"password": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Sensitive:   true,
-				DefaultFunc: schema.EnvDefaultFunc("POWERSTORE_PASSWORD", nil),
+			"password": schema.StringAttribute{
+				MarkdownDescription: "The password of the PowerStore host.",
+				Description:         "The password of the PowerStore host.",
+				Required:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
+			},
+			"username": schema.StringAttribute{
+				MarkdownDescription: "The username of the PowerStore host.",
+				Description:         "The username of the PowerStore host.",
+				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
+			},
+			"timeout": schema.Int64Attribute{
+				MarkdownDescription: "The default timeout value for the Powerstore host.",
+				Description:         "The default timeout value for the Powerstore host.",
+				Optional:            true,
 			},
 		},
-		ResourcesMap: map[string]*schema.Resource{
-			"powerstore_volume":            resourceVolume(),
-			"powerstore_snapshot_rule":     resourceSnapshotRule(),
-			"powerstore_storage_container": resourceStorageContainer(),
-			"powerstore_protection_policy": resourceProtectionPolicy(),
-		},
-		DataSourcesMap:       map[string]*schema.Resource{},
-		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+// Configure defines provider interface Configure method
+func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 
-	// Warning or errors can be collected in a slice type
-	var diags diag.Diagnostics
+	config := ProviderData{}
 
-	//getting username , password and host url from terraform scripts (.tf files)
-	username := d.Get("username").(string)
-	password := d.Get("password").(string)
-	hostURL := d.Get("host").(string)
-
-	if (username != "") && (password != "") && (hostURL != "") {
-		//calling new client to create Client struct for powerstore appliance
-		c, err := NewClient(&hostURL, &username, &password)
-		if err != nil {
-
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Unable to create powerstore client",
-				Detail:   "Unable to authenticate user for authenticated powerstore client",
-			})
-			return nil, diags
-		}
-
-		return c, diags
-
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	return nil, diags
+
+	// initializing powerstore client
+	pstoreClient, err := client.NewClient(
+		config.Endpoint.ValueString(),
+		config.Username.ValueString(),
+		config.Password.ValueString(),
+		// as false is default value, so even if insecure parameter is not provided
+		// value will be false
+		config.Insecure.ValueBool(),
+		config.Timeout.ValueInt64(),
+	)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to create powerstore client",
+			"Unable to authenticate user for authenticated powerstore client",
+		)
+		return
+	}
+
+	p.client = pstoreClient
+	resp.ResourceData = pstoreClient
+	resp.DataSourceData = pstoreClient
+}
+
+// Resources defines provider interface Resources method
+func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resource {
+	return []func() resource.Resource{
+		newVolumeResource,
+		newSnapshotRuleResource,
+		newStorageContainerResource,
+		newProtectionPolicyResource,
+	}
+}
+
+// DataSources defines provider interface DataSources method
+func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{
+		newVolumeDataSource,
+	}
+}
+
+// New returns instance of provider
+func New(version string) func() provider.Provider {
+	return func() provider.Provider {
+		return &Pstoreprovider{
+			version: version,
+		}
+	}
 }

@@ -31,8 +31,12 @@ testlogfile
 *.tfstate
 *.tfstate.*
 
+# .tfvars file
+*.tfvars
+
 # Local .terraform directories
 **/.terraform/*
 
 # Coverage Test Files
 cover.*
+c.out
