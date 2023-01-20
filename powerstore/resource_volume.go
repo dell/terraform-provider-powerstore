@@ -72,7 +72,6 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
-						"KB",
 						"MB",
 						"GB",
 						"TB",
@@ -356,7 +355,7 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 	if !valid {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
-			"Could not create volume, either of "+errmsg+" should be present",
+			"Could not create volume, "+errmsg+"",
 		)
 		return
 	}
@@ -518,7 +517,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	if !valid {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
-			"Could not Update volume, either of "+errmsg+" should be present",
+			"Could not Update volume, "+errmsg+"",
 		)
 		return
 	}
@@ -599,7 +598,14 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	volID := state.ID.ValueString()
 	if state.ProtectionPolicyID.ValueString() != "" {
 		state.ProtectionPolicyID = types.StringValue("")
-		modifyVolume(state, 0, volID, *r.client)
+		err := modifyVolume(state, 0, volID, *r.client)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Cannot detach protection policy",
+				"Could not delete volume, unexpected error: "+err.Error(),
+			)
+			return
+		}
 	}
 
 	if state.HostID.ValueString() != "" || state.HostGroupID.ValueString() != "" {

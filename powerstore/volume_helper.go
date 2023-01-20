@@ -51,14 +51,17 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 		volState.HostGroupID = types.StringValue("")
 		volState.LogicalUnitNumber = types.Int64Value(0)
 	}
-
-	if operation == operationCreate || operation == operationUpdate {
+	if operation == operationCreate {
 		volState.MinimumSize = volPlan.MinimumSize
 		volState.SectorSize = volPlan.SectorSize
+	}
+
+	if operation == operationCreate || operation == operationUpdate {
 		volState.ApplianceName = volPlan.ApplianceName
 		volState.HostName = volPlan.HostName
 		volState.HostGroupName = volPlan.HostGroupName
 		volState.VolumeGroupName = volPlan.VolumeGroupName
+		volState.ProtectionPolicyName = volPlan.ProtectionPolicyName
 	} else if operation == operationImport || operation == operationRead {
 		volState.SectorSize = types.Int64Value(defaultSectorSize)
 	}
@@ -95,16 +98,16 @@ func updateVol(ctx context.Context, client client.Client, planVol, stateVol mode
 	err := modifyVolume(planVol, valInBytes, volID, client)
 
 	if err != nil {
-		updateFailedParameters = append(updateFailedParameters, "name,size,protection policy,performance policy")
+		updateFailedParameters = append(updateFailedParameters, "name,size,protection policy,performance policy, description")
 		errorMessages = append(errorMessages, fmt.Sprintf("Failed to Update : %s", err.Error()))
 	} else {
-		updatedParameters = append(updatedParameters, "name, size, protection policy, performance policy")
+		updatedParameters = append(updatedParameters, "name, size, protection policy, performance policy, description")
 	}
 
 	// If there's any mismatch between planned and state value of Host and HostGroup ID then either Mapping or UnMapping of host is performed
 	if planVol.HostGroupID.ValueString() != stateVol.HostGroupID.ValueString() || planVol.HostID.ValueString() != stateVol.HostID.ValueString() {
 		// Detach host from volume
-		detachHostFromVolume(stateVol, planVol, client, volID)
+		err := detachHostFromVolume(stateVol, planVol, client, volID)
 		if err != nil {
 			updateFailedParameters = append(updateFailedParameters, "unmap volume from host")
 			errorMessages = append(errorMessages, fmt.Sprintf("Failed to unmap volume from host: %s", err.Error()))
@@ -112,7 +115,7 @@ func updateVol(ctx context.Context, client client.Client, planVol, stateVol mode
 			updatedParameters = append(updatedParameters, "unmapped volume from host")
 		}
 		// Attach host to volume
-		attachHostFromVolume(stateVol, planVol, client, volID)
+		err = attachHostFromVolume(stateVol, planVol, client, volID)
 		if err != nil {
 			updateFailedParameters = append(updateFailedParameters, "map volume to host")
 			errorMessages = append(errorMessages, fmt.Sprintf("Failed to map volume to host: %s", err.Error()))
@@ -124,7 +127,7 @@ func updateVol(ctx context.Context, client client.Client, planVol, stateVol mode
 	// If there's any mismatch between planned and state value of VolumeGroup ID then either Mapping or UnMapping of Volume Group is performed
 	if planVol.VolumeGroupID.ValueString() != stateVol.VolumeGroupID.ValueString() {
 		if stateVol.VolumeGroupID.ValueString() != "" {
-			detachVolumeGroup(ctx, stateVol, client, volID)
+			err := detachVolumeGroup(ctx, stateVol, client, volID)
 			if err != nil {
 				updateFailedParameters = append(updateFailedParameters, "Unmap volume group ID")
 				errorMessages = append(errorMessages, fmt.Sprintf("Failed to unmap volume group ID: %s", err.Error()))
@@ -133,7 +136,7 @@ func updateVol(ctx context.Context, client client.Client, planVol, stateVol mode
 			}
 		}
 		if planVol.VolumeGroupID.ValueString() != "" {
-			attachVolumeGroup(ctx, planVol, client, volID)
+			err = attachVolumeGroup(ctx, planVol, client, volID)
 			if err != nil {
 				updateFailedParameters = append(updateFailedParameters, "Map volume group ID")
 				errorMessages = append(errorMessages, fmt.Sprintf("Failed to Map volume group ID : %s", err.Error()))
@@ -202,34 +205,39 @@ func convertFromBytes(bytes int64) (float64, string) {
 
 // fetchByName updates IDs of the corresponding name present in plan
 func fetchByName(client client.Client, plan *models.Volume) (bool, string) {
-	if plan.HostID.ValueString() != "" && plan.HostName.ValueString() != "" {
-		return false, "Host ID or Host Name"
-	} else if plan.HostName.ValueString() != "" {
-		hostMap, _ := client.PStoreClient.GetHostByName(context.Background(), plan.HostName.ValueString())
+	if plan.HostName.ValueString() != "" {
+		hostMap, err := client.PStoreClient.GetHostByName(context.Background(), plan.HostName.ValueString())
+		if err != nil {
+			return false, "Invalid host name"
+		}
 		plan.HostID = types.StringValue(hostMap.ID)
 	}
-	if plan.HostGroupID.ValueString() != "" && plan.HostGroupName.ValueString() != "" {
-		return false, "Host Group ID or Host Group Name"
-	} else if plan.HostGroupName.ValueString() != "" {
-		hostGroupMap, _ := client.PStoreClient.GetHostGroupByName(context.Background(), plan.HostGroupName.ValueString())
+	if plan.HostGroupName.ValueString() != "" {
+		hostGroupMap, err := client.PStoreClient.GetHostGroupByName(context.Background(), plan.HostGroupName.ValueString())
+		if err != nil {
+			return false, "Invalid host group name"
+		}
 		plan.HostGroupID = types.StringValue(hostGroupMap.ID)
 	}
-	if plan.VolumeGroupID.ValueString() != "" && plan.VolumeGroupName.ValueString() != "" {
-		return false, "Volume Group ID or Volume Group Name"
-	} else if plan.VolumeGroupName.ValueString() != "" {
-		volGroupMap, _ := client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
+	if plan.VolumeGroupName.ValueString() != "" {
+		volGroupMap, err := client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
+		if err != nil {
+			return false, "Invalid volume group name"
+		}
 		plan.VolumeGroupID = types.StringValue(volGroupMap.ID)
 	}
-	if plan.ApplianceID.ValueString() != "" && plan.ApplianceName.ValueString() != "" {
-		return false, "Appliance ID or Appliance Name"
-	} else if plan.ApplianceName.ValueString() != "" {
-		applianceMap, _ := client.PStoreClient.GetApplianceByName(context.Background(), plan.ApplianceName.ValueString())
+	if plan.ApplianceName.ValueString() != "" {
+		applianceMap, err := client.PStoreClient.GetApplianceByName(context.Background(), plan.ApplianceName.ValueString())
+		if err != nil {
+			return false, "Invalid Appliance name"
+		}
 		plan.ApplianceID = types.StringValue(applianceMap.ID)
 	}
-	if plan.ProtectionPolicyID.ValueString() != "" && plan.ProtectionPolicyName.ValueString() != "" {
-		return false, "Protection Policy ID or Protection Policy Name"
-	} else if plan.ProtectionPolicyName.ValueString() != "" {
-		policyMap, _ := client.PStoreClient.GetApplianceByName(context.Background(), plan.ProtectionPolicyName.ValueString())
+	if plan.ProtectionPolicyName.ValueString() != "" {
+		policyMap, err := client.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
+		if err != nil {
+			return false, "Invalid Protection policy name"
+		}
 		plan.ProtectionPolicyID = types.StringValue(policyMap.ID)
 	}
 	return true, ""
@@ -283,6 +291,7 @@ func modifyVolume(planVol models.Volume, valInBytes int64, volID string, client 
 		Size:                valInBytes,
 		ProtectionPolicyID:  planVol.ProtectionPolicyID.ValueString(),
 		PerformancePolicyID: planVol.PerformancePolicyID.ValueString(),
+		Description:         planVol.Description.ValueString(),
 	}
 
 	_, err := client.PStoreClient.ModifyVolume(context.Background(), vgModify, volID)
