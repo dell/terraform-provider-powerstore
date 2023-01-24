@@ -51,12 +51,10 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 		volState.HostGroupID = types.StringValue("")
 		volState.LogicalUnitNumber = types.Int64Value(0)
 	}
-	if operation == operationCreate {
-		volState.MinimumSize = volPlan.MinimumSize
-		volState.SectorSize = volPlan.SectorSize
-	}
 
 	if operation == operationCreate || operation == operationUpdate {
+		volState.MinimumSize = volPlan.MinimumSize
+		volState.SectorSize = volPlan.SectorSize
 		volState.ApplianceName = volPlan.ApplianceName
 		volState.HostName = volPlan.HostName
 		volState.HostGroupName = volPlan.HostGroupName
@@ -245,7 +243,7 @@ func fetchByName(client client.Client, plan *models.Volume) (bool, string) {
 
 func detachHostFromVolume(stateVol, planVol models.Volume, client client.Client, volID string) error {
 	var err error
-	if (stateVol.HostID.ValueString() != "" && planVol.HostID.ValueString() == "") || (stateVol.HostGroupID.ValueString() != "" && planVol.HostGroupID.ValueString() == "") {
+	if stateVol.HostID.ValueString() != "" || stateVol.HostGroupID.ValueString() != "" {
 		volumeHostMapping := &pstore.HostVolumeDetach{
 			VolumeID: &volID,
 		}
@@ -260,7 +258,7 @@ func detachHostFromVolume(stateVol, planVol models.Volume, client client.Client,
 
 func attachHostFromVolume(stateVol, planVol models.Volume, client client.Client, volID string) error {
 	var err error
-	if (stateVol.HostID.ValueString() == "" && planVol.HostID.ValueString() != "") || (stateVol.HostGroupID.ValueString() == "" && planVol.HostGroupID.ValueString() != "") {
+	if planVol.HostID.ValueString() != "" || planVol.HostGroupID.ValueString() != "" {
 		volumeHostMapping := &pstore.HostVolumeAttach{
 			VolumeID: &volID,
 		}
@@ -285,11 +283,11 @@ func detachVolumeGroup(ctx context.Context, stateVol models.Volume, client clien
 }
 
 func modifyVolume(planVol models.Volume, valInBytes int64, volID string, client client.Client) error {
-
+	protectionPolicy := planVol.ProtectionPolicyID.ValueString()
 	vgModify := &pstore.VolumeModify{
 		Name:                planVol.Name.ValueString(),
 		Size:                valInBytes,
-		ProtectionPolicyID:  planVol.ProtectionPolicyID.ValueString(),
+		ProtectionPolicyID:  &protectionPolicy,
 		PerformancePolicyID: planVol.PerformancePolicyID.ValueString(),
 		Description:         planVol.Description.ValueString(),
 	}
