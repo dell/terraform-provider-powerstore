@@ -119,11 +119,11 @@ func TestAccProtectionPolicy_CreateWithMutuallyExclusiveParams(t *testing.T) {
 	tests := []resource.TestStep{
 		{
 			Config:      ProtectionPolicyParamsWithSnapshotIDAndName,
-			ExpectError: regexp.MustCompile("either of snapshot rule id or snapshot rule name should be present"),
+			ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 		},
 		{
 			Config:      ProtectionPolicyParamsWithReplicationIDAndName,
-			ExpectError: regexp.MustCompile("either of replication rule id or replication rule name should be present"),
+			ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 		},
 	}
 
