@@ -100,19 +100,19 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 	tests := []resource.TestStep{
 		{
 			Config:      SnapshotRuleParamsWithInvalidInterval,
-			ExpectError: regexp.MustCompile("Attribute interval value must be one of"),
+			ExpectError: regexp.MustCompile(InvalidIntervalErrorMsg),
 		},
 		{
 			Config:      SnapshotRuleParamsWithInvalidTimezone,
-			ExpectError: regexp.MustCompile("Attribute timezone value must be one of"),
+			ExpectError: regexp.MustCompile(InvalidTimezoneErrorMsg),
 		},
 		{
 			Config:      SnapshotRuleParamsWithInvalidDaysOfWeek,
-			ExpectError: regexp.MustCompile("Attribute days_of_week[^ ]* value must be one of"),
+			ExpectError: regexp.MustCompile(InvalidDaysOfWeekErrorMsg),
 		},
 		{
 			Config:      SnapshotRuleParamsWithInvalidNasAccessType,
-			ExpectError: regexp.MustCompile("Attribute nas_access_type value must be one of"),
+			ExpectError: regexp.MustCompile(InvalidNasAccessTypeErrorMsg),
 		},
 	}
 
@@ -139,7 +139,7 @@ func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 				Config:        SnapshotRuleParamsWithTimeOfDay,
 				ResourceName:  "powerstore_snapshotrule.test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not read snapshot rule with error invalid-id"),
+				ExpectError:   regexp.MustCompile(ImportSRDetailErrorMsg),
 				ImportStateId: "invalid-id",
 			},
 		},

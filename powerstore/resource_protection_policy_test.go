@@ -77,7 +77,7 @@ func TestAccProtectionPolicy_CreateWithInvalidValues(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProtectionPoliycParamsCreateServerError,
-				ExpectError: regexp.MustCompile("Could not create protection policy"),
+				ExpectError: regexp.MustCompile(CreatePPDetailErrorMsg),
 			},
 		},
 	})
@@ -104,7 +104,7 @@ func TestAccProtectionPolicy_UpdateError(t *testing.T) {
 			},
 			{
 				Config:      ProtectionPoliycParamsCreateServerError,
-				ExpectError: regexp.MustCompile("Could not update"),
+				ExpectError: regexp.MustCompile(UpdatePPDetailErrorMsg),
 			},
 		},
 	})
@@ -119,11 +119,11 @@ func TestAccProtectionPolicy_CreateWithMutuallyExclusiveParams(t *testing.T) {
 	tests := []resource.TestStep{
 		{
 			Config:      ProtectionPolicyParamsWithSnapshotIDAndName,
-			ExpectError: regexp.MustCompile("either of snapshot rule id or snapshot rule name should be present"),
+			ExpectError: regexp.MustCompile(SnapshotIDSnapshotNameErroMsg),
 		},
 		{
 			Config:      ProtectionPolicyParamsWithReplicationIDAndName,
-			ExpectError: regexp.MustCompile("either of replication rule id or replication rule name should be present"),
+			ExpectError: regexp.MustCompile(ReplicationIDReplicationNameErrorMsg),
 		},
 	}
 
@@ -196,7 +196,7 @@ func TestAccProtectionPolicy_ImportFailure(t *testing.T) {
 				Config:        ProtectionPolicyParamsCreate,
 				ResourceName:  "powerstore_protectionpolicy.test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not read protection policy with error invalid-id"),
+				ExpectError:   regexp.MustCompile(ImportPPDetailErrorMsg),
 				ImportStateId: "invalid-id",
 			},
 		},
