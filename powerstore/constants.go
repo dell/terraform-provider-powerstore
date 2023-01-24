@@ -97,3 +97,4 @@ const (
 	//ReplicationIDReplicationNameErrorMsg specifies error caused if both replication_rule_id and replication_rule_name are specified while creating protection policy
 	ReplicationIDReplicationNameErrorMsg = "either of replication rule id or replication rule name should be present"
 )
+
