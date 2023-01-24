@@ -92,9 +92,6 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 				Description:         "The time of the day to take a daily snapshot, with format hh:mm, mutually exclusive with interval parameter.",
 				MarkdownDescription: "The time of the day to take a daily snapshot, with format hh:mm.",
 				Validators: []validator.String{
-					stringvalidator.ExactlyOneOf(path.Expressions{
-						path.MatchRoot("interval"),
-					}...),
 
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`^[0-9]{2}:[0-9]{2}$`),
