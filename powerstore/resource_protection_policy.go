@@ -90,12 +90,12 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 				Description:         "List of the snapshot rule IDs that are associated with this policy.",
 				MarkdownDescription: "List of the snapshot rule IDs that are associated with this policy.",
 				Validators: []validator.Set{
-
-					setvalidator.SizeAtLeast(1),
-
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
 					),
+					setvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("snapshot_rule_names"),
+					}...),
 				},
 			},
 
@@ -106,9 +106,6 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 				Description:         "List of the snapshot rule names that are associated with this policy.",
 				MarkdownDescription: "List of the snapshot rule names that are associated with this policy.",
 				Validators: []validator.Set{
-
-					setvalidator.SizeAtLeast(1),
-
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
 					),
@@ -122,12 +119,12 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 				Description:         "List of the replication rule IDs that are associated with this policy.",
 				MarkdownDescription: "List of the replication rule IDs that are associated with this policy.",
 				Validators: []validator.Set{
-
-					setvalidator.SizeAtLeast(1),
-
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
 					),
+					setvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("replication_rule_names"),
+					}...),
 				},
 			},
 
@@ -138,9 +135,6 @@ func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.Sche
 				Description:         "List of the replication rule names that are associated with this policy.",
 				MarkdownDescription: "List of the replication rule names that are associated with this policy.",
 				Validators: []validator.Set{
-
-					setvalidator.SizeAtLeast(1),
-
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
 					),
