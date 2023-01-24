@@ -245,9 +245,6 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 							string(gopowerstore.DaysOfWeekEnumSunday),
 						}...),
 					),
-					listvalidator.AlsoRequires(path.Expressions{
-						path.MatchRoot("time_of_day"),
-					}...),
 				},
 			},
 
