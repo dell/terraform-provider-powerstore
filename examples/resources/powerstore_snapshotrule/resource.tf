@@ -1,5 +1,3 @@
-# powerstore_snapshotrule example
-
 resource "powerstore_snapshotrule" "test" {
   name = "test_snapshotrule_1"
   # interval = "Four_Hours"

@@ -104,7 +104,7 @@ func TestAccVolume_CreateVolumeWithPB(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      VolumeParamsWithPB,
-				ExpectError: regexp.MustCompile("Invalid Attribute Value Match"),
+				ExpectError: regexp.MustCompile(InvalidAttributeErrorMsg),
 			},
 		},
 	})
@@ -122,7 +122,7 @@ func TestAccVolume_CreateVolumeWithInvalidCapUnit(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      VolumeParamsWithInvalidCapUnit,
-				ExpectError: regexp.MustCompile("Invalid Attribute Value Match"),
+				ExpectError: regexp.MustCompile(InvalidAttributeErrorMsg),
 			},
 		},
 	})
@@ -169,7 +169,7 @@ func TestAccVolume_UpdateVolumeGbError1(t *testing.T) {
 			},
 			{
 				Config:      VolumeUpdateGbError,
-				ExpectError: regexp.MustCompile("Error: Failed to update all parameters of Volume"),
+				ExpectError: regexp.MustCompile(InvalidSizeErrorMsg),
 			},
 		},
 	})
@@ -237,7 +237,7 @@ func TestAccVolume_UpdateVolumeInvalidApplianceID(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "appliance_id", "Z1")),
-				ExpectError: regexp.MustCompile("Unable to find an appliance"),
+				ExpectError: regexp.MustCompile(InvalidAppliaceErrorMsg),
 			},
 		},
 	})
@@ -258,7 +258,7 @@ func TestAccVolume_UpdateVolumePerformancePolicyID(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-				ExpectError: regexp.MustCompile("Invalid Attribute Value Match"),
+				ExpectError: regexp.MustCompile(InvalidAttributeErrorMsg),
 			},
 		},
 	})
@@ -417,7 +417,7 @@ func TestAccVolume_UpdateHostAndHostGroupID(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-				ExpectError: regexp.MustCompile("Either of HostID and Host GroupID should be present."),
+				ExpectError: regexp.MustCompile(HostIDHostGroupErrorMsg),
 			},
 		},
 	})
@@ -458,7 +458,7 @@ func TestAccVolume_AddHostAndHostGroupID(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-				ExpectError: regexp.MustCompile("Could not create volume Either HostID or HostGroupID can be present"),
+				ExpectError: regexp.MustCompile(CreateVolumeHostIDErrorMsg),
 			},
 		},
 	})
@@ -478,7 +478,7 @@ func TestAccVolume_ImportFailure(t *testing.T) {
 				Config:        VolumeParams,
 				ResourceName:  "powerstore_volume.volume_create_test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not read volume with error invalid-id"),
+				ExpectError:   regexp.MustCompile(ImportVolumeDetailErrorMsg),
 				ImportStateId: "invalid-id",
 			},
 		},

@@ -74,11 +74,11 @@ func TestAccStorageContainer_CreateWithInvalidValues(t *testing.T) {
 	tests := []resource.TestStep{
 		{
 			Config:      StorageContainerParamsInvalidStorageProtocol,
-			ExpectError: regexp.MustCompile("Attribute storage_protocol value must be one of"),
+			ExpectError: regexp.MustCompile(InvalidStorageProtocolErrorMsg),
 		},
 		{
 			Config:      StorageContainerParamsCreateServerError,
-			ExpectError: regexp.MustCompile("Could not create Storage Container"),
+			ExpectError: regexp.MustCompile(CreateSCDetailErrorMsg),
 		},
 	}
 
@@ -112,7 +112,7 @@ func TestAccStorageContainer_UpdateError(t *testing.T) {
 			},
 			{
 				Config:      StorageContainerParamsCreateServerError,
-				ExpectError: regexp.MustCompile("Could not update"),
+				ExpectError: regexp.MustCompile(UpdateSCDetailErrorMsg),
 			},
 		},
 	})
@@ -132,7 +132,7 @@ func TestAccStorageContainer_ImportFailure(t *testing.T) {
 				Config:        StorageContainerParamsCreate,
 				ResourceName:  "powerstore_storagecontainer.test",
 				ImportState:   true,
-				ExpectError:   regexp.MustCompile("Could not read storageContainerID with error invalid-id"),
+				ExpectError:   regexp.MustCompile(ImportSCDetailErrorMsg),
 				ImportStateId: "invalid-id",
 			},
 		},

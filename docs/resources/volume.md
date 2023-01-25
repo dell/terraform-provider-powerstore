@@ -13,8 +13,6 @@ description: |-
 ## Example Usage
 
 ```terraform
-# powerstore_snapshotrule example
-
 resource "powerstore_volume" "test" {
   name = "test_vol"
   size = 7516192768
