@@ -92,9 +92,8 @@ const (
 	InvalidNasAccessTypeErrorMsg = "Attribute nas_access_type value must be one of"
 
 	//SnapshotIDSnapshotNameErroMsg specifies error caused if both snapshot_rule_id and snapshot_rule_name are specified while creating protection policy
-	SnapshotIDSnapshotNameErroMsg = "either of snapshot rule id or snapshot rule name should be present"
+	SnapshotIDSnapshotNameErroMsg = "Invalid Attribute Combination"
 
 	//ReplicationIDReplicationNameErrorMsg specifies error caused if both replication_rule_id and replication_rule_name are specified while creating protection policy
-	ReplicationIDReplicationNameErrorMsg = "either of replication rule id or replication rule name should be present"
+	ReplicationIDReplicationNameErrorMsg = "Invalid Attribute Combination"
 )
-
