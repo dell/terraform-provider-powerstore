@@ -2,7 +2,7 @@ terraform {
   required_providers {
     powerstore = {
       version = "0.0.1"
-      source = "dell/powerstore"
+      source = "registry.terraform.io/dell/powerstore"
     }
   }
 }
@@ -26,5 +26,6 @@ resource "powerstore_snapshotrule" "test1" {
   delete_snaps = true
 }
 
-resource "powerstore_snapshotrule" "test1" {
-}
+//Below example is for import operation
+/*resource "powerstore_snapshotrule" "terraform-provider-test-import" {
+}*/

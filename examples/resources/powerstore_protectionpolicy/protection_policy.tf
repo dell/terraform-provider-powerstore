@@ -2,7 +2,7 @@ terraform {
   required_providers {
     powerstore = {
       version = "0.0.1"
-      source = "dell/powerstore"
+      source = "registry.terraform.io/dell/powerstore"
     }
   }
 }
@@ -22,6 +22,6 @@ resource "powerstore_protectionpolicy" "terraform-provider-test1" {
   replication_rule_names = ["Emalee-SRA-7416-Rep"]
 }
 
-resource "powerstore_protectionpolicy" "terraform-provider-test-import"{
-
-}
+//Below example is for import operation
+/*resource "powerstore_protectionpolicy" "terraform-provider-test-import"{
+}*/
