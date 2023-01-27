@@ -25,7 +25,7 @@ resource "powerstore_volume" "test" {
   sector_size=512
   protection_policy_id=""
   performance_policy_id="default_medium"
-  app_type=""
+  app_type="Relational_Databases_Other"
   app_type_other=""
 }
 ```
