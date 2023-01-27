@@ -14,13 +14,6 @@ provider "powerstore" {
   insecure = true
 }
 
-resource "powerstore_storagecontainer" "test1" {
-  name = "scterraform1"
-  quota = 10737418240
-  storage_protocol = "SCSI"
-  high_water_mark = 70
+data "powerstore_volume" "test1" {
+        name = "tf_vol"
 }
-
-//Below example is for import operation
-/*resource "powerstore_storagecontainer" "terraform-provider-test-import" {
-}*/

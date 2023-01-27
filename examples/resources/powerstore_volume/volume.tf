@@ -2,7 +2,7 @@ terraform {
   required_providers {
     powerstore = {
       version = "0.0.1"
-      source = "powerstore.com/powerstoreprovider/powerstore"
+      source = "registry.terraform.io/dell/powerstore"
     }
   }
 }
@@ -26,9 +26,10 @@ resource "powerstore_volume" "test1" {
   sector_size=512
   protection_policy_id=""
   performance_policy_id="default_medium"
-  app_type=""
+  app_type="Relational_Databases_Other"
   app_type_other=""
 }
 
-resource "powerstore_volume" "test1" {
-}
+//Below example is for import operation
+/*resource "powerstore_volume" "terraform-provider-test-import" {
+}*/
