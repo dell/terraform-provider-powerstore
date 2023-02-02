@@ -16,9 +16,9 @@ provider "powerstore" {
 
 resource "powerstore_storagecontainer" "test1" {
   name = "scterraform1"
-  quota = 10737418240
-  storage_protocol = "SCSI"
-  high_water_mark = 70
+  quota = 0
+  storage_protocol = "NVMe"
+  high_water_mark = 100
 }
 
 //Below example is for import operation

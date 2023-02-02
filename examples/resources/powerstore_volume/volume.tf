@@ -16,9 +16,9 @@ provider "powerstore" {
 
 resource "powerstore_volume" "test1" {
   name = "test_vol1"
-  size = 7516192768
+  size = 10
   description = "Creating volume"
-  host_id=""
+  host_id="00b2de1b-b200-41b0-a1a8-46d8f4613304"
   host_group_id=""
   appliance_id="A1"
   volume_group_id=""

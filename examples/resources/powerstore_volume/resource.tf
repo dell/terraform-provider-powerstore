@@ -1,9 +1,10 @@
 resource "powerstore_volume" "test" {
   name = "test_vol"
-  size = 7516192768
+  size = 1
+  capacity_unit = "TB"
   description = "Creating volume"
   host_id=""
-  host_group_id=""
+  host_group_name = "tf_hostgroup1"
   appliance_id="A1"
   volume_group_id=""
   min_size=1048576

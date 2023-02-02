@@ -18,8 +18,8 @@ resource "powerstore_protectionpolicy" "terraform-provider-test1" {
   # (resource arguments)
   description = "Creating Protection Policy"
   name = "test_protection_policy1"
-  snapshot_rule_names = ["vsi_aut_snaprule","snapshot_test_emi","test_snapshotrule_1","snap-use-for-nfs-test"]
-  replication_rule_names = ["Emalee-SRA-7416-Rep"]
+  snapshot_rule_names = ["snapshot_test_emi"]
+  replication_rule_ids = ["5d45b173-9a85-473e-8ab8-e107f8b8085e"]
 }
 
 //Below example is for import operation
