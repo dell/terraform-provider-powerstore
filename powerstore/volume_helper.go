@@ -171,6 +171,9 @@ func validateUpdate(ctx context.Context, planVol, stateVol models.Volume) (bool,
 	if planVol.SectorSize != stateVol.SectorSize {
 		return false, "Sector Size cannot be modified."
 	}
+	if planVol.MinimumSize != stateVol.MinimumSize {
+		return false, "Minimum Size cannot be modified."
+	}
 	return true, ""
 }
 
