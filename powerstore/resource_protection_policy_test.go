@@ -25,8 +25,8 @@ func TestAccProtectionPolicy_Create(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 		},
@@ -48,8 +48,8 @@ func TestAccProtectionPolicy_Update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 			{
@@ -57,8 +57,8 @@ func TestAccProtectionPolicy_Update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test UpdateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 		},
@@ -98,8 +98,8 @@ func TestAccProtectionPolicy_UpdateError(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 			{
@@ -151,8 +151,8 @@ func TestAccProtectionPolicy_CreateWithSnapshotRuleName(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_names.0", "test_snapshotrule_1"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", "5d45b173-9a85-473e-8ab8-e107f8b8085e"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_names.0", snapshotRuleName),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
 				),
 			},
 		},
@@ -174,8 +174,8 @@ func TestAccProtectionPolicy_CreateWithReplicationRuleName(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", "4be81573-c0e6-4956-a32f-a0e396a9b86d"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_names.0", "Emalee-SRA-7416-Rep"),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_names.0", replicationRuleName),
 				),
 			},
 		},
@@ -225,8 +225,8 @@ func TestAccProtectionPolicy_ImportSuccess(t *testing.T) {
 					assert.Equal(t, "protectionpolicy_acc_new", s[0].Attributes["name"])
 					assert.Equal(t, "Test CreateProtectionPolicy", s[0].Attributes["description"])
 					assert.Equal(t, "Protection", s[0].Attributes["type"])
-					assert.Equal(t, "5d45b173-9a85-473e-8ab8-e107f8b8085e", s[0].Attributes["replication_rule_ids.0"])
-					assert.Equal(t, "4be81573-c0e6-4956-a32f-a0e396a9b86d", s[0].Attributes["snapshot_rule_ids.0"])
+					assert.Equal(t, replicationRuleID, s[0].Attributes["replication_rule_ids.0"])
+					assert.Equal(t, snapshotRuleID, s[0].Attributes["snapshot_rule_ids.0"])
 					return nil
 				},
 			},
@@ -244,8 +244,8 @@ provider "powerstore" {
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test CreateProtectionPolicy"
-	replication_rule_ids = ["5d45b173-9a85-473e-8ab8-e107f8b8085e"]
-	snapshot_rule_ids = ["4be81573-c0e6-4956-a32f-a0e396a9b86d"]
+	replication_rule_ids = ["` + replicationRuleID + `"]
+	snapshot_rule_ids = ["` + snapshotRuleID + `"]
 }
 `
 
@@ -259,8 +259,8 @@ provider "powerstore" {
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
-	replication_rule_ids = ["5d45b173-9a85-473e-8ab8-e107f8b8085e"]
-	snapshot_rule_ids = ["4be81573-c0e6-4956-a32f-a0e396a9b86d"]
+	replication_rule_ids = ["` + replicationRuleID + `"]
+	snapshot_rule_ids = ["` + snapshotRuleID + `"]
 }
 `
 
@@ -287,8 +287,8 @@ provider "powerstore" {
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
-	snapshot_rule_names = ["test_snapshotrule_1"]
-	snapshot_rule_ids = ["4be81573-c0e6-4956-a32f-a0e396a9b86d"]
+	snapshot_rule_names = ["` + snapshotRuleName + `"]
+	snapshot_rule_ids = ["` + snapshotRuleID + `"]
 }
 `
 
@@ -302,8 +302,8 @@ provider "powerstore" {
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
-	replication_rule_names = ["Emalee-SRA-7416-Rep"]
-	replication_rule_ids = ["5d45b173-9a85-473e-8ab8-e107f8b8085e"]
+	replication_rule_names = ["` + replicationRuleName + `"]
+	replication_rule_ids = ["` + replicationRuleID + `"]
 }
 `
 
@@ -317,8 +317,8 @@ provider "powerstore" {
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test CreateProtectionPolicy"
-	snapshot_rule_names = ["test_snapshotrule_1"]
-	replication_rule_ids = ["5d45b173-9a85-473e-8ab8-e107f8b8085e"]
+	snapshot_rule_names = ["` + snapshotRuleName + `"]
+	replication_rule_ids = ["` + replicationRuleID + `"]
 }
 `
 
@@ -332,7 +332,7 @@ provider "powerstore" {
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test CreateProtectionPolicy"
-	snapshot_rule_ids = ["4be81573-c0e6-4956-a32f-a0e396a9b86d"]
-	replication_rule_names = ["Emalee-SRA-7416-Rep"]
+	snapshot_rule_ids = ["` + snapshotRuleID + `"]
+	replication_rule_names = ["` + replicationRuleName + `"]
 }
 `
