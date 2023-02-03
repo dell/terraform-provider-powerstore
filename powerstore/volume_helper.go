@@ -3,10 +3,11 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	pstore "github.com/dell/gopowerstore"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+
+	pstore "github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 const (
@@ -158,7 +159,21 @@ func validateUpdate(ctx context.Context, planVol, stateVol models.Volume) (bool,
 	if !planVol.PerformancePolicyID.IsUnknown() && planVol.PerformancePolicyID.ValueString() == "" {
 		return false, "Performance Policy if present cannot be empty. Either remove the field or set desired value"
 	}
-
+	if !planVol.LogicalUnitNumber.IsUnknown() && planVol.LogicalUnitNumber != stateVol.LogicalUnitNumber {
+		return false, "Logical Unit Number cannot be modified."
+	}
+	if !planVol.ApplianceID.IsUnknown() && planVol.ApplianceID.ValueString() != stateVol.ApplianceID.ValueString() {
+		return false, "Appliance ID cannot be modified."
+	}
+	if planVol.ApplianceName.ValueString() != stateVol.ApplianceName.ValueString() {
+		return false, "Appliance Name cannot be modified."
+	}
+	if planVol.SectorSize != stateVol.SectorSize {
+		return false, "Sector Size cannot be modified."
+	}
+	if planVol.MinimumSize != stateVol.MinimumSize {
+		return false, "Minimum Size cannot be modified."
+	}
 	return true, ""
 }
 
@@ -287,9 +302,11 @@ func modifyVolume(planVol models.Volume, valInBytes int64, volID string, client 
 	vgModify := &pstore.VolumeModify{
 		Name:                planVol.Name.ValueString(),
 		Size:                valInBytes,
-		ProtectionPolicyID:  &protectionPolicy,
+		ProtectionPolicyID:  protectionPolicy,
 		PerformancePolicyID: planVol.PerformancePolicyID.ValueString(),
 		Description:         planVol.Description.ValueString(),
+		AppType:             planVol.AppType.ValueString(),
+		AppTypeOther:        planVol.AppTypeOther.ValueString(),
 	}
 
 	_, err := client.PStoreClient.ModifyVolume(context.Background(), vgModify, volID)

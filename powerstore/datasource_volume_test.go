@@ -1,10 +1,11 @@
 package powerstore
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"os"
 	"regexp"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 // Test to Fetch Volume
@@ -43,7 +44,7 @@ provider "powerstore" {
 }
 
 data "powerstore_volume" "test1" {
-	name = "tf_vol"
+	name = "` + volumeName + `"
 }
 `
 var VolumeDataSourceparamsNameNegative = `
@@ -55,7 +56,7 @@ provider "powerstore" {
 }
 
 data "powerstore_volume" "test1" {
-	name = "tf"
+	name = "invalid-name"
 }
 `
 
@@ -68,7 +69,7 @@ provider "powerstore" {
 }
 
 data "powerstore_volume" "test1" {
-	id = "a0b0c773-1c50-425a-89dc-aef9162ec787"
+	id = "` + volumeID + `"
 }
 `
 

@@ -20,6 +20,12 @@ var hostGroupID = os.Getenv("HOST_GROUP_ID")
 var volumeGroupID = os.Getenv("VOLUME_GROUP_ID")
 var hostName = os.Getenv("HOST_NAME")
 var hostGroupName = os.Getenv("HOST_GROUP_NAME")
+var volumeID = os.Getenv("VOLUME_ID")
+var volumeName = os.Getenv("VOLUME_NAME")
+var snapshotRuleID = os.Getenv("SNAPSHOT_RULE_ID")
+var replicationRuleID = os.Getenv("REPLICATION_RULE_ID")
+var snapshotRuleName = os.Getenv("SNAPSHOT_RULE_NAME")
+var replicationRuleName = os.Getenv("REPLICATION_RULE_NAME")
 
 func init() {
 	testProvider = New("test")()
