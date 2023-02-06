@@ -12,5 +12,5 @@ provider "powerstore" {
   password = var.password
   endpoint = var.endpoint
   insecure = true
-  #timeout = 120
+  timeout = var.timeout
 }

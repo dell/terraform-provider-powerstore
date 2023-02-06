@@ -8,6 +8,11 @@ variable "password" {
   description = "Stores the password of PowerStore host."
 }
 
+variable "timeout" {
+  type=string
+  description = "Stores the timeout of PowerStore host."
+}
+
 variable "endpoint" {
   type=string
   description = "Stores the endpoint of PowerStore host. eg: https://10.1.1.1:443 where 443 is port where API requests are getting accepted"
