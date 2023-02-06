@@ -1,18 +1,9 @@
-terraform {
-  required_providers {
-    powerstore = {
-      version = "0.0.1"
-      source = "registry.terraform.io/dell/powerstore"
-    }
-  }
-}
+# Commands to run this tf file : terraform init && terraform plan && terraform apply
+# Create, Update, Delete is supported for this resource
+# To import , check volume_import.tf for more info
+# name and size are the required attributes to create and update
+# To check which attributes of the volume can be updated, please refer Product Guide in the documentation
 
-provider "powerstore" {
-  username = "${var.username}"
-  password = "${var.password}"
-  endpoint = "${var.endpoint}"
-  insecure = true
-}
 
 resource "powerstore_volume" "test1" {
   name = "test_vol1"
@@ -29,7 +20,3 @@ resource "powerstore_volume" "test1" {
   app_type="Relational_Databases_Other"
   app_type_other=""
 }
-
-//Below example is for import operation
-/*resource "powerstore_volume" "terraform-provider-test-import" {
-}*/

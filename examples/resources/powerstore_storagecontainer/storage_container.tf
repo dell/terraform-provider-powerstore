@@ -1,18 +1,9 @@
-terraform {
-  required_providers {
-    powerstore = {
-      version = "0.0.1"
-      source = "registry.terraform.io/dell/powerstore"
-    }
-  }
-}
+# Commands to run this tf file : terraform init && terraform plan && terraform apply
+# Create, Update, Delete is supported for this resource
+# To import , check storage_container_import.tf for more info
+# name is the required attribute to create and update
+# To check which attributes of the storage container can be updated, please refer Product Guide in the documentation
 
-provider "powerstore" {
-  username = "${var.username}"
-  password = "${var.password}"
-  endpoint = "${var.endpoint}"
-  insecure = true
-}
 
 resource "powerstore_storagecontainer" "test1" {
   name = "scterraform1"
@@ -20,7 +11,3 @@ resource "powerstore_storagecontainer" "test1" {
   storage_protocol = "SCSI"
   high_water_mark = 70
 }
-
-//Below example is for import operation
-/*resource "powerstore_storagecontainer" "terraform-provider-test-import" {
-}*/

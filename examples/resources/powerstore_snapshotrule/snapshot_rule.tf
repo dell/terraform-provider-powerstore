@@ -1,18 +1,9 @@
-terraform {
-  required_providers {
-    powerstore = {
-      version = "0.0.1"
-      source = "registry.terraform.io/dell/powerstore"
-    }
-  }
-}
+# Commands to run this tf file : terraform init && terraform plan && terraform apply
+# Create, Update, Delete is supported for this resource
+# To import , check snapshot_rule_import.tf for more info
+# name and interval OR name, time_of_day, days_of_week and timezone are required attributes to create and update
+# To check which attributes of the snapshot rule can be updated, please refer Product Guide in the documentation
 
-provider "powerstore" {
-  username = "${var.username}"
-  password = "${var.password}"
-  endpoint = "${var.endpoint}"
-  insecure = true
-}
 
 resource "powerstore_snapshotrule" "test1" {
   name = "test_snapshotrule_2"
