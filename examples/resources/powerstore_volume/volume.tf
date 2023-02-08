@@ -7,7 +7,7 @@
 
 resource "powerstore_volume" "test1" {
   name = "test_vol1"
-  size = 7516192768
+  size = 8
   description = "Creating volume"
   host_id=""
   host_group_id=""
