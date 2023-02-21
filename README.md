@@ -1,5 +1,20 @@
-
+<!--
+Copyright (c) 2022 Dell Inc., or its subsidiaries. All Rights Reserved.
+Licensed under the Mozilla Public License Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://mozilla.org/MPL/2.0/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 # Terraform Provider for PowerStore
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](about/CODE_OF_CONDUCT.md)
+[![License](https://img.shields.io/badge/License-MPL_2.0-blue.svg)](LICENSE)
+
 
 The Terraform Provider for PowerStore is a plugin for Terraform that allows the resource management for PowerStore appliance. This provider is built by Dell Technologies CTIO (Chief Technology & Innovation Office) team. For more details on PowerStore, please refer to PowerStore Official webpage [here][powerstore-website].
 
