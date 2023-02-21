@@ -19,7 +19,7 @@ limitations under the License.
 
 The Terraform Provider for Dell PowerStore repository is inspected for security vulnerabilities via blackduck scans and static code analysis.
 
-In addition to this, there are various security checks that get executed against a branch when a pull request is created/updated.  Please refer to [pull request](CONTRIBUTING.md#Pull-requests) for more information.
+In addition to this, there are various security checks that get executed against a branch when a pull request is created/updated.  Please refer to [pull request](../about/CONTRIBUTING.md#Pull-requests) for more information.
 
 ## Reporting a vulnerability
 
