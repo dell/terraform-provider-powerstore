@@ -22,7 +22,7 @@ func main() {
 	flag.Parse()
 
 	err := providerserver.Serve(context.Background(), powerstore.New(version), providerserver.ServeOpts{
-		Address: "powerstore.com/powerstoreprovider/powerstore",
+		Address: "registry.terraform.io/dell/powerstore",
 		Debug:   debug,
 	})
 
