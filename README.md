@@ -22,29 +22,29 @@ The Terraform Provider can be used to manage volumes, snapshot rules, protection
 
 ## Table of contents
 
-+* [License](#license)
-+* [Prerequisites](#prerequisites)
-+* [List of Resources in Terraform Provider for Dell PowerStore](#list-of-resources-in-terraform-provider-for-dell-powerstore)
-+* [List of DataSources in Terraform Provider for Dell PowerStore](#list-of-datasources-in-terraform-provider-for-dell-powerstore)
-+* [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
+* [License](#license)
+* [Prerequisites](#prerequisites)
+* [List of Resources in Terraform Provider for Dell PowerStore](#list-of-resources-in-terraform-provider-for-dell-powerstore)
+* [List of DataSources in Terraform Provider for Dell PowerStore](#list-of-datasources-in-terraform-provider-for-dell-powerstore)
+* [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
 
-+## License
-+The Terraform Provider for PowerStore is released and licensed under the MPL-2.0 license. See [LICENSE](https://github.com/dell/terraform-provider-powerstore/blob/main/LICENSE) for the full terms.
+## License
+The Terraform Provider for PowerStore is released and licensed under the MPL-2.0 license. See [LICENSE](https://github.com/dell/terraform-provider-powerstore/blob/main/LICENSE) for the full terms.
 
 ## Prerequisites
 
-+| **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
-+|---------------------|-----------------------|-------|--------------------|--------------------------|
-+| v1.0.0 | 3.0 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.2 <br> 1.2.9 <br> | 1.19.x
+| **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
+|---------------------|-----------------------|-------|--------------------|--------------------------|
+| v1.0.0 | 3.0 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.2 <br> 1.2.9 <br> | 1.19.x
 
-+## List of Resources in Terraform Provider for Dell PowerStore
-+  * Volume
-+  * Snapshot Rule
-+  * Protection Policy
-+  * Storage Container
+## List of Resources in Terraform Provider for Dell PowerStore
+  * Volume
+  * Snapshot Rule
+  * Protection Policy
+  * Storage Container
 
-+## List of DataSources in Terraform Provider for Dell PowerStore
-+  * Volume
+## List of DataSources in Terraform Provider for Dell PowerStore
+  * Volume
 
 ## Installation of Terraform Provider for Dell PowerFStore
 
