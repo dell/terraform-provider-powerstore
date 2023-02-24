@@ -26,4 +26,4 @@ In addition to this, there are various security checks that get executed against
 Have you discovered a security vulnerability in this project?
 We ask you to alert the maintainers by sending an email, describing the issue, impact, and fix - if applicable.
 
-You can reach the Terraform providers for Dell PowerStore maintainers at ses.avengers@dell.com.
+You can reach the Terraform providers for Dell PowerStore maintainers at tpfdi.team@dell.com.
