@@ -10,88 +10,96 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-# Terraform Provider for PowerStore
+# Terraform Provider for Dell Technologies PowerStore
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](about/CODE_OF_CONDUCT.md)
 [![License](https://img.shields.io/badge/License-MPL_2.0-blue.svg)](LICENSE)
 
 
-The Terraform Provider for PowerStore is a plugin for Terraform that allows the resource management for PowerStore appliance. This provider is built by Dell Technologies CTIO (Chief Technology & Innovation Office) team. For more details on PowerStore, please refer to PowerStore Official webpage [here][powerstore-website].
+The Terraform Provider for Dell Technologies (Dell) PowerStore allows Data Center and IT administrators to use Hashicorp Terraform to automate and orchestrate the provisioning and management of Dell PowerStore storage systems.
 
-For general information about Terraform, visit the [official website][tf-website] and the [GitHub project page][tf-github].
+The Terraform Provider can be used to manage volumes, snapshot rules, protection policies and storage containers.
 
-[tf-website]: https://terraform.io
-[tf-github]: https://github.com/hashicorp/terraform
-[powerstore-website]: https://www.delltechnologies.com/en-in/storage/powerstore-storage-appliance.htm
+## Table of contents
 
-## Requirements
++* [License](#license)
++* [Prerequisites](#prerequisites)
++* [List of Resources in Terraform Provider for Dell PowerStore](#list-of-resources-in-terraform-provider-for-dell-powerstore)
++* [List of DataSources in Terraform Provider for Dell PowerStore](#list-of-datasources-in-terraform-provider-for-dell-powerstore)
++* [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
 
-- [Terraform](https://www.terraform.io/downloads.html) 0.13.x and later
-- [Go](https://golang.org/doc/install) 1.13.x and later (to build the provider plugin) 
++## License
++The Terraform Provider for PowerStore is released and licensed under the MPL-2.0 license. See [LICENSE](https://github.com/dell/terraform-provider-powerstore/blob/main/LICENSE) for the full terms.
 
-## Development
+## Prerequisites
 
-*Note*: This project uses [Go modules](https://blog.golang.org/using-go-modules) making it safe to work with it outside of your existing [GOPATH](http://golang.org/doc/code.html#GOPATH). We assuming the dir you choose is in variable $DIR
++| **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
++|---------------------|-----------------------|-------|--------------------|--------------------------|
++| v1.0.0 | 3.0 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.2 <br> 1.2.9 <br> | 1.19.x
 
-### steps
++## List of Resources in Terraform Provider for Dell PowerStore
++  * Volume
++  * Snapshot Rule
++  * Protection Policy
++  * Storage Container
 
-1. clone repo and build the provider binary
-```bash
-$ mkdir -p $DIR && cd $DIR
-$ git clone https://github.com/dell/terraform-provider-powerstore.git
-$ go mod download
-$ go build
-```
++## List of DataSources in Terraform Provider for Dell PowerStore
++  * Volume
 
-2. configure terraform to use this new build provider binary instead of fetching from [terraform registry](https://registry.terraform.io/)
-    1. create a file `.terraformrc` in home directory and copy the following content
-    2. replace DIR_absolute_path with the $DIR content i.e. the absolute path where repo is cloned
+## Installation of Terraform Provider for Dell PowerFStore
 
-```bash
-$ cat ~/.terraformrc
-provider_installation {
+## Installation from Terraform Registry
 
-  dev_overrides {
-      "powerstore.com/powerstoreprovider/powerstore" = "DIR_absolute_path"
+The provider will be fetched from the Terraform registry and installed by Terraform automatically.
+Create a file called `main.tf` in your workspace with the following contents
+
+```terraform
+terraform {
+  required_providers {
+    powerstore = {
+      version = "1.0.0"
+      source = "registry.terraform.io/dell/powerstore"
+    }
   }
-
-  direct {}
 }
 ```
-
-3. run example
-```bash
-$ cd $DIR/examples
-# create a .auto.tfvars file with variables and value
-# this var file will be auto loaded
-$ cat $DIR/examples/.auto.tfvars
-username=""
-password=""
-endpoint=""
-$ terraform apply
-...
-^C
+Then, in that workspace, run
+```
+terraform init
 ```
 
-4. for debugging
-```bash
-export TF_LOG_PATH=/tmp/logfile
-export GOPOWERSTORE_DEBUG="TRUE"
-export TF_LOG="debug"
+## Installation from source code
+
+Dependencies: Go 1.19.x, make, Terraform 1.2.9/1.3.2
+<br>
+<br>
+Run
+```
+git clone https://github.com/dell/terraform-provider-powerstore.git
+cd terraform-provider-powerstore
+make install
+```
+Then follow [installation from Terraform registry](#installation-from-terraform-registry)
+
+## SSL Certificate Verification
+
+For SSL verifcation on RHEL, these steps can be performed:
+ * Copy the CA certificate to the `/etc/pki/ca-trust/source/anchors` path of the host by any external means.
+ * Import the SSL certificate to host by running
+```
+update-ca-trust extract
+```
+For SSL verification on Ubuntu, these steps can be performed:
+ * Copy the CA certificate to the `/etc/ssl/certs` path of the host by any external means.
+ * Import the SSL certificate to host by running:
+ ```
+  update-ca-certificates
 ```
 
-## Documentation
+## Releasing, Maintenance and Deprecation
 
-The documentation for the provider resources can found [here](https://github.com/dell/terraform-provider-powerstore/tree/main/docs/resources)
+Terraform Provider for Dell Technnologies PowerStore follows [Semantic Versioning](https://semver.org/).
 
-## Roadmap
+New version will be released regularly if significant changes(bug fixes or new features) are made in the provider.
 
-Our roadmap for Terraform provider for PowerStore resources can be found [here](https://github.com/dell/terraform-provider-powerstore/tree/main/docs/ROADMAP.md)
-
-## Contributing
-
-The Terraform PowerStore provider is open-source and community supported.
-
-For issues, questions or feedback, join the [Dell EMC Automation community](https://www.dell.com/community/Automation/bd-p/Automation).
-
-
+Released code versions are located on tags with names of the form "vx.y.z" where x.y.z corresponds to the version number.
