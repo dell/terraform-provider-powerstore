@@ -50,7 +50,7 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 ## List of DataSources in Terraform Provider for Dell PowerStore
   * Volume
 
-## Installation of Terraform Provider for Dell PowerFStore
+## Installation of Terraform Provider for Dell PowerStore
 
 ## Installation from Terraform Registry
 
