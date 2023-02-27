@@ -17,6 +17,6 @@ limitations under the License.
 
 # Support
 
-For all your support needs or to follow the latest ongoing discussions and updates, join our Slack group. Click [Here](./) to request your invite.
+For any Terraform Provider for Dell PowerStore issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md)
 
 You can also interact with us on [GitHub](https://github.com/dell/dell-terraform-providers) by creating a [GitHub Issue](https://github.com/dell/dell-terraform-providers/issues).
