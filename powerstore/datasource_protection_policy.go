@@ -40,11 +40,11 @@ func (d *protectionPolicyDataSource) Metadata(_ context.Context, req datasource.
 
 func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: ".",
+		Description: "ProtectionPolicy DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the policy.",
-				MarkdownDescription: "Unique identifier of the policy.",
+				Description:         "Unique identifier of the protection policy.",
+				MarkdownDescription: "Unique identifier of the protection policy.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -53,8 +53,8 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Policy name.",
-				MarkdownDescription: "Policy name.",
+				Description:         "Protection Policy name.",
+				MarkdownDescription: "Protection Policy name.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
