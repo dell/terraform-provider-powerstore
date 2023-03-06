@@ -139,7 +139,7 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		Description:            plan.Description.ValueString(),
 		VolumeIds:              volumeIds,
 		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
-		ProtectionPolicyID:     plan.ProtectionPolicyId.ValueString(),
+		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 	}
 
 	//Create New Volume Group
@@ -217,7 +217,7 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.Name = types.StringValue(volGroupResponse.Name)
 	volgroupState.Description = types.StringValue(volGroupResponse.Description)
 	volgroupState.IsWriteOrderConsistent = types.BoolValue(volGroupResponse.IsWriteOrderConsistent)
-	volgroupState.ProtectionPolicyId = types.StringValue(volGroupResponse.ProtectionPolicyID)
+	volgroupState.ProtectionPolicyID = types.StringValue(volGroupResponse.ProtectionPolicyID)
 
 	//Update VolumeIDs value from Response to State
 	var volumeIds []string

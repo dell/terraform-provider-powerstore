@@ -4,12 +4,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// VolumeGroup - VolumeGroup properties
+// Volumegroup - Volumegroup properties
 type Volumegroup struct {
 	ID                     types.String `tfsdk:"id"`
 	Name                   types.String `tfsdk:"name"`
 	Description            types.String `tfsdk:"description"`
 	VolumeIDs              types.Set    `tfsdk:"volume_ids"`
 	IsWriteOrderConsistent types.Bool   `tfsdk:"is_write_order_consistent"`
-	ProtectionPolicyId     types.String `tfsdk:"protection_policy_id"`
+	ProtectionPolicyID     types.String `tfsdk:"protection_policy_id"`
 }
