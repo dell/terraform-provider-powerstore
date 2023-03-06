@@ -26,6 +26,7 @@ var snapshotRuleID = os.Getenv("SNAPSHOT_RULE_ID")
 var replicationRuleID = os.Getenv("REPLICATION_RULE_ID")
 var snapshotRuleName = os.Getenv("SNAPSHOT_RULE_NAME")
 var replicationRuleName = os.Getenv("REPLICATION_RULE_NAME")
+var protectionPolicyID = os.Getenv("PROTECTION_POLICY_ID")
 
 func init() {
 	testProvider = New("test")()
