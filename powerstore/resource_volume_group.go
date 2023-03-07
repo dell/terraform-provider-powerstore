@@ -120,6 +120,7 @@ func (r *resourceVolumeGroup) Configure(ctx context.Context, req resource.Config
 	r.client = client
 }
 
+// Create - method to create volume group resource
 func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan models.Volumegroup
 
@@ -173,9 +174,34 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 	log.Printf("Done with Create")
 }
 
+// Delete - method to delete volume group resource
 func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	log.Printf("Started with the Delete")
+
+	var state models.Volumegroup
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get Volume Group ID from state
+	volumeGroupID := state.ID.ValueString()
+
+	//Delete Volume Group by calling API
+	_, err := r.client.PStoreClient.DeleteVolumeGroup(context.Background(), volumeGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error deleting volume group",
+			"Could not delete volumeGroupID "+volumeGroupID+": "+err.Error(),
+		)
+		return
+	}
+
+	log.Printf("Done with Delete")
 }
 
+// Read - method to read volume group resource
 func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	log.Printf("Reading Volume Group")
 	var state models.Volumegroup
@@ -208,9 +234,11 @@ func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest
 	log.Printf("Done with Read")
 }
 
+// Update - method to update volume group resource
 func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
+// updateVolGroupState - method to update terraform state
 func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse gopowerstore.VolumeGroup, volGroupPlan *models.Volumegroup) {
 	// Update value from Volume Group Response to State
 	volgroupState.ID = types.StringValue(volGroupResponse.ID)

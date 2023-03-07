@@ -96,4 +96,10 @@ const (
 
 	//ReplicationIDReplicationNameErrorMsg specifies error caused if both replication_rule_id and replication_rule_name are specified while creating protection policy
 	ReplicationIDReplicationNameErrorMsg = "Invalid Attribute Combination"
+
+	//CreateVolumeGroupDetailErrorMsg specifies error caused when invalid attribute values are provided
+	CreateVolumeGroupDetailErrorMsg = "Error creating volume group"
+
+	//CreateVolumeGroupMissingErrorMsg specifies error caused when required attribute value is not provided
+	CreateVolumeGroupMissingErrorMsg = "Missing required argument"
 )
