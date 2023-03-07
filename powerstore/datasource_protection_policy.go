@@ -53,8 +53,8 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Protection Policy name.",
-				MarkdownDescription: "Protection Policy name.",
+				Description:         "Protection policy name.",
+				MarkdownDescription: "Protection policy name.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -74,7 +74,7 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 						},
 						"name": schema.StringAttribute{
 							Description:         "Protection policy name.",
-							MarkdownDescription: "Protection Policy name.",
+							MarkdownDescription: "Protection policy name.",
 							Computed:            true,
 						},
 						"description": schema.StringAttribute{
