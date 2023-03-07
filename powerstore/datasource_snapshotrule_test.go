@@ -22,7 +22,15 @@ func TestAccSnapshotRule_FetchSnapshotRule(t *testing.T) {
 				Config: SnapshotRuleDataSourceparamsName,
 			},
 			{
+				Config:      SnapshotRuleDataSourceparamsNameEmpty,
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
+			},
+			{
 				Config: SnapshotRuleDataSourceparamsID,
+			},
+			{
+				Config:      SnapshotRuleDataSourceparamsIDEmpty,
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
 			},
 			{
 				Config: SnapshotRuleDataSourceparamsAll,
@@ -47,6 +55,32 @@ data "powerstore_snapshotrule" "test1" {
 	name = "` + snapshotRuleName + `"
 }
 `
+var SnapshotRuleDataSourceparamsNameEmpty = `
+provider "powerstore" {
+	username = "` + username + `"
+	password = "` + password + `"
+	endpoint = "` + endpoint + `"
+	insecure = true
+}
+
+data "powerstore_snapshotrule" "test1" {
+	name = " "
+}
+`
+
+var SnapshotRuleDataSourceparamsIDEmpty = `
+provider "powerstore" {
+	username = "` + username + `"
+	password = "` + password + `"
+	endpoint = "` + endpoint + `"
+	insecure = true
+}
+
+data "powerstore_snapshotrule" "test1" {
+	id = " "
+}
+`
+
 var SnapshotRuleDataSourceparamsNameNegative = `
 provider "powerstore" {
 	username = "` + username + `"

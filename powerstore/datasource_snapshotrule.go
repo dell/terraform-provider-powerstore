@@ -77,8 +77,8 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 							Computed:            true,
 						},
 						"interval": schema.StringAttribute{
-							Description:         "The size of the snapshot rule.",
-							MarkdownDescription: "The size of the snapshot rule.",
+							Description:         "The interval of the snapshot rule.",
+							MarkdownDescription: "The interval of the snapshot rule.",
 							Computed:            true,
 						},
 						"time_of_day": schema.StringAttribute{
@@ -155,8 +155,8 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 							Computed:            true,
 						},
 						"policies": schema.ListNestedAttribute{
-							Description:         "List of the policies that are associated with the snapshot_rule.",
-							MarkdownDescription: "List of the policies that are associated with the snapshot_rule..",
+							Description:         "List of the protection policies that are associated with the snapshot_rule.",
+							MarkdownDescription: "List of the protection policies that are associated with the snapshot_rule..",
 							Computed:            true,
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -238,7 +238,7 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 	}
 }
 
-// updateSnapshotRuleState ruleState iterates over the snapshot rule list and update the state
+// updateSnapshotRuleState iterates over the snapshot rules list and update the state
 func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (response []models.SnapshotRuleDataSource, err error) {
 	for _, SnapshotRuleValue := range SnapshotRules {
 		daysOfWeekList := []attr.Value{}
