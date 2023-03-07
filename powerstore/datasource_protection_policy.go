@@ -62,29 +62,29 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 			},
 
 			"policies": schema.ListNestedAttribute{
-				Description:         "List of policies.",
-				MarkdownDescription: "List of policies.",
+				Description:         "List of protection policies.",
+				MarkdownDescription: "List of protection policies.",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
-							Description:         "Unique identifier of the policy.",
-							MarkdownDescription: "Unique identifier of the policy.",
+							Description:         "Unique identifier of the protection policy.",
+							MarkdownDescription: "Unique identifier of the protection policy.",
 							Computed:            true,
 						},
 						"name": schema.StringAttribute{
-							Description:         "Policy name.",
-							MarkdownDescription: "Policy name.",
+							Description:         "Protection policy name.",
+							MarkdownDescription: "Protection Policy name.",
 							Computed:            true,
 						},
 						"description": schema.StringAttribute{
-							Description:         "Policy description.",
-							MarkdownDescription: "Policy description.",
+							Description:         "Protection policy description.",
+							MarkdownDescription: "Protection policy description.",
 							Computed:            true,
 						},
 						"type": schema.StringAttribute{
-							Description:         "Type of the policy.",
-							MarkdownDescription: "Type of the policy.",
+							Description:         "Type of the protection policy.",
+							MarkdownDescription: "Type of the protection policy.",
 							Computed:            true,
 						},
 						"managed_by": schema.StringAttribute{
@@ -98,13 +98,13 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 							Computed:            true,
 						},
 						"is_read_only": schema.BoolAttribute{
-							Description:         "Indicates whether this policy can be modified.",
-							MarkdownDescription: "Indicates whether this policy can be modified.",
+							Description:         "Indicates whether this protection policy can be modified.",
+							MarkdownDescription: "Indicates whether this protection policy can be modified.",
 							Computed:            true,
 						},
 						"is_replica": schema.BoolAttribute{
-							Description:         "Indicates if this is a replica of a policy on a remote system",
-							MarkdownDescription: "Indicates if this is a replica of a policy on a remote system",
+							Description:         "Indicates if this is a replica of a protection policy on a remote system",
+							MarkdownDescription: "Indicates if this is a replica of a protection policy on a remote system",
 							Computed:            true,
 						},
 						"type_l10n": schema.StringAttribute{
