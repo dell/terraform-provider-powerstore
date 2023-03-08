@@ -161,18 +161,18 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"id": schema.StringAttribute{
-										Description:         "Unique identifier of the policy.",
-										MarkdownDescription: "Unique identifier of the policy.",
+										Description:         "Unique identifier of the protection policy.",
+										MarkdownDescription: "Unique identifier of the protection policy.",
 										Computed:            true,
 									},
 									"name": schema.StringAttribute{
-										Description:         "Name of the policy.",
-										MarkdownDescription: "Name of the policy.",
+										Description:         "Name of the protection policy.",
+										MarkdownDescription: "Name of the protection policy.",
 										Computed:            true,
 									},
 									"description": schema.StringAttribute{
-										Description:         "Description of the policy.",
-										MarkdownDescription: "Description of the policy.",
+										Description:         "Description of the protection policy.",
+										MarkdownDescription: "Description of the protection policy.",
 										Computed:            true,
 									},
 								},
