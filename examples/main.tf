@@ -110,3 +110,7 @@ resource "powerstore_protectionpolicy" "terraform-provider-test" {
 data "powerstore_volume" "test1" {
         name = "tf_vol"
 }
+
+data "powerstore_snapshotrule" "test1" {
+       name = "tf_snapshotRule"
+}
