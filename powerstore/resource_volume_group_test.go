@@ -19,7 +19,7 @@ func TestAccVolumeGroup_Create(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeGroupParamsCreate,
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
@@ -41,7 +41,7 @@ func TestAccVolumeGroup_CreateWithoutName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      VolumeGroupParamsCreateWithoutName,
+				Config:      ProviderConfigForTesting + VolumeGroupParamsCreateWithoutName,
 				ExpectError: regexp.MustCompile(CreateVolumeGroupMissingErrorMsg),
 			},
 		},
@@ -59,7 +59,7 @@ func TestAccVolumeGroup_CreateWithInvalidPolicy(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      VolumeGroupParamsCreateWithInvalidPolicy,
+				Config:      ProviderConfigForTesting + VolumeGroupParamsCreateWithInvalidPolicy,
 				ExpectError: regexp.MustCompile(CreateVolumeGroupDetailErrorMsg),
 			},
 		},
@@ -77,7 +77,7 @@ func TestAccVolumeGroup_CreateWithInvalidVolume(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      VolumeGroupParamsCreateWithInvalidVolume,
+				Config:      ProviderConfigForTesting + VolumeGroupParamsCreateWithInvalidVolume,
 				ExpectError: regexp.MustCompile(CreateVolumeGroupDetailErrorMsg),
 			},
 		},
@@ -85,12 +85,6 @@ func TestAccVolumeGroup_CreateWithInvalidVolume(t *testing.T) {
 }
 
 var VolumeGroupParamsCreate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
 resource "powerstore_volumegroup" "test" {
   name = "test_volume_group"
   description = "Creating Volume Group"
@@ -99,24 +93,12 @@ resource "powerstore_volumegroup" "test" {
 `
 
 var VolumeGroupParamsCreateWithoutName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
 resource "powerstore_volumegroup" "test" {
 	description = "Create volume group without name"
 }
 `
 
 var VolumeGroupParamsCreateWithInvalidPolicy = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
 resource "powerstore_volumegroup" "test" {
 	name = "test_volume_group"
 	description = "Create volume group without name"
@@ -126,12 +108,6 @@ resource "powerstore_volumegroup" "test" {
 `
 
 var VolumeGroupParamsCreateWithInvalidVolume = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
 resource "powerstore_volumegroup" "test" {
 	name = "test_volume_group"
 	description = "Create volume group without name"
