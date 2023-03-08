@@ -29,7 +29,7 @@ func TestAccVolume_FetchVolume(t *testing.T) {
 			},
 			{
 				Config:      VolumeDataSourceparamsNameNegative,
-				ExpectError: regexp.MustCompile("nable to Read PowerStore Volumes"),
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore Volumes"),
 			},
 		},
 	})
