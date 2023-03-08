@@ -133,6 +133,7 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		newVolumeDataSource,
+		newProtectionPolicyDataSource,
 	}
 }
 

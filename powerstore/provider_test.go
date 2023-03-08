@@ -1,6 +1,7 @@
 package powerstore
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -26,8 +27,26 @@ var snapshotRuleID = os.Getenv("SNAPSHOT_RULE_ID")
 var replicationRuleID = os.Getenv("REPLICATION_RULE_ID")
 var snapshotRuleName = os.Getenv("SNAPSHOT_RULE_NAME")
 var replicationRuleName = os.Getenv("REPLICATION_RULE_NAME")
+var policyName = os.Getenv("PROTECTION_POLICY_NAME")
+var policyID = os.Getenv("PROTECTION_POLICY_ID")
+
+var ProviderConfigForTesting = ``
 
 func init() {
+	username := os.Getenv("POWERSTORE_USERNAME")
+	password := os.Getenv("POWERSTORE_PASSWORD")
+	endpoint := os.Getenv("POWERSTORE_ENDPOINT")
+	insecure := "true"
+
+	ProviderConfigForTesting = fmt.Sprintf(`
+		provider "powerstore" {
+			username = "%s"
+			password = "%s"
+			endpoint = "%s"
+			insecure = "%s"
+		}
+	`, username, password, endpoint, insecure)
+
 	testProvider = New("test")()
 	testProviderFactory = map[string]func() (tfprotov6.ProviderServer, error){
 		"powerstore": providerserver.NewProtocol6WithError(testProvider),
