@@ -40,7 +40,7 @@ func (d *snapshotRuleDataSource) Metadata(_ context.Context, req datasource.Meta
 
 func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: ".",
+		Description: "SnapshotRule DataSource",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Unique identifier of the snapshot rule instance.",
