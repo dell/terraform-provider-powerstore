@@ -114,3 +114,9 @@ data "powerstore_volume" "test1" {
 data "powerstore_snapshotrule" "test1" {
        name = "tf_snapshotRule"
 }
+
+resource "powerstore_host" "test" {
+  name = "new-host1"
+  os_type = "Linux"
+  initiators = [{port_name= "iqn.1994-05.com.redhat:88cb605", port_type="NVMe"}]
+}
