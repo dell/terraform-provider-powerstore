@@ -2,7 +2,6 @@ package powerstore
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -119,7 +118,6 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 
 			"protection_policy_name": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
 				Description:         "Unique name of the protection policy assigned to the volume group.",
 				MarkdownDescription: "Unique name of the protection policy assigned to the volume group.",
 				Validators: []validator.String{
@@ -158,16 +156,6 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	//Get IDs for volume and protection policy names
-	valid, err := r.fetchByName(&plan)
-	if !valid {
-		resp.Diagnostics.AddError(
-			"Error creating volume group",
-			"Could not create volume group, unexpected error: "+err.Error(),
-		)
 		return
 	}
 
@@ -314,15 +302,29 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.ProtectionPolicyName = volGroupPlan.ProtectionPolicyName
 }
 
-func (r resourceVolumeGroup) fetchByName(plan *models.Volumegroup) (valid bool, err error) {
+// ModifyPlan modify resource plan attribute value
+func (r *resourceVolumeGroup) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+	var plan models.Volumegroup
+
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	var volumeIds []string
-	if len(plan.VolumeIDs.Elements()) != 0 && len(plan.VolumeNames.Elements()) != 0 {
-		return false, errors.New("either of volume id or volume name should be present")
-	} else if len(plan.VolumeNames.Elements()) != 0 {
+	if len(plan.VolumeNames.Elements()) != 0 {
 		for _, volumeName := range plan.VolumeNames.Elements() {
 			volume, err := r.client.PStoreClient.GetVolumeByName(context.Background(), strings.Trim(volumeName.String(), "\""))
 			if err != nil {
-				return false, errors.New("invalid volume name")
+				resp.Diagnostics.AddError(
+					"Error getting volume ",
+					"Could not get volume with name: "+strings.Trim(volumeName.String(), "\"")+", \n unexpected error: "+err.Error(),
+				)
+				return
 			}
 			volumeIds = append(volumeIds, strings.Trim(volume.ID, "\""))
 		}
@@ -333,15 +335,21 @@ func (r resourceVolumeGroup) fetchByName(plan *models.Volumegroup) (valid bool, 
 		plan.VolumeIDs, _ = types.SetValue(types.StringType, volumeList)
 	}
 
-	if plan.ProtectionPolicyID.ValueString() != "" && plan.ProtectionPolicyName.ValueString() != "" {
-		return false, errors.New("either of protection policy id or protection policy name should be present")
-	} else if plan.ProtectionPolicyName.String() != "" {
+	if plan.ProtectionPolicyName.ValueString() != "" {
 		policy, err := r.client.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
 		if err != nil {
-			return false, errors.New("invalid protection policy name")
+			resp.Diagnostics.AddError(
+				"Error getting protection policy",
+				"Could not get protection policy with name: "+plan.ProtectionPolicyName.ValueString()+", \n unexpected error: "+err.Error(),
+			)
+			return
 		}
 		plan.ProtectionPolicyID = types.StringValue(policy.ID)
 	}
 
-	return true, nil
+	diags = resp.Plan.Set(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
