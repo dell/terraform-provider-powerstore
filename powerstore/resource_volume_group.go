@@ -198,6 +198,21 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
+	//Remove protection policy from volume group if present
+	if volGroupResponse.ProtectionPolicyID != "" {
+		volGroupChangePolicy := &gopowerstore.VolumeGroupChangePolicy{
+			ProtectionPolicyID: "",
+		}
+		_, err = r.client.PStoreClient.UpdateVolumeGroupProtectionPolicy(context.Background(), volumeGroupID, volGroupChangePolicy)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error deleting volume group",
+				"Could not remove protection policy from volume group "+volumeGroupID+": "+err.Error(),
+			)
+			return
+		}
+	}
+
 	//Remove volume(s) from volume group if present
 	if len(volGroupResponse.Volumes) != 0 {
 		var volumeIDs []string
@@ -212,21 +227,6 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 			resp.Diagnostics.AddError(
 				"Error deleting volume group",
 				"Could not remove volume from volume group "+volumeGroupID+": "+err.Error(),
-			)
-			return
-		}
-	}
-
-	//Remove protection policy from volume group if present
-	if volGroupResponse.ProtectionPolicyID != "" {
-		volGroupChangePolicy := &gopowerstore.VolumeGroupChangePolicy{
-			ProtectionPolicyID: "",
-		}
-		_, err = r.client.PStoreClient.UpdateVolumeGroupProtectionPolicy(context.Background(), volumeGroupID, volGroupChangePolicy)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error deleting volume group",
-				"Could not remove protection policy from volume group "+volumeGroupID+": "+err.Error(),
 			)
 			return
 		}
