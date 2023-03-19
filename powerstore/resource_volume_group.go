@@ -10,6 +10,7 @@ import (
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -71,7 +72,11 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				Description:         "A list of identifiers of existing volumes that should be added to the volume group.",
 				MarkdownDescription: "A list of identifiers of existing volumes that should be added to the volume group.",
-				Validators:          []validator.Set{},
+				Validators: []validator.Set{
+					setvalidator.ValueStringsAre(
+						stringvalidator.LengthAtLeast(1),
+					),
+				},
 			},
 
 			"is_write_order_consistent": schema.BoolAttribute{
