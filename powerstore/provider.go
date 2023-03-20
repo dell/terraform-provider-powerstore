@@ -136,6 +136,7 @@ func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.Da
 		newVolumeDataSource,
 		newSnapshotRuleDataSource,
 		newProtectionPolicyDataSource,
+		newVolumeGroupDataSource,
 	}
 }
 
