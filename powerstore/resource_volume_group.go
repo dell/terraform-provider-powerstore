@@ -288,8 +288,8 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	removeVolumeIdsSlice := []string{}
-	for _, volumeId := range removeVolumeIdsMap {
-		removeVolumeIdsSlice = append(removeVolumeIdsSlice, volumeId)
+	for _, volumeID := range removeVolumeIdsMap {
+		removeVolumeIdsSlice = append(removeVolumeIdsSlice, volumeID)
 	}
 
 	addVolumeIdsMap := make(map[string]string)
@@ -302,8 +302,8 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	addVolumeIdsSlice := []string{}
-	for _, volumeId := range addVolumeIdsMap {
-		addVolumeIdsSlice = append(addVolumeIdsSlice, volumeId)
+	for _, volumeID := range addVolumeIdsMap {
+		addVolumeIdsSlice = append(addVolumeIdsSlice, volumeID)
 	}
 
 	removeVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
