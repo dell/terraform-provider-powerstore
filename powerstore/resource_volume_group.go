@@ -254,16 +254,19 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
+	//Get volume ids from plan into a slice
 	var planVolumeIds []string
 	for _, volume := range plan.VolumeIDs.Elements() {
 		planVolumeIds = append(planVolumeIds, strings.Trim(volume.String(), "\""))
 	}
 
+	//Get volume ids from state into a slice
 	var stateVolumeIds []string
 	for _, volume := range state.VolumeIDs.Elements() {
 		stateVolumeIds = append(stateVolumeIds, strings.Trim(volume.String(), "\""))
 	}
 
+	//Get volume ids from plan into map for optimized element search
 	planVolumeIdsMap := make(map[string]string)
 	if len(planVolumeIds) != 0 {
 		for i := 0; i < len(planVolumeIds); i++ {
@@ -271,6 +274,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		}
 	}
 
+	//Get volume ids from state into a map for optimized element search
 	stateVolumeIdsMap := make(map[string]string)
 	if len(stateVolumeIds) != 0 {
 		for i := 0; i < len(stateVolumeIds); i++ {
@@ -278,29 +282,33 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		}
 	}
 
+	//Create map of volume ids to be removed by comparing plan and state volume ids
 	removeVolumeIdsMap := make(map[string]string)
 	for i := 0; i < len(stateVolumeIds); i++ {
 		_, found := planVolumeIdsMap[stateVolumeIds[i]]
 		if !found {
-			log.Printf("Elem not found in state")
+			log.Printf("Volume not found in state")
 			removeVolumeIdsMap[stateVolumeIds[i]] = stateVolumeIds[i]
 		}
 	}
 
+	//Get list of volume ids to be removed into a slice
 	removeVolumeIdsSlice := []string{}
 	for _, volumeID := range removeVolumeIdsMap {
 		removeVolumeIdsSlice = append(removeVolumeIdsSlice, volumeID)
 	}
 
+	//Create map of volume ids to be added by comparing plan and state volume ids
 	addVolumeIdsMap := make(map[string]string)
 	for i := 0; i < len(planVolumeIds); i++ {
 		_, found := stateVolumeIdsMap[planVolumeIds[i]]
 		if !found {
-			log.Printf("Elem not found in plan")
+			log.Printf("Volume not found in plan")
 			addVolumeIdsMap[planVolumeIds[i]] = planVolumeIds[i]
 		}
 	}
 
+	//Get list of volume ids to be added into a slice
 	addVolumeIdsSlice := []string{}
 	for _, volumeID := range addVolumeIdsMap {
 		addVolumeIdsSlice = append(addVolumeIdsSlice, volumeID)
