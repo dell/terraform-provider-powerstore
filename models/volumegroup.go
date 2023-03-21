@@ -12,4 +12,6 @@ type Volumegroup struct {
 	VolumeIDs              types.Set    `tfsdk:"volume_ids"`
 	IsWriteOrderConsistent types.Bool   `tfsdk:"is_write_order_consistent"`
 	ProtectionPolicyID     types.String `tfsdk:"protection_policy_id"`
+	VolumeNames            types.Set    `tfsdk:"volume_names"`
+	ProtectionPolicyName   types.String `tfsdk:"protection_policy_name"`
 }
