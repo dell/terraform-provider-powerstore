@@ -3,6 +3,10 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"log"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
+
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -10,9 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"log"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 )
 
 // newHostResource returns host new resource instance
@@ -64,6 +65,11 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Required:            true,
 				Description:         "Operating system of the host.",
 				MarkdownDescription: "Operating system of the host.",
+				Validators: []validator.String{stringvalidator.OneOf(
+					"Windows",
+					"Linux",
+					"ESXi",
+				)},
 			},
 			"initiators": schema.SetNestedAttribute{
 				Description:         "Parameters for creating or adding initiators to host.",
@@ -80,6 +86,11 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Description:         "Protocol type of the host initiator.",
 							MarkdownDescription: "Protocol type of the host initiator.",
 							Required:            true,
+							Validators: []validator.String{stringvalidator.OneOf(
+								"iSCSI",
+								"NVMe",
+								"FC",
+							)},
 						},
 					},
 				},
@@ -89,6 +100,12 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				Description:         "Connectivity type for hosts and host groups.",
 				MarkdownDescription: "Connectivity type for hosts and host groups.",
+				Validators: []validator.String{stringvalidator.OneOf(
+					"Local_Only",
+					"Metro_Optimize_Both",
+					"Metro_Optimize_Local",
+					"Metro_Optimize_Remote",
+				)},
 			},
 		},
 	}
