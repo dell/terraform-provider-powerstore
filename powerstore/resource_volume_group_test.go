@@ -156,6 +156,7 @@ func TestAccVolumeGroup_CreateWithVolumeName(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_names.0", volumeName),
 				),
 			},
 		},
@@ -294,6 +295,7 @@ func TestAccVolumeGroup_UpdateAddVolume(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
 				),
 			},
 		},
@@ -373,6 +375,7 @@ func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
 				),
 			},
 			{
