@@ -84,6 +84,312 @@ func TestAccVolumeGroup_CreateWithInvalidVolume(t *testing.T) {
 	})
 }
 
+// Test to Update existing VolumeGroup Params
+func TestAccVolumeGroup_Update(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+		},
+	})
+}
+
+// Test to Update existing VolumeGroup Params, will result in error
+func TestAccVolumeGroup_UpdateError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupParamsUpdateServerError,
+				ExpectError: regexp.MustCompile(UpdateVolumeGroupDetailErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Create VolumeGroup with Volume name
+func TestAccVolumeGroup_CreateWithVolumeName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsWithVolumeName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_names.0", volumeName),
+				),
+			},
+		},
+	})
+}
+
+// Test to Create VolumeGroup with Protection Policy name
+func TestAccVolumeGroup_CreateWithPolicyName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsWithPolicyName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_name", policyName),
+				),
+			},
+		},
+	})
+}
+
+// Test to Create VolumeGroup with protection policy id and protection policy name, will result in error
+func TestAccVolumeGroup_CreateWithInvalidPolicyName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupParamsWithInvalidPolicyName,
+				ExpectError: regexp.MustCompile(CreateVolumeGroupInvalidPolicyErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Create VolumeGroup with volume id and volume name, will result in error
+func TestAccVolumeGroup_CreateWithVolumeIDAndName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupParamsWithVolumeIDAndName,
+				ExpectError: regexp.MustCompile(VolumeGroupInvalidAttributeCombinationErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Create VolumeGroup with protection policy id and protection policy name, will result in error
+func TestAccVolumeGroup_CreateWithPolicyIDAndName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupParamsWithPolicyIDAndName,
+				ExpectError: regexp.MustCompile(VolumeGroupInvalidAttributeCombinationErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Update existing VolumeGroup Params
+func TestAccVolumeGroup_UpdateAddPolicy(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddPolicy,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_id", policyID),
+				),
+			},
+		},
+	})
+}
+
+// Test to Update existing VolumeGroup Params
+func TestAccVolumeGroup_UpdateAddVolume(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddVolume,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
+				),
+			},
+		},
+	})
+}
+
+// Test to Update existing VolumeGroup Params
+func TestAccVolumeGroup_UpdateAddPolicyNegative(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupParamsUpdateAddPolicyNegative,
+				ExpectError: regexp.MustCompile(CreateVolumeGroupInvalidPolicyErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Update existing VolumeGroup Params
+func TestAccVolumeGroup_UpdateRemovePolicy(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddPolicy,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_id", policyID),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateRemovePolicy,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+		},
+	})
+}
+
+// Test to Update existing VolumeGroup Params
+func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddVolume,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateRemoveVolume,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
+				),
+			},
+		},
+	})
+}
+
 var VolumeGroupParamsCreate = `
 resource "powerstore_volumegroup" "test" {
   name = "test_volume_group"
@@ -101,7 +407,7 @@ resource "powerstore_volumegroup" "test" {
 var VolumeGroupParamsCreateWithInvalidPolicy = `
 resource "powerstore_volumegroup" "test" {
 	name = "test_volume_group"
-	description = "Create volume group without name"
+	description = "Creating Volume Group"
 	is_write_order_consistent = false
 	protection_policy_id = "invalid-id"
 }
@@ -110,8 +416,115 @@ resource "powerstore_volumegroup" "test" {
 var VolumeGroupParamsCreateWithInvalidVolume = `
 resource "powerstore_volumegroup" "test" {
 	name = "test_volume_group"
-	description = "Create volume group without name"
+	description = "Creating Volume Group"
 	is_write_order_consistent = false
 	volume_ids = ["invalid-id"]
+}
+`
+
+var VolumeGroupParamsUpdate = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
+}
+`
+
+var VolumeGroupParamsUpdateServerError = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
+  protection_policy_id = "invalid-id"
+}
+`
+
+var VolumeGroupParamsWithVolumeName = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Creating Volume Group"
+  is_write_order_consistent = false
+  volume_names = ["` + volumeName + `"]
+}
+`
+
+var VolumeGroupParamsWithPolicyName = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Creating Volume Group"
+  is_write_order_consistent = false
+  protection_policy_name = "` + policyName + `"
+}
+`
+
+var VolumeGroupParamsWithInvalidPolicyName = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Creating Volume Group"
+  is_write_order_consistent = false
+  protection_policy_name = "invalid-name"
+}
+`
+
+var VolumeGroupParamsWithVolumeIDAndName = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Creating Volume Group"
+  is_write_order_consistent = false
+  volume_ids = ["` + volumeID + `"]
+  volume_names = ["` + volumeName + `"]
+}
+`
+
+var VolumeGroupParamsWithPolicyIDAndName = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Creaing Volume Group"
+  is_write_order_consistent = false
+  protection_policy_id = "` + protectionPolicyID + `"
+  protection_policy_name = "` + policyName + `"
+}
+`
+
+var VolumeGroupParamsUpdateAddPolicy = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
+  protection_policy_id = "` + policyID + `"
+}
+`
+
+var VolumeGroupParamsUpdateAddPolicyNegative = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
+  protection_policy_name = "invalid-name"
+}
+`
+
+var VolumeGroupParamsUpdateAddVolume = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
+  volume_ids = ["` + volumeID + `"]
+}
+`
+
+var VolumeGroupParamsUpdateRemovePolicy = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
+}
+`
+
+var VolumeGroupParamsUpdateRemoveVolume = `
+resource "powerstore_volumegroup" "test" {
+  name = "test_volume_group"
+  description = "Updating Volume Group"
+  is_write_order_consistent = false
 }
 `
