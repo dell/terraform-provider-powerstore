@@ -102,4 +102,13 @@ const (
 
 	//CreateVolumeGroupMissingErrorMsg specifies error caused when required attribute value is not provided
 	CreateVolumeGroupMissingErrorMsg = "Missing required argument"
+
+	//UpdateVolumeGroupDetailErrorMsg specifies error caused when invalid attribute values are provided
+	UpdateVolumeGroupDetailErrorMsg = "Error updating volume group"
+
+	//CreateVolumeGroupInvalidPolicyErrorMsg specifies error caused when invalid protection policy value is provided
+	CreateVolumeGroupInvalidPolicyErrorMsg = "Error getting protection policy"
+
+	//VolumeGroupInvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
+	VolumeGroupInvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
 )

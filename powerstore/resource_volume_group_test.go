@@ -134,7 +134,7 @@ func TestAccVolumeGroup_UpdateError(t *testing.T) {
 			},
 			{
 				Config:      ProviderConfigForTesting + VolumeGroupParamsUpdateServerError,
-				ExpectError: regexp.MustCompile("Error updating volume group"),
+				ExpectError: regexp.MustCompile(UpdateVolumeGroupDetailErrorMsg),
 			},
 		},
 	})
@@ -198,7 +198,7 @@ func TestAccVolumeGroup_CreateWithInvalidPolicyName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + VolumeGroupParamsWithInvalidPolicyName,
-				ExpectError: regexp.MustCompile(" Error getting protection policy"),
+				ExpectError: regexp.MustCompile(CreateVolumeGroupInvalidPolicyErrorMsg),
 			},
 		},
 	})
@@ -216,7 +216,7 @@ func TestAccVolumeGroup_CreateWithVolumeIDAndName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + VolumeGroupParamsWithVolumeIDAndName,
-				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
+				ExpectError: regexp.MustCompile(VolumeGroupInvalidAttributeCombinationErrorMsg),
 			},
 		},
 	})
@@ -234,7 +234,7 @@ func TestAccVolumeGroup_CreateWithPolicyIDAndName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + VolumeGroupParamsWithPolicyIDAndName,
-				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
+				ExpectError: regexp.MustCompile(VolumeGroupInvalidAttributeCombinationErrorMsg),
 			},
 		},
 	})
@@ -322,7 +322,7 @@ func TestAccVolumeGroup_UpdateAddPolicyNegative(t *testing.T) {
 			},
 			{
 				Config:      ProviderConfigForTesting + VolumeGroupParamsUpdateAddPolicyNegative,
-				ExpectError: regexp.MustCompile("Error getting protection policy"),
+				ExpectError: regexp.MustCompile(CreateVolumeGroupInvalidPolicyErrorMsg),
 			},
 		},
 	})
