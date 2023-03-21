@@ -2,6 +2,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// VolumeGroupDataSource - Volume Group DataSource properties
 type VolumeGroupDataSource struct {
 	ID                       types.String        `tfsdk:"id"`
 	Name                     types.String        `tfsdk:"name"`
