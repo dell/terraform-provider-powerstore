@@ -42,7 +42,7 @@ func TestAccVolumeGroup_CreateWithoutName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + VolumeGroupParamsCreateWithoutName,
-				ExpectError: regexp.MustCompile(CreateVolumeGroupMissingErrorMsg),
+				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
 			},
 		},
 	})

@@ -100,6 +100,12 @@ const (
 	//CreateVolumeGroupDetailErrorMsg specifies error caused when invalid attribute values are provided
 	CreateVolumeGroupDetailErrorMsg = "Error creating volume group"
 
+	//CreateResourceMissingErrorMsg specifies error caused when required attribute value is not provided
+	CreateResourceMissingErrorMsg = "Missing required argument"
+
+	//ImportHostDetailErrorMsg specifies error details while importing host
+	ImportHostDetailErrorMsg = "Could not read hostID with error invalid-id"
+
 	//CreateVolumeGroupMissingErrorMsg specifies error caused when required attribute value is not provided
 	CreateVolumeGroupMissingErrorMsg = "Missing required argument"
 
