@@ -90,7 +90,7 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 						},
 						"is_protectable": schema.BoolAttribute{
 							Description:         "This is a derived field that is set internally.",
-							MarkdownDescription: "It enables/disables the following functionality: Whether a protection_policy can be applied to the group. Whether manual snapshots can be taken. Whether clones of the group can be created.",
+							MarkdownDescription: "This is a derived field that is set internally.",
 							Computed:            true,
 						},
 						"protection_policy_id": schema.StringAttribute{
