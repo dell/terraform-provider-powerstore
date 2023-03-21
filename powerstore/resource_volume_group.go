@@ -309,6 +309,152 @@ func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest
 
 // Update - method to update volume group resource
 func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	log.Printf("Started Update")
+
+	//Get plan values
+	var plan models.Volumegroup
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get current state
+	var state models.Volumegroup
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get volume ids from plan into a slice
+	var planVolumeIds []string
+	for _, volume := range plan.VolumeIDs.Elements() {
+		planVolumeIds = append(planVolumeIds, strings.Trim(volume.String(), "\""))
+	}
+
+	//Get volume ids from state into a slice
+	var stateVolumeIds []string
+	for _, volume := range state.VolumeIDs.Elements() {
+		stateVolumeIds = append(stateVolumeIds, strings.Trim(volume.String(), "\""))
+	}
+
+	//Get volume ids from plan into map for optimized element search
+	planVolumeIdsMap := make(map[string]string)
+	if len(planVolumeIds) != 0 {
+		for i := 0; i < len(planVolumeIds); i++ {
+			planVolumeIdsMap[planVolumeIds[i]] = planVolumeIds[i]
+		}
+	}
+
+	//Get volume ids from state into a map for optimized element search
+	stateVolumeIdsMap := make(map[string]string)
+	if len(stateVolumeIds) != 0 {
+		for i := 0; i < len(stateVolumeIds); i++ {
+			stateVolumeIdsMap[stateVolumeIds[i]] = stateVolumeIds[i]
+		}
+	}
+
+	//Create map of volume ids to be removed by comparing plan and state volume ids
+	removeVolumeIdsMap := make(map[string]string)
+	for i := 0; i < len(stateVolumeIds); i++ {
+		_, found := planVolumeIdsMap[stateVolumeIds[i]]
+		if !found {
+			log.Printf("Volume not found in state")
+			removeVolumeIdsMap[stateVolumeIds[i]] = stateVolumeIds[i]
+		}
+	}
+
+	//Get list of volume ids to be removed into a slice
+	removeVolumeIdsSlice := []string{}
+	for _, volumeID := range removeVolumeIdsMap {
+		removeVolumeIdsSlice = append(removeVolumeIdsSlice, volumeID)
+	}
+
+	//Create map of volume ids to be added by comparing plan and state volume ids
+	addVolumeIdsMap := make(map[string]string)
+	for i := 0; i < len(planVolumeIds); i++ {
+		_, found := stateVolumeIdsMap[planVolumeIds[i]]
+		if !found {
+			log.Printf("Volume not found in plan")
+			addVolumeIdsMap[planVolumeIds[i]] = planVolumeIds[i]
+		}
+	}
+
+	//Get list of volume ids to be added into a slice
+	addVolumeIdsSlice := []string{}
+	for _, volumeID := range addVolumeIdsMap {
+		addVolumeIdsSlice = append(addVolumeIdsSlice, volumeID)
+	}
+
+	removeVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
+		VolumeIds: removeVolumeIdsSlice,
+	}
+
+	addVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
+		VolumeIds: addVolumeIdsSlice,
+	}
+
+	// Get Volume Group ID from from state
+	volumeGroupID := state.ID.ValueString()
+
+	volumeGroupUpdate := &gopowerstore.VolumeGroupModify{
+		Description:            plan.Description.ValueString(),
+		ProtectionPolicyId:     plan.ProtectionPolicyID.ValueString(),
+		Name:                   plan.Name.ValueString(),
+		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
+	}
+
+	//Update Volume Group by calling API
+	_, err := r.client.PStoreClient.ModifyVolumeGroup(context.Background(), volumeGroupUpdate, volumeGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating volume group",
+			"Could not update volumeGroupID "+volumeGroupID+": "+err.Error(),
+		)
+	}
+
+	if len(addVolumeIdsSlice) != 0 {
+		//Add Volumes in Volume Group by calling API
+		_, err := r.client.PStoreClient.AddMembersToVolumeGroup(context.Background(), addVolumeGroupMembers, volumeGroupID)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error updating volume group",
+				"Could not update volumeGroupID "+volumeGroupID+": "+err.Error(),
+			)
+		}
+	}
+
+	if len(removeVolumeIdsSlice) != 0 {
+		//Remove Volumes in Volume Group by calling API
+		_, err := r.client.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), removeVolumeGroupMembers, volumeGroupID)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error updating volume group",
+				"Could not update volumeGroupID "+volumeGroupID+": "+err.Error(),
+			)
+		}
+	}
+
+	//Get Volume Group details
+	getRes, err := r.client.PStoreClient.GetVolumeGroup(context.Background(), volumeGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting volume group after update",
+			"Could not get volume group, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	r.updateVolGroupState(&state, getRes, &plan)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
 // updateVolGroupState - method to update terraform state
