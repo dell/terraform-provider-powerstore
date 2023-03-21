@@ -219,8 +219,8 @@ func (d *volumeGroupDataSource) Configure(_ context.Context, req datasource.Conf
 
 func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeGroupDataSourceModel
-	var volume_groups []gopowerstore.VolumeGroup
-	var volume_group gopowerstore.VolumeGroup
+	var volumeGroups []gopowerstore.VolumeGroup
+	var volumeGroup gopowerstore.VolumeGroup
 	var err error
 
 	diags := req.Config.Get(ctx, &state)
@@ -231,13 +231,13 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	//Read the volume group based on volume group id/name and if nothing is mentioned, then it returns all the volume groups
 	if state.Name.ValueString() != "" {
-		volume_group, err = d.client.PStoreClient.GetVolumeGroupByName(context.Background(), state.Name.ValueString())
-		volume_groups = append(volume_groups, volume_group)
+		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupByName(context.Background(), state.Name.ValueString())
+		volumeGroups = append(volumeGroups, volumeGroup)
 	} else if state.ID.ValueString() != "" {
-		volume_group, err = d.client.PStoreClient.GetVolumeGroup(context.Background(), state.ID.ValueString())
-		volume_groups = append(volume_groups, volume_group)
+		volumeGroup, err = d.client.PStoreClient.GetVolumeGroup(context.Background(), state.ID.ValueString())
+		volumeGroups = append(volumeGroups, volumeGroup)
 	} else {
-		volume_groups, err = d.client.PStoreClient.GetVolumeGroups(context.Background())
+		volumeGroups, err = d.client.PStoreClient.GetVolumeGroups(context.Background())
 	}
 
 	//check if there is any error while getting the volume group
@@ -249,7 +249,7 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	state.VolumeGroups, err = updateVolGroupState(volume_groups, d.client)
+	state.VolumeGroups, err = updateVolGroupState(volumeGroups, d.client)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Failed to update volume group state",
@@ -266,8 +266,8 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 }
 
 // updateVolGroupState iterates over the volume groups list and update the state
-func updateVolGroupState(volume_groups []gopowerstore.VolumeGroup, p *client.Client) (response []models.VolumeGroupDataSource, err error) {
-	for _, volumeGroupValue := range volume_groups {
+func updateVolGroupState(volumeGroups []gopowerstore.VolumeGroup, p *client.Client) (response []models.VolumeGroupDataSource, err error) {
+	for _, volumeGroupValue := range volumeGroups {
 		volumeGroupState := models.VolumeGroupDataSource{
 			ID:                       types.StringValue(volumeGroupValue.ID),
 			Name:                     types.StringValue(volumeGroupValue.Name),
