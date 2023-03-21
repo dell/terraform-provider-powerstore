@@ -188,8 +188,52 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 	//Get Volume Group ID from state
 	volumeGroupID := state.ID.ValueString()
 
+	//Get Volume Group details using ID retrived above
+	volGroupResponse, err := r.client.PStoreClient.GetVolumeGroup(context.Background(), volumeGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting volume group after creation",
+			"Could not get volume group, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	//Remove protection policy from volume group if present
+	if volGroupResponse.ProtectionPolicyID != "" {
+		volGroupChangePolicy := &gopowerstore.VolumeGroupChangePolicy{
+			ProtectionPolicyID: "",
+		}
+		_, err = r.client.PStoreClient.UpdateVolumeGroupProtectionPolicy(context.Background(), volumeGroupID, volGroupChangePolicy)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error deleting volume group",
+				"Could not remove protection policy from volume group "+volumeGroupID+": "+err.Error(),
+			)
+			return
+		}
+	}
+
+	//Remove volume(s) from volume group if present
+	if len(volGroupResponse.Volumes) != 0 {
+		var volumeIDs []string
+		for _, vol := range volGroupResponse.Volumes {
+			volumeIDs = append(volumeIDs, vol.ID)
+		}
+		volGroupMembers := &gopowerstore.VolumeGroupMembers{
+			VolumeIds: volumeIDs,
+		}
+		_, err = r.client.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), volGroupMembers, volumeGroupID)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error deleting volume group",
+				"Could not remove volume from volume group "+volumeGroupID+": "+err.Error(),
+			)
+			return
+		}
+	}
+
 	//Delete Volume Group by calling API
-	_, err := r.client.PStoreClient.DeleteVolumeGroup(context.Background(), volumeGroupID)
+	_, err = r.client.PStoreClient.DeleteVolumeGroup(context.Background(), volumeGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting volume group",
