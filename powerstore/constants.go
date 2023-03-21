@@ -105,7 +105,7 @@ const (
 
 	//ImportHostDetailErrorMsg specifies error details while importing host
 	ImportHostDetailErrorMsg = "Could not read hostID with error invalid-id"
-  
+
 	//CreateVolumeGroupMissingErrorMsg specifies error caused when required attribute value is not provided
 	CreateVolumeGroupMissingErrorMsg = "Missing required argument"
 
