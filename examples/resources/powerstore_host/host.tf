@@ -2,7 +2,7 @@
 # Create, Update, Delete is supported for this resource
 # To import , check host_import.tf for more info
 # name,os_type and initiators are the required attributes to create and update
-# description, host_group_id and host_connectivity are the optional attributes
+# description and host_connectivity are the optional attributes
 # To check which attributes of the host resource can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_host" "test" {
