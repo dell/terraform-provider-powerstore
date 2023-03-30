@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"log"
-	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 )
@@ -85,7 +84,7 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 						"port_type": schema.StringAttribute{
 							Description:         "Protocol type of the host initiator.",
 							MarkdownDescription: "Protocol type of the host initiator.",
-							Optional:            true,
+							Required:            true,
 							Validators: []validator.String{stringvalidator.OneOf(
 								string(gopowerstore.InitiatorProtocolTypeEnumISCSI),
 								string(gopowerstore.InitiatorProtocolTypeEnumNVME),
@@ -172,10 +171,6 @@ func (r *resourceHost) Create(ctx context.Context, req resource.CreateRequest, r
 
 		portName := v.PortName.ValueString()
 		portType := gopowerstore.InitiatorProtocolTypeEnum(v.PortType.ValueString())
-		if portType == "" {
-			portType = r.getPortType(portName)
-		}
-
 		chapMutualPassword := v.ChapMutualPassword.ValueString()
 		chapMutualUsername := v.ChapMutualUsername.ValueString()
 		chapSinglePassword := v.ChapSinglePassword.ValueString()
@@ -528,8 +523,8 @@ func (r resourceHost) planToServer(plan, state models.Host) *gopowerstore.HostMo
 	}
 
 	var removeInitiators []string
-	for removeId := range removeInitiatorsMap {
-		removeInitiators = append(removeInitiators, removeId.ValueString())
+	for removeID := range removeInitiatorsMap {
+		removeInitiators = append(removeInitiators, removeID.ValueString())
 	}
 
 	hostUpdate = &gopowerstore.HostModify{
@@ -593,17 +588,4 @@ func (r resourceHost) modifyOperation(plan, state models.Host) *gopowerstore.Hos
 	}
 	return hostUpdate
 
-}
-
-// getPortType - returns portType based on the portName if user fails to give portType
-func (r resourceHost) getPortType(portName string) gopowerstore.InitiatorProtocolTypeEnum {
-	var portType gopowerstore.InitiatorProtocolTypeEnum
-	if strings.HasPrefix(portName, "iqn") {
-		portType = gopowerstore.InitiatorProtocolTypeEnumISCSI
-	} else if strings.HasPrefix(portName, "nqn") {
-		portType = gopowerstore.InitiatorProtocolTypeEnumNVME
-	} else {
-		portType = gopowerstore.InitiatorProtocolTypeEnumFC
-	}
-	return portType
 }
