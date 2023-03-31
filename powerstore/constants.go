@@ -117,4 +117,7 @@ const (
 
 	//VolumeGroupInvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
 	VolumeGroupInvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
+
+	//ImportVGDetailErrorMsg specifies error details occured while importing volume group
+	ImportVGDetailErrorMsg = "Could not read volume group with error invalid-id"
 )
