@@ -117,4 +117,7 @@ const (
 
 	//VolumeGroupInvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
 	VolumeGroupInvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
+
+	//InvalidLengthErrorMsg specifies error details for empty name/ID
+	InvalidLengthErrorMsg = "Invalid Attribute Value Length"
 )

@@ -120,3 +120,7 @@ resource "powerstore_host" "test" {
   os_type = "Linux"
   initiators = [{port_name= "iqn.1994-05.com.redhat:88cb605", port_type="NVMe"}]
 }
+
+data "powerstore_host" "test1" {
+       name = "tf_host"
+}
