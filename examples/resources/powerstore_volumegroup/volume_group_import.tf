@@ -1,6 +1,6 @@
 # Below are the steps to import volume group :
 # Step 1 - To import a volume group , we need the id of that volume group 
-# Step 2 - To check the id of the volume group we can make use of volume group datasource to read required/all volume group ids. Alternatively, we can make Get request to volume group endpoint. eg. https://10.0.0.1/api/rest/policy which will return list of all volume group ids.
+# Step 2 - To check the id of the volume group we can make use of volume group datasource to read required/all volume group ids. Alternatively, we can make GET request to volume group endpoint. eg. https://10.0.0.1/api/rest/volume_group which will return list of all volume group ids.
 # Step 3 - Add empty resource block in tf file. 
 # eg. 
 # resource "powerstore_volumegroup" "resource_block_name" {
