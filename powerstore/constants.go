@@ -126,4 +126,7 @@ const (
 
 	//CreateHGWithBlankName specifies error when blank name is provided
 	CreateHGWithBlankName = "Invalid Attribute Value Length"
+
+	//ImportVGDetailErrorMsg specifies error details occured while importing volume group
+	ImportVGDetailErrorMsg = "Could not read volume group with error invalid-id"
 )
