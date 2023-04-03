@@ -10,7 +10,6 @@ import (
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
-	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -71,10 +70,20 @@ func (r *resourceHostGroup) Schema(ctx context.Context, req resource.SchemaReque
 				Required:            true,
 				Description:         "The list of hosts to include in the host group.",
 				MarkdownDescription: "The list of hosts to include in the host group.",
-				Validators: []validator.Set{
-					setvalidator.ValueStringsAre(
-						stringvalidator.LengthAtLeast(1),
-					),
+			},
+
+			"host_connectivity": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Connectivity type for hosts and host groups.",
+				MarkdownDescription: "Connectivity type for hosts and host groups.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.HostConnectivityEnumLocalOnly),
+						string(gopowerstore.HostConnectivityEnumMetroOptimizeBoth),
+						string(gopowerstore.HostConnectivityEnumMetroOptimizeLocal),
+						string(gopowerstore.HostConnectivityEnumMetroOptimizeRemote),
+					}...),
 				},
 			},
 		},
@@ -205,6 +214,65 @@ func (r *resourceHostGroup) Read(ctx context.Context, req resource.ReadRequest, 
 }
 
 func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	log.Printf("Started Update")
+
+	//Get plan values
+	var plan models.HostGroup
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get current state
+	var state models.HostGroup
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	addHostIds, removeHostIds := GetHostDetails(plan, &state)
+
+	// Get Host Group ID from state
+	hostGroupID := state.ID.ValueString()
+
+	hostGroupUpdate := &gopowerstore.HostGroupModify{
+		Name:             plan.Name.ValueString(),
+		Description:      plan.Description.ValueString(),
+		HostConnectivity: plan.HostConnectivity.ValueString(),
+		RemoveHostIDs:    removeHostIds,
+		AddHostIDs:       addHostIds,
+	}
+
+	//Update Host Group by calling API
+	_, err := r.client.PStoreClient.ModifyHostGroup(context.Background(), hostGroupUpdate, hostGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating host group",
+			"Could not update hostGroupID "+hostGroupID+": "+err.Error(),
+		)
+	}
+
+	//Get Host Group details
+	getRes, err := r.client.PStoreClient.GetHostGroup(context.Background(), hostGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting host group after update",
+			"Could not get host group, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	r.updateHostGroupState(&state, getRes, &plan)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
 func (r resourceHostGroup) planToHostGroupParam(plan models.HostGroup) *gopowerstore.HostGroupCreate {
@@ -239,4 +307,68 @@ func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup
 		hostIDList = append(hostIDList, types.StringValue(string(hostID)))
 	}
 	hostGroupState.HostIDs, _ = types.SetValue(types.StringType, hostIDList)
+}
+
+func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, []string) {
+	//Get host ids from plan into a slice
+	var planHostIds []string
+	for _, host := range plan.HostIDs.Elements() {
+		planHostIds = append(planHostIds, strings.Trim(host.String(), "\""))
+	}
+
+	//Get host ids from state into a slice
+	var stateHostIds []string
+	for _, host := range state.HostIDs.Elements() {
+		stateHostIds = append(stateHostIds, strings.Trim(host.String(), "\""))
+	}
+
+	//Get host ids from plan into map for optimized element search
+	planHostIdsMap := make(map[string]string)
+	if len(planHostIds) != 0 {
+		for i := 0; i < len(planHostIds); i++ {
+			planHostIdsMap[planHostIds[i]] = planHostIds[i]
+		}
+	}
+
+	//Get host ids from state into a map for optimized element search
+	stateHostIdsMap := make(map[string]string)
+	if len(stateHostIds) != 0 {
+		for i := 0; i < len(stateHostIds); i++ {
+			stateHostIdsMap[stateHostIds[i]] = stateHostIds[i]
+		}
+	}
+
+	//Create map of host ids to be removed by comparing plan and state host ids
+	removeHostIdsMap := make(map[string]string)
+	for i := 0; i < len(stateHostIds); i++ {
+		_, found := planHostIdsMap[stateHostIds[i]]
+		if !found {
+			log.Printf("Volume not found in state")
+			removeHostIdsMap[stateHostIds[i]] = stateHostIds[i]
+		}
+	}
+
+	//Get list of host ids to be removed into a slice
+	removeHostIdsSlice := []string{}
+	for _, hostID := range removeHostIdsMap {
+		removeHostIdsSlice = append(removeHostIdsSlice, hostID)
+	}
+
+	//Create map of host ids to be added by comparing plan and state host ids
+	addHostIdsMap := make(map[string]string)
+	for i := 0; i < len(planHostIds); i++ {
+		_, found := stateHostIdsMap[planHostIds[i]]
+		if !found {
+			log.Printf("Host not found in plan")
+			addHostIdsMap[planHostIds[i]] = planHostIds[i]
+		}
+	}
+
+	//Get list of host ids to be added into a slice
+	addHostIdsSlice := []string{}
+	for _, hostID := range addHostIdsMap {
+		addHostIdsSlice = append(addHostIdsSlice, hostID)
+	}
+
+	return addHostIdsSlice, removeHostIdsSlice
 }
