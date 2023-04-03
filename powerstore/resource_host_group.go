@@ -113,14 +113,7 @@ func (r *resourceHostGroup) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	hostGroupCreate, err := r.planToHostGroupParam(plan)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error creating host group",
-			err.Error(),
-		)
-		return
-	}
+	hostGroupCreate := r.planToHostGroupParam(plan)
 
 	//Create New HostGroup
 	hostGroupCreateResponse, err := r.client.PStoreClient.CreateHostGroup(context.Background(), hostGroupCreate)
@@ -214,7 +207,7 @@ func (r *resourceHostGroup) Read(ctx context.Context, req resource.ReadRequest, 
 func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
-func (r resourceHostGroup) planToHostGroupParam(plan models.HostGroup) (*gopowerstore.HostGroupCreate, error) {
+func (r resourceHostGroup) planToHostGroupParam(plan models.HostGroup) *gopowerstore.HostGroupCreate {
 
 	var hostIds []string
 	for _, hostID := range plan.HostIDs.Elements() {
@@ -226,7 +219,7 @@ func (r resourceHostGroup) planToHostGroupParam(plan models.HostGroup) (*gopower
 		Description: plan.Description.ValueString(),
 		HostIDs:     hostIds,
 	}
-	return hostGroupCreate, nil
+	return hostGroupCreate
 }
 
 func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup, hostGroupResponse gopowerstore.HostGroup, hostGroupPlan *models.HostGroup) {
