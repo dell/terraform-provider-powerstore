@@ -84,11 +84,86 @@ func TestAccHostGroup_CreateWithBlankName(t *testing.T) {
 	})
 }
 
+// Test to Update existing HostGroup Params
+func TestAccHostGroup_Update(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsCreate1,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID1),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID1),
+				),
+			},
+		},
+	})
+}
+
+// Test to Update existing HostGroup Params
+func TestAccHostGroup_UpdateRemoveHost(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsCreate2,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID2),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
+				),
+			},
+		},
+	})
+}
+
 var HostGroupParamsCreate = `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
 	host_ids = ["` + hostID + `"]
+}
+`
+
+var HostGroupParamsCreate1 = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_ids = ["` + hostID1 + `"]
+}
+`
+
+var HostGroupParamsCreate2 = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_ids = ["` + hostID2 + `"]
 }
 `
 
@@ -104,7 +179,6 @@ resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
 	host_ids = ["invalid-id"]
-
 }
 `
 
@@ -113,5 +187,21 @@ resource "powerstore_hostgroup" "test" {
 	name = ""
 	description = "Test Create Host Group"
 	host_ids = ["` + hostID + `"]
+}
+`
+
+var HostGroupParamsUpdate = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Update Host Group"
+	host_ids = ["` + hostID1 + `"]
+}
+`
+
+var HostGroupParamsUpdateRemoveHost = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Update Host Group"
+	host_ids = []
 }
 `
