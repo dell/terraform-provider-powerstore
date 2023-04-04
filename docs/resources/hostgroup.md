@@ -23,6 +23,7 @@ HostGroup resource
 ### Optional
 
 - `description` (String) An optional description for the host group.
+- `host_connectivity` (String) Connectivity type for hosts and host groups.
 
 ### Read-Only
 
