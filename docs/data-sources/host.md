@@ -32,7 +32,6 @@ Read-Only:
 - `description` (String) Description of the host.
 - `host_connectivity` (String) Connectivity type for hosts.
 - `host_connectivity_l10n` (String) Localized message string corresponding to host connectivity.
-- `host_group` (Object) Properties of a host group. (see [below for nested schema](#nestedatt--host--host_group))
 - `host_group_id` (String) Associated host group, if host is part of host group.
 - `host_virtual_volume_mappings` (Attributes List) Virtual volume mapping details. (see [below for nested schema](#nestedatt--host--host_virtual_volume_mappings))
 - `id` (String) The ID of the host.
@@ -44,17 +43,7 @@ Read-Only:
 - `os_type_l10n` (String) Localized message string corresponding to OS type.
 - `type` (String) Type of hosts.
 - `type_l10n` (String) Localized message string corresponding to type
-- `vsphere_hosts` (Attributes List) List of the vsphere_hosts that are associated with this host. (see [below for nested schema](#nestedatt--host--vsphere_hosts))
-
-<a id="nestedatt--host--host_group"></a>
-### Nested Schema for `host.host_group`
-
-Read-Only:
-
-- `description` (String)
-- `id` (String)
-- `name` (String)
-
+- `vsphere_hosts` (Attributes List) List of the vsphere hosts that are associated with this host. (see [below for nested schema](#nestedatt--host--vsphere_hosts))
 
 <a id="nestedatt--host--host_virtual_volume_mappings"></a>
 ### Nested Schema for `host.host_virtual_volume_mappings`
@@ -80,9 +69,7 @@ Read-Only:
 
 Read-Only:
 
-- `chap_mutual_password` (String) Password for CHAP authentication.
 - `chap_mutual_username` (String) Username for CHAP authentication.
-- `chap_single_password` (String) Password for CHAP authentication.
 - `chap_single_username` (String) Username for CHAP authentication.
 - `port_name` (String) The port name, one of: IQN, WWN, or NQN..
 - `port_type` (String) Protocol type of the host initiator.

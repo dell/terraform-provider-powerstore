@@ -145,16 +145,6 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 								},
 							},
 						},
-						"host_group": schema.ObjectAttribute{
-							Description:         "Properties of a host group.",
-							MarkdownDescription: "Properties of a host group.",
-							Computed:            true,
-							AttributeTypes: map[string]attr.Type{
-								"id":          types.StringType,
-								"name":        types.StringType,
-								"description": types.StringType,
-							},
-						},
 						"import_host_system": schema.ObjectAttribute{
 							Description:         "Details about an import host system.",
 							MarkdownDescription: "Details about an import host system.",
@@ -308,11 +298,6 @@ func updateHostState(Hosts []gopowerstore.Host) (response []models.HostDataSourc
 			TypeL10n:             types.StringValue(HostValue.TypeL10n),
 			OsTypeL10n:           types.StringValue(HostValue.OSTypeL10n),
 			HostConnectivityL10n: types.StringValue(HostValue.HostConnectivityL10n),
-			HostGroup: models.HostGroup{
-				ID:          types.StringValue(HostValue.HostGroup.ID),
-				Name:        types.StringValue(HostValue.HostGroup.Name),
-				Description: types.StringValue(HostValue.HostGroup.Description),
-			},
 			ImportHostSystem: models.ImportHostSystem{
 				ID:           types.StringValue(HostValue.ImportHostSystem.ID),
 				AgentAddress: types.StringValue(HostValue.ImportHostSystem.AgentAddress),
