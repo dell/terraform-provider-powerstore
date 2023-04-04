@@ -118,6 +118,15 @@ const (
 	//VolumeGroupInvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
 	VolumeGroupInvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
 
+	//CreateHGDetailErrorMsg specifies error caused when required fields are not provided
+	CreateHGDetailErrorMsg = "Missing required argument"
+
+	//CreateHGInvalidHostErrorMsg specifies error caused when Invalid attribute value is provided
+	CreateHGInvalidHostErrorMsg = "Error creating host group"
+
+	//CreateHGWithBlankName specifies error when blank name is provided
+	CreateHGWithBlankName = "Invalid Attribute Value Length"
+
 	//ImportVGDetailErrorMsg specifies error details occured while importing volume group
 	ImportVGDetailErrorMsg = "Could not read volume group with error invalid-id"
 )

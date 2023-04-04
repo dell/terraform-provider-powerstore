@@ -128,6 +128,7 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 		newProtectionPolicyResource,
 		newVolumeGroupResource,
 		newHostResource,
+		newHostGroupResource,
 	}
 }
 
