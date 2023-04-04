@@ -102,16 +102,16 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 							MarkdownDescription: "Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is mutual authentication.",
 							Optional:            true,
 						},
-						"chap_single_password": schema.StringAttribute{
+						"chap_single_username": schema.StringAttribute{
 							Description:         "Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is single authentication.",
 							MarkdownDescription: "Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is single authentication.",
 							Optional:            true,
-							Sensitive:           true,
 						},
-						"chap_single_username": schema.StringAttribute{
+						"chap_single_password": schema.StringAttribute{
 							Description:         "Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is single authentication.",
 							MarkdownDescription: "Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is single authentication.",
 							Optional:            true,
+							Sensitive:           true,
 						},
 					},
 				},
@@ -406,6 +406,7 @@ func (r *resourceHost) ImportState(ctx context.Context, req resource.ImportState
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
+// Update details to state from the API repsonse
 func (r resourceHost) serverToState(plan, state *models.Host, response gopowerstore.Host, operation operation) {
 	state.ID = types.StringValue(response.ID)
 	state.Name = types.StringValue(response.Name)
@@ -468,6 +469,7 @@ func (r resourceHost) serverToState(plan, state *models.Host, response gopowerst
 	}
 }
 
+// Attributes to be updated in update operation
 func (r resourceHost) planToServer(plan, state models.Host) *gopowerstore.HostModify {
 
 	hostUpdate := &gopowerstore.HostModify{}
@@ -522,6 +524,7 @@ func (r resourceHost) planToServer(plan, state models.Host) *gopowerstore.HostMo
 		})
 	}
 
+	// Fetch keys (port names) to be removed
 	var removeInitiators []string
 	for removeID := range removeInitiatorsMap {
 		removeInitiators = append(removeInitiators, removeID.ValueString())
