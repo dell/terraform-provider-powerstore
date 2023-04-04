@@ -9,7 +9,7 @@ type HostDataSource struct {
 	Description               types.String                `tfsdk:"description"`
 	HostGroupID               types.String                `tfsdk:"host_group_id"`
 	OsType                    types.String                `tfsdk:"os_type"`
-	Initiators                []InitiatorCreateModify     `tfsdk:"initiators"`
+	Initiators                []InitiatorInstance         `tfsdk:"initiators"`
 	HostConnectivity          types.String                `tfsdk:"host_connectivity"`
 	Type                      types.String                `tfsdk:"type"`
 	TypeL10n                  types.String                `tfsdk:"type_l10n"`
@@ -53,4 +53,12 @@ type HostVirtualVolumeMappings struct {
 type VsphereHosts struct {
 	ID   types.String `tfsdk:"id"`
 	Name types.String `tfsdk:"name"`
+}
+
+// InitiatorInstance - for reading initiator to the host
+type InitiatorInstance struct {
+	PortName           types.String `tfsdk:"port_name"`
+	PortType           types.String `tfsdk:"port_type"`
+	ChapMutualUsername types.String `tfsdk:"chap_mutual_username"`
+	ChapSingleUsername types.String `tfsdk:"chap_single_username"`
 }

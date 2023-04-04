@@ -132,11 +132,6 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 										MarkdownDescription: "The port name, one of: IQN, WWN, or NQN..",
 										Computed:            true,
 									},
-									"chap_mutual_password": schema.StringAttribute{
-										Description:         "Password for CHAP authentication.",
-										MarkdownDescription: "Password for CHAP authentication.",
-										Computed:            true,
-									},
 									"chap_mutual_username": schema.StringAttribute{
 										Description:         "Username for CHAP authentication.",
 										MarkdownDescription: "Username for CHAP authentication.",
@@ -145,11 +140,6 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 									"chap_single_username": schema.StringAttribute{
 										Description:         "Username for CHAP authentication.",
 										MarkdownDescription: "Username for CHAP authentication.",
-										Computed:            true,
-									},
-									"chap_single_password": schema.StringAttribute{
-										Description:         "Password for CHAP authentication.",
-										MarkdownDescription: "Password for CHAP authentication.",
 										Computed:            true,
 									},
 								},
@@ -223,8 +213,8 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 							},
 						},
 						"vsphere_hosts": schema.ListNestedAttribute{
-							Description:         "List of the vsphere_hosts that are associated with this host.",
-							MarkdownDescription: "List of the vsphere_hosts that are associated with this host.",
+							Description:         "List of the vsphere hosts that are associated with this host.",
+							MarkdownDescription: "List of the vsphere hosts that are associated with this host.",
 							Computed:            true,
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -339,8 +329,9 @@ func updateHostState(Hosts []gopowerstore.Host) (response []models.HostDataSourc
 
 		for _, hostVirtualVolumeMappings := range HostValue.HostVirtualVolumeMappings {
 			hostState.HostVirtualVolumeMappings = append(hostState.HostVirtualVolumeMappings, models.HostVirtualVolumeMappings{
-				ID:     types.StringValue(hostVirtualVolumeMappings.ID),
-				HostID: types.StringValue(hostVirtualVolumeMappings.HostID),
+				ID:              types.StringValue(hostVirtualVolumeMappings.ID),
+				HostID:          types.StringValue(hostVirtualVolumeMappings.HostID),
+				VirtualVolumeID: types.StringValue(hostVirtualVolumeMappings.VirtualVolumeID),
 			})
 		}
 
@@ -352,13 +343,11 @@ func updateHostState(Hosts []gopowerstore.Host) (response []models.HostDataSourc
 		}
 
 		for _, initiators := range HostValue.Initiators {
-			hostState.Initiators = append(hostState.Initiators, models.InitiatorCreateModify{
+			hostState.Initiators = append(hostState.Initiators, models.InitiatorInstance{
 				PortName:           types.StringValue(initiators.PortName),
 				PortType:           types.StringValue(string(initiators.PortType)),
 				ChapMutualUsername: types.StringValue(initiators.ChapMutualUsername),
 				ChapSingleUsername: types.StringValue(initiators.ChapSingleUsername),
-				ChapSinglePassword: types.StringValue(initiators.ChapSinglePassword),
-				ChapMutualPassword: types.StringValue(initiators.ChapMutualPassword),
 			})
 		}
 		response = append(response, hostState)
