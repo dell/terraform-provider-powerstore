@@ -457,6 +457,11 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	log.Printf("Successfully done with Update")
 }
 
+// ImportState import state for existing volume group
+func (r *resourceVolumeGroup) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
 // updateVolGroupState - method to update terraform state
 func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse gopowerstore.VolumeGroup, volGroupPlan *models.Volumegroup) {
 	// Update value from Volume Group Response to State
