@@ -155,6 +155,7 @@ func (r *resourceHostGroup) Create(ctx context.Context, req resource.CreateReque
 	log.Printf("Done with Create")
 }
 
+// Delete - method to delete host group resource
 func (r *resourceHostGroup) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with the Delete")
 
@@ -181,6 +182,7 @@ func (r *resourceHostGroup) Delete(ctx context.Context, req resource.DeleteReque
 	log.Printf("Done with Delete")
 }
 
+// Read - reads host group resource information
 func (r *resourceHostGroup) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	log.Printf("Reading Host Group")
 	var state models.HostGroup
@@ -213,6 +215,7 @@ func (r *resourceHostGroup) Read(ctx context.Context, req resource.ReadRequest, 
 	log.Printf("Done with Read")
 }
 
+// Update - updates host group resource
 func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update")
 
@@ -232,6 +235,7 @@ func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
+	// Get ids of hosts to be added/removed from host group
 	addHostIds, removeHostIds := GetHostDetails(plan, &state)
 
 	// Get Host Group ID from state
@@ -275,6 +279,7 @@ func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateReque
 	log.Printf("Successfully done with Update")
 }
 
+// planToHostGroupParam - Create HostGroupCreate instance
 func (r resourceHostGroup) planToHostGroupParam(plan models.HostGroup) *gopowerstore.HostGroupCreate {
 
 	var hostIds []string
@@ -290,6 +295,7 @@ func (r resourceHostGroup) planToHostGroupParam(plan models.HostGroup) *gopowers
 	return hostGroupCreate
 }
 
+// updateHostGroupState - Update host group details from response to state
 func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup, hostGroupResponse gopowerstore.HostGroup, hostGroupPlan *models.HostGroup) {
 	// Update value from Host Group Response to State
 	hostGroupState.ID = types.StringValue(hostGroupResponse.ID)
@@ -309,6 +315,7 @@ func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup
 	hostGroupState.HostIDs, _ = types.SetValue(types.StringType, hostIDList)
 }
 
+// GetHostDetails - Get details of hosts to be added/removed from host group
 func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, []string) {
 	//Get host ids from plan into a slice
 	var planHostIds []string
