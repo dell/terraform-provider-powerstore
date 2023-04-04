@@ -15,18 +15,10 @@ type HostDataSource struct {
 	TypeL10n                  types.String                `tfsdk:"type_l10n"`
 	OsTypeL10n                types.String                `tfsdk:"os_type_l10n"`
 	HostConnectivityL10n      types.String                `tfsdk:"host_connectivity_l10n"`
-	HostGroup                 HostGroup                   `tfsdk:"host_group"`
 	ImportHostSystem          ImportHostSystem            `tfsdk:"import_host_system"`
 	MappedHosts               []MappedHosts               `tfsdk:"mapped_hosts"`
 	HostVirtualVolumeMappings []HostVirtualVolumeMappings `tfsdk:"host_virtual_volume_mappings"`
 	VsphereHosts              []VsphereHosts              `tfsdk:"vsphere_hosts"`
-}
-
-// HostGroup - Properties of a host group.
-type HostGroup struct {
-	ID          types.String `tfsdk:"id"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
 }
 
 // ImportHostSystem - Details about an import host system.
