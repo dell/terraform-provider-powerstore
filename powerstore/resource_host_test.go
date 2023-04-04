@@ -31,7 +31,28 @@ func TestAccHost_Create(t *testing.T) {
 	})
 }
 
-// Test to Create Host Resource
+// Test to Create Host Resource with Single CHAP
+func TestAccHost_CreateSingleCHAP(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostParamsCreateWithSingleCHAP,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
+				),
+			},
+		},
+	})
+}
+
+// Test to Create Host Resource without policy
 func TestAccHost_CreateWithoutPolicy(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
@@ -62,6 +83,89 @@ func TestAccHost_CreateWithoutName(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + HostParamsCreateWithoutName,
 				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to rename Host Resource
+func TestAccHost_Rename(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
+					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + HostParamsRename,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", "new_name_host_acc_test"),
+					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
+					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
+				),
+			},
+		},
+	})
+}
+
+// Test to Add and remove Host Resource
+func TestAccHost_AddRemoveInitiators(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostParamsCreateWithCHAP,
+			},
+			{
+				Config: ProviderConfigForTesting + HostParamsAddInitiators,
+			},
+			{
+				Config: ProviderConfigForTesting + HostParamsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
+					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
+				),
+			},
+		},
+	})
+}
+
+// Test to Modify Host Resource
+func TestAccHost_ModifyInitiators(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostParamsCreateWithSingleCHAP,
+			},
+			{
+				Config: ProviderConfigForTesting + HostParamsCreateWithCHAP,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
+					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
+				),
 			},
 		},
 	})
@@ -109,7 +213,7 @@ func TestAccHost_ImportSuccess(t *testing.T) {
 				ExpectError:       nil,
 				ImportStateVerify: true,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					//assert.Equal(t, hostName, s[0].Attributes["name"])
+					assert.Equal(t, hostName, s[0].Attributes["name"])
 					assert.Equal(t, "Linux", s[0].Attributes["os_type"])
 					return nil
 				},
@@ -124,21 +228,54 @@ resource "powerstore_host" "test" {
 	name = "` + hostName + `"
 	description = "Test Host Resource"
 	os_type = "Linux"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb605eb13", port_type="NVMe"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
+}
+`
+
+var HostParamsCreateWithCHAP = `
+resource "powerstore_host" "test" {
+	name = "` + hostName + `"
+	description = "Test Host Resource"
+	os_type = "Linux"
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"}]
+}
+`
+var HostParamsCreateWithSingleCHAP = `
+resource "powerstore_host" "test" {
+	name = "` + hostName + `"
+	description = "Test Host Resource"
+	os_type = "Linux"
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606",port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
 }
 `
 
 var HostParamsCreateWithoutPolicy = `
 resource "powerstore_host" "test" {
 	name = "` + hostName + `"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb605eb13", port_type="NVMe"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
 	description = "Test Host Resource"
 }
 `
 var HostParamsCreateWithoutName = `
 resource "powerstore_host" "test" {
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb605eb13", port_type="NVMe"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
 	description = "Test Host Resource"
-os_type = "Linux"
+	os_type = "Linux"
+}
+`
+var HostParamsRename = `
+resource "powerstore_host" "test" {
+	name = "new_name_host_acc_test"
+	description = "Test Host Resource"
+	os_type = "Linux"
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
+}
+`
+var HostParamsAddInitiators = `
+resource "powerstore_host" "test" {
+	name = "` + hostName + `"
+	description = "Test Host Resource"
+	os_type = "Linux"
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"},{port_name="iqn.1998-01.com.vmware:lgc198248-5b06fb37", port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
 }
 `
