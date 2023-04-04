@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test to Create VolumeGroup
@@ -390,6 +392,56 @@ func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
 	})
 }
 
+// Test to import volume group successfully
+func TestAccVolumeGroup_ImportSuccess(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
+			},
+			{
+				Config:       ProviderConfigForTesting + VolumeGroupParamsCreate,
+				ResourceName: "powerstore_volumegroup.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_volume_group", s[0].Attributes["name"])
+					assert.Equal(t, "Creating Volume Group", s[0].Attributes["description"])
+					assert.Equal(t, "false", s[0].Attributes["is_write_order_consistent"])
+					return nil
+				},
+			},
+		},
+	})
+}
+
+// Negative - Test to import volume group
+func TestAccVolumeGroup_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        ProviderConfigForTesting + VolumeGroupParamsCreate,
+				ResourceName:  "powerstore_volumegroup.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(ImportVGDetailErrorMsg),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
 var VolumeGroupParamsCreate = `
 resource "powerstore_volumegroup" "test" {
   name = "test_volume_group"
@@ -481,7 +533,7 @@ resource "powerstore_volumegroup" "test" {
   name = "test_volume_group"
   description = "Creaing Volume Group"
   is_write_order_consistent = false
-  protection_policy_id = "` + protectionPolicyID + `"
+  protection_policy_id = "` + policyID + `"
   protection_policy_name = "` + policyName + `"
 }
 `
