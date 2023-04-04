@@ -15,6 +15,10 @@ type Host struct {
 
 // InitiatorCreateModify - for adding and modifying initiator to the host
 type InitiatorCreateModify struct {
-	PortName types.String `tfsdk:"port_name"`
-	PortType types.String `tfsdk:"port_type"`
+	PortName           types.String `tfsdk:"port_name"`
+	PortType           types.String `tfsdk:"port_type"`
+	ChapMutualPassword types.String `tfsdk:"chap_mutual_password"`
+	ChapMutualUsername types.String `tfsdk:"chap_mutual_username"`
+	ChapSinglePassword types.String `tfsdk:"chap_single_password"`
+	ChapSingleUsername types.String `tfsdk:"chap_single_username"`
 }
