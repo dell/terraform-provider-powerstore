@@ -132,5 +132,4 @@ const (
 
 	//ImportVGDetailErrorMsg specifies error details occured while importing volume group
 	ImportVGDetailErrorMsg = "Could not read volume group with error invalid-id"
-
 )
