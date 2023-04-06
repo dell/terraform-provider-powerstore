@@ -12,6 +12,7 @@ import (
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -277,6 +278,11 @@ func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	log.Printf("Successfully done with Update")
+}
+
+// ImportState import state for existing host group
+func (r *resourceHostGroup) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 // planToHostGroupParam - Create HostGroupCreate instance
