@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test to Create HostGroup
@@ -143,6 +145,56 @@ func TestAccHostGroup_UpdateRemoveHost(t *testing.T) {
 	})
 }
 
+// Test to import host group successfully
+func TestAccHostGroup_ImportSuccess(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsCreate3,
+			},
+			{
+				Config:       ProviderConfigForTesting + HostGroupParamsCreate3,
+				ResourceName: "powerstore_hostgroup.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_hostgroup", s[0].Attributes["name"])
+					assert.Equal(t, "Test Create Host Group", s[0].Attributes["description"])
+					assert.Equal(t, hostID3, s[0].Attributes["host_ids.0"])
+					return nil
+				},
+			},
+		},
+	})
+}
+
+// Negative - Test to import host group
+func TestAccHostGroup_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        ProviderConfigForTesting + HostGroupParamsCreate,
+				ResourceName:  "powerstore_hostgroup.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(ImportHGDetailErrorMsg),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
 var HostGroupParamsCreate = `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
@@ -164,6 +216,14 @@ resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
 	host_ids = ["` + hostID2 + `"]
+}
+`
+
+var HostGroupParamsCreate3 = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_ids = ["` + hostID3 + `"]
 }
 `
 
