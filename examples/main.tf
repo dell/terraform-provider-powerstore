@@ -124,3 +124,11 @@ resource "powerstore_host" "test" {
 data "powerstore_host" "test1" {
        name = "tf_host"
 }
+
+resource "powerstore_snapshot" "test" {
+  name = "test_snap"
+  volume_id="01d88dea-7d71-4a1b-abd6-be07f94aecd9"
+  performance_policy_id = "default_medium"
+  expiration_timestamp="2023-05-06T09:01:47Z"
+  creator_type="User"
+}
