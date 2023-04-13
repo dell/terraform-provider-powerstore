@@ -124,3 +124,9 @@ resource "powerstore_host" "test" {
 data "powerstore_host" "test1" {
        name = "tf_host"
 }
+
+resource "powerstore_volumeGroupSnapshot" "test" {
+  name = "test_snap"
+  volume_group_id="410943f5-0033-45e5-b900-6e48305ea007"
+  expiration_timestamp="2023-05-06T09:01:47Z"
+}
