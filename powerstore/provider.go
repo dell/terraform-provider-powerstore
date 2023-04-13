@@ -129,6 +129,7 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 		newVolumeGroupResource,
 		newHostResource,
 		newHostGroupResource,
+		newVGSnapshotResource,
 	}
 }
 
