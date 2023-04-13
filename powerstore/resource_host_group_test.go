@@ -44,7 +44,7 @@ func TestAccHostGroup_CreateWithInvalidValues(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + HostGroupParamsCreateServerError,
-				ExpectError: regexp.MustCompile(CreateHGDetailErrorMsg),
+				ExpectError: regexp.MustCompile(CreateHGInvalidHostErrorMsg),
 			},
 		},
 	})
