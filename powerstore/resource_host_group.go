@@ -10,6 +10,7 @@ import (
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -68,9 +69,23 @@ func (r *resourceHostGroup) Schema(ctx context.Context, req resource.SchemaReque
 
 			"host_ids": schema.SetAttribute{
 				ElementType:         types.StringType,
-				Required:            true,
-				Description:         "The list of hosts to include in the host group.",
-				MarkdownDescription: "The list of hosts to include in the host group.",
+				Optional:            true,
+				Computed:            true,
+				Description:         "The list of host IDs to include in the host group.",
+				MarkdownDescription: "The list of host IDs to include in the host group.",
+				Validators: []validator.Set{
+					setvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("host_names"),
+					}...),
+				},
+			},
+
+			"host_names": schema.SetAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
+				Computed:            true,
+				Description:         "The list of host names to include in the host group.",
+				MarkdownDescription: "The list of host names to include in the host group.",
 			},
 
 			"host_connectivity": schema.StringAttribute{
@@ -319,6 +334,18 @@ func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup
 		hostIDList = append(hostIDList, types.StringValue(string(hostID)))
 	}
 	hostGroupState.HostIDs, _ = types.SetValue(types.StringType, hostIDList)
+
+	//Update HostNames value from Plan to State
+	var hostNames []string
+	for _, hostName := range hostGroupPlan.HostNames.Elements() {
+		hostNames = append(hostNames, strings.Trim(hostName.String(), "\""))
+	}
+	hostNameList := []attr.Value{}
+	for _, hostName := range hostNames {
+		hostNameList = append(hostNameList, types.StringValue(string(hostName)))
+	}
+	hostGroupState.HostNames, _ = types.SetValue(types.StringType, hostNameList)
+
 }
 
 // GetHostDetails - Get details of hosts to be added/removed from host group
@@ -384,4 +411,44 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 	}
 
 	return addHostIdsSlice, removeHostIdsSlice
+}
+
+// ModifyPlan modify resource plan attribute value
+func (r *resourceHostGroup) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+	var plan models.HostGroup
+
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var hostIds []string
+	if len(plan.HostNames.Elements()) != 0 {
+		for _, hostName := range plan.HostNames.Elements() {
+			host, err := r.client.PStoreClient.GetHostByName(context.Background(), strings.Trim(hostName.String(), "\""))
+			if err != nil {
+				resp.Diagnostics.AddError(
+					"Error getting host ",
+					"Could not get host with name: "+strings.Trim(hostName.String(), "\"")+", \n unexpected error: "+err.Error(),
+				)
+				return
+			}
+			hostIds = append(hostIds, strings.Trim(host.ID, "\""))
+		}
+		hostList := []attr.Value{}
+		for i := 0; i < len(hostIds); i++ {
+			hostList = append(hostList, types.StringValue(string(hostIds[i])))
+		}
+		plan.HostIDs, _ = types.SetValue(types.StringType, hostList)
+	}
+
+	diags = resp.Plan.Set(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }

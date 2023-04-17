@@ -10,5 +10,6 @@ type HostGroup struct {
 	Name             types.String `tfsdk:"name"`
 	Description      types.String `tfsdk:"description"`
 	HostIDs          types.Set    `tfsdk:"host_ids"`
+	HostNames        types.Set    `tfsdk:"host_names"`
 	HostConnectivity types.String `tfsdk:"host_connectivity"`
 }

@@ -138,4 +138,10 @@ const (
 
 	//CreateSnapshotErrorMsg specifies error caused when invalid attribute values are provided during snapshot creation
 	CreateSnapshotErrorMsg = "Error creating volume snapshot"
+
+	//CreateHostGroupInvalidHostErrorMsg specifies error caused when invalid host value is provided
+	CreateHostGroupInvalidHostErrorMsg = "Error getting host"
+
+	//InvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
+	InvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
 )
