@@ -49,13 +49,14 @@ resource "powerstore_hostgroup" "test" {
 
 ### Required
 
-- `host_ids` (Set of String) The list of hosts to include in the host group.
 - `name` (String) The host group name.
 
 ### Optional
 
 - `description` (String) An optional description for the host group.
 - `host_connectivity` (String) Connectivity type for hosts and host groups.
+- `host_ids` (Set of String) The list of host IDs to include in the host group.
+- `host_names` (Set of String) The list of host names to include in the host group.
 
 ### Read-Only
 
