@@ -77,7 +77,7 @@ func TestAccVolumeSnapshot_CreateWithoutVolume(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + SnapParamsCreateWithoutVolume,
-				ExpectError: regexp.MustCompile(CreateSnapshotErrorMsg),
+				ExpectError: regexp.MustCompile(InvalidAttributeCombinationErrorMsg),
 			},
 		},
 	})
