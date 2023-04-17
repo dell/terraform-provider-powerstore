@@ -135,4 +135,7 @@ const (
 
 	//ImportHGDetailErrorMsg specifies error details occured while importing host group
 	ImportHGDetailErrorMsg = "Could not read host group with error invalid-id"
+
+	//CreateSnapshotErrorMsg specifies error caused when invalid attribute values are provided during snapshot creation
+	CreateSnapshotErrorMsg = "Error creating volume snapshot"
 )
