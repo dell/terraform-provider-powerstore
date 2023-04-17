@@ -56,6 +56,15 @@ func (r *resourceSnapshot) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: "ID of the volume to take snapshot.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("volume_name")),
+				},
+			},
+			"volume_name": schema.StringAttribute{
+				Optional:            true,
+				Description:         "Name of the volume to take snapshot.",
+				MarkdownDescription: "Name of the volume to take snapshot.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"description": schema.StringAttribute{
@@ -137,14 +146,35 @@ func (r *resourceSnapshot) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	// Update details to state
-	result := models.Snapshot{}
+	volID := plan.VolumeID.ValueString()
 
 	name := plan.Name.ValueString()
 	description := plan.Description.ValueString()
 	performancePolicyID := plan.PerformancePolicyID.ValueString()
 	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
 	creatorType := plan.CreatorType.ValueString()
+
+	// if volume name is present instead of ID
+	if volID == "" {
+		// Check if both volume name and volume ID are absent
+		if plan.VolumeName.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"At least one of, volume name OR volume ID should be present",
+			)
+			return
+		}
+		// Continue to fetch volume ID from volume name otherwise
+		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"Could not fetch volume ID from volume name, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		volID = volResponse.ID
+	}
 
 	// Create new volume snapshot
 	snapCreate := &gopowerstore.SnapshotCreate{
@@ -155,7 +185,7 @@ func (r *resourceSnapshot) Create(ctx context.Context, req resource.CreateReques
 		CreatorType:         gopowerstore.StorageCreatorTypeEnum(creatorType),
 	}
 
-	snapCreateResponse, err := r.client.PStoreClient.CreateSnapshot(context.Background(), snapCreate, plan.VolumeID.ValueString())
+	snapCreateResponse, err := r.client.PStoreClient.CreateSnapshot(context.Background(), snapCreate, volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume snapshot",
@@ -173,6 +203,8 @@ func (r *resourceSnapshot) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
+	// Update details to state
+	result := models.Snapshot{}
 	r.updateSnapshotState(&plan, &result, snapshotResponse)
 
 	diags = resp.State.Set(ctx, result)
@@ -250,7 +282,6 @@ func (r *resourceSnapshot) Delete(ctx context.Context, req resource.DeleteReques
 
 // ImportState - imports state for existing snapshot
 func (r *resourceSnapshot) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 // updateSnapshotState - method to update terraform state
@@ -266,5 +297,6 @@ func (r resourceSnapshot) updateSnapshotState(plan, state *models.Snapshot, resp
 
 	if plan != nil {
 		state.VolumeID = plan.VolumeID
+		state.VolumeName = plan.VolumeName
 	}
 }

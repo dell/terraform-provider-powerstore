@@ -11,4 +11,5 @@ type Snapshot struct {
 	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
 	CreatorType         types.String `tfsdk:"creator_type"`
 	VolumeID            types.String `tfsdk:"volume_id"`
+	VolumeName          types.String `tfsdk:"volume_name"`
 }
