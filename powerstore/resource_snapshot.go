@@ -56,7 +56,7 @@ func (r *resourceSnapshot) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: "ID of the volume to take snapshot.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-					stringvalidator.ConflictsWith(path.MatchRoot("volume_name")),
+					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_name")),
 				},
 			},
 			"volume_name": schema.StringAttribute{
@@ -65,6 +65,7 @@ func (r *resourceSnapshot) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: "Name of the volume to take snapshot.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_id")),
 				},
 			},
 			"description": schema.StringAttribute{
@@ -156,15 +157,6 @@ func (r *resourceSnapshot) Create(ctx context.Context, req resource.CreateReques
 
 	// if volume name is present instead of ID
 	if volID == "" {
-		// Check if both volume name and volume ID are absent
-		if plan.VolumeName.ValueString() == "" {
-			resp.Diagnostics.AddError(
-				"Error creating volume snapshot",
-				"At least one of, volume name OR volume ID should be present",
-			)
-			return
-		}
-		// Continue to fetch volume ID from volume name otherwise
 		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
