@@ -125,7 +125,13 @@ data "powerstore_host" "test1" {
        name = "tf_host"
 }
 
-resource "powerstore_volumeSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
+  name = "test_snap"
+  volume_group_id = "410943f5-0033-45e5-b900-6e48305ea007"
+  expiration_timestamp = "2023-05-06T09:01:47Z"
+}
+
+resource "powerstore_volume_snapshot" "test" {
   name = "test_snap"
   volume_id="01d88dea-7d71-4a1b-abd6-be07f94aecd9"
   performance_policy_id = "default_medium"
