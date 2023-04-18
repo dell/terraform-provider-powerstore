@@ -11,6 +11,7 @@ type Snapshot struct {
 	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
 	CreatorType         types.String `tfsdk:"creator_type"`
 	VolumeID            types.String `tfsdk:"volume_id"`
+	VolumeName          types.String `tfsdk:"volume_name"`
 }
 
 // VolumeGroupSnapshot - VolumeGroupSnapshot properties
@@ -20,5 +21,5 @@ type VolumeGroupSnapshot struct {
 	Description         types.String `tfsdk:"description"`
 	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
 	VolumeGroupID       types.String `tfsdk:"volume_group_id"`
+	VolumeGroupName     types.String `tfsdk:"volume_group_name"`
 }
-
