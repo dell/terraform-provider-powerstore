@@ -21,8 +21,8 @@ func TestAccVolumeGroupSnapshot_Create(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumeGroupSnapshot.test", "name", "test_snap"),
-					resource.TestCheckResourceAttr("powerstore_volumeGroupSnapshot.test", "description", "Test Snapshot Resource"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "description", "Test Snapshot Resource"),
 				),
 			},
 		},
@@ -119,7 +119,7 @@ func TestAccVolumeGroupSnapshot_CreateWithInvalidVolumeGroupName(t *testing.T) {
 }
 
 var VolumeGroupSnapParamsCreate = `
-resource "powerstore_volumeGroupSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_id="` + volumeGroupID + `"
@@ -128,7 +128,7 @@ resource "powerstore_volumeGroupSnapshot" "test" {
 `
 
 var VolumeGroupSnapshotParamsCreateWithoutName = `
-resource "powerstore_volumeGroupSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_group_id="` + volumeGroupID + `"
   expiration_timestamp="2023-05-06T09:01:47Z"
@@ -136,7 +136,7 @@ resource "powerstore_volumeGroupSnapshot" "test" {
 `
 
 var VolumeGroupSnapshotParamsCreateWithoutExpiry = `
-resource "powerstore_volumeGroupSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_id="` + volumeGroupID + `"
@@ -144,7 +144,7 @@ resource "powerstore_volumeGroupSnapshot" "test" {
 `
 
 var VolumeGroupSnapParamsCreateWithoutVolume = `
-resource "powerstore_volumeGroupSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   expiration_timestamp="2023-05-06T09:01:47Z"
@@ -152,7 +152,7 @@ resource "powerstore_volumeGroupSnapshot" "test" {
 `
 
 var SnapParamsCreateVolumeGroupName = `
-resource "powerstore_volumeGroupSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_name="` + volumeGroupName + `"
@@ -161,7 +161,7 @@ resource "powerstore_volumeGroupSnapshot" "test" {
 `
 
 var SnapParamsCreateInvalidVolumeGroupName = `
-resource "powerstore_volumeGroupSnapshot" "test" {
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_name="random_volgroup"

@@ -27,7 +27,7 @@ type resourceVGSnapshot struct {
 
 // Metadata defines resource interface Metadata method
 func (r *resourceVGSnapshot) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_volumeGroupSnapshot"
+	resp.TypeName = req.ProviderTypeName + "_volumegroup_snapshot"
 }
 
 // Schema defines resource interface Schema method
