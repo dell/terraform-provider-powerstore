@@ -8,8 +8,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// Test to Create Snapshot Resource
-func TestAccVolumeSnapshot_Create(t *testing.T) {
+// Test to Create VolumeGroup Snapshot Resource
+func TestAccVolumeGroupSnapshot_Create(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -19,18 +19,18 @@ func TestAccVolumeSnapshot_Create(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + SnapParamsCreate,
+				Config: ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "description", "Test Snapshot Resource"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "description", "Test Snapshot Resource"),
 				),
 			},
 		},
 	})
 }
 
-// Test to Create Snapshot Resource Without Name
-func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
+// Test to Create VolumeGroup Snapshot Resource Without Name
+func TestAccVolumeGroupSnapshot_CreateWithoutName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -40,15 +40,15 @@ func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
+				Config:      ProviderConfigForTesting + VolumeGroupSnapshotParamsCreateWithoutName,
 				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
 			},
 		},
 	})
 }
 
-// Test to Create Snapshot Resource Without Expiration timeout
-func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
+// Test to Create VolumeGroup Snapshot Resource Without Expiration timeout
+func TestAccVolumeGroupSnapshot_CreateWithoutExpiration(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -58,15 +58,15 @@ func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
+				Config:      ProviderConfigForTesting + VolumeGroupSnapshotParamsCreateWithoutName,
 				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
 			},
 		},
 	})
 }
 
-// Test to Create Snapshot Resource Without volume ID
-func TestAccVolumeSnapshot_CreateWithoutVolume(t *testing.T) {
+// Test to Create VolumeGroup Snapshot Resource Without volume group name and ID
+func TestAccVolumeGroupSnapshot_CreateWithoutVolume(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -76,15 +76,15 @@ func TestAccVolumeSnapshot_CreateWithoutVolume(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapParamsCreateWithoutVolume,
+				Config:      ProviderConfigForTesting + VolumeGroupSnapParamsCreateWithoutVolume,
 				ExpectError: regexp.MustCompile(InvalidAttributeCombinationErrorMsg),
 			},
 		},
 	})
 }
 
-// Test to Create Snapshot Resource With volume Name
-func TestAccVolumeSnapshot_CreateWithVolumeName(t *testing.T) {
+// Test to Create Snapshot Resource With volume group Name
+func TestAccVolumeGroupSnapshot_CreateWithVolumeGroupName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -94,14 +94,14 @@ func TestAccVolumeSnapshot_CreateWithVolumeName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + SnapParamsCreateVolumeName,
+				Config: ProviderConfigForTesting + SnapParamsCreateVolumeGroupName,
 			},
 		},
 	})
 }
 
-// Test to Create Snapshot Resource With Invalid volume Name
-func TestAccVolumeSnapshot_CreateWithInvalidVolumeName(t *testing.T) {
+// Test to Create Snapshot Resource With Invalid volume group Name
+func TestAccVolumeGroupSnapshot_CreateWithInvalidVolumeGroupName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -111,70 +111,60 @@ func TestAccVolumeSnapshot_CreateWithInvalidVolumeName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapParamsCreateInvalidVolumeName,
-				ExpectError: regexp.MustCompile(CreateSnapshotErrorMsg),
+				Config:      ProviderConfigForTesting + SnapParamsCreateInvalidVolumeGroupName,
+				ExpectError: regexp.MustCompile(CreateVolumeGroupSnapshotErrorMsg),
 			},
 		},
 	})
 }
 
-var SnapParamsCreate = `
-resource "powerstore_volume_snapshot" "test" {
+var VolumeGroupSnapParamsCreate = `
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
-  performance_policy_id = "default_medium"
+  volume_group_id="` + volumeGroupID + `"
   expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
 }
 `
 
-var SnapshotParamsCreateWithoutName = `
-resource "powerstore_volume_snapshot" "test" {
+var VolumeGroupSnapshotParamsCreateWithoutName = `
+resource "powerstore_volumegroup_snapshot" "test" {
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
-  performance_policy_id = "default_medium"
+  volume_group_id="` + volumeGroupID + `"
   expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
 }
 `
 
-var SnapshotParamsCreateWithoutExpiry = `
-resource "powerstore_volume_snapshot" "test" {
+var VolumeGroupSnapshotParamsCreateWithoutExpiry = `
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
-  performance_policy_id = "default_medium"
-  creator_type="User"
+  volume_group_id="` + volumeGroupID + `"
 }
 `
 
-var SnapParamsCreateWithoutVolume = `
-resource "powerstore_volume_snapshot" "test" {
+var VolumeGroupSnapParamsCreateWithoutVolume = `
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  performance_policy_id = "default_medium"
   expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
 }
 `
-var SnapParamsCreateVolumeName = `
-resource "powerstore_volume_snapshot" "test" {
+
+var SnapParamsCreateVolumeGroupName = `
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_name="` + volumeName + `"
-  performance_policy_id = "default_medium"
+  volume_group_name="` + volumeGroupName + `"
   expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
 }
 `
-var SnapParamsCreateInvalidVolumeName = `
-resource "powerstore_volume_snapshot" "test" {
+
+var SnapParamsCreateInvalidVolumeGroupName = `
+resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_name="random_volname"
-  performance_policy_id = "default_medium"
+  volume_group_name="random_volgroup"
   expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
 }
 `
