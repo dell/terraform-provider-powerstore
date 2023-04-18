@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -50,11 +51,21 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 			},
 			"volume_group_id": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
 				Description:         "ID of the volume group to take snapshot.",
 				MarkdownDescription: "ID of the volume group to take snapshot.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_group_name")),
+				},
+			},
+			"volume_group_name": schema.StringAttribute{
+				Optional:            true,
+				Description:         "Name of the volume to take snapshot.",
+				MarkdownDescription: "Name of the volume to take snapshot.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_group_id")),
 				},
 			},
 			"description": schema.StringAttribute{
@@ -114,6 +125,21 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 	description := plan.Description.ValueString()
 	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
 
+	volGroupID := plan.VolumeGroupID.ValueString()
+
+	// if volume group name is present instead of ID
+	if volGroupID == "" {
+		volGroupResponse, err := r.client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume group snapshot",
+				"Could not fetch volume group ID from volume group name, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		volGroupID = volGroupResponse.ID
+	}
+
 	// Create new volume group snapshot
 	vgSnapCreate := &gopowerstore.VolumeGroupSnapshotCreate{
 		Name:                name,
@@ -121,7 +147,7 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 		ExpirationTimestamp: expirationTimestamp,
 	}
 
-	snapCreateResponse, err := r.client.PStoreClient.CreateVolumeGroupSnapshot(context.Background(), plan.VolumeGroupID.ValueString(), vgSnapCreate)
+	snapCreateResponse, err := r.client.PStoreClient.CreateVolumeGroupSnapshot(context.Background(), volGroupID, vgSnapCreate)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume group snapshot",
@@ -233,6 +259,7 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 
 	if plan != nil {
 		state.VolumeGroupID = plan.VolumeGroupID
+		state.VolumeGroupName = plan.VolumeGroupName
 	}
 }
 

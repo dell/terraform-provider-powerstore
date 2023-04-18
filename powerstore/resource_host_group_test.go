@@ -44,7 +44,7 @@ func TestAccHostGroup_CreateWithInvalidValues(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + HostGroupParamsCreateServerError,
-				ExpectError: regexp.MustCompile(CreateHGDetailErrorMsg),
+				ExpectError: regexp.MustCompile(CreateHGInvalidHostErrorMsg),
 			},
 		},
 	})
@@ -81,6 +81,64 @@ func TestAccHostGroup_CreateWithBlankName(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + HostGroupParamsCreateWithBlankName,
 				ExpectError: regexp.MustCompile(CreateHGWithBlankName),
+			},
+		},
+	})
+}
+
+// Test to Create HostGroup with Host name
+func TestAccHostGroup_CreateWithHostName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsCreateWithHostName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_names.0", hostName),
+				),
+			},
+		},
+	})
+}
+
+// Test to Create HostGroup with invalid host name, will result in error
+func TestAccVolumeGroup_CreateWithInvalidHostName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + HostGroupParamsCreateWithInvalidHostName,
+				ExpectError: regexp.MustCompile(CreateHostGroupInvalidHostErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Create HostGroup with host id and host name, will result in error
+func TestAccHostGroup_CreateWithHostIDAndName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + HostGroupParamsWithHostIDAndHostName,
+				ExpectError: regexp.MustCompile(InvalidAttributeCombinationErrorMsg),
 			},
 		},
 	})
@@ -224,6 +282,31 @@ resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
 	host_ids = ["` + hostID3 + `"]
+}
+`
+
+var HostGroupParamsCreateWithHostName = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_names = ["` + hostName + `"]
+}
+`
+
+var HostGroupParamsCreateWithInvalidHostName = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_names = ["invalid-name"]
+}
+`
+
+var HostGroupParamsWithHostIDAndHostName = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_ids = ["` + hostID + `"]
+	host_names = ["` + hostName + `"]
 }
 `
 
