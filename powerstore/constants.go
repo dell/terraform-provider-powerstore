@@ -144,4 +144,7 @@ const (
 
 	//InvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
 	InvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
+
+	//CreateVolumeGroupSnapshotErrorMsg specifies error caused when invalid attribute values are provided during volume group snapshot creation
+	CreateVolumeGroupSnapshotErrorMsg = "Error creating volume group snapshot"
 )
