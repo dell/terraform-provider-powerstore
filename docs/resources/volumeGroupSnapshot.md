@@ -24,6 +24,7 @@ Volume Group Snapshot resource
 
 - `description` (String) Description of the volume group snapshot.
 - `volume_group_id` (String) ID of the volume group to take snapshot.
+- `volume_group_name` (String) Name of the volume to take snapshot.
 
 ### Read-Only
 

@@ -168,4 +168,3 @@ resource "powerstore_volumeGroupSnapshot" "test" {
   expiration_timestamp="2023-05-06T09:01:47Z"
 }
 `
-
