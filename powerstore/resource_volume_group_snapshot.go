@@ -52,6 +52,7 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"volume_group_id": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "ID of the volume group to take snapshot.",
 				MarkdownDescription: "ID of the volume group to take snapshot.",
 				Validators: []validator.String{
@@ -256,9 +257,8 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 	state.Name = types.StringValue(response.Name)
 	state.Description = types.StringValue(response.Description)
 	state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
-
+	state.VolumeGroupID = types.StringValue(response.ProtectionData.ParentID)
 	if plan != nil {
-		state.VolumeGroupID = plan.VolumeGroupID
 		state.VolumeGroupName = plan.VolumeGroupName
 	}
 }
