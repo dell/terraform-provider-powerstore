@@ -262,4 +262,3 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 		state.VolumeGroupName = plan.VolumeGroupName
 	}
 }
-
