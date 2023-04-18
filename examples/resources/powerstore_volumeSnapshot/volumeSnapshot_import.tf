@@ -3,7 +3,7 @@
 # Step 2 - To check the id of the volume snapshot we can make Get request to volume snapshot endpoint. eg. https://10.0.0.1/api/rest/volume --header 'type: Snapshot' which will return list of all volume snapshots ids.
 # Step 3 - Add empty resource block in tf file.
 # eg.
-# resource "powerstore_snapshot" "resource_block_name" {
+# resource "powerstore_volumeSnapshot" "resource_block_name" {
   # (resource arguments)
 # }
 # Step 4 - Execute the command: terraform import "powerstore_snapshot.resource_block_name" "id_of_the_snapshot" (resource_block_name must be taken from step 3 and id must be taken from step 2)

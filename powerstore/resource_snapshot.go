@@ -16,22 +16,22 @@ import (
 	"terraform-provider-powerstore/models"
 )
 
-// newSnapshotResource returns snapshot new resource instance
-func newSnapshotResource() resource.Resource {
-	return &resourceSnapshot{}
+// newVolumeSnapshotResource returns snapshot new resource instance
+func newVolumeSnapshotResource() resource.Resource {
+	return &resourceVolumeSnapshot{}
 }
 
-type resourceSnapshot struct {
+type resourceVolumeSnapshot struct {
 	client *client.Client
 }
 
 // Metadata defines resource interface Metadata method
-func (r *resourceSnapshot) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_snapshot"
+func (r *resourceVolumeSnapshot) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_volumeSnapshot"
 }
 
 // Schema defines resource interface Schema method
-func (r *resourceSnapshot) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
 		MarkdownDescription: "volume snapshot resource",
@@ -116,7 +116,7 @@ func (r *resourceSnapshot) Schema(ctx context.Context, req resource.SchemaReques
 }
 
 // Configure - defines configuration for volume snapshot resource
-func (r *resourceSnapshot) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *resourceVolumeSnapshot) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -137,7 +137,7 @@ func (r *resourceSnapshot) Configure(ctx context.Context, req resource.Configure
 }
 
 // Create - method to create volume snapshot resource
-func (r *resourceSnapshot) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 
 	var plan models.Snapshot
 
@@ -208,7 +208,7 @@ func (r *resourceSnapshot) Create(ctx context.Context, req resource.CreateReques
 }
 
 // Read - reads volume snapshot resource information
-func (r *resourceSnapshot) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *resourceVolumeSnapshot) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
 	var state models.Snapshot
 	diags := req.State.Get(ctx, &state)
@@ -241,11 +241,11 @@ func (r *resourceSnapshot) Read(ctx context.Context, req resource.ReadRequest, r
 }
 
 // Update - updates volume snapshot resource
-func (r *resourceSnapshot) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete - method to delete volume snapshot resource
-func (r *resourceSnapshot) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *resourceVolumeSnapshot) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Started with Delete")
 
 	var state models.Snapshot
@@ -273,11 +273,11 @@ func (r *resourceSnapshot) Delete(ctx context.Context, req resource.DeleteReques
 }
 
 // ImportState - imports state for existing snapshot
-func (r *resourceSnapshot) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *resourceVolumeSnapshot) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 }
 
 // updateSnapshotState - method to update terraform state
-func (r resourceSnapshot) updateSnapshotState(plan, state *models.Snapshot, response gopowerstore.Volume) {
+func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot, response gopowerstore.Volume) {
 
 	expTime := response.ProtectionData.ExpirationTimeStamp
 	state.ID = types.StringValue(response.ID)
