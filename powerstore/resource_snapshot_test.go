@@ -21,8 +21,8 @@ func TestAccVolumeSnapshot_Create(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshot.test", "name", "test_snap"),
-					resource.TestCheckResourceAttr("powerstore_snapshot.test", "description", "Test Snapshot Resource"),
+					resource.TestCheckResourceAttr("powerstore_volumeSnapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volumeSnapshot.test", "description", "Test Snapshot Resource"),
 				),
 			},
 		},
@@ -119,7 +119,7 @@ func TestAccVolumeSnapshot_CreateWithInvalidVolumeName(t *testing.T) {
 }
 
 var SnapParamsCreate = `
-resource "powerstore_snapshot" "test" {
+resource "powerstore_volumeSnapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
@@ -130,7 +130,7 @@ resource "powerstore_snapshot" "test" {
 `
 
 var SnapshotParamsCreateWithoutName = `
-resource "powerstore_snapshot" "test" {
+resource "powerstore_volumeSnapshot" "test" {
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
@@ -140,7 +140,7 @@ resource "powerstore_snapshot" "test" {
 `
 
 var SnapshotParamsCreateWithoutExpiry = `
-resource "powerstore_snapshot" "test" {
+resource "powerstore_volumeSnapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
@@ -150,7 +150,7 @@ resource "powerstore_snapshot" "test" {
 `
 
 var SnapParamsCreateWithoutVolume = `
-resource "powerstore_snapshot" "test" {
+resource "powerstore_volumeSnapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   performance_policy_id = "default_medium"
@@ -159,7 +159,7 @@ resource "powerstore_snapshot" "test" {
 }
 `
 var SnapParamsCreateVolumeName = `
-resource "powerstore_snapshot" "test" {
+resource "powerstore_volumeSnapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_name="` + volumeName + `"
@@ -169,7 +169,7 @@ resource "powerstore_snapshot" "test" {
 }
 `
 var SnapParamsCreateInvalidVolumeName = `
-resource "powerstore_snapshot" "test" {
+resource "powerstore_volumeSnapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_name="random_volname"
