@@ -53,6 +53,7 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			},
 			"volume_id": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "ID of the volume to take snapshot.",
 				MarkdownDescription: "ID of the volume to take snapshot.",
 				Validators: []validator.String{

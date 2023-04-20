@@ -147,4 +147,7 @@ const (
 
 	//CreateVolumeGroupSnapshotErrorMsg specifies error caused when invalid attribute values are provided during volume group snapshot creation
 	CreateVolumeGroupSnapshotErrorMsg = "Error creating volume group snapshot"
+
+	//ImportSnapshotDetailErrorMsg specifies error details while importing host
+	ImportSnapshotDetailErrorMsg = "Could not read snapshotID with error invalid-id"
 )

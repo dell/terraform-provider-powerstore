@@ -1,6 +1,8 @@
 package powerstore
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
@@ -40,8 +42,7 @@ func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
-				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
+				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
 			},
 		},
 	})
@@ -58,8 +59,7 @@ func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
-				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
+				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutExpiry,
 			},
 		},
 	})
@@ -113,6 +113,56 @@ func TestAccVolumeSnapshot_CreateWithInvalidVolumeName(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + SnapParamsCreateInvalidVolumeName,
 				ExpectError: regexp.MustCompile(CreateSnapshotErrorMsg),
+			},
+		},
+	})
+}
+
+// Negative test case for import
+func TestAccVolumeSnapshot_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName:  "powerstore_volume_snapshot.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(ImportSnapshotDetailErrorMsg),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
+// Test to import successfully
+func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
+
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + SnapParamsCreate,
+			},
+			{
+				Config:            ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName:      "powerstore_volume_snapshot.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_snap", s[0].Attributes["name"])
+					return nil
+				},
 			},
 		},
 	})
