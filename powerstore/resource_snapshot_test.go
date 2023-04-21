@@ -43,6 +43,10 @@ func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "description", "Test Snapshot Resource"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "expiration_timestamp", "2023-05-06T09:01:47Z"),
+				),
 			},
 		},
 	})
@@ -60,6 +64,10 @@ func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutExpiry,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_id", volumeID),
+				),
 			},
 		},
 	})
@@ -95,6 +103,10 @@ func TestAccVolumeSnapshot_CreateWithVolumeName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreateVolumeName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_name", volumeName),
+				),
 			},
 		},
 	})
