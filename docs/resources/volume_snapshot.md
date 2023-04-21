@@ -35,7 +35,7 @@ volume snapshot resource
 # To import , check volume_snapshot_import.tf for more info
 # volume_id/volume_name is the required attribute to create and update
 # name, expiration_timestamp, performance_policy_id and creator_type are the optional attributes
-# name and expiration_timestamp if present in cofing cannot be ""
+# name and expiration_timestamp if present in config cannot be ""
 # Either volume_id or volume_name should be present.
 # To check which attributes of the volume snapshot resource can be updated, please refer Product Guide in the documentation
 
