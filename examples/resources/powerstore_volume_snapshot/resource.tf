@@ -1,8 +1,9 @@
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check volume_snapshot_import.tf for more info
-# name, volume_id/volume_name and expiration_timestamp are the required attributes to create and update
-# performance_policy_id and creator_type are the optional attributes
+# volume_id/volume_name is the required attribute to create and update
+# name, expiration_timestamp, performance_policy_id and creator_type are the optional attributes
+# name and expiration_timestamp if present in config cannot be ""
 # Either volume_id or volume_name should be present.
 # To check which attributes of the volume snapshot resource can be updated, please refer Product Guide in the documentation
 
