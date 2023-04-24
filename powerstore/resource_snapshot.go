@@ -43,15 +43,17 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 				MarkdownDescription: "The unique identifier of the volume snapshot.",
 			},
 			"name": schema.StringAttribute{
-				Required:            true,
-				Description:         "Name of the volume snapshot.",
-				MarkdownDescription: "Name of the volume snapshot.",
+				Optional:            true,
+				Computed:            true,
+				Description:         "Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.",
+				MarkdownDescription: "Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"volume_id": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "ID of the volume to take snapshot.",
 				MarkdownDescription: "ID of the volume to take snapshot.",
 				Validators: []validator.String{
@@ -88,7 +90,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 				},
 			},
 			"expiration_timestamp": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 				Description:         "Expiration Timestamp of the volume snapshot.",
 				MarkdownDescription: "Expiration Timestamp of the volume snapshot.",
 				Validators: []validator.String{
@@ -154,6 +157,19 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 	performancePolicyID := plan.PerformancePolicyID.ValueString()
 	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
 	creatorType := plan.CreatorType.ValueString()
+
+	// If name of the snapshot is not present, the default name of the volume snapshot is the date and time when the snapshot is taken.
+	if name == "" {
+		cluster, err := r.client.PStoreClient.GetCluster(ctx)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"Could not fetch name of the cluster, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		name = cluster.SystemTime
+	}
 
 	// if volume name is present instead of ID
 	if volID == "" {
@@ -274,6 +290,7 @@ func (r *resourceVolumeSnapshot) Delete(ctx context.Context, req resource.Delete
 
 // ImportState - imports state for existing snapshot
 func (r *resourceVolumeSnapshot) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 // updateSnapshotState - method to update terraform state
@@ -283,12 +300,16 @@ func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot
 	state.ID = types.StringValue(response.ID)
 	state.Name = types.StringValue(response.Name)
 	state.Description = types.StringValue(response.Description)
-	state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
+	// if expiration timestamp is not present then set to null.
+	if expTime == "" {
+		state.ExpirationTimestamp = types.StringNull()
+	} else {
+		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
+	}
 	state.CreatorType = types.StringValue(response.ProtectionData.CreatorType)
 	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
-
+	state.VolumeID = types.StringValue(response.ProtectionData.ParentID)
 	if plan != nil {
-		state.VolumeID = plan.VolumeID
 		state.VolumeName = plan.VolumeName
 	}
 }
