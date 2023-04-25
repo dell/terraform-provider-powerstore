@@ -1,6 +1,8 @@
 package powerstore
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
@@ -40,8 +42,11 @@ func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
-				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
+				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "description", "Test Snapshot Resource"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "expiration_timestamp", "2023-05-06T09:01:47Z"),
+				),
 			},
 		},
 	})
@@ -58,8 +63,11 @@ func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
-				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
+				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutExpiry,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_id", volumeID),
+				),
 			},
 		},
 	})
@@ -95,6 +103,10 @@ func TestAccVolumeSnapshot_CreateWithVolumeName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreateVolumeName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_name", volumeName),
+				),
 			},
 		},
 	})
@@ -113,6 +125,56 @@ func TestAccVolumeSnapshot_CreateWithInvalidVolumeName(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + SnapParamsCreateInvalidVolumeName,
 				ExpectError: regexp.MustCompile(CreateSnapshotErrorMsg),
+			},
+		},
+	})
+}
+
+// Negative test case for import
+func TestAccVolumeSnapshot_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName:  "powerstore_volume_snapshot.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(ImportSnapshotDetailErrorMsg),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
+// Test to import successfully
+func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
+
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + SnapParamsCreate,
+			},
+			{
+				Config:            ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName:      "powerstore_volume_snapshot.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_snap", s[0].Attributes["name"])
+					return nil
+				},
 			},
 		},
 	})

@@ -1,6 +1,8 @@
 package powerstore
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
@@ -58,8 +60,11 @@ func TestAccVolumeGroupSnapshot_CreateWithoutExpiration(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + VolumeGroupSnapshotParamsCreateWithoutName,
-				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
+				Config: ProviderConfigForTesting + VolumeGroupSnapshotParamsCreateWithoutExpiry,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "volume_group_id", volumeGroupID),
+				),
 			},
 		},
 	})
@@ -113,6 +118,56 @@ func TestAccVolumeGroupSnapshot_CreateWithInvalidVolumeGroupName(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + SnapParamsCreateInvalidVolumeGroupName,
 				ExpectError: regexp.MustCompile(CreateVolumeGroupSnapshotErrorMsg),
+			},
+		},
+	})
+}
+
+// Negative test case for import
+func TestAccVolumeGroupSnapshot_ImportFailure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:        ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
+				ResourceName:  "powerstore_volumegroup_snapshot.test",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(ImportSnapshotDetailErrorMsg),
+				ImportStateId: "invalid-id",
+			},
+		},
+	})
+}
+
+// Test to import successfully
+func TestAccVolumeGroupSnapshot_ImportSuccess(t *testing.T) {
+
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
+			},
+			{
+				Config:            ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
+				ResourceName:      "powerstore_volumegroup_snapshot.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_snap", s[0].Attributes["name"])
+					return nil
+				},
 			},
 		},
 	})
