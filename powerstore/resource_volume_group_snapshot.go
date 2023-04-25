@@ -76,13 +76,14 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 				MarkdownDescription: "Description of the volume group snapshot.",
 			},
 			"expiration_timestamp": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 				Description:         "Expiration Timestamp of the volume group snapshot.",
 				MarkdownDescription: "Expiration Timestamp of the volume group snapshot.",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\b`),
-						"Only UTC +Z format is allowed",
+						"Only UTC +Z format is allowed eg: 2023-05-06T09:01:47Z",
 					),
 				},
 			},
@@ -247,6 +248,7 @@ func (r *resourceVGSnapshot) Delete(ctx context.Context, req resource.DeleteRequ
 
 // ImportState - imports state for existing volume group snapshot
 func (r *resourceVGSnapshot) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 // updateVGSnapshotState - method to update terraform state
@@ -256,7 +258,12 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 	state.ID = types.StringValue(response.ID)
 	state.Name = types.StringValue(response.Name)
 	state.Description = types.StringValue(response.Description)
-	state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
+	// if expiration timestamp is not present then set to null.
+	if expTime == "" {
+		state.ExpirationTimestamp = types.StringNull()
+	} else {
+		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
+	}
 	state.VolumeGroupID = types.StringValue(response.ProtectionData.ParentID)
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
