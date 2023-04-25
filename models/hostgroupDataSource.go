@@ -14,7 +14,7 @@ type HostGroupDataSource struct {
 	HostVirtualVolumeMappings []HostVirtualVolumeMappings `tfsdk:"host_virtual_volume_mappings"`
 }
 
-// MappedHosts - Details about a configured host or host group attached to a volume.
+// MappedHostGroup - Details about a configured host or host group attached to a volume.
 type MappedHostGroup struct {
 	ID          types.String `tfsdk:"id"`
 	HostID      types.String `tfsdk:"host_id"`
