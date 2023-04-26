@@ -16,14 +16,15 @@ type HostGroupDataSource struct {
 
 // MappedHostGroup - Details about a configured host or host group attached to a volume.
 type MappedHostGroup struct {
-	ID          types.String `tfsdk:"id"`
-	HostID      types.String `tfsdk:"host_id"`
-	HostGroupID types.String `tfsdk:"host_group_id"`
+	ID         types.String `tfsdk:"id"`
+	HostID     types.String `tfsdk:"host_id"`
+	VolumeID   types.String `tfsdk:"volume_id"`
+	VolumeName types.String `tfsdk:"volume_name"`
 }
 
 // Hosts - Properties of a host.
 type Hosts struct {
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
-	HostGroupID types.String `tfsdk:"host_group_id"`
+	Description types.String `tfsdk:"description"`
 }

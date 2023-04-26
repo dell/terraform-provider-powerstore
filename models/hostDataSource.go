@@ -36,9 +36,10 @@ type MappedHosts struct {
 
 // HostVirtualVolumeMappings - Virtual volume mapping details.
 type HostVirtualVolumeMappings struct {
-	ID              types.String `tfsdk:"id"`
-	HostID          types.String `tfsdk:"host_id"`
-	VirtualVolumeID types.String `tfsdk:"virtual_volume_id"`
+	ID                types.String `tfsdk:"id"`
+	HostID            types.String `tfsdk:"host_id"`
+	VirtualVolumeID   types.String `tfsdk:"virtual_volume_id"`
+	VirtualVolumeName types.String `tfsdk:"virtual_volume_name"`
 }
 
 // VsphereHosts - List of the vsphere hosts that are associated with this host.
