@@ -78,6 +78,7 @@ Read-Only:
 - `host_id` (String) Unique identifier of a host attached to a volume.
 - `id` (String) Unique identifier of a mapping between a host and a virtual volume.
 - `virtual_volume_id` (String) Unique identifier of the virtual volume to which the host is attached.
+- `virtual_volume_name` (String) Name of the virtual volume to which the host is attached.
 
 
 <a id="nestedatt--host_groups--hosts"></a>
@@ -85,7 +86,7 @@ Read-Only:
 
 Read-Only:
 
-- `host_group_id` (String) Associated host group, if host is part of host group.
+- `description` (String) A description for the host.
 - `id` (String) Unique identifier of the host.
 - `name` (String) The host name.
 
@@ -95,6 +96,7 @@ Read-Only:
 
 Read-Only:
 
-- `host_group_id` (String) Unique identifier of a host group attached to a volume.
 - `host_id` (String) Unique identifier of a host attached to a volume.
 - `id` (String) Unique identifier of a mapping between a host and a volume.
+- `volume_id` (String) Unique identifier of the volume to which the host is attached.
+- `volume_name` (String) Name of the volume to which the host is attached.
