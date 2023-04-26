@@ -108,9 +108,9 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 										MarkdownDescription: "The host name.",
 										Computed:            true,
 									},
-									"host_group_id": schema.StringAttribute{
-										Description:         "Associated host group, if host is part of host group.",
-										MarkdownDescription: "Associated host group, if host is part of host group.",
+									"description": schema.StringAttribute{
+										Description:         "A description for the host.",
+										MarkdownDescription: "A description for the host.",
 										Computed:            true,
 									},
 								},
@@ -132,9 +132,14 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 										MarkdownDescription: "Unique identifier of a host attached to a volume.",
 										Computed:            true,
 									},
-									"host_group_id": schema.StringAttribute{
-										Description:         "Unique identifier of a host group attached to a volume.",
-										MarkdownDescription: "Unique identifier of a host group attached to a volume.",
+									"volume_id": schema.StringAttribute{
+										Description:         "Unique identifier of the volume to which the host is attached.",
+										MarkdownDescription: "Unique identifier of the volume to which the host is attached.",
+										Computed:            true,
+									},
+									"volume_name": schema.StringAttribute{
+										Description:         "Name of the volume to which the host is attached.",
+										MarkdownDescription: "Name of the volume to which the host is attached.",
 										Computed:            true,
 									},
 								},
@@ -159,6 +164,11 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 									"virtual_volume_id": schema.StringAttribute{
 										Description:         "Unique identifier of the virtual volume to which the host is attached.",
 										MarkdownDescription: "Unique identifier of the virtual volume to which the host is attached.",
+										Computed:            true,
+									},
+									"virtual_volume_name": schema.StringAttribute{
+										Description:         "Name of the virtual volume to which the host is attached.",
+										MarkdownDescription: "Name of the virtual volume to which the host is attached.",
 										Computed:            true,
 									},
 								},
@@ -241,23 +251,25 @@ func updateHostGroupState(hostGroups []gopowerstore.HostGroup, p *client.Client)
 			hostGroupState.Hosts = append(hostGroupState.Hosts, models.Hosts{
 				ID:          types.StringValue(host.ID),
 				Name:        types.StringValue(host.Name),
-				HostGroupID: types.StringValue(host.HostGroupID),
+				Description: types.StringValue(host.Description),
 			})
 		}
 
 		for _, mappedHostGroup := range hostGroupValue.MappedHostGroups {
 			hostGroupState.MappedHostGroups = append(hostGroupState.MappedHostGroups, models.MappedHostGroup{
-				ID:          types.StringValue(mappedHostGroup.ID),
-				HostID:      types.StringValue(mappedHostGroup.HostID),
-				HostGroupID: types.StringValue(mappedHostGroup.HostGroupID),
+				ID:         types.StringValue(mappedHostGroup.ID),
+				HostID:     types.StringValue(mappedHostGroup.HostID),
+				VolumeID:   types.StringValue(mappedHostGroup.VolumeID),
+				VolumeName: types.StringValue(mappedHostGroup.Volume.Name),
 			})
 		}
 
 		for _, hostVirtualVolumeMapping := range hostGroupValue.HostVirtualVolumeMappings {
 			hostGroupState.HostVirtualVolumeMappings = append(hostGroupState.HostVirtualVolumeMappings, models.HostVirtualVolumeMappings{
-				ID:              types.StringValue(hostVirtualVolumeMapping.ID),
-				HostID:          types.StringValue(hostVirtualVolumeMapping.HostID),
-				VirtualVolumeID: types.StringValue(hostVirtualVolumeMapping.VirtualVolumeID),
+				ID:                types.StringValue(hostVirtualVolumeMapping.ID),
+				HostID:            types.StringValue(hostVirtualVolumeMapping.HostID),
+				VirtualVolumeID:   types.StringValue(hostVirtualVolumeMapping.VirtualVolumeID),
+				VirtualVolumeName: types.StringValue(hostVirtualVolumeMapping.VirtualVolume.Name),
 			})
 		}
 
