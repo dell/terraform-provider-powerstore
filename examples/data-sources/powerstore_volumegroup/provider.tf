@@ -2,7 +2,7 @@ terraform {
   required_providers {
     powerstore = {
       version = "0.0.1"
-      source = "registry.terraform.io/dell/powerstore"
+      source  = "registry.terraform.io/dell/powerstore"
     }
   }
 }

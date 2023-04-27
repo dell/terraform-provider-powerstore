@@ -36,7 +36,7 @@ Host DataSource
 # Only one of the attribute can be provided among id and name 
 
 data "powerstore_host" "test1" {
-        name = "tf_host"
+  name = "tf_host"
 }
 
 output "hostResult" {
