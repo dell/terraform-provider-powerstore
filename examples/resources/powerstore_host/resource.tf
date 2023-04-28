@@ -6,9 +6,9 @@
 # To check which attributes of the host resource can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_host" "test" {
-  name = "new-host1"
-  os_type = "Linux"
-  description = "Creating host"
+  name              = "new-host1"
+  os_type           = "Linux"
+  description       = "Creating host"
   host_connectivity = "Local_Only"
-  initiators = [{port_name= "iqn.1994-05.com.redhat:88cb605", port_type="NVMe"}]
+  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605", port_type = "NVMe" }]
 }

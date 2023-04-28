@@ -36,7 +36,7 @@ description: |-
 # Only one of the attribute can be provided among id and  name 
 
 data "powerstore_volume" "test1" {
-        name = "tf_vol"
+  name = "tf_vol"
 }
 
 output "volumeResult" {

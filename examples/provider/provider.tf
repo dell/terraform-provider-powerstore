@@ -1,18 +1,18 @@
 variable "username" {
-  type=string
+  type = string
 }
 
 variable "password" {
-  type=string
+  type = string
 }
 
 variable "endpoint" {
-  type=string
+  type = string
 }
 
 provider "powerstore" {
-  username = "${var.username}"
-  password = "${var.password}"
-  endpoint = "${var.endpoint}"
+  username = var.username
+  password = var.password
+  endpoint = var.endpoint
   insecure = true
 }

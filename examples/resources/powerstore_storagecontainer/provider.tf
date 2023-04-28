@@ -2,7 +2,7 @@ terraform {
   required_providers {
     powerstore = {
       version = "0.0.1"
-      source = "registry.terraform.io/dell/powerstore"
+      source  = "registry.terraform.io/dell/powerstore"
     }
   }
 }
@@ -12,5 +12,5 @@ provider "powerstore" {
   password = var.password
   endpoint = var.endpoint
   insecure = true
-  timeout = var.timeout
+  timeout  = var.timeout
 }

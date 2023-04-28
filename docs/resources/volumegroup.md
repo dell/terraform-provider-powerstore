@@ -38,11 +38,11 @@ VolumeGroup resource
 
 resource "powerstore_volumegroup" "terraform-provider-test1" {
   # (resource arguments)
-  description = "Creating Volume Group"
-  name = "test_volume_group"
+  description               = "Creating Volume Group"
+  name                      = "test_volume_group"
   is_write_order_consistent = "false"
-  protection_policy_id = "01b8521d-26f5-479f-ac7d-3d8666097094"
-  volume_ids = ["140bb395-1d85-49ae-bde8-35070383bd92"]
+  protection_policy_id      = "01b8521d-26f5-479f-ac7d-3d8666097094"
+  volume_ids                = ["140bb395-1d85-49ae-bde8-35070383bd92"]
 }
 ```
 

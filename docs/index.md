@@ -33,21 +33,21 @@ Provider for PowerStore
 provider.tf
 ```terraform
 variable "username" {
-  type=string
+  type = string
 }
 
 variable "password" {
-  type=string
+  type = string
 }
 
 variable "endpoint" {
-  type=string
+  type = string
 }
 
 provider "powerstore" {
-  username = "${var.username}"
-  password = "${var.password}"
-  endpoint = "${var.endpoint}"
+  username = var.username
+  password = var.password
+  endpoint = var.endpoint
   insecure = true
 }
 ```
@@ -55,22 +55,22 @@ provider "powerstore" {
 variables.tf
 ```terraform
 variable "username" {
-  type=string
+  type        = string
   description = "Stores the username of PowerStore host."
 }
 
 variable "password" {
-  type=string
+  type        = string
   description = "Stores the password of PowerStore host."
 }
 
 variable "timeout" {
-  type=string
+  type        = string
   description = "Stores the timeout of PowerStore host."
 }
 
 variable "endpoint" {
-  type=string
+  type        = string
   description = "Stores the endpoint of PowerStore host. eg: https://10.1.1.1/api/rest"
 }
 ```
