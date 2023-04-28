@@ -53,6 +53,7 @@ test: check
 	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
 
 check:
+	terraform fmt -recursive examples/
 	gofmt -s -w .
 	golint ./...
 	go vet

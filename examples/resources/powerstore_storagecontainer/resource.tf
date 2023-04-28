@@ -6,8 +6,8 @@
 
 
 resource "powerstore_storagecontainer" "test1" {
-  name = "scterraform1"
-  quota = 10737418240
+  name             = "scterraform1"
+  quota            = 10737418240
   storage_protocol = "SCSI"
-  high_water_mark = 70
+  high_water_mark  = 70
 }

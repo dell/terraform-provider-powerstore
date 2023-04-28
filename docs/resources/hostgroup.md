@@ -38,9 +38,9 @@ HostGroup resource
 # To check which attributes of the host resource can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_hostgroup" "test" {
-  name = "test_hostgroup"
+  name        = "test_hostgroup"
   description = "Creating host group"
-  host_ids = ["42c60954-ea71-4b50-b172-63880cd48f99"]
+  host_ids    = ["42c60954-ea71-4b50-b172-63880cd48f99"]
 }
 ```
 
