@@ -37,6 +37,7 @@ volume snapshot resource
 # name, expiration_timestamp, performance_policy_id and creator_type are the optional attributes
 # name and expiration_timestamp if present in config cannot be ""
 # Either volume_id or volume_name should be present.
+# Volume DataSource can be used to fetch volume ID/Name
 # To check which attributes of the volume snapshot resource can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_volume_snapshot" "test" {
