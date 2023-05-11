@@ -62,8 +62,8 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"volume_group_name": schema.StringAttribute{
 				Optional:            true,
-				Description:         "Name of the volume to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.",
-				MarkdownDescription: "Name of the volume to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.",
+				Description:         "Name of the volume group to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.",
+				MarkdownDescription: "Name of the volume group to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_group_id")),
