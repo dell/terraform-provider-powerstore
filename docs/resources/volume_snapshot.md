@@ -56,11 +56,11 @@ resource "powerstore_volume_snapshot" "test" {
 
 - `creator_type` (String) Creator Type of the volume snapshot.
 - `description` (String) Description of the volume snapshot.
-- `expiration_timestamp` (String) Expiration Timestamp of the volume snapshot.
+- `expiration_timestamp` (String) Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.
 - `name` (String) Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.
-- `performance_policy_id` (String) Performance Policy id of the volume snapshot.
-- `volume_id` (String) ID of the volume to take snapshot.
-- `volume_name` (String) Name of the volume to take snapshot.
+- `performance_policy_id` (String) Performance Policy id of the volume snapshot. Valid values are default_medium, default_low, default_high.
+- `volume_id` (String) ID of the volume to take snapshot.Conflicts with `volume_name`.Cannot be updated.
+- `volume_name` (String) Name of the volume to take snapshot.Conflicts with `volume_id`.Cannot be updated.
 
 ### Read-Only
 
