@@ -54,8 +54,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			"volume_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "ID of the volume to take snapshot.",
-				MarkdownDescription: "ID of the volume to take snapshot.",
+				Description:         "ID of the volume to take snapshot.Conflicts with `volume_name`.Cannot be updated.",
+				MarkdownDescription: "ID of the volume to take snapshot.Conflicts with `volume_name`.Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_name")),
@@ -63,8 +63,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			},
 			"volume_name": schema.StringAttribute{
 				Optional:            true,
-				Description:         "Name of the volume to take snapshot.",
-				MarkdownDescription: "Name of the volume to take snapshot.",
+				Description:         "Name of the volume to take snapshot.Conflicts with `volume_id`.Cannot be updated.",
+				MarkdownDescription: "Name of the volume to take snapshot.Conflicts with `volume_id`.Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_id")),
@@ -79,8 +79,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			"performance_policy_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Performance Policy id of the volume snapshot.",
-				MarkdownDescription: "Performance Policy id of the volume snapshot.",
+				Description:         "Performance Policy id of the volume snapshot. Valid values are default_medium, default_low, default_high.",
+				MarkdownDescription: "Performance Policy id of the volume snapshot. Valid values are default_medium, default_low, default_high.",
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
 						"default_medium",
@@ -92,8 +92,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			"expiration_timestamp": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Expiration Timestamp of the volume snapshot.",
-				MarkdownDescription: "Expiration Timestamp of the volume snapshot.",
+				Description:         "Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed",
+				MarkdownDescription: "Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\b`),
