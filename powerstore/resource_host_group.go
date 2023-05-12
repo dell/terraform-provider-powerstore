@@ -71,8 +71,8 @@ func (r *resourceHostGroup) Schema(ctx context.Context, req resource.SchemaReque
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Description:         "The list of host IDs to include in the host group.",
-				MarkdownDescription: "The list of host IDs to include in the host group.",
+				Description:         "The list of host IDs to include in the host group. Conflicts with `host_names`.",
+				MarkdownDescription: "The list of host IDs to include in the host group. Conflicts with `host_names`.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("host_names"),
@@ -84,8 +84,8 @@ func (r *resourceHostGroup) Schema(ctx context.Context, req resource.SchemaReque
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Description:         "The list of host names to include in the host group.",
-				MarkdownDescription: "The list of host names to include in the host group.",
+				Description:         "The list of host names to include in the host group. Conflicts with `host_ids`.",
+				MarkdownDescription: "The list of host names to include in the host group. Conflicts with `host_ids`.",
 			},
 
 			"host_connectivity": schema.StringAttribute{
