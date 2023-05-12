@@ -71,8 +71,8 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Description:         "A list of identifiers of existing volumes that should be added to the volume group.",
-				MarkdownDescription: "A list of identifiers of existing volumes that should be added to the volume group.",
+				Description:         "A list of identifiers of existing volumes that should be added to the volume group. Conflicts with `volume_names`.",
+				MarkdownDescription: "A list of identifiers of existing volumes that should be added to the volume group. Conflicts with `volume_names`.",
 				Validators: []validator.Set{
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
@@ -93,8 +93,8 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 			"protection_policy_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Unique identifier of the protection policy assigned to the volume group.",
-				MarkdownDescription: "Unique identifier of the protection policy assigned to the volume group.",
+				Description:         "Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.",
+				MarkdownDescription: "Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ConflictsWith(path.Expressions{
@@ -118,8 +118,8 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 
 			"protection_policy_name": schema.StringAttribute{
 				Optional:            true,
-				Description:         "Unique name of the protection policy assigned to the volume group.",
-				MarkdownDescription: "Unique name of the protection policy assigned to the volume group.",
+				Description:         "Unique name of the protection policy assigned to the volume group. Conflicts with `protection_policy_id`.",
+				MarkdownDescription: "Unique name of the protection policy assigned to the volume group. Conflicts with `protection_policy_id`.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
