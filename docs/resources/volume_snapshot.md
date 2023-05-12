@@ -45,7 +45,6 @@ resource "powerstore_volume_snapshot" "test" {
   volume_id             = "01d88dea-7d71-4a1b-abd6-be07f94aecd9"
   performance_policy_id = "default_medium"
   expiration_timestamp  = "2023-05-06T09:01:47Z"
-  creator_type          = "User"
 }
 ```
 
@@ -54,7 +53,6 @@ resource "powerstore_volume_snapshot" "test" {
 
 ### Optional
 
-- `creator_type` (String) Creator Type of the volume snapshot.
 - `description` (String) Description of the volume snapshot.
 - `expiration_timestamp` (String) Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.
 - `name` (String) Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.
@@ -64,6 +62,7 @@ resource "powerstore_volume_snapshot" "test" {
 
 ### Read-Only
 
+- `creator_type` (String) Creator Type of the volume snapshot.
 - `id` (String) The unique identifier of the volume snapshot.
 
 ## Import

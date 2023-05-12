@@ -102,17 +102,9 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 				},
 			},
 			"creator_type": schema.StringAttribute{
-				Optional:            true,
 				Computed:            true,
 				Description:         "Creator Type of the volume snapshot.",
 				MarkdownDescription: "Creator Type of the volume snapshot.",
-				Validators: []validator.String{
-					stringvalidator.OneOf([]string{
-						"User",
-						"System",
-						"Scheduler",
-					}...),
-				},
 			},
 		},
 	}
@@ -169,19 +161,6 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 			return
 		}
 		name = cluster.SystemTime
-	}
-
-	// if volume name is present instead of ID
-	if volID == "" {
-		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error creating volume snapshot",
-				"Could not fetch volume ID from volume name, unexpected error: "+err.Error(),
-			)
-			return
-		}
-		volID = volResponse.ID
 	}
 
 	// Create new volume snapshot
@@ -258,6 +237,65 @@ func (r *resourceVolumeSnapshot) Read(ctx context.Context, req resource.ReadRequ
 
 // Update - updates volume snapshot resource
 func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	log.Printf("Started Update")
+
+	//Get plan values
+	var plan models.Snapshot
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get current state
+	var state models.Snapshot
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if plan.VolumeID.ValueString() != state.VolumeID.ValueString() || plan.VolumeName.ValueString() != state.VolumeName.ValueString() {
+		resp.Diagnostics.AddError(
+			"Error updating volume snapshot resource",
+			"Volume Name or Volume ID cannot be updated")
+		return
+	}
+
+	volModify := r.planToServer(plan)
+
+	//Get volume snapshot ID from state
+	volumeSnapshotID := state.ID.ValueString()
+
+	//Update volume snapshot by calling API
+	_, err := r.client.PStoreClient.ModifyVolume(context.Background(), volModify, volumeSnapshotID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating volume snapshot resource",
+			"Could not update volume snapshot "+volumeSnapshotID+": "+err.Error(),
+		)
+		return
+	}
+
+	//Get Volume Snapshot details
+	getRes, err := r.client.PStoreClient.GetSnapshot(context.Background(), volumeSnapshotID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting snapshot resource after update",
+			"Could not get volume snapshot, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	r.updateSnapshotState(&plan, &state, getRes)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
 // Delete - method to delete volume snapshot resource
@@ -306,10 +344,57 @@ func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot
 	} else {
 		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
 	}
-	state.CreatorType = types.StringValue(response.ProtectionData.CreatorType)
-	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
 	state.VolumeID = types.StringValue(response.ProtectionData.ParentID)
+	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
 	if plan != nil {
 		state.VolumeName = plan.VolumeName
+	}
+}
+
+func (r resourceVolumeSnapshot) planToServer(plan models.Snapshot) *gopowerstore.VolumeModify {
+	name := plan.Name.ValueString()
+	description := plan.Description.ValueString()
+	performancePolicyID := plan.PerformancePolicyID.ValueString()
+	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
+
+	volSnapshotUpdate := &gopowerstore.VolumeModify{
+		Description:         description,
+		Name:                name,
+		PerformancePolicyID: performancePolicyID,
+		ExpirationTimestamp: expirationTimeStamp,
+	}
+	return volSnapshotUpdate
+}
+
+// ModifyPlan modify resource plan attribute value
+func (r *resourceVolumeSnapshot) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+	var plan models.Snapshot
+
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// if volume name is present instead of ID
+	if plan.VolumeID.ValueString() == "" {
+		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"Could not fetch volume ID from volume name, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		plan.VolumeID = types.StringValue(volResponse.ID)
+	}
+
+	diags = resp.Plan.Set(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 }
