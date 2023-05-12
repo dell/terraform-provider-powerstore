@@ -107,8 +107,8 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Description:         "A list of names of existing volumes that should be added to the volume group.",
-				MarkdownDescription: "A list of names of existing volumes that should be added to the volume group.",
+				Description:         "A list of names of existing volumes that should be added to the volume group. Conflicts with `volume_ids`.",
+				MarkdownDescription: "A list of names of existing volumes that should be added to the volume group. Conflicts with `volume_ids`.",
 				Validators: []validator.Set{
 					setvalidator.ValueStringsAre(
 						stringvalidator.LengthAtLeast(1),
