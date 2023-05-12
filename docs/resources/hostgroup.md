@@ -26,6 +26,8 @@ description: |-
 
 HostGroup resource
 
+~> **Note:** Exactly one of `host_ids` and `host_names` should be provided.
+~> **Note:** `host_connectivity` can only be updated and it cannot be used while creating host group resource.
 
 ## Example Usage
 
@@ -55,8 +57,8 @@ resource "powerstore_hostgroup" "test" {
 
 - `description` (String) An optional description for the host group.
 - `host_connectivity` (String) Connectivity type for hosts and host groups.
-- `host_ids` (Set of String) The list of host IDs to include in the host group.
-- `host_names` (Set of String) The list of host names to include in the host group.
+- `host_ids` (Set of String) The list of host IDs to include in the host group. Conflicts with `host_names`.
+- `host_names` (Set of String) The list of host names to include in the host group. Conflicts with `host_ids`.
 
 ### Read-Only
 
@@ -77,4 +79,4 @@ Import is supported using the following syntax:
 # }
 # Step 4 - Execute the command: terraform import "powerstore_hostgroup.resource_block_name" "id_of_the_hostgroup" (resource_block_name must be taken from step 3 and id must be taken from step 2)
 # Step 5 - After successful execution of the command , check the state file
-```
+``` 
