@@ -53,8 +53,8 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 			"volume_group_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "ID of the volume group to take snapshot.",
-				MarkdownDescription: "ID of the volume group to take snapshot.",
+				Description:         "ID of the volume group to take snapshot.Conflicts with `volume_group_name`.Cannot be updated.",
+				MarkdownDescription: "ID of the volume group to take snapshot.Conflicts with `volume_group_name`.Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_group_name")),
@@ -62,8 +62,8 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"volume_group_name": schema.StringAttribute{
 				Optional:            true,
-				Description:         "Name of the volume to take snapshot.",
-				MarkdownDescription: "Name of the volume to take snapshot.",
+				Description:         "Name of the volume group to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.",
+				MarkdownDescription: "Name of the volume group to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_group_id")),
@@ -78,12 +78,12 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 			"expiration_timestamp": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Expiration Timestamp of the volume group snapshot.",
-				MarkdownDescription: "Expiration Timestamp of the volume group snapshot.",
+				Description:         "Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed",
+				MarkdownDescription: "Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\b`),
-						"Only UTC +Z format is allowed eg: 2023-05-06T09:01:47Z",
+						"Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
 					),
 				},
 			},
