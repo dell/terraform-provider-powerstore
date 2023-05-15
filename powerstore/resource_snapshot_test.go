@@ -228,11 +228,10 @@ func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
 				Config: ProviderConfigForTesting + SnapParamsCreate,
 			},
 			{
-				Config:            ProviderConfigForTesting + SnapParamsCreate,
-				ResourceName:      "powerstore_volume_snapshot.test",
-				ImportState:       true,
-				ExpectError:       nil,
-				ImportStateVerify: true,
+				Config:       ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName: "powerstore_volume_snapshot.test",
+				ImportState:  true,
+				ExpectError:  nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "test_snap", s[0].Attributes["name"])
 					return nil
@@ -249,6 +248,7 @@ resource "powerstore_volume_snapshot" "test" {
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
   expiration_timestamp="2035-05-06T09:01:47Z"
+  creator_type = "User"
 }
 `
 

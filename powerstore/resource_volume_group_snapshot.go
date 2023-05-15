@@ -129,6 +129,20 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 
 	volGroupID := plan.VolumeGroupID.ValueString()
 
+	// if volume group name is present instead of ID
+	if volGroupID == "" {
+		volGroupResponse, err := r.client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume group snapshot",
+				"Could not fetch volume group ID from volume group name, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		volGroupID = volGroupResponse.ID
+		plan.VolumeGroupID = types.StringValue(volGroupID)
+	}
+
 	// Create new volume group snapshot
 	vgSnapCreate := &gopowerstore.VolumeGroupSnapshotCreate{
 		Name:                name,
@@ -327,37 +341,4 @@ func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *gopow
 		ExpirationTimestamp: expirationTimeStamp,
 	}
 	return volGroupSnapshotUpdate
-}
-
-// ModifyPlan modify resource plan attribute value
-func (r *resourceVGSnapshot) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if req.Plan.Raw.IsNull() {
-		return
-	}
-	var plan models.VolumeGroupSnapshot
-
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	// if volume name is present instead of ID
-	if plan.VolumeGroupID.ValueString() == "" {
-		volGroupResponse, err := r.client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error creating volume group snapshot",
-				"Could not fetch volume group ID from volume group name, unexpected error: "+err.Error(),
-			)
-			return
-		}
-		plan.VolumeGroupID = types.StringValue(volGroupResponse.ID)
-	}
-
-	diags = resp.Plan.Set(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }

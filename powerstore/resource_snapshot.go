@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"log"
@@ -103,8 +104,17 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			},
 			"creator_type": schema.StringAttribute{
 				Computed:            true,
+				Optional:            true,
 				Description:         "Creator Type of the volume snapshot.",
 				MarkdownDescription: "Creator Type of the volume snapshot.",
+				PlanModifiers: []planmodifier.String{
+					DefaultAttribute("User"),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						"User",
+					}...),
+				},
 			},
 		},
 	}
@@ -143,6 +153,20 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 	}
 
 	volID := plan.VolumeID.ValueString()
+
+	// if volume name is present instead of ID
+	if plan.VolumeID.ValueString() == "" {
+		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"Could not fetch volume ID from volume name, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		volID = volResponse.ID
+		plan.VolumeID = types.StringValue(volID)
+	}
 
 	name := plan.Name.ValueString()
 	description := plan.Description.ValueString()
@@ -255,7 +279,7 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	if plan.VolumeID.ValueString() != state.VolumeID.ValueString() || plan.VolumeName.ValueString() != state.VolumeName.ValueString() {
+	if (plan.VolumeID.ValueString() != "" && (plan.VolumeID.ValueString() != state.VolumeID.ValueString())) || plan.VolumeName.ValueString() != state.VolumeName.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating volume snapshot resource",
 			"Volume Name or Volume ID cannot be updated")
@@ -348,6 +372,7 @@ func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot
 	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
 	if plan != nil {
 		state.VolumeName = plan.VolumeName
+		state.CreatorType = plan.CreatorType
 	}
 }
 
@@ -364,37 +389,4 @@ func (r resourceVolumeSnapshot) planToServer(plan models.Snapshot) *gopowerstore
 		ExpirationTimestamp: expirationTimeStamp,
 	}
 	return volSnapshotUpdate
-}
-
-// ModifyPlan modify resource plan attribute value
-func (r *resourceVolumeSnapshot) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if req.Plan.Raw.IsNull() {
-		return
-	}
-	var plan models.Snapshot
-
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	// if volume name is present instead of ID
-	if plan.VolumeID.ValueString() == "" {
-		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error creating volume snapshot",
-				"Could not fetch volume ID from volume name, unexpected error: "+err.Error(),
-			)
-			return
-		}
-		plan.VolumeID = types.StringValue(volResponse.ID)
-	}
-
-	diags = resp.Plan.Set(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }
