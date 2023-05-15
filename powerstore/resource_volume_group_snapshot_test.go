@@ -31,6 +31,68 @@ func TestAccVolumeGroupSnapshot_Create(t *testing.T) {
 	})
 }
 
+// Test to volume id of Volume group snapshot
+func TestAccVolumeGroupSnapshot_InvalidSnapshotVolumegroupID(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupSnapParamInvalidVolumeID,
+				ExpectError: regexp.MustCompile(CreateVolumeGroupSnapshotErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Rename Volume group snapshot
+func TestAccVolumeGroupSnapshot_UpdateSnapshotRename(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap")),
+			},
+			{
+				Config: ProviderConfigForTesting + VolumeGroupSnapParamsRename,
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap_new")),
+			},
+		},
+	})
+}
+
+// Test to volume id of Volume group snapshot
+func TestAccVolumeGroupSnapshot_UpdateSnapshotVolumeName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + VolumeGroupSnapParamsCreate,
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap")),
+			},
+			{
+				Config:      ProviderConfigForTesting + VolumeGroupSnapParamInvalidVolumeID,
+				ExpectError: regexp.MustCompile(VolumeGroupIDNameUpdateErrorMsg),
+			},
+		},
+	})
+}
+
 // Test to Create VolumeGroup Snapshot Resource Without Name
 func TestAccVolumeGroupSnapshot_CreateWithoutName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
@@ -178,7 +240,25 @@ resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_id="` + volumeGroupID + `"
-  expiration_timestamp="2023-05-06T09:01:47Z"
+  expiration_timestamp="2035-05-06T09:01:47Z"
+}
+`
+
+var VolumeGroupSnapParamInvalidVolumeID = `
+resource "powerstore_volumegroup_snapshot" "test" {
+  name = "test_snap"
+  description = "Test Snapshot Resource"
+  volume_group_id="5c3c103a-9373-4f50-a34a"
+  expiration_timestamp="2035-05-06T09:01:47Z"
+}
+`
+
+var VolumeGroupSnapParamsRename = `
+resource "powerstore_volumegroup_snapshot" "test" {
+  name = "test_snap_new"
+  description = "Test Snapshot Resource"
+  volume_group_id="` + volumeGroupID + `"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
@@ -186,7 +266,7 @@ var VolumeGroupSnapshotParamsCreateWithoutName = `
 resource "powerstore_volumegroup_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_group_id="` + volumeGroupID + `"
-  expiration_timestamp="2023-05-06T09:01:47Z"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
@@ -202,7 +282,7 @@ var VolumeGroupSnapParamsCreateWithoutVolume = `
 resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  expiration_timestamp="2023-05-06T09:01:47Z"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
@@ -211,7 +291,7 @@ resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_name="` + volumeGroupName + `"
-  expiration_timestamp="2023-05-06T09:01:47Z"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
@@ -220,6 +300,6 @@ resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_name="random_volgroup"
-  expiration_timestamp="2023-05-06T09:01:47Z"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
