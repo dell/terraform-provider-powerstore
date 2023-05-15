@@ -34,7 +34,7 @@ volume snapshot resource
 # Create, Update, Delete is supported for this resource
 # To import , check volume_snapshot_import.tf for more info
 # volume_id/volume_name is the required attribute to create and update
-# name, expiration_timestamp, performance_policy_id and creator_type are the optional attributes
+# name, expiration_timestamp, performance_policy_id and description are the optional attributes
 # name and expiration_timestamp if present in config cannot be ""
 # Either volume_id or volume_name should be present.
 # Volume DataSource can be used to fetch volume ID/Name
@@ -42,6 +42,7 @@ volume snapshot resource
 
 resource "powerstore_volume_snapshot" "test" {
   name                  = "test_snap"
+  description           = "powerstore volume snapshot"
   volume_id             = "01d88dea-7d71-4a1b-abd6-be07f94aecd9"
   performance_policy_id = "default_medium"
   expiration_timestamp  = "2023-05-06T09:01:47Z"
@@ -53,6 +54,7 @@ resource "powerstore_volume_snapshot" "test" {
 
 ### Optional
 
+- `creator_type` (String) Creator Type of the volume snapshot.
 - `description` (String) Description of the volume snapshot.
 - `expiration_timestamp` (String) Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.
 - `name` (String) Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.
@@ -62,7 +64,6 @@ resource "powerstore_volume_snapshot" "test" {
 
 ### Read-Only
 
-- `creator_type` (String) Creator Type of the volume snapshot.
 - `id` (String) The unique identifier of the volume snapshot.
 
 ## Import
