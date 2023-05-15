@@ -36,6 +36,8 @@ VolumeGroup resource
 # Create, Update, Delete is supported for this resource
 # To import , check volume_group_import.tf for more info
 # name is the required attribute to create and update
+# Volume datasource can be used to fetch volume id/name.
+# Protection policy datasource can be used to fetch protection policy id/name.
 # To check which attributes of the volume group can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_volumegroup" "terraform-provider-test1" {
