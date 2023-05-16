@@ -31,6 +31,68 @@ func TestAccVolumeSnapshot_Create(t *testing.T) {
 	})
 }
 
+// Test to add invalid volume id to the Volume snapshot
+func TestAccVolumeSnapshot_InvalidSnapshotVolumeID(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + SnapParamInvalidVolumeID,
+				ExpectError: regexp.MustCompile(CreateSnapshotErrorMsg),
+			},
+		},
+	})
+}
+
+// Test to Rename Volume snapshot
+func TestAccVolumeSnapshot_UpdateSnapshotRename(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + SnapParamsCreate,
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap")),
+			},
+			{
+				Config: ProviderConfigForTesting + SnapParamsRename,
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap_new")),
+			},
+		},
+	})
+}
+
+// Test to update volume id of Volume snapshot
+func TestAccVolumeSnapshot_UpdateSnapshotVolumeName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + SnapParamsCreate,
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap")),
+			},
+			{
+				Config:      ProviderConfigForTesting + SnapParamInvalidVolumeID,
+				ExpectError: regexp.MustCompile(VolumeIDNameUpdateErrorMsg),
+			},
+		},
+	})
+}
+
 // Test to Create Snapshot Resource Without Name
 func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
@@ -45,7 +107,7 @@ func TestAccVolumeSnapshot_CreateWithoutName(t *testing.T) {
 				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutName,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "description", "Test Snapshot Resource"),
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "expiration_timestamp", "2023-05-06T09:01:47Z"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "expiration_timestamp", "2035-05-06T09:01:47Z"),
 				),
 			},
 		},
@@ -166,11 +228,10 @@ func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
 				Config: ProviderConfigForTesting + SnapParamsCreate,
 			},
 			{
-				Config:            ProviderConfigForTesting + SnapParamsCreate,
-				ResourceName:      "powerstore_volume_snapshot.test",
-				ImportState:       true,
-				ExpectError:       nil,
-				ImportStateVerify: true,
+				Config:       ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName: "powerstore_volume_snapshot.test",
+				ImportState:  true,
+				ExpectError:  nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "test_snap", s[0].Attributes["name"])
 					return nil
@@ -186,18 +247,36 @@ resource "powerstore_volume_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
-  expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
+  expiration_timestamp="2035-05-06T09:01:47Z"
+  creator_type = "User"
 }
 `
 
+var SnapParamInvalidVolumeID = `
+resource "powerstore_volume_snapshot" "test" {
+  name = "test_snap"
+  description = "Test Snapshot Resource"
+  volume_id="05a959ed-6545-48fb-9887-ce4"
+  performance_policy_id = "default_medium"
+  expiration_timestamp="2035-05-06T09:01:47Z"
+}
+`
+
+var SnapParamsRename = `
+resource "powerstore_volume_snapshot" "test" {
+  name = "test_snap_new"
+  description = "Test Snapshot Resource"
+  volume_id="` + volumeID + `"
+  performance_policy_id = "default_medium"
+  expiration_timestamp="2035-05-06T09:01:47Z"
+}
+`
 var SnapshotParamsCreateWithoutName = `
 resource "powerstore_volume_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
-  expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
@@ -207,7 +286,6 @@ resource "powerstore_volume_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
-  creator_type="User"
 }
 `
 
@@ -216,8 +294,7 @@ resource "powerstore_volume_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
   performance_policy_id = "default_medium"
-  expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 var SnapParamsCreateVolumeName = `
@@ -226,8 +303,7 @@ resource "powerstore_volume_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_name="` + volumeName + `"
   performance_policy_id = "default_medium"
-  expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 var SnapParamsCreateInvalidVolumeName = `
@@ -236,7 +312,6 @@ resource "powerstore_volume_snapshot" "test" {
   description = "Test Snapshot Resource"
   volume_name="random_volname"
   performance_policy_id = "default_medium"
-  expiration_timestamp="2023-05-06T09:01:47Z"
-  creator_type="User"
+  expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `

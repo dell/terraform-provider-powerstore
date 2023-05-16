@@ -140,6 +140,7 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 			return
 		}
 		volGroupID = volGroupResponse.ID
+		plan.VolumeGroupID = types.StringValue(volGroupID)
 	}
 
 	// Create new volume group snapshot
@@ -215,6 +216,65 @@ func (r *resourceVGSnapshot) Read(ctx context.Context, req resource.ReadRequest,
 
 // Update - updates volume group snapshot resource
 func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	log.Printf("Started Update")
+
+	//Get plan values
+	var plan models.VolumeGroupSnapshot
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	//Get current state
+	var state models.VolumeGroupSnapshot
+	diags = req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if plan.VolumeGroupID.ValueString() != state.VolumeGroupID.ValueString() || plan.VolumeGroupName.ValueString() != state.VolumeGroupName.ValueString() {
+		resp.Diagnostics.AddError(
+			"Error updating volume group snapshot resource",
+			"Volume group Name or Volume group ID cannot be updated")
+		return
+	}
+
+	volModify := r.planToServer(plan)
+
+	//Get volume group snapshot ID from state
+	volumeGroupSnapshotID := state.ID.ValueString()
+
+	//Update volume group snapshot by calling API
+	_, err := r.client.PStoreClient.ModifyVolumeGroup(context.Background(), volModify, volumeGroupSnapshotID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating volume group snapshot resource",
+			"Could not update volume group snapshot "+volumeGroupSnapshotID+": "+err.Error(),
+		)
+		return
+	}
+
+	//Get Volume Snapshot details
+	getRes, err := r.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), volumeGroupSnapshotID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting volume group snapshot resource after update",
+			"Could not get volume group snapshot, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	r.updateVGSnapshotState(&plan, &state, getRes)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	log.Printf("Successfully done with Update")
 }
 
 // Delete - method to delete volume group snapshot resource
@@ -268,4 +328,17 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
 	}
+}
+
+func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *gopowerstore.VolumeGroupModify {
+	name := plan.Name.ValueString()
+	description := plan.Description.ValueString()
+	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
+
+	volGroupSnapshotUpdate := &gopowerstore.VolumeGroupModify{
+		Description:         description,
+		Name:                name,
+		ExpirationTimestamp: expirationTimeStamp,
+	}
+	return volGroupSnapshotUpdate
 }

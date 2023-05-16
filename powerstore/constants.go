@@ -150,4 +150,10 @@ const (
 
 	//ImportSnapshotDetailErrorMsg specifies error details while importing host
 	ImportSnapshotDetailErrorMsg = "Could not read snapshotID with error invalid-id"
+
+	//VolumeIDNameUpdateErrorMsg specifies error details while updating volume details
+	VolumeIDNameUpdateErrorMsg = "Volume Name or Volume ID cannot be updated"
+
+	//VolumeGroupIDNameUpdateErrorMsg specifies error details while updating volume group details
+	VolumeGroupIDNameUpdateErrorMsg = "Volume group Name or Volume group ID cannot be updated"
 )
