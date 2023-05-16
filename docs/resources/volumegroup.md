@@ -26,6 +26,8 @@ description: |-
 
 VolumeGroup resource
 
+~> **Note:** Exactly one of `volume_ids` and `volume_names` should be provided.
+~> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` should be provided.
 
 ## Example Usage
 
@@ -34,6 +36,8 @@ VolumeGroup resource
 # Create, Update, Delete is supported for this resource
 # To import , check volume_group_import.tf for more info
 # name is the required attribute to create and update
+# Volume datasource can be used to fetch volume id/name.
+# Protection policy datasource can be used to fetch protection policy id/name.
 # To check which attributes of the volume group can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_volumegroup" "terraform-provider-test1" {
@@ -57,10 +61,10 @@ resource "powerstore_volumegroup" "terraform-provider-test1" {
 
 - `description` (String) Description for the volume group.
 - `is_write_order_consistent` (Boolean) Determines whether snapshot sets of the group will be write order consistent.
-- `protection_policy_id` (String) Unique identifier of the protection policy assigned to the volume group.
-- `protection_policy_name` (String) Unique name of the protection policy assigned to the volume group.
-- `volume_ids` (Set of String) A list of identifiers of existing volumes that should be added to the volume group.
-- `volume_names` (Set of String) A list of names of existing volumes that should be added to the volume group.
+- `protection_policy_id` (String) Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.
+- `protection_policy_name` (String) Unique name of the protection policy assigned to the volume group. Conflicts with `protection_policy_id`.
+- `volume_ids` (Set of String) A list of identifiers of existing volumes that should be added to the volume group. Conflicts with `volume_names`.
+- `volume_names` (Set of String) A list of names of existing volumes that should be added to the volume group. Conflicts with `volume_ids`.
 
 ### Read-Only
 
