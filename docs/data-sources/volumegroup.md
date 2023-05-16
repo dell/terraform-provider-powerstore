@@ -26,6 +26,8 @@ description: |-
 
 VolumeGroup DataSource.
 
+~> **Note:** Only one of `name` or `id` can be provided at a time.
+
 ## Example Usage
 
 ```terraform
@@ -49,8 +51,8 @@ output "volumeGroupResult" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the volume group.
-- `name` (String) Volume group name.
+- `id` (String) Unique identifier of the volume group. Conflicts with `name`.
+- `name` (String) Volume group name. Conflicts with `id`.
 
 ### Read-Only
 
