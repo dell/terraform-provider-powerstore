@@ -43,8 +43,8 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 		Description: "HostGroup DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the host group.",
-				MarkdownDescription: "Unique identifier of the host group.",
+				Description:         "Unique identifier of the host group. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the host group. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -53,8 +53,8 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Host group name.",
-				MarkdownDescription: "Host group name.",
+				Description:         "Host group name. Conflicts with `id`.",
+				MarkdownDescription: "Host group name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),

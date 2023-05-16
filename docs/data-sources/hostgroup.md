@@ -26,6 +26,8 @@ description: |-
 
 HostGroup DataSource.
 
+~> **Note:** Only one of `name` or `id` can be provided at a time.
+
 ## Example Usage
 
 ```terraform
@@ -49,8 +51,8 @@ output "hostGroupResult" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the host group.
-- `name` (String) Host group name.
+- `id` (String) Unique identifier of the host group. Conflicts with `name`.
+- `name` (String) Host group name. Conflicts with `id`.
 
 ### Read-Only
 

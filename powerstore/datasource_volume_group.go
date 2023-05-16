@@ -44,8 +44,8 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 		Description: "VolumeGroup DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the volume group.",
-				MarkdownDescription: "Unique identifier of the volume group.",
+				Description:         "Unique identifier of the volume group. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the volume group. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -54,8 +54,8 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Volume group name.",
-				MarkdownDescription: "Volume group name.",
+				Description:         "Volume group name. Conflicts with `id`.",
+				MarkdownDescription: "Volume group name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
