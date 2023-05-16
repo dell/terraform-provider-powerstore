@@ -31,7 +31,7 @@ func TestAccVolumeSnapshot_Create(t *testing.T) {
 	})
 }
 
-// Test to volume id of Volume snapshot
+// Test to add invalid volume id to the Volume snapshot
 func TestAccVolumeSnapshot_InvalidSnapshotVolumeID(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
@@ -49,7 +49,7 @@ func TestAccVolumeSnapshot_InvalidSnapshotVolumeID(t *testing.T) {
 	})
 }
 
-// Test to Rename Volume group snapshot
+// Test to Rename Volume snapshot
 func TestAccVolumeSnapshot_UpdateSnapshotRename(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
@@ -71,7 +71,7 @@ func TestAccVolumeSnapshot_UpdateSnapshotRename(t *testing.T) {
 	})
 }
 
-// Test to volume id of Volume group snapshot
+// Test to update volume id of Volume snapshot
 func TestAccVolumeSnapshot_UpdateSnapshotVolumeName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
