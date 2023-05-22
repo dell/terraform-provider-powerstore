@@ -33,6 +33,8 @@ var replicationRuleName = os.Getenv("REPLICATION_RULE_NAME")
 var policyName = os.Getenv("PROTECTION_POLICY_NAME")
 var policyID = os.Getenv("PROTECTION_POLICY_ID")
 var volumeGroupName = os.Getenv("VOLUME_GROUP_NAME")
+var volumeGroupSnapshotName = os.Getenv("VOLUME_GROUP_SNAPSHOT_NAME")
+var volumeGroupSnapshotID = os.Getenv("VOLUME_GROUP_SNAPSHOT_ID")
 
 var ProviderConfigForTesting = ``
 
