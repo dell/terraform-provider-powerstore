@@ -14,33 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-title: "powerstore_volume data source"
-linkTitle: "powerstore_volume"
-page_title: "powerstore_volume Data Source - powerstore"
+title: "powerstore_volume_snapshot data source"
+linkTitle: "powerstore_volume_snapshot"
+page_title: "powerstore_volume_snapshot Data Source - powerstore"
 subcategory: ""
 description: |-
-  .
+  VolumeSnapshot DataSource.
 ---
 
-# powerstore_volume (Data Source)
+# powerstore_volume_snapshot (Data Source)
 
-.
+VolumeSnapshot DataSource.
 
 ## Example Usage
 
 ```terraform
 # commands to run this tf file : terraform init && terraform apply --auto-approve
-# This datasource reads volumes either by id or name where user can provide a value to any one of them
-# If it is a empty datsource block , then it will read all the volumes
-# If id or name is provided then it reads a particular volume with that id or name
+# This datasource reads volume snapshots either by id or name where user can provide a value to any one of them
+# If it is a empty datsource block , then it will read all the volume snapshots
+# If id or name is provided then it reads a particular volume snapshot with that id or name
 # Only one of the attribute can be provided among id and  name 
 
-data "powerstore_volume" "test1" {
-  name = "tf_vol"
+data "powerstore_volume_snapshot" "test1" {
+  name = "test_snap"
+  #id = "adeeef05-aa68-4c17-b2d0-12c4a8e69176"
 }
 
-output "volumeResult" {
-  value = data.powerstore_volume.test1.volumes
+output "volumeSnapshotResult" {
+  value = data.powerstore_volume_snapshot.test1.volumes
 }
 ```
 
@@ -49,8 +50,8 @@ output "volumeResult" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the volume instance.
-- `name` (String) Name of the volume.
+- `id` (String) Unique identifier of the volume snapshot instance.
+- `name` (String) Name of the volume snapshot.
 
 ### Read-Only
 
@@ -69,10 +70,10 @@ Read-Only:
 - `capacity_unit` (String) The Capacity Unit corresponding to the size.
 - `creation_timestamp` (String) The creation timestamp of the volume.
 - `datastores` (Attributes List) Specifies the Datastores for a volume. (see [below for nested schema](#nestedatt--volumes--datastores))
-- `description` (String) The description of the volume.
+- `description` (String) The description of the volume snapshot.
 - `host_group_id` (String) The host group id of the volume.
 - `host_id` (String) The host id of the volume.
-- `id` (String) The ID of the volume.
+- `id` (String) The ID of the volume snapshot.
 - `is_host_access_available` (Boolean) Indicates whether the volume is available to host
 - `is_replication_destination` (Boolean) Indicates whether this volume is a replication destination.
 - `location_history` (Attributes List) Specifies the LocationHistory for a volume. (see [below for nested schema](#nestedatt--volumes--location_history))
@@ -82,12 +83,12 @@ Read-Only:
 - `metro_replication_session_id` (String) Unique identifier of the replication session assigned to the volume
 - `migration_session` (Object) Specifies the MigrationSession associated for a volume. (see [below for nested schema](#nestedatt--volumes--migration_session))
 - `migration_session_id` (String) Unique identifier of the migration session assigned to the volume
-- `name` (String) Name of the volume.
+- `name` (String) Name of the volume snapshot.
 - `nguid` (String) The nguid of the volume.
 - `node_affinity` (String) The node affinity of the volume.
 - `node_affinity_l10n` (String) Localized message string corresponding to node affinity
 - `nsid` (Number) The nsid of the volume.
-- `performance_policy_id` (String) The performance policy assigned to the volume.
+- `performance_policy_id` (String) The performance policy assigned to the volume snapshot.
 - `protection_data` (Object) Specifies the ProtectionData associated with a volume. (see [below for nested schema](#nestedatt--volumes--protection_data))
 - `protection_policy` (Object) Specifies the protection policy associated for a volume. (see [below for nested schema](#nestedatt--volumes--protection_policy))
 - `protection_policy_id` (String) The protection policy assigned to the volume.
