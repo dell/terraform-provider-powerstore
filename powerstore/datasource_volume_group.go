@@ -128,7 +128,9 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 							MarkdownDescription: "Specifies the ProtectionData associated with a volume group.",
 							Computed:            true,
 							AttributeTypes: map[string]attr.Type{
-								"source_id": types.StringType,
+								"source_id":            types.StringType,
+								"creator_type":         types.StringType,
+								"expiration_timestamp": types.StringType,
 							},
 						},
 						"is_importing": schema.BoolAttribute{
@@ -284,7 +286,9 @@ func updateVolGroupState(volumeGroups []gopowerstore.VolumeGroup, p *client.Clie
 			TypeL10:                  types.StringValue(volumeGroupValue.TypeL10),
 
 			ProtectionData: models.ProtectionData{
-				SourceID: types.StringValue(volumeGroupValue.ProtectionData.SourceID),
+				SourceID:            types.StringValue(volumeGroupValue.ProtectionData.SourceID),
+				CreatorType:         types.StringValue(volumeGroupValue.ProtectionData.CreatorType),
+				ExpirationTimestamp: types.StringValue(volumeGroupValue.ProtectionData.ExpirationTimeStamp),
 			},
 
 			ProtectionPolicy: models.VolProtectionPolicy{

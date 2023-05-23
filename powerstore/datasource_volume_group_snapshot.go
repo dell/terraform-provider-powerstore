@@ -22,7 +22,7 @@ var (
 	_ datasource.DataSourceWithConfigure = &volumeGroupSnapshotDataSource{}
 )
 
-// newVolumeGroupSnapshotDataSource returns the volume group data source object
+// newVolumeGroupSnapshotDataSource returns the volume group snapshot data source object
 func newVolumeGroupSnapshotDataSource() datasource.DataSource {
 	return &volumeGroupSnapshotDataSource{}
 }
@@ -33,7 +33,7 @@ func (d *volumeGroupSnapshotDataSource) Metadata(_ context.Context, req datasour
 
 func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "VolumeGroup DataSource.",
+		Description: "VolumeGroup Snapshot DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Unique identifier of the volume group snapshot. Conflicts with `name`.",
@@ -61,18 +61,18 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
-							Description:         "Unique identifier of the volume group.",
-							MarkdownDescription: "Unique identifier of the volume group.",
+							Description:         "Unique identifier of the volume group snapshot.",
+							MarkdownDescription: "Unique identifier of the volume group snapshot.",
 							Computed:            true,
 						},
 						"name": schema.StringAttribute{
-							Description:         "Volume group name.",
-							MarkdownDescription: "Volume group name.",
+							Description:         "Volume group snapshot name.",
+							MarkdownDescription: "Volume group snapshot name.",
 							Computed:            true,
 						},
 						"description": schema.StringAttribute{
-							Description:         "Volume group description.",
-							MarkdownDescription: "Volume group description.",
+							Description:         "Volume group snapshot description.",
+							MarkdownDescription: "Volume group snapshot description.",
 							Computed:            true,
 						},
 						"creation_timestamp": schema.StringAttribute{
@@ -120,7 +120,9 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 							MarkdownDescription: "Specifies the ProtectionData associated with a volume group.",
 							Computed:            true,
 							AttributeTypes: map[string]attr.Type{
-								"source_id": types.StringType,
+								"source_id":            types.StringType,
+								"creator_type":         types.StringType,
+								"expiration_timestamp": types.StringType,
 							},
 						},
 						"is_importing": schema.BoolAttribute{
@@ -221,7 +223,7 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 		return
 	}
 
-	//Read the volume group based on volume group id/name and if nothing is mentioned, then it returns all the volume groups
+	//Read the volume group snapshot based on volume group snapshot id/name and if nothing is mentioned, then it returns all the volume group snapshots
 	if state.Name.ValueString() != "" {
 		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshotByName(context.Background(), state.Name.ValueString())
 		volumeGroups = append(volumeGroups, volumeGroup)
@@ -235,7 +237,7 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 	//check if there is any error while getting the volume group
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Read PowerStore Volume Group",
+			"Unable to Read PowerStore Volume Group Snapshot",
 			err.Error(),
 		)
 		return
@@ -244,7 +246,7 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 	state.VolumeGroups, err = updateVolGroupState(volumeGroups, d.client)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Failed to update volume group state",
+			"Failed to update volume group snapshot state",
 			err.Error(),
 		)
 		return
