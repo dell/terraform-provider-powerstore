@@ -19,24 +19,24 @@ linkTitle: "powerstore_volumegroup_snapshot"
 page_title: "powerstore_volumegroup_snapshot Data Source - powerstore"
 subcategory: ""
 description: |-
-  VolumeGroup DataSource.
+  VolumeGroup Snapshot DataSource.
 ---
 
 # powerstore_volumegroup_snapshot (Data Source)
 
-VolumeGroup DataSource.
+VolumeGroup Snapshot DataSource.
 
 ## Example Usage
 
 ```terraform
 # commands to run this tf file : terraform init && terraform apply --auto-approve
-# This datasource reads volume groups either by id or name where user can provide a value to any one of them
+# This datasource reads volume group snapshots either by id or name where user can provide a value to any one of them
 # If it is a empty datsource block , then it will read all the volume group snapshots
 # If id or name is provided then it reads a particular volume group snapshot with that id or name
 # Only one of the attribute can be provided among id and name
 
 data "powerstore_volumegroup_snapshot" "test1" {
-  name = "test_volumegroup_snap"
+#  name = "test_volumegroup_snap"
 }
 
 output "volumeGroupSnapshotResult" {
@@ -62,8 +62,8 @@ output "volumeGroupSnapshotResult" {
 Read-Only:
 
 - `creation_timestamp` (String) The time at which the volume group was created.
-- `description` (String) Volume group description.
-- `id` (String) Unique identifier of the volume group.
+- `description` (String) Volume group snapshot description.
+- `id` (String) Unique identifier of the volume group snapshot.
 - `is_importing` (Boolean) Indicates whether the volume group is being imported.
 - `is_protectable` (Boolean) This is a derived field that is set internally.
 - `is_replication_destination` (Boolean) Indicates whether this volume group is a replication destination.
@@ -71,7 +71,7 @@ Read-Only:
 - `location_history` (Attributes List) Storage resource location history. (see [below for nested schema](#nestedatt--volume_groups--location_history))
 - `migration_session` (Object) Properties of a migration session. (see [below for nested schema](#nestedatt--volume_groups--migration_session))
 - `migration_session_id` (String) Unique identifier of the migration session assigned to the volume group when it is part of a migration activity.
-- `name` (String) Volume group name.
+- `name` (String) Volume group snapshot name.
 - `placement_rule` (String) This is set during creation, and determines resource balancer recommendations.
 - `protection_data` (Object) Specifies the ProtectionData associated with a volume group. (see [below for nested schema](#nestedatt--volume_groups--protection_data))
 - `protection_policy` (Object) Specifies the Protection Policy associated with a volume group. (see [below for nested schema](#nestedatt--volume_groups--protection_policy))
@@ -103,6 +103,8 @@ Read-Only:
 
 Read-Only:
 
+- `creator_type` (String)
+- `expiration_timestamp` (String)
 - `source_id` (String)
 
 

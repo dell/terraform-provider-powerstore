@@ -105,6 +105,8 @@ Read-Only:
 
 Read-Only:
 
+- `creator_type` (String)
+- `expiration_timestamp` (String)
 - `source_id` (String)
 
 
