@@ -85,7 +85,9 @@ type LocationHistory struct {
 
 // ProtectionData - details of Protection data for volume
 type ProtectionData struct {
-	SourceID types.String `tfsdk:"source_id"`
+	SourceID            types.String `tfsdk:"source_id"`
+	CreatorType         types.String `tfsdk:"creator_type"`
+	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
 }
 
 // VolProtectionPolicy - details of protection policy associated with volume
