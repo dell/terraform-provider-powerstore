@@ -43,8 +43,8 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 		Description: "SnapshotRule DataSource",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the snapshot rule instance.",
-				MarkdownDescription: "Unique identifier of the snapshot rule instance.",
+				Description:         "Unique identifier of the snapshot rule instance. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the snapshot rule instance. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -53,8 +53,8 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Name of the snapshot rule.",
-				MarkdownDescription: "Name of the snapshot rule.",
+				Description:         "Name of the snapshot rule. Conflicts with `id`.",
+				MarkdownDescription: "Name of the snapshot rule. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
