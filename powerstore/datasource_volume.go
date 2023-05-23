@@ -222,7 +222,9 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 							MarkdownDescription: "Specifies the ProtectionData associated with a volume.",
 							Computed:            true,
 							AttributeTypes: map[string]attr.Type{
-								"source_id": types.StringType,
+								"source_id":            types.StringType,
+								"creator_type":         types.StringType,
+								"expiration_timestamp": types.StringType,
 							},
 						},
 						"location_history": schema.ListNestedAttribute{
