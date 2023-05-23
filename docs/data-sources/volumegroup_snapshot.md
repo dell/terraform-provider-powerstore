@@ -49,12 +49,12 @@ output "volumeGroupSnapshotResult" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the volume group. Conflicts with `name`.
-- `name` (String) Volume group name. Conflicts with `id`.
+- `id` (String) Unique identifier of the volume group snapshot. Conflicts with `name`.
+- `name` (String) Volume group snapshot name. Conflicts with `id`.
 
 ### Read-Only
 
-- `volume_groups` (Attributes List) List of volume groups. (see [below for nested schema](#nestedatt--volume_groups))
+- `volume_groups` (Attributes List) List of volume group snapshots. (see [below for nested schema](#nestedatt--volume_groups))
 
 <a id="nestedatt--volume_groups"></a>
 ### Nested Schema for `volume_groups`
