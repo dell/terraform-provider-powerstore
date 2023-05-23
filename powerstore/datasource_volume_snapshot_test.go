@@ -19,20 +19,32 @@ func TestAccVolume_FetchVolumeSnapshot(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeSnapshotDataSourceparamsID,
+				Config: ProviderConfigForTesting + VolumeSnapshotDataSourceparamsID,
 			},
 			{
-				Config: VolumeSnapshotDataSourceparamsName,
+				Config: ProviderConfigForTesting + VolumeSnapshotDataSourceparamsName,
 			},
 			{
-				Config: VolumeSnapshotDataSourceparamsAll,
+				Config: ProviderConfigForTesting + VolumeSnapshotDataSourceparamsAll,
 			},
 			{
-				Config:      VolumeSnapshotDataSourceparamsIDNegative,
+				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsIDAndName,
+				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
+			},
+			{
+				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsEmptyID,
+				ExpectError: regexp.MustCompile("Invalid Attribute Value Length"),
+			},
+			{
+				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsEmptyName,
+				ExpectError: regexp.MustCompile("Invalid Attribute Value Length"),
+			},
+			{
+				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsIDNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Volume Snapshots"),
 			},
 			{
-				Config:      VolumeSnapshotDataSourceparamsNameNegative,
+				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Volume Snapshots"),
 			},
 		},
@@ -40,64 +52,49 @@ func TestAccVolume_FetchVolumeSnapshot(t *testing.T) {
 }
 
 var VolumeSnapshotDataSourceparamsID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 data "powerstore_volume_snapshot" "test1" {
 	id = "` + volumeSnapshotID + `"
 }
 `
 
 var VolumeSnapshotDataSourceparamsIDNegative = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 data "powerstore_volume_snapshot" "test1" {
 	id = "invalid-id"
 }
 `
 
-var VolumeSnapshotDataSourceparamsName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
+var VolumeSnapshotDataSourceparamsEmptyID = `
+data "powerstore_volume_snapshot" "test1" {
+	id = ""
 }
+`
 
+var VolumeSnapshotDataSourceparamsName = `
 data "powerstore_volume_snapshot" "test1" {
 	name = "` + volumeSnapshotName + `"
 }
 `
-var VolumeSnapshotDataSourceparamsNameNegative = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
 
+var VolumeSnapshotDataSourceparamsNameNegative = `
 data "powerstore_volume_snapshot" "test1" {
 	name = "invalid-name"
 }
 `
 
-var VolumeSnapshotDataSourceparamsAll = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeSnapshotDataSourceparamsEmptyName = `
 data "powerstore_volume_snapshot" "test1" {
+	name = ""
+}
+`
+
+var VolumeSnapshotDataSourceparamsAll = `
+data "powerstore_volume_snapshot" "test1" {
+}
+`
+
+var VolumeSnapshotDataSourceparamsIDAndName = `
+data "powerstore_volume_snapshot" "test1" {
+	id = "` + volumeSnapshotID + `"
+	name = "` + volumeSnapshotName + `"
 }
 `

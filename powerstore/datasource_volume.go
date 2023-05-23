@@ -2,6 +2,9 @@ package powerstore
 
 import (
 	"context"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
+
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -10,8 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 )
 
 var (
@@ -452,7 +453,9 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 			NodeAffinityL10n:          types.StringValue(volumeValue.NodeAffinityL10n),
 			AppTypeL10n:               types.StringValue(volumeValue.AppTypeL10n),
 			ProtectionData: models.ProtectionData{
-				SourceID: types.StringValue(volumeValue.ProtectionData.SourceID),
+				SourceID:            types.StringValue(volumeValue.ProtectionData.SourceID),
+				CreatorType:         types.StringValue(volumeValue.ProtectionData.CreatorType),
+				ExpirationTimestamp: types.StringValue(volumeValue.ProtectionData.ExpirationTimeStamp),
 			},
 
 			Appliance: models.Appliance{

@@ -10,5 +10,5 @@ data "powerstore_volume_snapshot" "test1" {
 }
 
 output "volumeSnapshotResult" {
-  value = data.powerstore_volume_snapshot.test1.snapshots
+  value = data.powerstore_volume_snapshot.test1.volumes
 }
