@@ -36,8 +36,8 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 		Description: "VolumeGroup DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the volume group. Conflicts with `name`.",
-				MarkdownDescription: "Unique identifier of the volume group. Conflicts with `name`.",
+				Description:         "Unique identifier of the volume group snapshot. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the volume group snapshot. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -46,8 +46,8 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Volume group name. Conflicts with `id`.",
-				MarkdownDescription: "Volume group name. Conflicts with `id`.",
+				Description:         "Volume group snapshot name. Conflicts with `id`.",
+				MarkdownDescription: "Volume group snapshot name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -55,8 +55,8 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 			},
 
 			"volume_groups": schema.ListNestedAttribute{
-				Description:         "List of volume groups.",
-				MarkdownDescription: "List of volume groups.",
+				Description:         "List of volume group snapshots.",
+				MarkdownDescription: "List of volume group snapshots.",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
