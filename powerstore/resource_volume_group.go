@@ -62,9 +62,6 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				Description:         "Description for the volume group.",
 				MarkdownDescription: "Description for the volume group.",
-				Validators: []validator.String{
-					stringvalidator.LengthAtLeast(1),
-				},
 			},
 
 			"volume_ids": schema.SetAttribute{
