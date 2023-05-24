@@ -55,8 +55,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			"volume_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "ID of the volume to take snapshot.Conflicts with `volume_name`.Cannot be updated.",
-				MarkdownDescription: "ID of the volume to take snapshot.Conflicts with `volume_name`.Cannot be updated.",
+				Description:         "ID of the volume to take snapshot. Conflicts with `volume_name`. Cannot be updated.",
+				MarkdownDescription: "ID of the volume to take snapshot. Conflicts with `volume_name`. Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_name")),
@@ -64,8 +64,8 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 			},
 			"volume_name": schema.StringAttribute{
 				Optional:            true,
-				Description:         "Name of the volume to take snapshot.Conflicts with `volume_id`.Cannot be updated.",
-				MarkdownDescription: "Name of the volume to take snapshot.Conflicts with `volume_id`.Cannot be updated.",
+				Description:         "Name of the volume to take snapshot. Conflicts with `volume_id`. Cannot be updated.",
+				MarkdownDescription: "Name of the volume to take snapshot. Conflicts with `volume_id`. Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ExactlyOneOf(path.MatchRoot("volume_id")),
