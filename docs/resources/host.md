@@ -26,6 +26,11 @@ description: |-
 
 Host resource
 
+~> **Note:** `name`, `os_type` and `initiators` are the required attributes to create.
+~> **Note:** `os_type` cannot be updated.
+~> **Note:** `port_name` and `port_type` are required attributes for `initiators`.
+~> **Note:** `chap_single_password` must be present when `chap_single_username` is given and vice-versa.
+~> **Note:** `chap_mutual_password` must be present when `chap_mutual_username` is given and vice-versa.
 
 ## Example Usage
 
@@ -33,7 +38,7 @@ Host resource
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check host_import.tf for more info
-# name,os_type and initiators are the required attributes to create and update
+# name, os_type and initiators are the required attributes to create and update
 # description and host_connectivity are the optional attributes
 # To check which attributes of the host resource can be updated, please refer Product Guide in the documentation
 
@@ -42,7 +47,7 @@ resource "powerstore_host" "test" {
   os_type           = "Linux"
   description       = "Creating host"
   host_connectivity = "Local_Only"
-  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605", port_type = "NVMe" }]
+  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605", port_type = "iSCSI" }]
 }
 ```
 
@@ -53,7 +58,7 @@ resource "powerstore_host" "test" {
 
 - `initiators` (Attributes Set) Parameters for creating or adding initiators to host. (see [below for nested schema](#nestedatt--initiators))
 - `name` (String) Name of the host. This should be unique across all hosts in the cluster.
-- `os_type` (String) Operating system of the host.
+- `os_type` (String) Operating system of the host. This cannot be updated
 
 ### Optional
 
@@ -95,4 +100,4 @@ Import is supported using the following syntax:
 # }
 # Step 4 - Execute the command: terraform import "powerstore_host.resource_block_name" "id_of_the_host" (resource_block_name must be taken from step 3 and id must be taken from step 2)
 # Step 5 - After successful execution of the command , check the state file
-```
+``` 
