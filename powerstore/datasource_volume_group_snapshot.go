@@ -2,9 +2,6 @@ package powerstore
 
 import (
 	"context"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
-
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -13,39 +10,34 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"terraform-provider-powerstore/client"
 )
 
-type volumeGroupDataSource struct {
+type volumeGroupSnapshotDataSource struct {
 	client *client.Client
 }
 
-type volumeGroupDataSourceModel struct {
-	VolumeGroups []models.VolumeGroupDataSource `tfsdk:"volume_groups"`
-	ID           types.String                   `tfsdk:"id"`
-	Name         types.String                   `tfsdk:"name"`
-}
-
 var (
-	_ datasource.DataSource              = &volumeGroupDataSource{}
-	_ datasource.DataSourceWithConfigure = &volumeGroupDataSource{}
+	_ datasource.DataSource              = &volumeGroupSnapshotDataSource{}
+	_ datasource.DataSourceWithConfigure = &volumeGroupSnapshotDataSource{}
 )
 
-// newVolumeGroupDataSource returns the volume group data source object
-func newVolumeGroupDataSource() datasource.DataSource {
-	return &volumeGroupDataSource{}
+// newVolumeGroupSnapshotDataSource returns the volume group snapshot data source object
+func newVolumeGroupSnapshotDataSource() datasource.DataSource {
+	return &volumeGroupSnapshotDataSource{}
 }
 
-func (d *volumeGroupDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_volumegroup"
+func (d *volumeGroupSnapshotDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_volumegroup_snapshot"
 }
 
-func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "VolumeGroup DataSource.",
+		Description: "VolumeGroup Snapshot DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the volume group. Conflicts with `name`.",
-				MarkdownDescription: "Unique identifier of the volume group. Conflicts with `name`.",
+				Description:         "Unique identifier of the volume group snapshot. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the volume group snapshot. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -54,8 +46,8 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Volume group name. Conflicts with `id`.",
-				MarkdownDescription: "Volume group name. Conflicts with `id`.",
+				Description:         "Volume group snapshot name. Conflicts with `id`.",
+				MarkdownDescription: "Volume group snapshot name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -63,24 +55,24 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 			},
 
 			"volume_groups": schema.ListNestedAttribute{
-				Description:         "List of volume groups.",
-				MarkdownDescription: "List of volume groups.",
+				Description:         "List of volume group snapshots.",
+				MarkdownDescription: "List of volume group snapshots.",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
-							Description:         "Unique identifier of the volume group.",
-							MarkdownDescription: "Unique identifier of the volume group.",
+							Description:         "Unique identifier of the volume group snapshot.",
+							MarkdownDescription: "Unique identifier of the volume group snapshot.",
 							Computed:            true,
 						},
 						"name": schema.StringAttribute{
-							Description:         "Volume group name.",
-							MarkdownDescription: "Volume group name.",
+							Description:         "Volume group snapshot name.",
+							MarkdownDescription: "Volume group snapshot name.",
 							Computed:            true,
 						},
 						"description": schema.StringAttribute{
-							Description:         "Volume group description.",
-							MarkdownDescription: "Volume group description.",
+							Description:         "Volume group snapshot description.",
+							MarkdownDescription: "Volume group snapshot description.",
 							Computed:            true,
 						},
 						"creation_timestamp": schema.StringAttribute{
@@ -212,14 +204,14 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 	}
 }
 
-func (d *volumeGroupDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
+func (d *volumeGroupSnapshotDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
 	d.client = req.ProviderData.(*client.Client)
 }
 
-func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeGroupDataSourceModel
 	var volumeGroups []gopowerstore.VolumeGroup
 	var volumeGroup gopowerstore.VolumeGroup
@@ -231,21 +223,21 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	//Read the volume group based on volume group id/name and if nothing is mentioned, then it returns all the volume groups
+	//Read the volume group snapshot based on volume group snapshot id/name and if nothing is mentioned, then it returns all the volume group snapshots
 	if state.Name.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupByName(context.Background(), state.Name.ValueString())
+		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshotByName(context.Background(), state.Name.ValueString())
 		volumeGroups = append(volumeGroups, volumeGroup)
 	} else if state.ID.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroup(context.Background(), state.ID.ValueString())
+		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), state.ID.ValueString())
 		volumeGroups = append(volumeGroups, volumeGroup)
 	} else {
-		volumeGroups, err = d.client.PStoreClient.GetVolumeGroups(context.Background())
+		volumeGroups, err = d.client.PStoreClient.GetVolumeGroupSnapshots(context.Background())
 	}
 
 	//check if there is any error while getting the volume group
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Read PowerStore Volume Group",
+			"Unable to Read PowerStore Volume Group Snapshot",
 			err.Error(),
 		)
 		return
@@ -254,7 +246,7 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 	state.VolumeGroups, err = updateVolGroupState(volumeGroups, d.client)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Failed to update volume group state",
+			"Failed to update volume group snapshot state",
 			err.Error(),
 		)
 		return
@@ -265,59 +257,4 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
-}
-
-// updateVolGroupState iterates over the volume groups list and update the state
-func updateVolGroupState(volumeGroups []gopowerstore.VolumeGroup, p *client.Client) (response []models.VolumeGroupDataSource, err error) {
-	for _, volumeGroupValue := range volumeGroups {
-		volumeGroupState := models.VolumeGroupDataSource{
-			ID:                       types.StringValue(volumeGroupValue.ID),
-			Name:                     types.StringValue(volumeGroupValue.Name),
-			Description:              types.StringValue(volumeGroupValue.Description),
-			CreationTimestamp:        types.StringValue(volumeGroupValue.CreationTimeStamp),
-			IsProtectable:            types.BoolValue(volumeGroupValue.IsProtectable),
-			ProtectionPolicyID:       types.StringValue(volumeGroupValue.ProtectionPolicyID),
-			MigrationSessionID:       types.StringValue(volumeGroupValue.MigrationSessionID),
-			IsWriteOrderConsistent:   types.BoolValue(volumeGroupValue.IsWriteOrderConsistent),
-			PlacementRule:            types.StringValue(string(volumeGroupValue.PlacementRule)),
-			Type:                     types.StringValue(string(volumeGroupValue.Type)),
-			IsReplicationDestination: types.BoolValue(volumeGroupValue.IsReplicationDestination),
-			IsImporting:              types.BoolValue(volumeGroupValue.IsImporting),
-			TypeL10:                  types.StringValue(volumeGroupValue.TypeL10),
-
-			ProtectionData: models.ProtectionData{
-				SourceID:            types.StringValue(volumeGroupValue.ProtectionData.SourceID),
-				CreatorType:         types.StringValue(volumeGroupValue.ProtectionData.CreatorType),
-				ExpirationTimestamp: types.StringValue(volumeGroupValue.ProtectionData.ExpirationTimeStamp),
-			},
-
-			ProtectionPolicy: models.VolProtectionPolicy{
-				ID:          types.StringValue(volumeGroupValue.ProtectionPolicy.ID),
-				Name:        types.StringValue(volumeGroupValue.ProtectionPolicy.Name),
-				Description: types.StringValue(volumeGroupValue.ProtectionPolicy.Description),
-			},
-
-			MigrationSession: models.MigrationSession{
-				ID:   types.StringValue(volumeGroupValue.MigrationSession.ID),
-				Name: types.StringValue(volumeGroupValue.MigrationSession.Name),
-			},
-		}
-
-		for _, history := range volumeGroupValue.LocationHistory {
-			volumeGroupState.LocationHistory = append(volumeGroupState.LocationHistory, models.LocationHistory{
-				FromApplianceID: types.StringValue(history.FromApplianceId),
-				ToApplianceID:   types.StringValue(history.ToApplianceId),
-			})
-		}
-
-		for _, volume := range volumeGroupValue.Volumes {
-			volumeGroupState.Volumes = append(volumeGroupState.Volumes, models.Volumes{
-				ID:          types.StringValue(volume.ID),
-				Name:        types.StringValue(volume.Name),
-				Description: types.StringValue(volume.Description),
-			})
-		}
-		response = append(response, volumeGroupState)
-	}
-	return response, nil
 }
