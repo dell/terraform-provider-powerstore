@@ -43,8 +43,8 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 		Description: "Host DataSource",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the host instance.",
-				MarkdownDescription: "Unique identifier of the host instance.",
+				Description:         "Unique identifier of the host instance. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the host instance. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -53,8 +53,8 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Name of the host.",
-				MarkdownDescription: "Name of the host.",
+				Description:         "Name of the host. Conflicts with `id`.",
+				MarkdownDescription: "Name of the host. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),

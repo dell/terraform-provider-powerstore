@@ -26,6 +26,8 @@ description: |-
 
 SnapshotRule DataSource
 
+~> **Note:** Only one of `name` or `id` can be provided at a time.
+
 ## Example Usage
 
 ```terraform
@@ -49,8 +51,8 @@ output "snapshotRule" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the snapshot rule instance.
-- `name` (String) Name of the snapshot rule.
+- `id` (String) Unique identifier of the snapshot rule instance. Conflicts with `name`.
+- `name` (String) Name of the snapshot rule. Conflicts with `id`.
 
 ### Read-Only
 

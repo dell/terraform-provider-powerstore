@@ -26,6 +26,8 @@ description: |-
 
 Host DataSource
 
+~> **Note:** Only one of `name` or `id` can be provided at a time.
+
 ## Example Usage
 
 ```terraform
@@ -49,8 +51,8 @@ output "hostResult" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the host instance.
-- `name` (String) Name of the host.
+- `id` (String) Unique identifier of the host instance. Conflicts with `name`.
+- `name` (String) Name of the host. Conflicts with `id`.
 
 ### Read-Only
 
