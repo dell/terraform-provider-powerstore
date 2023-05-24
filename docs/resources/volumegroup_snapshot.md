@@ -1,13 +1,13 @@
 ---
 # Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
-# 
+#
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://mozilla.org/MPL/2.0/
-# 
-# 
+#
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,10 @@ description: |-
 
 Volume Group Snapshot resource
 
+~> **Note:** `volume_group_id`/`volume_group_name` is the required attribute to create volume group snapshot.
+~> **Note:** `expiration_timestamp` if present in config cannot be "". if absent, default value is allocated to it.
+~> **Note:** Volume group DataSource can be used to fetch volume group ID/Name.
+~> **Note:** Exactly one of `volume_group_id` and `volume_group_name` should be provided.
 
 ## Example Usage
 
@@ -33,7 +37,7 @@ Volume Group Snapshot resource
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check volumegroup_snapshot_import.tf for more info
-# name and volume_group_id/volume_group_name are the required attributes to create and update.
+# name and volume_group_id/volume_group_name are the required attributes to create volume group snapshot.
 # description and expiration_timestamp are the optional attributes.
 # Either volume_group_id or volume_group_name should be present.
 # VolumeGroup DataSource can be used to fetch volume group ID/Name
@@ -58,8 +62,8 @@ resource "powerstore_volumegroup_snapshot" "test" {
 
 - `description` (String) Description of the volume group snapshot.
 - `expiration_timestamp` (String) Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed
-- `volume_group_id` (String) ID of the volume group to take snapshot.Conflicts with `volume_group_name`.Cannot be updated.
-- `volume_group_name` (String) Name of the volume group to take snapshot.Conflicts with `volume_group_id`.Cannot be updated.
+- `volume_group_id` (String) ID of the volume group to take snapshot. Conflicts with `volume_group_name`. Cannot be updated.
+- `volume_group_name` (String) Name of the volume group to take snapshot. Conflicts with `volume_group_id`. Cannot be updated.
 
 ### Read-Only
 

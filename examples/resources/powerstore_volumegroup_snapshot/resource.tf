@@ -1,7 +1,7 @@
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check volumegroup_snapshot_import.tf for more info
-# name and volume_group_id/volume_group_name are the required attributes to create and update.
+# name and volume_group_id/volume_group_name are the required attributes to create volume group snapshot.
 # description and expiration_timestamp are the optional attributes.
 # Either volume_group_id or volume_group_name should be present.
 # VolumeGroup DataSource can be used to fetch volume group ID/Name
