@@ -27,7 +27,9 @@ description: |-
 {{ .Description | trimspace }}
 
 ~> **Note:** `volume_id`/`volume_name` is the required attribute to create volume snapshot.
-~> **Note:** `name` and `expiration_timestamp` if present in config cannot be "". if absent, default values are allocated to them.
+~> **Note:** if `name` is present in the config it cannot be "". if absent, default value is allocated to it.
+~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to "", snapshot will be created with infinite retention.
+~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to "".
 ~> **Note:** Volume DataSource can be used to fetch volume ID/Name for volume snapshot creation.
 ~> **Note:** Exactly one of `volume_id` and `volume_name` should be provided.
 

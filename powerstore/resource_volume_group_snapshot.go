@@ -82,7 +82,7 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 				MarkdownDescription: "Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\b`),
+						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
 						"Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
 					),
 				},
@@ -320,7 +320,7 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 	state.Description = types.StringValue(response.Description)
 	// if expiration timestamp is not present then set to null.
 	if expTime == "" {
-		state.ExpirationTimestamp = types.StringNull()
+		state.ExpirationTimestamp = types.StringValue("")
 	} else {
 		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
 	}
