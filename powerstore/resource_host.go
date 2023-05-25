@@ -43,7 +43,7 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				Description:         "Name of the host.",
+				Description:         "Name of the host. This should be unique across all hosts in the cluster.",
 				MarkdownDescription: "Name of the host. This should be unique across all hosts in the cluster.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -62,8 +62,8 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 			},
 			"os_type": schema.StringAttribute{
 				Required:            true,
-				Description:         "Operating system of the host.",
-				MarkdownDescription: "Operating system of the host.",
+				Description:         "Operating system of the host. This cannot be updated",
+				MarkdownDescription: "Operating system of the host. This cannot be updated",
 				Validators: []validator.String{stringvalidator.OneOf(
 					string(gopowerstore.OSTypeEnumWindows),
 					string(gopowerstore.OSTypeEnumLinux),
