@@ -43,8 +43,8 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 		Description: "ProtectionPolicy DataSource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the protection policy.",
-				MarkdownDescription: "Unique identifier of the protection policy.",
+				Description:         "Unique identifier of the protection policy. Conflicts with `name`.",
+				MarkdownDescription: "Unique identifier of the protection policy. Conflicts with `name`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -53,8 +53,8 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Protection policy name.",
-				MarkdownDescription: "Protection policy name.",
+				Description:         "Protection policy name. Conflicts with `id`.",
+				MarkdownDescription: "Protection policy name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
