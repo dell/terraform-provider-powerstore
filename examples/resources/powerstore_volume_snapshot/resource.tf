@@ -3,9 +3,9 @@
 # To import , check volume_snapshot_import.tf for more info
 # volume_id/volume_name is the required attribute to create volume snapshot.
 # name, expiration_timestamp, performance_policy_id and description are the optional attributes
-# if name is present in the config it cannot be ""
-# During create operation, if expiration_timestamp is not specified or set to "", snapshot will be created with infinite retention
-# During modify operation, to set infinite retention, expiration_timestamp can be set to ""
+# if name is present in the config it cannot be blank
+# During create operation, if expiration_timestamp is not specified or set to blank, snapshot will be created with infinite retention
+# During modify operation, to set infinite retention, expiration_timestamp can be set to blank
 # Either volume_id or volume_name should be present.
 # Volume DataSource can be used to fetch volume ID/Name
 # To check which attributes of the volume snapshot resource can be updated, please refer Product Guide in the documentation
