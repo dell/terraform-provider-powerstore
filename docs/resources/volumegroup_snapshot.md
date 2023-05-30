@@ -27,9 +27,9 @@ description: |-
 Volume Group Snapshot resource
 
 ~> **Note:** `volume_group_id`/`volume_group_name` is the required attribute to create volume group snapshot.
-~> **Note:** `expiration_timestamp` if present in config cannot be "". if absent, default value is allocated to it.
-~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to "", snapshot will be created with infinite retention.
-~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to "".
+~> **Note:** `expiration_timestamp` if present in config cannot be blank. if absent, default value is allocated to it.
+~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to blank, snapshot will be created with infinite retention.
+~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank.
 ~> **Note:** Volume group DataSource can be used to fetch volume group ID/Name.
 ~> **Note:** Exactly one of `volume_group_id` and `volume_group_name` should be provided.
 
@@ -43,8 +43,8 @@ Volume Group Snapshot resource
 # description and expiration_timestamp are the optional attributes.
 # Either volume_group_id or volume_group_name should be present.
 # VolumeGroup DataSource can be used to fetch volume group ID/Name
-# During create operation, if expiration_timestamp is not specified or set to "", snapshot will be created with infinite retention
-# During modify operation, to set infinite retention, expiration_timestamp can be set to ""
+# During create operation, if expiration_timestamp is not specified or set to blank, snapshot will be created with infinite retention
+# During modify operation, to set infinite retention, expiration_timestamp can be set to blank
 # To check which attributes of the volume group snapshot resource can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_volumegroup_snapshot" "test" {
