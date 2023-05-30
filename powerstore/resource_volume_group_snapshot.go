@@ -234,7 +234,7 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	if plan.VolumeGroupID.ValueString() != state.VolumeGroupID.ValueString() || plan.VolumeGroupName.ValueString() != state.VolumeGroupName.ValueString() {
+	if (plan.VolumeGroupID.ValueString() != "" && plan.VolumeGroupID.ValueString() != state.VolumeGroupID.ValueString()) || plan.VolumeGroupName.ValueString() != state.VolumeGroupName.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating volume group snapshot resource",
 			"Volume group Name or Volume group ID cannot be updated")
@@ -338,7 +338,7 @@ func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *gopow
 	volGroupSnapshotUpdate := &gopowerstore.VolumeGroupModify{
 		Description:         description,
 		Name:                name,
-		ExpirationTimestamp: expirationTimeStamp,
+		ExpirationTimestamp: &expirationTimeStamp,
 	}
 	return volGroupSnapshotUpdate
 }
