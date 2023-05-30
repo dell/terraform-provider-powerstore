@@ -1,13 +1,13 @@
 ---
 # Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
-# 
+#
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://mozilla.org/MPL/2.0/
-# 
-# 
+#
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,12 @@ description: |-
 
 volume snapshot resource
 
+~> **Note:** `volume_id`/`volume_name` is the required attribute to create volume snapshot.
+~> **Note:** if `name` is present in the config it cannot be blank(""). if absent, default value is allocated to it.
+~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to blank(""), snapshot will be created with infinite retention.
+~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank("").
+~> **Note:** Volume DataSource can be used to fetch volume ID/Name for volume snapshot creation.
+~> **Note:** Exactly one of `volume_id` and `volume_name` should be provided.
 
 ## Example Usage
 
@@ -33,9 +39,11 @@ volume snapshot resource
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check volume_snapshot_import.tf for more info
-# volume_id/volume_name is the required attribute to create and update
+# volume_id/volume_name is the required attribute to create volume snapshot.
 # name, expiration_timestamp, performance_policy_id and description are the optional attributes
-# name and expiration_timestamp if present in config cannot be ""
+# if name is present in the config it cannot be blank("").
+# During create operation, if expiration_timestamp is not specified or set to blank(""), snapshot will be created with infinite retention.
+# During modify operation, to set infinite retention, expiration_timestamp can be set to blank("").
 # Either volume_id or volume_name should be present.
 # Volume DataSource can be used to fetch volume ID/Name
 # To check which attributes of the volume snapshot resource can be updated, please refer Product Guide in the documentation
@@ -59,8 +67,8 @@ resource "powerstore_volume_snapshot" "test" {
 - `expiration_timestamp` (String) Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.
 - `name` (String) Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.
 - `performance_policy_id` (String) Performance Policy id of the volume snapshot. Valid values are default_medium, default_low, default_high.
-- `volume_id` (String) ID of the volume to take snapshot.Conflicts with `volume_name`.Cannot be updated.
-- `volume_name` (String) Name of the volume to take snapshot.Conflicts with `volume_id`.Cannot be updated.
+- `volume_id` (String) ID of the volume to take snapshot. Conflicts with `volume_name`. Cannot be updated.
+- `volume_name` (String) Name of the volume to take snapshot. Conflicts with `volume_id`. Cannot be updated.
 
 ### Read-Only
 
