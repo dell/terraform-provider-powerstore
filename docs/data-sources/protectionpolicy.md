@@ -26,6 +26,8 @@ description: |-
 
 ProtectionPolicy DataSource.
 
+~> **Note:** Only one of `name` or `id` can be provided at a time.
+
 ## Example Usage
 
 ```terraform
@@ -49,8 +51,8 @@ output "policyResult" {
 
 ### Optional
 
-- `id` (String) Unique identifier of the protection policy.
-- `name` (String) Protection policy name.
+- `id` (String) Unique identifier of the protection policy. Conflicts with `name`.
+- `name` (String) Protection policy name. Conflicts with `id`.
 
 ### Read-Only
 
