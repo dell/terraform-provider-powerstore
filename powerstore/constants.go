@@ -113,7 +113,7 @@ const (
 	UpdateVolumeGroupDetailErrorMsg = "Error updating volume group"
 
 	//CreateVolumeGroupInvalidPolicyErrorMsg specifies error caused when invalid protection policy value is provided
-	CreateVolumeGroupInvalidPolicyErrorMsg = "Error getting protection policy"
+	CreateVolumeGroupInvalidPolicyErrorMsg = "Error getting protection"
 
 	//VolumeGroupInvalidAttributeCombinationErrorMsg specifies error caused if mutually exclusive paramaters are provided
 	VolumeGroupInvalidAttributeCombinationErrorMsg = "Invalid Attribute Combination"
