@@ -386,7 +386,7 @@ func (r resourceVolumeSnapshot) planToServer(plan models.Snapshot) *gopowerstore
 		Description:         description,
 		Name:                name,
 		PerformancePolicyID: performancePolicyID,
-		ExpirationTimestamp: expirationTimeStamp,
+		ExpirationTimestamp: &expirationTimeStamp,
 	}
 	return volSnapshotUpdate
 }
