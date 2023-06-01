@@ -138,6 +138,15 @@ func (r *resourceHostGroup) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
+	valid, errmsg := r.fetchByName(&plan)
+	if !valid {
+		resp.Diagnostics.AddError(
+			"Error creating host group",
+			"Could not create host group, unexpected error: "+errmsg+"",
+		)
+		return
+	}
+
 	hostGroupCreate := r.planToHostGroupParam(plan)
 
 	//Create New HostGroup
@@ -248,6 +257,15 @@ func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateReque
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	valid, errmsg := r.fetchByName(&plan)
+	if !valid {
+		resp.Diagnostics.AddError(
+			"Error updating host group",
+			"Could not update host group, unexpected error: "+errmsg+"",
+		)
 		return
 	}
 
@@ -383,7 +401,6 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 	for i := 0; i < len(stateHostIds); i++ {
 		_, found := planHostIdsMap[stateHostIds[i]]
 		if !found {
-			log.Printf("Volume not found in state")
 			removeHostIdsMap[stateHostIds[i]] = stateHostIds[i]
 		}
 	}
@@ -399,7 +416,6 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 	for i := 0; i < len(planHostIds); i++ {
 		_, found := stateHostIdsMap[planHostIds[i]]
 		if !found {
-			log.Printf("Host not found in plan")
 			addHostIdsMap[planHostIds[i]] = planHostIds[i]
 		}
 	}
@@ -413,29 +429,14 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 	return addHostIdsSlice, removeHostIdsSlice
 }
 
-// ModifyPlan modify resource plan attribute value
-func (r *resourceHostGroup) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if req.Plan.Raw.IsNull() {
-		return
-	}
-	var plan models.HostGroup
-
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
+// fetchByName fetches hosts using name and updates respective ids in plan
+func (r resourceHostGroup) fetchByName(plan *models.HostGroup) (bool, string) {
 	var hostIds []string
 	if len(plan.HostNames.Elements()) != 0 {
 		for _, hostName := range plan.HostNames.Elements() {
 			host, err := r.client.PStoreClient.GetHostByName(context.Background(), strings.Trim(hostName.String(), "\""))
 			if err != nil {
-				resp.Diagnostics.AddError(
-					"Error getting host ",
-					"Could not get host with name: "+strings.Trim(hostName.String(), "\"")+", \n unexpected error: "+err.Error(),
-				)
-				return
+				return false, "Error getting host with name: " + strings.Trim(hostName.String(), "\"")
 			}
 			hostIds = append(hostIds, strings.Trim(host.ID, "\""))
 		}
@@ -446,9 +447,5 @@ func (r *resourceHostGroup) ModifyPlan(ctx context.Context, req resource.ModifyP
 		plan.HostIDs, _ = types.SetValue(types.StringType, hostList)
 	}
 
-	diags = resp.Plan.Set(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	return true, ""
 }
