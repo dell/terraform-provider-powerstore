@@ -311,17 +311,22 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// Modify CHAP credentials based on PortName.
-	// since due to idempotency issue modify is getting called in every call.
-	_, err = r.client.PStoreClient.ModifyHost(
-		context.Background(),
-		r.modifyOperation(plan, state),
-		hostID,
-	)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error updating host",
-			"Could not update hostID "+hostID+": "+err.Error(),
+	modifyInitiators := r.modifyOperation(plan, state)
+	if len(modifyInitiators) > 0 {
+		hostUpdate := &gopowerstore.HostModify{
+			ModifyInitiators: &modifyInitiators,
+		}
+		_, err = r.client.PStoreClient.ModifyHost(
+			context.Background(),
+			hostUpdate,
+			hostID,
 		)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error updating host",
+				"Could not update hostID "+hostID+": "+err.Error(),
+			)
+		}
 	}
 
 	// Get host Details
@@ -510,8 +515,8 @@ func (r resourceHost) removeInitiators(plan, state models.Host) *gopowerstore.Ho
 }
 
 // to perform modify operation in update
-func (r resourceHost) modifyOperation(plan, state models.Host) *gopowerstore.HostModify {
-	hostUpdate := &gopowerstore.HostModify{}
+func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.UpdateInitiatorInHost {
+	//hostUpdate := &gopowerstore.HostModify{}
 	// update CHAP credentials based on port name
 	modifyInitiators := make([]gopowerstore.UpdateInitiatorInHost, 0, len(plan.Initiators))
 
@@ -557,12 +562,11 @@ func (r resourceHost) modifyOperation(plan, state models.Host) *gopowerstore.Hos
 			}
 
 			modifyInitiators = append(modifyInitiators, updateInitiator)
-			hostUpdate = &gopowerstore.HostModify{
-				ModifyInitiators: &modifyInitiators,
-			}
+
 		}
+
 	}
-	return hostUpdate
+	return modifyInitiators
 }
 
 func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
