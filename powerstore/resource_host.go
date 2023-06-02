@@ -166,47 +166,7 @@ func (r *resourceHost) Create(ctx context.Context, req resource.CreateRequest, r
 	// traverse through initiators in plan and store them
 	var initiators []gopowerstore.InitiatorCreateModify
 	for _, v := range plan.Initiators {
-		initiator := gopowerstore.InitiatorCreateModify{}
-
-		portName := v.PortName.ValueString()
-		portType := r.getPortType(portName)
-		chapMutualPassword := v.ChapMutualPassword.ValueString()
-		chapMutualUsername := v.ChapMutualUsername.ValueString()
-		chapSinglePassword := v.ChapSinglePassword.ValueString()
-		chapSingleUsername := v.ChapSingleUsername.ValueString()
-
-		var chapSingleUsername1 *string
-		chapSingleUsername1 = &chapSingleUsername
-		var chapSinglePassword1 *string
-		chapSinglePassword1 = &chapSinglePassword
-		var chapMutualUsername1 *string
-		chapMutualUsername1 = &chapMutualUsername
-		var chapMutualPassword1 *string
-		chapMutualPassword1 = &chapMutualPassword
-
-		// When port type is iSCSI only then look for CHAP Username and Password
-		if portType != "iSCSI" || (chapMutualUsername == "" && chapSingleUsername == "") {
-			initiator = gopowerstore.InitiatorCreateModify{
-				PortName: &portName,
-				PortType: (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-			}
-		} else if chapMutualUsername == "" {
-			initiator = gopowerstore.InitiatorCreateModify{
-				PortName:           &portName,
-				PortType:           (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-				ChapSinglePassword: chapSinglePassword1,
-				ChapSingleUsername: chapSingleUsername1,
-			}
-		} else {
-			initiator = gopowerstore.InitiatorCreateModify{
-				PortName:           &portName,
-				PortType:           (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-				ChapMutualPassword: chapMutualPassword1,
-				ChapMutualUsername: chapMutualUsername1,
-				ChapSinglePassword: chapSinglePassword1,
-				ChapSingleUsername: chapSingleUsername1,
-			}
-		}
+		initiator := r.addInitiatorFromPlan(v)
 		initiators = append(initiators, initiator)
 	}
 
@@ -506,12 +466,8 @@ func (r resourceHost) addInitiators(plan, state models.Host) *gopowerstore.HostM
 
 	addInitiators := make([]gopowerstore.InitiatorCreateModify, 0, len(addInitiatorsMap))
 	for _, initiator := range addInitiatorsMap {
-		portName := initiator.PortName.ValueString()
-		portType := r.getPortType(portName)
-		addInitiators = append(addInitiators, gopowerstore.InitiatorCreateModify{
-			PortName: &portName,
-			PortType: (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-		})
+		currentInitiator := r.addInitiatorFromPlan(initiator)
+		addInitiators = append(addInitiators, currentInitiator)
 	}
 
 	hostUpdate = &gopowerstore.HostModify{
@@ -520,7 +476,6 @@ func (r resourceHost) addInitiators(plan, state models.Host) *gopowerstore.HostM
 		Name:             &name,
 		AddInitiators:    &addInitiators,
 	}
-
 	return hostUpdate
 }
 
@@ -581,13 +536,17 @@ func (r resourceHost) modifyOperation(plan, state models.Host) *gopowerstore.Hos
 			var chapMutualPassword1 *string
 			chapMutualPassword1 = &chapMutualPassword
 
-			if chapMutualUsername == "" {
+			if chapMutualUsername == "" && chapSingleUsername == "" {
+				updateInitiator = gopowerstore.UpdateInitiatorInHost{
+					PortName: &portName,
+				}
+			} else if chapMutualUsername == "" {
 				updateInitiator = gopowerstore.UpdateInitiatorInHost{
 					PortName:           &portName,
 					ChapSinglePassword: chapSinglePassword1,
 					ChapSingleUsername: chapSingleUsername1,
 				}
-			} else {
+			} else if chapMutualUsername != "" {
 				updateInitiator = gopowerstore.UpdateInitiatorInHost{
 					PortName:           &portName,
 					ChapMutualPassword: chapMutualPassword1,
@@ -639,4 +598,50 @@ func (r resourceHost) getInitiatorMap(initiators []models.InitiatorCreateModify)
 		}
 	}
 	return initiatorsMap
+}
+
+func (r resourceHost) addInitiatorFromPlan(v models.InitiatorCreateModify) gopowerstore.InitiatorCreateModify {
+
+	initiator := gopowerstore.InitiatorCreateModify{}
+
+	portName := v.PortName.ValueString()
+	portType := r.getPortType(portName)
+	chapMutualPassword := v.ChapMutualPassword.ValueString()
+	chapMutualUsername := v.ChapMutualUsername.ValueString()
+	chapSinglePassword := v.ChapSinglePassword.ValueString()
+	chapSingleUsername := v.ChapSingleUsername.ValueString()
+
+	var chapSingleUsername1 *string
+	chapSingleUsername1 = &chapSingleUsername
+	var chapSinglePassword1 *string
+	chapSinglePassword1 = &chapSinglePassword
+	var chapMutualUsername1 *string
+	chapMutualUsername1 = &chapMutualUsername
+	var chapMutualPassword1 *string
+	chapMutualPassword1 = &chapMutualPassword
+
+	// When port type is iSCSI only then look for CHAP Username and Password
+	if portType != "iSCSI" || (chapMutualUsername == "" && chapSingleUsername == "") {
+		initiator = gopowerstore.InitiatorCreateModify{
+			PortName: &portName,
+			PortType: (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
+		}
+	} else if chapMutualUsername == "" {
+		initiator = gopowerstore.InitiatorCreateModify{
+			PortName:           &portName,
+			PortType:           (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
+			ChapSinglePassword: chapSinglePassword1,
+			ChapSingleUsername: chapSingleUsername1,
+		}
+	} else {
+		initiator = gopowerstore.InitiatorCreateModify{
+			PortName:           &portName,
+			PortType:           (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
+			ChapMutualPassword: chapMutualPassword1,
+			ChapMutualUsername: chapMutualUsername1,
+			ChapSinglePassword: chapSinglePassword1,
+			ChapSingleUsername: chapSingleUsername1,
+		}
+	}
+	return initiator
 }

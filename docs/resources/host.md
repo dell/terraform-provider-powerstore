@@ -49,7 +49,7 @@ resource "powerstore_host" "test" {
   os_type           = "Linux"
   description       = "Creating host"
   host_connectivity = "Local_Only"
-  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605", port_type = "iSCSI" }]
+  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605"}]
 }
 ```
 
