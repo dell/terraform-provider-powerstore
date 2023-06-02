@@ -138,7 +138,7 @@ func (r *resourceHostGroup) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	if plan.HostConnectivity.ValueString() != "" {
+	if !plan.HostConnectivity.IsUnknown() {
 		resp.Diagnostics.AddError(
 			"Error creating host group",
 			"Could not set host_connectivity while creating host group",
