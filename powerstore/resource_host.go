@@ -283,7 +283,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// Update host by calling API
-	//  Since either update/add/remove can be performed in a single call so moved modify and remove separately.
+	// Since either update/add/remove can be performed in a single call so moved modify and remove separately.
 	// first check if there is any addition in initiators
 	_, err = r.client.PStoreClient.ModifyHost(
 		context.Background(),
@@ -516,7 +516,6 @@ func (r resourceHost) removeInitiators(plan, state models.Host) *gopowerstore.Ho
 
 // to perform modify operation in update
 func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.UpdateInitiatorInHost {
-	//hostUpdate := &gopowerstore.HostModify{}
 	// update CHAP credentials based on port name
 	modifyInitiators := make([]gopowerstore.UpdateInitiatorInHost, 0, len(plan.Initiators))
 
