@@ -147,6 +147,14 @@ func (r *resourceHostGroup) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
+	if !plan.HostConnectivity.IsUnknown() {
+		resp.Diagnostics.AddError(
+			"Error creating host group",
+			"Could not set host_connectivity while creating host group",
+		)
+		return
+	}
+
 	hostGroupCreate := r.planToHostGroupParam(plan)
 
 	//Create New HostGroup
@@ -340,6 +348,7 @@ func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup
 	hostGroupState.ID = types.StringValue(hostGroupResponse.ID)
 	hostGroupState.Name = types.StringValue(hostGroupResponse.Name)
 	hostGroupState.Description = types.StringValue(hostGroupResponse.Description)
+	hostGroupState.HostConnectivity = types.StringValue(string(hostGroupResponse.HostConnectivity))
 
 	//Update HostIDs value from Response to State
 	var hostIDs []string
