@@ -138,11 +138,11 @@ func (r *resourceHostGroup) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	valid, errmsg := r.fetchByName(&plan)
-	if !valid {
+	errmsg := r.fetchByName(&plan)
+	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error creating host group",
-			"Could not create host group, unexpected error: "+errmsg+"",
+			"Could not create host group, unexpected error: "+errmsg,
 		)
 		return
 	}
@@ -260,11 +260,11 @@ func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	valid, errmsg := r.fetchByName(&plan)
-	if !valid {
+	errmsg := r.fetchByName(&plan)
+	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error updating host group",
-			"Could not update host group, unexpected error: "+errmsg+"",
+			"Could not update host group, unexpected error: "+errmsg,
 		)
 		return
 	}
@@ -430,13 +430,13 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 }
 
 // fetchByName fetches hosts using name and updates respective ids in plan
-func (r resourceHostGroup) fetchByName(plan *models.HostGroup) (bool, string) {
+func (r resourceHostGroup) fetchByName(plan *models.HostGroup) string {
 	var hostIds []string
 	if len(plan.HostNames.Elements()) != 0 {
 		for _, hostName := range plan.HostNames.Elements() {
 			host, err := r.client.PStoreClient.GetHostByName(context.Background(), strings.Trim(hostName.String(), "\""))
 			if err != nil {
-				return false, "Error getting host with name: " + strings.Trim(hostName.String(), "\"")
+				return "Error getting host with name: " + strings.Trim(hostName.String(), "\"")
 			}
 			hostIds = append(hostIds, strings.Trim(host.ID, "\""))
 		}
@@ -447,5 +447,5 @@ func (r resourceHostGroup) fetchByName(plan *models.HostGroup) (bool, string) {
 		plan.HostIDs, _ = types.SetValue(types.StringType, hostList)
 	}
 
-	return true, ""
+	return ""
 }
