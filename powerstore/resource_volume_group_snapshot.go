@@ -235,21 +235,24 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	volGroupID := plan.VolumeGroupID.ValueString()
-	var updatedVolGroup string
+	var errFlag bool
 	// if volume group name is present instead of ID
 	if volGroupID == "" {
 		volGroupResponse, err := r.client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
-				"Error creating volume group snapshot",
+				"Error updating volume group snapshot",
 				"Could not fetch volume group ID from volume group name, unexpected error: "+err.Error(),
 			)
 			return
 		}
-		updatedVolGroup = volGroupResponse.ID
+		if volGroupResponse.ID != state.VolumeGroupID.ValueString() {
+			errFlag = true
+		}
+	} else if volGroupID != "" && volGroupID != state.VolumeGroupID.ValueString() {
+		errFlag = true
 	}
-
-	if (volGroupID != "" && volGroupID != state.VolumeGroupID.ValueString()) || updatedVolGroup != state.VolumeGroupID.ValueString() {
+	if errFlag {
 		resp.Diagnostics.AddError(
 			"Error updating volume group snapshot resource",
 			"Volume group Name or Volume group ID cannot be updated")
