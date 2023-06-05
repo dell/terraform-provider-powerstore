@@ -28,9 +28,11 @@ Host resource
 
 ~> **Note:** `name`, `os_type` and `initiators` are the required attributes to create.
 ~> **Note:** `os_type` cannot be updated.
-~> **Note:** `port_name` and `port_type` are required attributes for `initiators`.
+~> **Note:** `port_name` is the required attribute for `initiators`.
 ~> **Note:** `chap_single_password` must be present when `chap_single_username` is given and vice-versa.
 ~> **Note:** `chap_mutual_password` must be present when `chap_mutual_username` is given and vice-versa.
+~> **Note:** `chap_mutual_username` and `chap_mutual_password` can be used only when `chap_single_username` and `chap_single_password` are present.
+
 
 ## Example Usage
 
@@ -47,7 +49,7 @@ resource "powerstore_host" "test" {
   os_type           = "Linux"
   description       = "Creating host"
   host_connectivity = "Local_Only"
-  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605", port_type = "iSCSI" }]
+  initiators        = [{ port_name = "iqn.1994-05.com.redhat:88cb605"}]
 }
 ```
 
@@ -76,7 +78,6 @@ resource "powerstore_host" "test" {
 Required:
 
 - `port_name` (String) IQN name aka address or NQN name for NVMEoF port types.
-- `port_type` (String) Protocol type of the host initiator.
 
 Optional:
 
@@ -84,6 +85,10 @@ Optional:
 - `chap_mutual_username` (String) Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is mutual authentication.
 - `chap_single_password` (String, Sensitive) Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is single authentication.
 - `chap_single_username` (String) Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is single authentication.
+
+Read-Only:
+
+- `port_type` (String) Protocol type of the host initiator.
 
 ## Import
 
