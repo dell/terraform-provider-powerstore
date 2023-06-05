@@ -217,43 +217,43 @@ func convertFromBytes(bytes int64) (float64, string) {
 }
 
 // fetchByName updates IDs of the corresponding name present in plan
-func fetchByName(client client.Client, plan *models.Volume) (bool, string) {
+func fetchByName(client client.Client, plan *models.Volume) string {
 	if plan.HostName.ValueString() != "" {
 		hostMap, err := client.PStoreClient.GetHostByName(context.Background(), plan.HostName.ValueString())
 		if err != nil {
-			return false, "Invalid host name"
+			return "Invalid host name"
 		}
 		plan.HostID = types.StringValue(hostMap.ID)
 	}
 	if plan.HostGroupName.ValueString() != "" {
 		hostGroupMap, err := client.PStoreClient.GetHostGroupByName(context.Background(), plan.HostGroupName.ValueString())
 		if err != nil {
-			return false, "Invalid host group name"
+			return "Invalid host group name"
 		}
 		plan.HostGroupID = types.StringValue(hostGroupMap.ID)
 	}
 	if plan.VolumeGroupName.ValueString() != "" {
 		volGroupMap, err := client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
 		if err != nil {
-			return false, "Invalid volume group name"
+			return "Invalid volume group name"
 		}
 		plan.VolumeGroupID = types.StringValue(volGroupMap.ID)
 	}
 	if plan.ApplianceName.ValueString() != "" {
 		applianceMap, err := client.PStoreClient.GetApplianceByName(context.Background(), plan.ApplianceName.ValueString())
 		if err != nil {
-			return false, "Invalid Appliance name"
+			return "Invalid Appliance name"
 		}
 		plan.ApplianceID = types.StringValue(applianceMap.ID)
 	}
 	if plan.ProtectionPolicyName.ValueString() != "" {
 		policyMap, err := client.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
 		if err != nil {
-			return false, "Invalid Protection policy name"
+			return "Invalid Protection policy name"
 		}
 		plan.ProtectionPolicyID = types.StringValue(policyMap.ID)
 	}
-	return true, ""
+	return ""
 }
 
 func detachHostFromVolume(stateVol, planVol models.Volume, client client.Client, volID string) error {
