@@ -350,11 +350,11 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	valid, errmsg := fetchByName(*r.client, &plan)
-	if !valid {
+	errmsg = fetchByName(*r.client, &plan)
+	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
-			"Could not create volume, "+errmsg+"",
+			"Could not create volume, "+errmsg,
 		)
 		return
 	}
@@ -512,11 +512,11 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	valid, errmsg := fetchByName(*r.client, &plan)
-	if !valid {
+	errmsg := fetchByName(*r.client, &plan)
+	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error Updating volume",
-			"Could not Update volume, "+errmsg+"",
+			"Could not Update volume, "+errmsg,
 		)
 		return
 	}
