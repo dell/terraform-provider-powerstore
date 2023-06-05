@@ -109,7 +109,7 @@ func TestAccHostGroup_CreateWithHostName(t *testing.T) {
 }
 
 // Test to Create HostGroup with invalid host name, will result in error
-func TestAccVolumeGroup_CreateWithInvalidHostName(t *testing.T) {
+func TestAccHostGroup_CreateWithInvalidHostName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
