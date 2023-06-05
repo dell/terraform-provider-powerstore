@@ -279,7 +279,21 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	if (plan.VolumeID.ValueString() != "" && (plan.VolumeID.ValueString() != state.VolumeID.ValueString())) || plan.VolumeName.ValueString() != state.VolumeName.ValueString() {
+	var newVolID string
+	// if volume name is present instead of ID
+	if plan.VolumeID.ValueString() == "" {
+		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"Could not fetch volume ID from volume name, unexpected error: "+err.Error(),
+			)
+			return
+		}
+		newVolID = volResponse.ID
+	}
+
+	if (plan.VolumeID.ValueString() != "" && (plan.VolumeID.ValueString() != state.VolumeID.ValueString())) || newVolID != state.VolumeName.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating volume snapshot resource",
 			"Volume Name or Volume ID cannot be updated")
