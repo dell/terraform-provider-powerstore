@@ -228,7 +228,7 @@ resource "powerstore_host" "test" {
 	name = "` + hostName + `"
 	description = "Test Host Resource"
 	os_type = "Linux"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606"}]
 }
 `
 
@@ -237,7 +237,7 @@ resource "powerstore_host" "test" {
 	name = "` + hostName + `"
 	description = "Test Host Resource"
 	os_type = "Linux"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" ,chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"}]
 }
 `
 var HostParamsCreateWithSingleCHAP = `
@@ -245,20 +245,20 @@ resource "powerstore_host" "test" {
 	name = "` + hostName + `"
 	description = "Test Host Resource"
 	os_type = "Linux"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606",port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606",chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
 }
 `
 
 var HostParamsCreateWithoutPolicy = `
 resource "powerstore_host" "test" {
 	name = "` + hostName + `"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" }]
 	description = "Test Host Resource"
 }
 `
 var HostParamsCreateWithoutName = `
 resource "powerstore_host" "test" {
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" }]
 	description = "Test Host Resource"
 	os_type = "Linux"
 }
@@ -268,7 +268,7 @@ resource "powerstore_host" "test" {
 	name = "new_name_host_acc_test"
 	description = "Test Host Resource"
 	os_type = "Linux"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" }]
 }
 `
 var HostParamsAddInitiators = `
@@ -276,6 +276,6 @@ resource "powerstore_host" "test" {
 	name = "` + hostName + `"
 	description = "Test Host Resource"
 	os_type = "Linux"
-	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606", port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"},{port_name="iqn.1998-01.com.vmware:lgc198248-5b06fb37", port_type="iSCSI",chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
+	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" ,chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"},{port_name="iqn.1998-01.com.vmware:lgc198248-5b06fb37" ,chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
 }
 `
