@@ -156,8 +156,8 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	valid, errmsg := r.fetchByName(&plan)
-	if !valid {
+	errmsg := r.fetchByName(&plan)
+	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error creating volume group",
 			"Could not create volume group, unexpected error: "+errmsg+"",
@@ -333,8 +333,8 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	valid, errmsg := r.fetchByName(&plan)
-	if !valid {
+	errmsg := r.fetchByName(&plan)
+	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error updating volume group",
 			"Could not update volume group, unexpected error: "+errmsg+"",
@@ -513,13 +513,13 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 }
 
 // fetchByName fetches by name and updates respective ids in plan
-func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) (bool, string) {
+func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) string {
 	var volumeIds []string
 	if len(plan.VolumeNames.Elements()) != 0 {
 		for _, volumeName := range plan.VolumeNames.Elements() {
 			volume, err := r.client.PStoreClient.GetVolumeByName(context.Background(), strings.Trim(volumeName.String(), "\""))
 			if err != nil {
-				return false, "Error getting volume with name: " + strings.Trim(volumeName.String(), "\"")
+				return "Error getting volume with name: " + strings.Trim(volumeName.String(), "\"")
 			}
 			volumeIds = append(volumeIds, strings.Trim(volume.ID, "\""))
 		}
@@ -533,10 +533,10 @@ func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) (bool, strin
 	if plan.ProtectionPolicyName.ValueString() != "" {
 		policy, err := r.client.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
 		if err != nil {
-			return false, "Error getting protection policy with name: " + strings.Trim(plan.ProtectionPolicyName.String(), "\"")
+			return "Error getting protection policy with name: " + strings.Trim(plan.ProtectionPolicyName.String(), "\"")
 		}
 		plan.ProtectionPolicyID = types.StringValue(policy.ID)
 	}
 
-	return true, ""
+	return ""
 }
