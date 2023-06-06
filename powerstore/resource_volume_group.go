@@ -156,6 +156,15 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	errmsg := r.fetchByName(&plan)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error creating volume group",
+			"Could not create volume group, unexpected error: "+errmsg+"",
+		)
+		return
+	}
+
 	var volumeIds []string
 	for _, volume := range plan.VolumeIDs.Elements() {
 		volumeIds = append(volumeIds, strings.Trim(volume.String(), "\""))
@@ -321,6 +330,15 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	errmsg := r.fetchByName(&plan)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error updating volume group",
+			"Could not update volume group, unexpected error: "+errmsg+"",
+		)
 		return
 	}
 
@@ -494,29 +512,14 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.ProtectionPolicyName = volGroupPlan.ProtectionPolicyName
 }
 
-// ModifyPlan modify resource plan attribute value
-func (r *resourceVolumeGroup) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if req.Plan.Raw.IsNull() {
-		return
-	}
-	var plan models.Volumegroup
-
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
+// fetchByName fetches by name and updates respective ids in plan
+func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) string {
 	var volumeIds []string
 	if len(plan.VolumeNames.Elements()) != 0 {
 		for _, volumeName := range plan.VolumeNames.Elements() {
 			volume, err := r.client.PStoreClient.GetVolumeByName(context.Background(), strings.Trim(volumeName.String(), "\""))
 			if err != nil {
-				resp.Diagnostics.AddError(
-					"Error getting volume ",
-					"Could not get volume with name: "+strings.Trim(volumeName.String(), "\"")+", \n unexpected error: "+err.Error(),
-				)
-				return
+				return "Error getting volume with name: " + strings.Trim(volumeName.String(), "\"")
 			}
 			volumeIds = append(volumeIds, strings.Trim(volume.ID, "\""))
 		}
@@ -530,18 +533,10 @@ func (r *resourceVolumeGroup) ModifyPlan(ctx context.Context, req resource.Modif
 	if plan.ProtectionPolicyName.ValueString() != "" {
 		policy, err := r.client.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error getting protection policy",
-				"Could not get protection policy with name: "+plan.ProtectionPolicyName.ValueString()+", \n unexpected error: "+err.Error(),
-			)
-			return
+			return "Error getting protection policy with name: " + strings.Trim(plan.ProtectionPolicyName.String(), "\"")
 		}
 		plan.ProtectionPolicyID = types.StringValue(policy.ID)
 	}
 
-	diags = resp.Plan.Set(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	return ""
 }
