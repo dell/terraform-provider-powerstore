@@ -93,7 +93,6 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				Description:         "Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.",
 				MarkdownDescription: "Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.",
 				Validators: []validator.String{
-					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("protection_policy_name"),
 					}...),
@@ -117,9 +116,6 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Description:         "Unique name of the protection policy assigned to the volume group. Conflicts with `protection_policy_id`.",
 				MarkdownDescription: "Unique name of the protection policy assigned to the volume group. Conflicts with `protection_policy_id`.",
-				Validators: []validator.String{
-					stringvalidator.LengthAtLeast(1),
-				},
 			},
 		},
 	}
@@ -413,9 +409,10 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	// Get Volume Group ID from from state
 	volumeGroupID := state.ID.ValueString()
 
+	ProtectionPolicyID := plan.ProtectionPolicyID.ValueString()
 	volumeGroupUpdate := &gopowerstore.VolumeGroupModify{
 		Description:            plan.Description.ValueString(),
-		ProtectionPolicyId:     plan.ProtectionPolicyID.ValueString(),
+		ProtectionPolicyId:     &ProtectionPolicyID,
 		Name:                   plan.Name.ValueString(),
 		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
 	}
