@@ -277,11 +277,18 @@ func (r *resourceHostGroup) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	// Get ids of hosts to be added/removed from host group
-	addHostIds, removeHostIds := GetHostDetails(plan, &state)
-
 	// Get Host Group ID from state
 	hostGroupID := state.ID.ValueString()
+
+	// Get ids of hosts to be added/removed from host group
+	addHostIds, removeHostIds, errmsg := GetHostDetails(plan, &state)
+	if errmsg != "" {
+		resp.Diagnostics.AddError(
+			"Error updating host group",
+			"Could not update hostGroupID "+hostGroupID+": "+errmsg,
+		)
+		return
+	}
 
 	hostGroupUpdate := &gopowerstore.HostGroupModify{
 		Name:             plan.Name.ValueString(),
@@ -376,7 +383,7 @@ func (r resourceHostGroup) updateHostGroupState(hostGroupState *models.HostGroup
 }
 
 // GetHostDetails - Get details of hosts to be added/removed from host group
-func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, []string) {
+func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, []string, string) {
 	//Get host ids from plan into a slice
 	var planHostIds []string
 	for _, host := range plan.HostIDs.Elements() {
@@ -420,6 +427,12 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 		removeHostIdsSlice = append(removeHostIdsSlice, hostID)
 	}
 
+	errmsg := ""
+	// check to disallow removing all the hosts from the host group when host connectivity is Local_Only
+	if plan.HostConnectivity.ValueString() == "Local_Only" && planHostIds == nil && removeHostIdsSlice != nil {
+		errmsg = "Cannot remove all the hosts when host_connectivity is set"
+	}
+
 	//Create map of host ids to be added by comparing plan and state host ids
 	addHostIdsMap := make(map[string]string)
 	for i := 0; i < len(planHostIds); i++ {
@@ -435,7 +448,7 @@ func GetHostDetails(plan models.HostGroup, state *models.HostGroup) ([]string, [
 		addHostIdsSlice = append(addHostIdsSlice, hostID)
 	}
 
-	return addHostIdsSlice, removeHostIdsSlice
+	return addHostIdsSlice, removeHostIdsSlice, errmsg
 }
 
 // fetchByName fetches hosts using name and updates respective ids in plan
