@@ -573,6 +573,12 @@ func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.Validate
 	var data models.Host
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 	for _, initiator := range data.Initiators {
+		if r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) && !(initiator.ChapSingleUsername.IsNull() && initiator.ChapMutualUsername.IsNull() && initiator.ChapMutualPassword.IsNull() && initiator.ChapSinglePassword.IsNull()) {
+			resp.Diagnostics.AddError(
+				"Error validating config host",
+				"chap credentials are supported only with iSCSI protocol",
+			)
+		}
 		if initiator.ChapMutualUsername != types.StringNull() && initiator.ChapSingleUsername == types.StringNull() {
 			resp.Diagnostics.AddError(
 				"Error validating config host",
@@ -589,12 +595,6 @@ func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.Validate
 			resp.Diagnostics.AddError(
 				"Error validating config host",
 				"`chap_single_password` cannot pe present without `chap_single_username`",
-			)
-		}
-		if r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) && !initiator.ChapSingleUsername.IsNull() {
-			resp.Diagnostics.AddError(
-				"Error validating config host",
-				"chap credentials are supported only with iSCSI",
 			)
 		}
 	}
