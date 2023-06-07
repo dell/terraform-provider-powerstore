@@ -591,7 +591,7 @@ func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.Validate
 				"`chap_single_password` cannot pe present without `chap_single_username`",
 			)
 		}
-		if r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) && !initiator.ChapSingleUsername.IsNull(){
+		if r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) && !initiator.ChapSingleUsername.IsNull() {
 			resp.Diagnostics.AddError(
 				"Error validating config host",
 				"chap credentials are supported only with iSCSI",
