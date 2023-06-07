@@ -526,6 +526,7 @@ func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.Up
 			var updateInitiator gopowerstore.UpdateInitiatorInHost
 
 			portName := initiator.PortName.ValueString()
+			portType := r.getPortType(portName)
 			chapMutualPassword := initiator.ChapMutualPassword.ValueString()
 			chapMutualUsername := initiator.ChapMutualUsername.ValueString()
 			chapSinglePassword := initiator.ChapSinglePassword.ValueString()
@@ -540,30 +541,30 @@ func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.Up
 			var chapMutualPassword1 *string
 			chapMutualPassword1 = &chapMutualPassword
 
-			if chapMutualUsername == "" && chapSingleUsername == "" {
-				updateInitiator = gopowerstore.UpdateInitiatorInHost{
-					PortName: &portName,
+			// update is supported only for CHAP credentials and they are absent in case of `NVME` and `FC` so modification is not applicable for them
+			if portType == string(gopowerstore.InitiatorProtocolTypeEnumISCSI) {
+				if initiator.ChapMutualUsername.IsNull() && initiator.ChapSingleUsername.IsNull() {
+					updateInitiator = gopowerstore.UpdateInitiatorInHost{
+						PortName: &portName,
+					}
+				} else if initiator.ChapMutualUsername.IsNull() {
+					updateInitiator = gopowerstore.UpdateInitiatorInHost{
+						PortName:           &portName,
+						ChapSinglePassword: chapSinglePassword1,
+						ChapSingleUsername: chapSingleUsername1,
+					}
+				} else if !initiator.ChapMutualUsername.IsNull() {
+					updateInitiator = gopowerstore.UpdateInitiatorInHost{
+						PortName:           &portName,
+						ChapMutualPassword: chapMutualPassword1,
+						ChapMutualUsername: chapMutualUsername1,
+						ChapSinglePassword: chapSinglePassword1,
+						ChapSingleUsername: chapSingleUsername1,
+					}
 				}
-			} else if chapMutualUsername == "" {
-				updateInitiator = gopowerstore.UpdateInitiatorInHost{
-					PortName:           &portName,
-					ChapSinglePassword: chapSinglePassword1,
-					ChapSingleUsername: chapSingleUsername1,
-				}
-			} else if chapMutualUsername != "" {
-				updateInitiator = gopowerstore.UpdateInitiatorInHost{
-					PortName:           &portName,
-					ChapMutualPassword: chapMutualPassword1,
-					ChapMutualUsername: chapMutualUsername1,
-					ChapSinglePassword: chapSinglePassword1,
-					ChapSingleUsername: chapSingleUsername1,
-				}
+				modifyInitiators = append(modifyInitiators, updateInitiator)
 			}
-
-			modifyInitiators = append(modifyInitiators, updateInitiator)
-
 		}
-
 	}
 	return modifyInitiators
 }
@@ -576,6 +577,24 @@ func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.Validate
 			resp.Diagnostics.AddError(
 				"Error validating config host",
 				"`chap_mutual_username` cannot pe present without `chap_single_username`",
+			)
+		}
+		if initiator.ChapMutualUsername == types.StringNull() && initiator.ChapMutualPassword != types.StringNull() {
+			resp.Diagnostics.AddError(
+				"Error validating config host",
+				"`chap_mutual_password` cannot pe present without `chap_mutual_username`",
+			)
+		}
+		if initiator.ChapSingleUsername == types.StringNull() && initiator.ChapSinglePassword != types.StringNull() {
+			resp.Diagnostics.AddError(
+				"Error validating config host",
+				"`chap_single_password` cannot pe present without `chap_single_username`",
+			)
+		}
+		if r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) && !initiator.ChapSingleUsername.IsNull(){
+			resp.Diagnostics.AddError(
+				"Error validating config host",
+				"chap credentials are supported only with iSCSI",
 			)
 		}
 	}
