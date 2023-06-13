@@ -15,6 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+terraform {
+  required_providers {
+    powerstore = {
+      version = "1.1.0"
+      source  = "registry.terraform.io/dell/powerstore"
+    }
+  }
+}
+
 variable "username" {
   type = string
 }
