@@ -63,7 +63,7 @@ func TestAccHost_FetchHostNegative(t *testing.T) {
 
 var HostDataSourceParamsName = `
 data "powerstore_host" "test1" {
-	name = "` + hostName + `"
+	name = "` + hostNameRead + `"
 }
 `
 var HostDataSourceParamsNameNegative = `
@@ -80,7 +80,7 @@ data "powerstore_host" "test1" {
 
 var HostDataSourceParamsID = `
 data "powerstore_host" "test1" {
-	id = "` + hostID + `"
+	id = "` + hostIDRead + `"
 }
 `
 

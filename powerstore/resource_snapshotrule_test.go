@@ -20,7 +20,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 		{
 			Config: SnapshotRuleParamsWithTimeOfDay,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
+				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "timezone", "UTC"),
 				resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
@@ -33,7 +33,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 		{
 			Config: SnapshotRuleParamsWithInterval,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
+				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
 				resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
@@ -66,7 +66,7 @@ func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 			{
 				Config: SnapshotRuleParamsWithTimeOfDay,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "timezone", "UTC"),
 					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
@@ -78,7 +78,7 @@ func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 			{
 				Config: SnapshotRuleParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule_updated"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule_updated"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "22:00"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "timezone", "UTC"),
 					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
@@ -160,7 +160,7 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 			{
 				Config: SnapshotRuleParamsWithInterval,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "test_snapshotrule"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
 					resource.TestCheckTypeSetElemAttr("powerstore_snapshotrule.test", "days_of_week.*", "Monday"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "desired_retention", "56"),
@@ -175,7 +175,7 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 				ExpectError:       nil,
 				ImportStateVerify: false,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "test_snapshotrule", s[0].Attributes["name"])
+					assert.Equal(t, "tf_snapshotrule", s[0].Attributes["name"])
 					assert.Equal(t, "Four_Hours", s[0].Attributes["interval"])
 					assert.Equal(t, "56", s[0].Attributes["desired_retention"])
 					return nil
@@ -195,7 +195,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"	
+	name = "tf_snapshotrule"	
 	time_of_day = "21:00"
 	timezone = "UTC"
 	days_of_week = ["Monday"]
@@ -215,7 +215,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"	
+	name = "tf_snapshotrule"	
 	interval = "Four_Hours"
 	days_of_week = ["Monday"]
 	desired_retention = 56
@@ -234,7 +234,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule_updated"	
+	name = "tf_snapshotrule_updated"	
 	time_of_day = "22:00"
 	timezone = "UTC"
 	days_of_week = ["Monday"]
@@ -253,7 +253,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"	
+	name = "tf_snapshotrule"	
 	interval = "invalid"
 	days_of_week = ["Monday"]
 	desired_retention = 56
@@ -271,7 +271,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	time_of_day = "22:00"
 	timezone = "invalid"
 	days_of_week = ["Monday"]
@@ -290,7 +290,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	time_of_day = "22:00"
 	timezone = "UTC"
 	days_of_week = ["Monday"]
@@ -309,7 +309,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	time_of_day = "22:00"
 	timezone = "UTC"
 	days_of_week = ["invalid"]
@@ -328,7 +328,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	time_of_day = "21:00"
 	timezone = ""
 	days_of_week = ["Monday"]
@@ -347,7 +347,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	time_of_day = "21:00"
 	timezone = "UTC"
 	days_of_week = ["Monday"]
@@ -366,7 +366,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	interval = "Four_Hours"
 	time_of_day = "21:00"
 	timezone = "UTC"
@@ -386,7 +386,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_snapshotrule" "test" {
-	name = "test_snapshotrule"
+	name = "tf_snapshotrule"
 	interval = "Four_Hours"
 	timezone = "Brazil__East"
 	days_of_week = ["Monday"]
