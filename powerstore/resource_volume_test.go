@@ -3,13 +3,14 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"os"
+	"regexp"
+	"testing"
+
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"regexp"
-	"testing"
 )
 
 // Test to Create Volume
@@ -744,7 +745,7 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_id = "` + hostID + `"
+	host_id = "` + hostIDRead + `"
 }
 `
 var VolumeParamsWithHostGroupID = `
@@ -775,7 +776,7 @@ resource "powerstore_volume" "volume_create_test" {
 	size = 2.5
 	capacity_unit = "GB"
 	host_group_id = "` + hostGroupID + `"
-	host_id =  "` + hostID + `"
+	host_id =  "` + hostIDRead + `"
 }
 `
 var VolumeParamsWithInvalidPerformancePolicy = `
@@ -820,6 +821,6 @@ resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_name = "` + hostName + `"
+	host_name = "` + hostNameRead + `"
 }
 `

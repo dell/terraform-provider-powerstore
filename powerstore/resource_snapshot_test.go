@@ -1,11 +1,12 @@
 package powerstore
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
@@ -23,7 +24,7 @@ func TestAccVolumeSnapshot_Create(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc"),
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "description", "Test Snapshot Resource"),
 				),
 			},
@@ -61,11 +62,11 @@ func TestAccVolumeSnapshot_UpdateSnapshotRename(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreate,
-				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap")),
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc")),
 			},
 			{
 				Config: ProviderConfigForTesting + SnapParamsRename,
-				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap_new")),
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc_new")),
 			},
 		},
 	})
@@ -83,7 +84,7 @@ func TestAccVolumeSnapshot_UpdateSnapshotVolumeName(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreate,
-				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap")),
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc")),
 			},
 			{
 				Config:      ProviderConfigForTesting + SnapParamInvalidVolumeID,
@@ -127,7 +128,7 @@ func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutExpiry,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc"),
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_id", volumeID),
 				),
 			},
@@ -166,7 +167,7 @@ func TestAccVolumeSnapshot_CreateWithVolumeName(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + SnapParamsCreateVolumeName,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "test_snap"),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc"),
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_name", volumeName),
 				),
 			},
@@ -233,7 +234,7 @@ func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
 				ImportState:  true,
 				ExpectError:  nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "test_snap", s[0].Attributes["name"])
+					assert.Equal(t, "tf_snap_acc", s[0].Attributes["name"])
 					return nil
 				},
 			},
@@ -243,7 +244,7 @@ func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
 
 var SnapParamsCreate = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap"
+  name = "tf_snap_acc"
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
@@ -254,7 +255,7 @@ resource "powerstore_volume_snapshot" "test" {
 
 var SnapParamInvalidVolumeID = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap"
+  name = "tf_snap_acc"
   description = "Test Snapshot Resource"
   volume_id="05a959ed-6545-48fb-9887-ce4"
   performance_policy_id = "default_medium"
@@ -264,7 +265,7 @@ resource "powerstore_volume_snapshot" "test" {
 
 var SnapParamsRename = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap_new"
+  name = "tf_snap_acc_new"
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
@@ -282,7 +283,7 @@ resource "powerstore_volume_snapshot" "test" {
 
 var SnapshotParamsCreateWithoutExpiry = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap"
+  name = "tf_snap_acc"
   description = "Test Snapshot Resource"
   volume_id="` + volumeID + `"
   performance_policy_id = "default_medium"
@@ -291,7 +292,7 @@ resource "powerstore_volume_snapshot" "test" {
 
 var SnapParamsCreateWithoutVolume = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap"
+  name = "tf_snap_acc"
   description = "Test Snapshot Resource"
   performance_policy_id = "default_medium"
   expiration_timestamp="2035-05-06T09:01:47Z"
@@ -299,7 +300,7 @@ resource "powerstore_volume_snapshot" "test" {
 `
 var SnapParamsCreateVolumeName = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap"
+  name = "tf_snap_acc"
   description = "Test Snapshot Resource"
   volume_name="` + volumeName + `"
   performance_policy_id = "default_medium"
@@ -308,7 +309,7 @@ resource "powerstore_volume_snapshot" "test" {
 `
 var SnapParamsCreateInvalidVolumeName = `
 resource "powerstore_volume_snapshot" "test" {
-  name = "test_snap"
+  name = "tf_snap_acc"
   description = "Test Snapshot Resource"
   volume_name="random_volname"
   performance_policy_id = "default_medium"
