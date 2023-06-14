@@ -40,7 +40,7 @@ func TestAccVolumeGroup_Create(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -116,7 +116,7 @@ func TestAccVolumeGroup_Update(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -124,7 +124,7 @@ func TestAccVolumeGroup_Update(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -146,7 +146,7 @@ func TestAccVolumeGroup_UpdateError(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -172,7 +172,7 @@ func TestAccVolumeGroup_CreateWithVolumeName(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsWithVolumeName,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_names.0", volumeName),
@@ -195,7 +195,7 @@ func TestAccVolumeGroup_CreateWithPolicyName(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsWithPolicyName,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_name", policyName),
@@ -272,7 +272,7 @@ func TestAccVolumeGroup_UpdateAddPolicy(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -280,7 +280,7 @@ func TestAccVolumeGroup_UpdateAddPolicy(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddPolicy,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_id", policyID),
@@ -303,7 +303,7 @@ func TestAccVolumeGroup_UpdateAddVolume(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -311,7 +311,7 @@ func TestAccVolumeGroup_UpdateAddVolume(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddVolume,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
@@ -334,7 +334,7 @@ func TestAccVolumeGroup_UpdateAddPolicyNegative(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -360,7 +360,7 @@ func TestAccVolumeGroup_UpdateRemovePolicy(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddPolicy,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_id", policyID),
@@ -369,7 +369,7 @@ func TestAccVolumeGroup_UpdateRemovePolicy(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateRemovePolicy,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -391,7 +391,7 @@ func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateAddVolume,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
@@ -400,7 +400,7 @@ func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + VolumeGroupParamsUpdateRemoveVolume,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "test_volume_group"),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
@@ -428,7 +428,7 @@ func TestAccVolumeGroup_ImportSuccess(t *testing.T) {
 				ImportState:  true,
 				ExpectError:  nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "test_volume_group", s[0].Attributes["name"])
+					assert.Equal(t, "tf_volume_group_new", s[0].Attributes["name"])
 					assert.Equal(t, "Creating Volume Group", s[0].Attributes["description"])
 					assert.Equal(t, "false", s[0].Attributes["is_write_order_consistent"])
 					return nil
@@ -461,7 +461,7 @@ func TestAccVolumeGroup_ImportFailure(t *testing.T) {
 
 var VolumeGroupParamsCreate = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
 }
@@ -475,7 +475,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsCreateWithInvalidPolicy = `
 resource "powerstore_volumegroup" "test" {
-	name = "test_volume_group"
+	name = "tf_volume_group_new"
 	description = "Creating Volume Group"
 	is_write_order_consistent = false
 	protection_policy_id = "invalid-id"
@@ -484,7 +484,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsCreateWithInvalidVolume = `
 resource "powerstore_volumegroup" "test" {
-	name = "test_volume_group"
+	name = "tf_volume_group_new"
 	description = "Creating Volume Group"
 	is_write_order_consistent = false
 	volume_ids = ["invalid-id"]
@@ -493,7 +493,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdate = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
 }
@@ -501,7 +501,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdateServerError = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
   protection_policy_id = "invalid-id"
@@ -510,7 +510,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsWithVolumeName = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
   volume_names = ["` + volumeName + `"]
@@ -519,7 +519,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsWithPolicyName = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
   protection_policy_name = "` + policyName + `"
@@ -528,7 +528,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsWithInvalidPolicyName = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
   protection_policy_name = "invalid-name"
@@ -537,7 +537,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsWithVolumeIDAndName = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
   volume_ids = ["` + volumeID + `"]
@@ -547,7 +547,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsWithPolicyIDAndName = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Creaing Volume Group"
   is_write_order_consistent = false
   protection_policy_id = "` + policyID + `"
@@ -557,7 +557,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdateAddPolicy = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
   protection_policy_id = "` + policyID + `"
@@ -566,7 +566,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdateAddPolicyNegative = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
   protection_policy_name = "invalid-name"
@@ -575,7 +575,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdateAddVolume = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
   volume_ids = ["` + volumeID + `"]
@@ -584,7 +584,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdateRemovePolicy = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
 }
@@ -592,7 +592,7 @@ resource "powerstore_volumegroup" "test" {
 
 var VolumeGroupParamsUpdateRemoveVolume = `
 resource "powerstore_volumegroup" "test" {
-  name = "test_volume_group"
+  name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
 }
