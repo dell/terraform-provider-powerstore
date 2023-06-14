@@ -1,3 +1,33 @@
+# v1.1.0
+## Release Summary
+The release supports resources and data sources mentioned in the Features section for Dell PowerStore.
+## Features
+
+### Data Sources:
+* `powerstore_volume_group` for reading volume group in PowerStore.
+* `powerstore_host` for reading host in PowerStore.
+* `powerstore_host_group` for reading host group in PowerStore.
+* `powerstore_volume_snapshot` for reading volume snapshot in PowerStore.
+* `powerstore_volume_group_snapshot` for reading volume group snapshot in PowerStore.
+* `powerstore_snapshot_rule` for reading snapshot rule in PowerStore.
+* `powerstore_protection_policy` for reading protection policy in PowerStore.
+
+### Resources
+* `powerstore_volume_group` for managing volume group in PowerStore.
+* `powerstore_host` for managing host in PowerStore.
+* `powerstore_host_group` for managing host group in PowerStore.
+* `powerstore_volume_snapshot` for managing volume snapshot in PowerStore.
+* `powerstore_volume_group_snapshot` for managing volume group snapshot in PowerStore.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+N/A
+
 # v1.0.0
 ## Release Summary
 The release supports resources and data sources mentioned in the Features section for Dell PowerStore.
