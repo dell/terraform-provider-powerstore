@@ -18,11 +18,12 @@ limitations under the License.
 package powerstore
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
@@ -40,7 +41,7 @@ func TestAccHost_Create(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", "tf_host_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
 				),
 			},
@@ -61,7 +62,7 @@ func TestAccHost_CreateSingleCHAP(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostParamsCreateWithSingleCHAP,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", "tf_host_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
 				),
 			},
@@ -118,7 +119,7 @@ func TestAccHost_Rename(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", "tf_host_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
 				),
@@ -154,7 +155,7 @@ func TestAccHost_AddRemoveInitiators(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", "tf_host_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
 				),
@@ -179,7 +180,7 @@ func TestAccHost_ModifyInitiators(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostParamsCreateWithCHAP,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_host.test", "name", hostName),
+					resource.TestCheckResourceAttr("powerstore_host.test", "name", "tf_host_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
 					resource.TestCheckResourceAttr("powerstore_host.test", "os_type", "Linux"),
 				),
@@ -230,7 +231,7 @@ func TestAccHost_ImportSuccess(t *testing.T) {
 				ExpectError:       nil,
 				ImportStateVerify: true,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, hostName, s[0].Attributes["name"])
+					assert.Equal(t, "tf_host_acc_new", s[0].Attributes["name"])
 					assert.Equal(t, "Linux", s[0].Attributes["os_type"])
 					return nil
 				},
@@ -242,7 +243,7 @@ func TestAccHost_ImportSuccess(t *testing.T) {
 
 var HostParamsCreate = `
 resource "powerstore_host" "test" {
-	name = "` + hostName + `"
+	name = "tf_host_acc_new"
 	description = "Test Host Resource"
 	os_type = "Linux"
 	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606"}]
@@ -251,7 +252,7 @@ resource "powerstore_host" "test" {
 
 var HostParamsCreateWithCHAP = `
 resource "powerstore_host" "test" {
-	name = "` + hostName + `"
+	name = "tf_host_acc_new"
 	description = "Test Host Resource"
 	os_type = "Linux"
 	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" ,chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"}]
@@ -259,7 +260,7 @@ resource "powerstore_host" "test" {
 `
 var HostParamsCreateWithSingleCHAP = `
 resource "powerstore_host" "test" {
-	name = "` + hostName + `"
+	name = "tf_host_acc_new"
 	description = "Test Host Resource"
 	os_type = "Linux"
 	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606",chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
@@ -268,7 +269,7 @@ resource "powerstore_host" "test" {
 
 var HostParamsCreateWithoutPolicy = `
 resource "powerstore_host" "test" {
-	name = "` + hostName + `"
+	name = "tf_host_acc_new"
 	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" }]
 	description = "Test Host Resource"
 }
@@ -290,7 +291,7 @@ resource "powerstore_host" "test" {
 `
 var HostParamsAddInitiators = `
 resource "powerstore_host" "test" {
-	name = "` + hostName + `"
+	name = "tf_host_acc_new"
 	description = "Test Host Resource"
 	os_type = "Linux"
 	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606" ,chap_single_username="chap_single_username",chap_single_password="chap_single_password", chap_mutual_username="chap_mutual_username",chap_mutual_password="chap_mutual_password"},{port_name="iqn.1998-01.com.vmware:lgc198248-5b06fb37" ,chap_single_username="chap_single_username",chap_single_password="chap_single_password"}]
