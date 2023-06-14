@@ -28,6 +28,9 @@ func TestAccHostGroup_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
 			},
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
+			},
 		},
 	})
 }
@@ -104,6 +107,9 @@ func TestAccHostGroup_CreateWithHostName(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_names.0", hostName),
 				),
 			},
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHostWithName,
+			},
 		},
 	})
 }
@@ -155,11 +161,11 @@ func TestAccHostGroup_Update(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + HostGroupParamsCreate1,
+				Config: ProviderConfigForTesting + HostGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID1),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
 			},
 			{
@@ -167,8 +173,11 @@ func TestAccHostGroup_Update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID1),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
+			},
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 			},
 		},
 	})
@@ -185,18 +194,18 @@ func TestAccHostGroup_UpdateRemoveHost(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + HostGroupParamsCreate2,
+				Config: ProviderConfigForTesting + HostGroupParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID2),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
 			},
 			{
 				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
 				),
 			},
 		},
@@ -214,19 +223,22 @@ func TestAccHostGroup_ImportSuccess(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + HostGroupParamsCreate3,
+				Config: ProviderConfigForTesting + HostGroupParamsCreate,
 			},
 			{
-				Config:       ProviderConfigForTesting + HostGroupParamsCreate3,
+				Config:       ProviderConfigForTesting + HostGroupParamsCreate,
 				ResourceName: "powerstore_hostgroup.test",
 				ImportState:  true,
 				ExpectError:  nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "test_hostgroup", s[0].Attributes["name"])
 					assert.Equal(t, "Test Create Host Group", s[0].Attributes["description"])
-					assert.Equal(t, hostID3, s[0].Attributes["host_ids.0"])
+					assert.Equal(t, hostID, s[0].Attributes["host_ids.0"])
 					return nil
 				},
+			},
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 			},
 		},
 	})
@@ -258,30 +270,6 @@ resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
 	host_ids = ["` + hostID + `"]
-}
-`
-
-var HostGroupParamsCreate1 = `
-resource "powerstore_hostgroup" "test" {
-	name = "test_hostgroup"
-	description = "Test Create Host Group"
-	host_ids = ["` + hostID1 + `"]
-}
-`
-
-var HostGroupParamsCreate2 = `
-resource "powerstore_hostgroup" "test" {
-	name = "test_hostgroup"
-	description = "Test Create Host Group"
-	host_ids = ["` + hostID2 + `"]
-}
-`
-
-var HostGroupParamsCreate3 = `
-resource "powerstore_hostgroup" "test" {
-	name = "test_hostgroup"
-	description = "Test Create Host Group"
-	host_ids = ["` + hostID3 + `"]
 }
 `
 
@@ -337,14 +325,22 @@ var HostGroupParamsUpdate = `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Update Host Group"
-	host_ids = ["` + hostID1 + `"]
+	host_ids = ["` + hostID + `"]
 }
 `
 
 var HostGroupParamsUpdateRemoveHost = `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
-	description = "Test Update Host Group"
+	description = "Test Create Host Group"
 	host_ids = []
+}
+`
+
+var HostGroupParamsUpdateRemoveHostWithName = `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_names = []
 }
 `
