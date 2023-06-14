@@ -19,12 +19,12 @@ linkTitle: "powerstore_volume"
 page_title: "powerstore_volume Resource - powerstore"
 subcategory: ""
 description: |-
-  .
+  Volume Resource.
 ---
 
 # powerstore_volume (Resource)
 
-.
+Volume Resource.
 
 
 ## Example Usage

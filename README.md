@@ -39,16 +39,29 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.0.0 | 3.0 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.2 <br> 1.2.9 <br> | 1.19.x
+| v1.1.0 | 3.0/3.2 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.x <br> 1.4.x <br> | 1.19.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
   * Volume
   * Snapshot Rule
   * Protection Policy
   * Storage Container
+  * Host
+  * Host Group
+  * Volume Group
+  * Volume Snapshot
+  * Volume Group Snapshot
+  * Storage Container
 
 ## List of DataSources in Terraform Provider for Dell PowerStore
   * Volume
+  * Volume Group
+  * Host
+  * Host Group
+  * Volume Snapshot
+  * Volume Group Snapshot
+  * Snapshot Rule
+  * Protection Policy
 
 ## Installation of Terraform Provider for Dell PowerStore
 
@@ -71,6 +84,13 @@ Then, in that workspace, run
 ```
 terraform init
 ```
+
+If you are upgrading from a previous version, set the version of powerstore in the required providers block to "1.1.0" as shown above.
+Then, in your workspace, run
+```
+terraform init -upgrade
+```
+For more details on how to upgrade provider versions, please check out https://developer.hashicorp.com/terraform/tutorials/configuration-language/provider-versioning
 
 ## Installation from source code
 
