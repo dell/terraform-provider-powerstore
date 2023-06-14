@@ -26,8 +26,8 @@ description: |-
 
 HostGroup resource
 
-~> **Note:** Exactly one of `host_ids` and `host_names` is required.
-~> **Note:** `host_connectivity` can only be updated and it cannot be used while creating host group resource.
+~> **Note:** Exactly one of `host_ids` and `host_names` is required.  
+~> **Note:** `host_connectivity` cannot be used while creating host group resource but it can be used while updating the host group resource.  
 
 ## Example Usage
 
