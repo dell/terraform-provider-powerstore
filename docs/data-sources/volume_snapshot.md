@@ -26,6 +26,8 @@ description: |-
 
 VolumeSnapshot DataSource.
 
+~> **Note:** Only one of `name` or `id` can be provided at a time.
+
 ## Example Usage
 
 ```terraform

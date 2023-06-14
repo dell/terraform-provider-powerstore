@@ -19,12 +19,14 @@ linkTitle: "powerstore_volume"
 page_title: "powerstore_volume Data Source - powerstore"
 subcategory: ""
 description: |-
-  .
+  Volume DataSource.
 ---
 
 # powerstore_volume (Data Source)
 
-.
+Volume DataSource.
+
+~> **Note:** Only one of `name` or `id` can be provided at a time.
 
 ## Example Usage
 
