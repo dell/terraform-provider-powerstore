@@ -1,3 +1,19 @@
+#Copyright (c) 2023 Dell Inc., or its subsidiaries. All Rights Reserved.
+#
+#Licensed under the Mozilla Public License Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+#
+#    http://mozilla.org/MPL/2.0/
+#
+#
+#Unless required by applicable law or agreed to in writing, software
+#distributed under the License is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#See the License for the specific language governing permissions and
+#limitations under the License.
+
+
 # Below are the steps to import host group :
 # Step 1 - To import a host group, we need the id of that host group
 # Step 2 - To check the id of the host group we can make use of host group datasource to read required/all host group ids. Alternatively, we can make Get request to host group endpoint. eg. https://10.0.0.1/api/rest/host_group which will return list of all host group ids.

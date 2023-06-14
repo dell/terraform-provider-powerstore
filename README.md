@@ -61,7 +61,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.0.0"
+      version = "1.1.0"
       source = "registry.terraform.io/dell/powerstore"
     }
   }
