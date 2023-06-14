@@ -26,8 +26,8 @@ description: |-
 
 VolumeGroup resource
 
-~> **Note:** Exactly one of `volume_ids` and `volume_names` should be provided.
-~> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` should be provided.
+~> **Note:** Exactly one of `volume_ids` and `volume_names` is required.  
+~> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.  
 
 ## Example Usage
 
