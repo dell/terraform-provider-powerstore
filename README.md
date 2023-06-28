@@ -130,4 +130,4 @@ New version will be released regularly if significant changes(bug fixes or new f
 Released code versions are located on tags with names of the form "vx.y.z" where x.y.z corresponds to the version number.
 
 ## Documentation
-For more detailed information, please refer to [Dell Terraform Providers documentation](https://dell.github.io/terraform-docs/).
+For more detailed information, please refer to [Dell Terraform Providers Documentation](https://dell.github.io/terraform-docs/).
