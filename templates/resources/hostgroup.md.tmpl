@@ -19,12 +19,13 @@ linkTitle: "{{.Name }}"
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+This resource is used to manage the host group entity of PowerStore Array. We can Create, Update and Delete the host group using this resource. We can also import an existing host group from PowerStore array.
 ---
 
 # {{.Name }} ({{.Type}})
 
 {{ .Description | trimspace }}
+This resource is used to manage the host group entity of PowerStore Array. We can Create, Update and Delete the host group using this resource. We can also import an existing host group from PowerStore array.
 
 ~> **Note:** Exactly one of `host_ids` and `host_names` is required.  
 ~> **Note:** `host_connectivity` cannot be used while creating host group resource but it can be used while updating the host group resource.  
@@ -33,6 +34,8 @@ description: |-
 ## Example Usage
 
 {{tffile .ExampleFile }}
+
+After the execution of above resource block, device would have been created on the PowerStore array. For more information, Please check the terraform state file.
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}

@@ -19,24 +19,27 @@ linkTitle: "{{.Name }}"
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+This resource is used to manage the volume snapshot entity of PowerStore Array. We can Create, Update and Delete the volume snapshot using this resource. We can also import an existing volume snapshot from PowerStore array.
 ---
 
 # {{.Name }} ({{.Type}})
 
 {{ .Description | trimspace }}
+This resource is used to manage the volume snapshot entity of PowerStore Array. We can Create, Update and Delete the volume snapshot using this resource. We can also import an existing volume snapshot from PowerStore array.
 
-~> **Note:** `volume_id`/`volume_name` is the required attribute to create volume snapshot.  
-~> **Note:** if `name` is present in the config it cannot be blank(""). if absent, default value is allocated to it.  
-~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to blank(""), snapshot will be created with infinite retention.  
-~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank("").  
-~> **Note:** Volume DataSource can be used to fetch volume ID/Name for volume snapshot creation.  
-~> **Note:** Exactly one of `volume_id` and `volume_name` should be provided.  
+> **Note:** `volume_id`/`volume_name` is the required attribute to create volume snapshot.  
+> **Note:** if `name` is present in the config it cannot be blank(""). if absent, default value is allocated to it.  
+> **Note:** During create operation, if `expiration_timestamp` is not specified or set to blank(""), snapshot will be created with infinite retention.  
+> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank("").  
+> **Note:** Volume DataSource can be used to fetch volume ID/Name for volume snapshot creation.  
+> **Note:** Exactly one of `volume_id` and `volume_name` should be provided.  
 
 {{ if .HasExample -}}
 ## Example Usage
 
 {{tffile .ExampleFile }}
+
+After the execution of above resource block, device would have been created on the PowerStore array. For more information, Please check the terraform state file.
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
