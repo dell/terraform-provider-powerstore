@@ -19,13 +19,13 @@ linkTitle: "powerstore_hostgroup"
 page_title: "powerstore_hostgroup Data Source - powerstore"
 subcategory: ""
 description: |-
-This datasource is used to query the existing host group from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing host group from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
 
 # powerstore_hostgroup (Data Source)
 
 HostGroup DataSource.
-This datasource is used to query the existing host group from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing host group from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
 > **Note:** Only one of `name` or `id` can be provided at a time.
 

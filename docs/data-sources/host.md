@@ -19,13 +19,14 @@ linkTitle: "powerstore_host"
 page_title: "powerstore_host Data Source - powerstore"
 subcategory: ""
 description: |-
-This datasource is used to query the existing host from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+
+This datasource is used to query the existing host from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
 
 # powerstore_host (Data Source)
 
 Host DataSource
-This datasource is used to query the existing host from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing host from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
 > **Note:** Only one of `name` or `id` can be provided at a time.
 

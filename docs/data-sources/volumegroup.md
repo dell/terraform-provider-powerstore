@@ -19,13 +19,13 @@ linkTitle: "powerstore_volumegroup"
 page_title: "powerstore_volumegroup Data Source - powerstore"
 subcategory: ""
 description: |-
-This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
 
 # powerstore_volumegroup (Data Source)
 
 VolumeGroup DataSource.
-This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
 > **Note:** Only one of `name` or `id` can be provided at a time.
 
