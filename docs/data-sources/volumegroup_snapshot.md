@@ -19,14 +19,13 @@ linkTitle: "powerstore_volumegroup_snapshot"
 page_title: "powerstore_volumegroup_snapshot Data Source - powerstore"
 subcategory: ""
 description: |-
-This datasource is used to query the existing volumegroup snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+  This datasource is used to query the existing volumegroup snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
 
 # powerstore_volumegroup_snapshot (Data Source)
 
-VolumeGroup Snapshot DataSource.
+This datasource is used to query the existing volumegroup snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
-This datasource is used to query the existing volumegroup snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
 > **Note:** Only one of `name` or `id` can be provided at a time.
 
 ## Example Usage

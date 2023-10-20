@@ -56,7 +56,8 @@ func (r *resourceProtectionPolicy) Metadata(ctx context.Context, req resource.Me
 func (r *resourceProtectionPolicy) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "ProtectionPolicy resource",
+		MarkdownDescription: "This resource is used to manage the protection policy entity of PowerStore Array. We can Create, Update and Delete the protection policy using this resource. We can also import an existing protection policy from PowerStore array.",
+		Description:         "This resource is used to manage the protection policy entity of PowerStore Array. We can Create, Update and Delete the protection policy using this resource. We can also import an existing protection policy from PowerStore array.",
 
 		Attributes: map[string]schema.Attribute{
 

@@ -58,7 +58,9 @@ func (d *volumeGroupDataSource) Metadata(_ context.Context, req datasource.Metad
 
 func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "VolumeGroup DataSource.",
+		Description:         "This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.",
+		MarkdownDescription: "This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.",
+
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "Unique identifier of the volume group. Conflicts with `name`.",

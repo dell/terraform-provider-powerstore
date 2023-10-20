@@ -51,7 +51,8 @@ func (r *resourceStorageContainer) Metadata(ctx context.Context, req resource.Me
 func (r *resourceStorageContainer) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "StorageContainer resource",
+		MarkdownDescription: "This resource is used to manage the storage container entity of PowerStore Array. We can Create, Update and Delete the storage container using this resource. We can also import an existing storage container from PowerStore array.",
+		Description:         "This resource is used to manage the storage container entity of PowerStore Array. We can Create, Update and Delete the storage container using this resource. We can also import an existing storage container from PowerStore array.",
 
 		Attributes: map[string]schema.Attribute{
 

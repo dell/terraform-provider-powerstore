@@ -19,13 +19,12 @@ linkTitle: "{{.Name }}"
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-This resource is used to manage the host entity of PowerStore Array. We can Create, Update and Delete the host using this resource. We can also import an existing host from PowerStore array.
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
 # {{.Name }} ({{.Type}})
 
 {{ .Description | trimspace }}
-This resource is used to manage the host entity of PowerStore Array. We can Create, Update and Delete the host using this resource. We can also import an existing host from PowerStore array.
 
 ~> **Note:** `name`, `os_type` and `initiators` are the required attributes to create.  
 ~> **Note:** `os_type` cannot be updated.  
@@ -40,7 +39,7 @@ This resource is used to manage the host entity of PowerStore Array. We can Crea
 
 {{tffile .ExampleFile }}
 
-After the execution of above resource block, device would have been created on the PowerStore array. For more information, Please check the terraform state file.
+After the execution of above resource block, host would have been created on the PowerStore array. For more information, Please check the terraform state file.
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}

@@ -19,13 +19,12 @@ linkTitle: "{{.Name }}"
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
 # {{.Name }} ({{.Type}})
 
 {{ .Description | trimspace }}
-This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.
 
 > **Note:** Exactly one of `volume_ids` and `volume_names` is required.  
 > **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.  
@@ -35,7 +34,7 @@ This resource is used to manage the volumegroup entity of PowerStore Array. We c
 
 {{tffile .ExampleFile }}
 
-After the execution of above resource block, device would have been created on the PowerStore array. For more information, Please check the terraform state file.
+After the execution of above resource block, volume group would have been created on the PowerStore array. For more information, Please check the terraform state file.
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}

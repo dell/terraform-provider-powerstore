@@ -55,7 +55,8 @@ func (r *resourceVolumeGroup) Metadata(ctx context.Context, req resource.Metadat
 func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "VolumeGroup resource",
+		MarkdownDescription: "This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.",
+		Description:         "This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.",
 
 		Attributes: map[string]schema.Attribute{
 
