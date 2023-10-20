@@ -19,20 +19,19 @@ linkTitle: "{{.Name }}"
 page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-This resource is used to manage the snapshot rule entity of PowerStore Array. We can Create, Update and Delete the snapshot rule using this resource. We can also import an existing snapshot rule from PowerStore array.
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
 # {{.Name }} ({{.Type}})
 
 {{ .Description | trimspace }}
-This resource is used to manage the snapshot rule entity of PowerStore Array. We can Create, Update and Delete the snapshot rule using this resource. We can also import an existing snapshot rule from PowerStore array.
 
 {{ if .HasExample -}}
 ## Example Usage
 
 {{tffile .ExampleFile }}
 
-After the execution of above resource block, device would have been created on the PowerStore array. For more information, Please check the terraform state file.
+After the execution of above resource block snapshot rule would have been created on the PowerStore array. For more information, Please check the terraform state file.
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}

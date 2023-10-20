@@ -59,7 +59,8 @@ func (r volumeResource) Metadata(ctx context.Context, req resource.MetadataReque
 
 func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Volume Resource.",
+		Description:         "This resource is used to manage the volume entity of PowerStore Array. We can Create, Update and Delete the volume using this resource. We can also import an existing volume from PowerStore array.",
+		MarkdownDescription: "This resource is used to manage the volume entity of PowerStore Array. We can Create, Update and Delete the volume using this resource. We can also import an existing volume from PowerStore array.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description:         "The ID of the volume.",

@@ -19,13 +19,13 @@ linkTitle: "powerstore_volume"
 page_title: "powerstore_volume Data Source - powerstore"
 subcategory: ""
 description: |-
-This datasource is used to query the existing volume from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+  This datasource is used to query the existing volume from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
 
 # powerstore_volume (Data Source)
 
-Volume DataSource.
-This datasource is used to query the existing volume from PowerStore array. The information fetched from this datasource can be used for getting the details / for further processing in resource block.
+This datasource is used to query the existing volume from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
+
 > **Note:** Only one of `name` or `id` can be provided at a time.
 
 ## Example Usage
