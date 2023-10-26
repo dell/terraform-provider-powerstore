@@ -51,7 +51,8 @@ func (r *resourceHost) Metadata(ctx context.Context, req resource.MetadataReques
 func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "Host resource",
+		MarkdownDescription: "This resource is used to manage the host entity of PowerStore Array. We can Create, Update and Delete the host using this resource. We can also import an existing host from PowerStore array.",
+		Description:         "This resource is used to manage the host entity of PowerStore Array. We can Create, Update and Delete the host using this resource. We can also import an existing host from PowerStore array.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

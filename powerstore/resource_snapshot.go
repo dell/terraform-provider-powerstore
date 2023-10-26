@@ -52,7 +52,8 @@ func (r *resourceVolumeSnapshot) Metadata(ctx context.Context, req resource.Meta
 func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "volume snapshot resource",
+		MarkdownDescription: "This resource is used to manage the volume snapshot entity of PowerStore Array. We can Create, Update and Delete the volume snapshot using this resource. We can also import an existing volume snapshot from PowerStore array.",
+		Description:         "This resource is used to manage the volume snapshot entity of PowerStore Array. We can Create, Update and Delete the volume snapshot using this resource. We can also import an existing volume snapshot from PowerStore array.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

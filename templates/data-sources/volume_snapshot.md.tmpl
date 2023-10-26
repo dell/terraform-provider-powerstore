@@ -25,13 +25,14 @@ description: |-
 # {{.Name }} ({{.Type}})
 
 {{ .Description | trimspace }}
-
-~> **Note:** Only one of `name` or `id` can be provided at a time.
+> **Note:** Only one of `name` or `id` can be provided at a time.
 
 {{ if .HasExample -}}
 ## Example Usage
 
 {{tffile .ExampleFile }}
+After the successful execution of above said block, We can see the output by executing `terraform output` command. Also, we can fetch information via the variable: `data.powerstore_volume_snapshot.test1.attribute_name` where attribute_name is the attribute which user wants to fetch.
+
 {{- end }}
 
 {{ .SchemaMarkdown | trimspace }}
