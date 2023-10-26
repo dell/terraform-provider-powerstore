@@ -57,7 +57,8 @@ func (r *resourceSnapshotRule) Metadata(ctx context.Context, req resource.Metada
 func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "SnapshotRule resource",
+		MarkdownDescription: "This resource is used to manage the snapshot rule entity of PowerStore Array. We can Create, Update and Delete the snapshot rule using this resource. We can also import an existing snapshot rule from PowerStore array.",
+		Description:         "This resource is used to manage the snapshot rule entity of PowerStore Array. We can Create, Update and Delete the snapshot rule using this resource. We can also import an existing snapshot rule from PowerStore array.",
 
 		Attributes: map[string]schema.Attribute{
 
