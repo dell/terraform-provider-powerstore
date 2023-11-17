@@ -26,11 +26,10 @@ import (
 )
 
 // Test to Fetch Protection Policy
-func TestAccProtectionPolicy_FetchPolicy(t *testing.T) {
+func TestAccProtectionPolicyDs_FetchPolicy(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -49,7 +48,7 @@ func TestAccProtectionPolicy_FetchPolicy(t *testing.T) {
 }
 
 // Test to Fetch Protection Policy- Negative
-func TestAccProtectionPolicy_FetchPolicyNegative(t *testing.T) {
+func TestAccProtectionPolicyDs_FetchPolicyNegative(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

@@ -45,6 +45,19 @@ func TestAccVolumeGroup_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
 			},
+			// Import test
+			{
+				Config:       ProviderConfigForTesting + VolumeGroupParamsCreate,
+				ResourceName: "powerstore_volumegroup.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "tf_volume_group_new", s[0].Attributes["name"])
+					assert.Equal(t, "Creating Volume Group", s[0].Attributes["description"])
+					assert.Equal(t, "false", s[0].Attributes["is_write_order_consistent"])
+					return nil
+				},
+			},
 		},
 	})
 }
@@ -404,35 +417,6 @@ func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
 				),
-			},
-		},
-	})
-}
-
-// Test to import volume group successfully
-func TestAccVolumeGroup_ImportSuccess(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + VolumeGroupParamsCreate,
-			},
-			{
-				Config:       ProviderConfigForTesting + VolumeGroupParamsCreate,
-				ResourceName: "powerstore_volumegroup.test",
-				ImportState:  true,
-				ExpectError:  nil,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "tf_volume_group_new", s[0].Attributes["name"])
-					assert.Equal(t, "Creating Volume Group", s[0].Attributes["description"])
-					assert.Equal(t, "false", s[0].Attributes["is_write_order_consistent"])
-					return nil
-				},
 			},
 		},
 	})

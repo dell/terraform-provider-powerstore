@@ -26,7 +26,7 @@ import (
 )
 
 // Test to Fetch SnapshotRule
-func TestAccSnapshotRule_FetchSnapshotRule(t *testing.T) {
+func TestAccSnapshotRuleDs_FetchSnapshotRule(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

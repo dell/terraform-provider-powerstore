@@ -26,7 +26,7 @@ import (
 )
 
 // Test to Fetch Volume Groups
-func TestAccVolumeGroup_FetchVolumeGroup(t *testing.T) {
+func TestAccVolumeGroupDs_FetchVolumeGroup(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

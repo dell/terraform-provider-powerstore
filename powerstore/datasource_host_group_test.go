@@ -26,7 +26,7 @@ import (
 )
 
 // Test to Fetch Host Groups
-func TestAccHostGroup_FetchHostGroup(t *testing.T) {
+func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

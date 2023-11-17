@@ -26,7 +26,7 @@ import (
 )
 
 // Test to Fetch Volume Snapshot
-func TestAccVolume_FetchVolumeSnapshot(t *testing.T) {
+func TestAccVolumeDs_FetchVolumeSnapshot(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

@@ -45,6 +45,17 @@ func TestAccVolumeSnapshot_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "description", "Test Snapshot Resource"),
 				),
 			},
+			// Import Testing
+			{
+				Config:       ProviderConfigForTesting + SnapParamsCreate,
+				ResourceName: "powerstore_volume_snapshot.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "tf_snap_acc", s[0].Attributes["name"])
+					return nil
+				},
+			},
 		},
 	})
 }
@@ -226,34 +237,6 @@ func TestAccVolumeSnapshot_ImportFailure(t *testing.T) {
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile(ImportSnapshotDetailErrorMsg),
 				ImportStateId: "invalid-id",
-			},
-		},
-	})
-}
-
-// Test to import successfully
-func TestAccVolumeSnapshot_ImportSuccess(t *testing.T) {
-
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + SnapParamsCreate,
-			},
-			{
-				Config:       ProviderConfigForTesting + SnapParamsCreate,
-				ResourceName: "powerstore_volume_snapshot.test",
-				ImportState:  true,
-				ExpectError:  nil,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "tf_snap_acc", s[0].Attributes["name"])
-					return nil
-				},
 			},
 		},
 	})

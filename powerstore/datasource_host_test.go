@@ -26,7 +26,7 @@ import (
 )
 
 // Test to Fetch Host details
-func TestAccHost_FetchHost(t *testing.T) {
+func TestAccHostDs_FetchHost(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -49,7 +49,7 @@ func TestAccHost_FetchHost(t *testing.T) {
 }
 
 // Test to fetch Host - Negative
-func TestAccHost_FetchHostNegative(t *testing.T) {
+func TestAccHostDs_FetchHostNegative(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

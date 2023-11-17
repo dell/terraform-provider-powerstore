@@ -45,6 +45,18 @@ func TestAccHost_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_host.test", "description", "Test Host Resource"),
 				),
 			},
+			{
+				Config:            ProviderConfigForTesting + HostParamsCreate,
+				ResourceName:      "powerstore_host.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "tf_host_acc_new", s[0].Attributes["name"])
+					assert.Equal(t, "Linux", s[0].Attributes["os_type"])
+					return nil
+				},
+			},
 		},
 	})
 }
@@ -208,37 +220,6 @@ func TestAccHost_ImportFailure(t *testing.T) {
 			},
 		},
 	})
-}
-
-// Test to import successfully
-func TestAccHost_ImportSuccess(t *testing.T) {
-
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + HostParamsCreate,
-			},
-			{
-				Config:            ProviderConfigForTesting + HostParamsCreate,
-				ResourceName:      "powerstore_host.test",
-				ImportState:       true,
-				ExpectError:       nil,
-				ImportStateVerify: true,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "tf_host_acc_new", s[0].Attributes["name"])
-					assert.Equal(t, "Linux", s[0].Attributes["os_type"])
-					return nil
-				},
-			},
-		},
-	})
-
 }
 
 var HostParamsCreate = `
