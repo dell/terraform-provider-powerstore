@@ -45,6 +45,29 @@ func TestAccHostGroup_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
 			},
+			// Import Testing
+			{
+				Config:       ProviderConfigForTesting + HostGroupParamsCreate,
+				ResourceName: "powerstore_hostgroup.test",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_hostgroup", s[0].Attributes["name"])
+					assert.Equal(t, "Test Create Host Group", s[0].Attributes["description"])
+					assert.Equal(t, hostID, s[0].Attributes["host_ids.0"])
+					return nil
+				},
+			},
+			// Update Testing
+			{
+				Config: ProviderConfigForTesting + HostGroupParamsUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
+				),
+			},
+			// Remove host before cleanup
 			{
 				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 			},
@@ -162,100 +185,6 @@ func TestAccHostGroup_CreateWithHostIDAndName(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + HostGroupParamsWithHostIDAndHostName,
 				ExpectError: regexp.MustCompile(InvalidAttributeCombinationErrorMsg),
-			},
-		},
-	})
-}
-
-// Test to Update existing HostGroup Params
-func TestAccHostGroup_Update(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsCreate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
-				),
-			},
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsUpdate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
-				),
-			},
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
-			},
-		},
-	})
-}
-
-// Test to Update existing HostGroup Params
-func TestAccHostGroup_UpdateRemoveHost(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsCreate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
-				),
-			},
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-				),
-			},
-		},
-	})
-}
-
-// Test to import host group successfully
-func TestAccHostGroup_ImportSuccess(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsCreate,
-			},
-			{
-				Config:       ProviderConfigForTesting + HostGroupParamsCreate,
-				ResourceName: "powerstore_hostgroup.test",
-				ImportState:  true,
-				ExpectError:  nil,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "test_hostgroup", s[0].Attributes["name"])
-					assert.Equal(t, "Test Create Host Group", s[0].Attributes["description"])
-					assert.Equal(t, hostID, s[0].Attributes["host_ids.0"])
-					return nil
-				},
-			},
-			{
-				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 			},
 		},
 	})

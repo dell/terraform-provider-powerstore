@@ -18,13 +18,10 @@ limitations under the License.
 package powerstore
 
 import (
-	"context"
-	"fmt"
 	"os"
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
@@ -45,6 +42,20 @@ func TestAccVolume_CreateVolume(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
+			},
+			// Import Succes Test
+			{
+				Config:            VolumeParams,
+				ResourceName:      "powerstore_volume.volume_create_test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "test_acc_cvol", s[0].Attributes["name"])
+					assert.Equal(t, "2.5", s[0].Attributes["size"])
+					assert.Equal(t, "GB", s[0].Attributes["capacity_unit"])
+					return nil
+				},
 			},
 		},
 	})
@@ -86,7 +97,7 @@ func TestAccVolume_CreateVolumeWithMBInInt(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: VolumeParamsWithMBInInt,
-				Check:  resource.ComposeTestCheckFunc(checkCreateVolume(t, testProvider, "test_acc_cvol_mb")),
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test_mb", "name", "test_acc_cvol_mb")),
 			},
 		},
 	})
@@ -104,7 +115,7 @@ func TestAccVolume_CreateVolumeWithTBInFloat(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: VolumeParamsWithTBInFloat,
-				Check:  resource.ComposeTestCheckFunc(checkCreateVolume(t, testProvider, "test_acc_cvol_tb_float")),
+				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test_tb_float", "name", "test_acc_cvol_tb_float")),
 			},
 		},
 	})
@@ -255,7 +266,7 @@ func TestAccVolume_UpdateVolumeInvalidApplianceID(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "appliance_id", "Z1")),
-				ExpectError: regexp.MustCompile(InvalidAppliaceErrorMsg),
+				ExpectError: regexp.MustCompile(CreateVolumeErrorMsg),
 			},
 		},
 	})
@@ -315,34 +326,19 @@ func TestAccVolume_UpdateVolumeGroupID(t *testing.T) {
 			{
 				Config: VolumeParams,
 			},
+			// Add Volume Group
 			{
 				Config: VolumeParamsWithVolumeGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 			},
-		},
-	})
-}
-
-// Test to update Volume Group ID in volume resource
-func TestAccVolume_DetachVolumeGroupID(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
+			// Remove Volume Group
 			{
 				Config: VolumeParamsWithVolumeGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-			},
-			{
-				Config: VolumeParams,
 			},
 		},
 	})
@@ -503,53 +499,6 @@ func TestAccVolume_ImportFailure(t *testing.T) {
 	})
 }
 
-// Test to import successfully
-func TestAccVolume_ImportSuccess(t *testing.T) {
-
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: VolumeParams,
-			},
-			{
-				Config:            VolumeParams,
-				ResourceName:      "powerstore_volume.volume_create_test",
-				ImportState:       true,
-				ExpectError:       nil,
-				ImportStateVerify: true,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "test_acc_cvol", s[0].Attributes["name"])
-					assert.Equal(t, "2.5", s[0].Attributes["size"])
-					assert.Equal(t, "GB", s[0].Attributes["capacity_unit"])
-					return nil
-				},
-			},
-		},
-	})
-
-}
-
-func checkCreateVolume(t *testing.T, p provider.Provider, volName string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		providers := p.(*Pstoreprovider)
-		_, err := providers.client.PStoreClient.GetVolumeByName(context.Background(), volName)
-		if err != nil {
-			return fmt.Errorf("failed to fetch volume")
-		}
-
-		if providers.client.PStoreClient == nil {
-			return fmt.Errorf("provider not configured")
-		}
-		return nil
-	}
-}
-
 var VolumeParams = `
 provider "powerstore" {
 	username = "` + username + `"
@@ -653,7 +602,7 @@ provider "powerstore" {
 }
 
 resource "powerstore_volume" "volume_create_test" {
-	name = "test_acc_cvol"
+	name = "test_acc_cvol_tb_float"
 	size = 2.5
 	capacity_unit = "TB"
 }

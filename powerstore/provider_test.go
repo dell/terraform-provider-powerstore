@@ -30,36 +30,38 @@ import (
 // var testAccProviders map[string]func() tfsdk.Provider
 var testProvider provider.Provider
 var testProviderFactory map[string]func() (tfprotov6.ProviderServer, error)
-var endpoint = os.Getenv("POWERSTORE_ENDPOINT")
-var username = os.Getenv("POWERSTORE_USERNAME")
-var password = os.Getenv("POWERSTORE_PASSWORD")
-var hostID = os.Getenv("HOST_ID")
-var hostIDRead = os.Getenv("HOST_ID_READ")
-var hostGroupID = os.Getenv("HOST_GROUP_ID")
-var volumeGroupID = os.Getenv("VOLUME_GROUP_ID")
-var hostName = os.Getenv("HOST_NAME")
-var hostNameRead = os.Getenv("HOST_NAME_READ")
-var hostGroupName = os.Getenv("HOST_GROUP_NAME")
-var volumeID = os.Getenv("VOLUME_ID")
-var volumeName = os.Getenv("VOLUME_NAME")
-var snapshotRuleID = os.Getenv("SNAPSHOT_RULE_ID")
-var replicationRuleID = os.Getenv("REPLICATION_RULE_ID")
-var snapshotRuleName = os.Getenv("SNAPSHOT_RULE_NAME")
-var replicationRuleName = os.Getenv("REPLICATION_RULE_NAME")
-var policyName = os.Getenv("PROTECTION_POLICY_NAME")
-var policyID = os.Getenv("PROTECTION_POLICY_ID")
-var volumeGroupName = os.Getenv("VOLUME_GROUP_NAME")
-var volumeGroupSnapshotName = os.Getenv("VOLUME_GROUP_SNAPSHOT_NAME")
-var volumeGroupSnapshotID = os.Getenv("VOLUME_GROUP_SNAPSHOT_ID")
-var volumeSnapshotID = os.Getenv("VOLUME_SNAPSHOT_ID")
-var volumeSnapshotName = os.Getenv("VOLUME_SNAPSHOT_NAME")
+
+var endpoint = setDefault(os.Getenv("POWERSTORE_ENDPOINT"), "http://localhost:3003/api/rest")
+var username = setDefault(os.Getenv("POWERSTORE_USERNAME"), "test")
+var password = setDefault(os.Getenv("POWERSTORE_PASSWORD"), "test")
+var hostID = setDefault(os.Getenv("HOST_ID"), "tfacc_host_id")
+var hostIDRead = setDefault(os.Getenv("HOST_ID_READ"), "tfacc_host_id")
+var hostGroupID = setDefault(os.Getenv("HOST_GROUP_ID"), "tfacc_host_group_id")
+var volumeGroupID = setDefault(os.Getenv("VOLUME_GROUP_ID"), "tfacc_volume_group_id")
+var hostName = setDefault(os.Getenv("HOST_NAME"), "tfacc_host_name")
+var hostNameRead = setDefault(os.Getenv("HOST_NAME_READ"), "tfacc_host_name")
+var hostGroupName = setDefault(os.Getenv("HOST_GROUP_NAME"), "tfacc_host_group_name")
+var volumeID = setDefault(os.Getenv("VOLUME_ID"), "tfacc_volume_id")
+var volumeName = setDefault(os.Getenv("VOLUME_NAME"), "tfacc_volume_name")
+var snapshotRuleID = setDefault(os.Getenv("SNAPSHOT_RULE_ID"), "tfacc_snapshot_rule_id")
+var replicationRuleID = setDefault(os.Getenv("REPLICATION_RULE_ID"), "tfacc_replication_rule_id")
+var snapshotRuleName = setDefault(os.Getenv("SNAPSHOT_RULE_NAME"), "tfacc_snapshot_rule_name")
+var replicationRuleName = setDefault(os.Getenv("REPLICATION_RULE_NAME"), "tfacc_replication_rule_name")
+var policyName = setDefault(os.Getenv("PROTECTION_POLICY_NAME"), "tfacc_policy_name")
+var policyID = setDefault(os.Getenv("PROTECTION_POLICY_ID"), "tfacc_policy_id")
+var volumeGroupName = setDefault(os.Getenv("VOLUME_GROUP_NAME"), "tfacc_volume_group_name")
+var volumeGroupSnapshotName = setDefault(os.Getenv("VOLUME_GROUP_SNAPSHOT_NAME"), "tfacc_volume_group_snapshot_name")
+var volumeGroupSnapshotID = setDefault(os.Getenv("VOLUME_GROUP_SNAPSHOT_ID"), "tfacc_volume_group_snapshot_id")
+var volumeSnapshotID = setDefault(os.Getenv("VOLUME_SNAPSHOT_ID"), "tfacc_volume_snapshot_id")
+var volumeSnapshotName = setDefault(os.Getenv("VOLUME_SNAPSHOT_NAME"), "tfacc_volume_snapshot_name")
 
 var ProviderConfigForTesting = ``
 
 func init() {
-	username := os.Getenv("POWERSTORE_USERNAME")
-	password := os.Getenv("POWERSTORE_PASSWORD")
-	endpoint := os.Getenv("POWERSTORE_ENDPOINT")
+
+	username := username
+	password := password
+	endpoint := endpoint
 	insecure := "true"
 
 	ProviderConfigForTesting = fmt.Sprintf(`
@@ -78,16 +80,23 @@ func init() {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("POWERSTORE_USERNAME"); v == "" {
+	if v := username; v == "" {
 		t.Fatal("POWERSTORE_USERNAME must be set for acceptance tests")
 	}
 
-	if v := os.Getenv("POWERSTORE_PASSWORD"); v == "" {
+	if v := password; v == "" {
 		t.Fatal("POWERSTORE_PASSWORD must be set for acceptance tests")
 	}
 
-	if v := os.Getenv("POWERSTORE_ENDPOINT"); v == "" {
+	if v := endpoint; v == "" {
 		t.Fatal("POWERSTORE_ENDPOINT must be set for acceptance tests")
 	}
 
+}
+
+func setDefault(osInput string, defaultStr string) string {
+	if osInput == "" {
+		return defaultStr
+	}
+	return osInput
 }

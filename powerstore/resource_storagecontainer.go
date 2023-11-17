@@ -20,10 +20,11 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"log"
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/path"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -154,7 +155,7 @@ func (r *resourceStorageContainer) Create(ctx context.Context, req resource.Crea
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error getting Storage Container after creation",
-			"Could not get Storage Container, unexpected error: "+err.Error(),
+			"Could not get Storage Container, unexpected error: "+err1.Error(),
 		)
 		return
 	}

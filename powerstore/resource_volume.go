@@ -439,7 +439,7 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volCreateResponse.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error fetching volume host mapping",
+			"Error fetching volume group mapping",
 			"Could not create volume, unexpected error: "+err.Error(),
 		)
 		return
@@ -569,7 +569,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Get Host Mapping from volume ID
-	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
+	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volResponse.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",
@@ -579,7 +579,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
+	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volResponse.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error fetching volume host mapping",

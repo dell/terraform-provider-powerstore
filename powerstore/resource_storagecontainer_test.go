@@ -46,6 +46,20 @@ func TestAccStorageContainer_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "high_water_mark", "70"),
 				),
 			},
+			// Import test
+			{
+				Config:            StorageContainerParamsCreate,
+				ResourceName:      "powerstore_storagecontainer.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "scterraform_acc", s[0].Attributes["name"])
+					assert.Equal(t, "10737418240", s[0].Attributes["quota"])
+					assert.Equal(t, "SCSI", s[0].Attributes["storage_protocol"])
+					return nil
+				},
+			},
 		},
 	})
 }
@@ -78,6 +92,11 @@ func TestAccStorageContainer_Update(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "high_water_mark", "60"),
 				),
 			},
+			// Test to update existing StorageContainer params but will result in error
+			{
+				Config:      StorageContainerParamsCreateServerError,
+				ExpectError: regexp.MustCompile(UpdateSCDetailErrorMsg),
+			},
 		},
 	})
 }
@@ -108,33 +127,6 @@ func TestAccStorageContainer_CreateWithInvalidValues(t *testing.T) {
 	}
 }
 
-// Test to update existing StorageContainer params but will result in error
-func TestAccStorageContainer_UpdateError(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: StorageContainerParamsCreate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "storage_protocol", "SCSI"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "high_water_mark", "70"),
-				),
-			},
-			{
-				Config:      StorageContainerParamsCreateServerError,
-				ExpectError: regexp.MustCompile(UpdateSCDetailErrorMsg),
-			},
-		},
-	})
-}
-
 // Test to import resource but resulting in error
 func TestAccStorageContainer_ImportFailure(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
@@ -154,44 +146,6 @@ func TestAccStorageContainer_ImportFailure(t *testing.T) {
 			},
 		},
 	})
-}
-
-// Test to import successfully
-func TestAccStorageContainer_ImportSuccess(t *testing.T) {
-
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: StorageContainerParamsCreate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "storage_protocol", "SCSI"),
-					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "high_water_mark", "70"),
-				),
-			},
-			{
-				Config:            StorageContainerParamsCreate,
-				ResourceName:      "powerstore_storagecontainer.test",
-				ImportState:       true,
-				ExpectError:       nil,
-				ImportStateVerify: true,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "scterraform_acc", s[0].Attributes["name"])
-					assert.Equal(t, "10737418240", s[0].Attributes["quota"])
-					assert.Equal(t, "SCSI", s[0].Attributes["storage_protocol"])
-					return nil
-				},
-			},
-		},
-	})
-
 }
 
 var StorageContainerParamsCreate = `

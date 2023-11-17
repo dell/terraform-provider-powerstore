@@ -117,6 +117,9 @@ const (
 	//CreateVolumeGroupDetailErrorMsg specifies error caused when invalid attribute values are provided
 	CreateVolumeGroupDetailErrorMsg = "Error creating volume group"
 
+	//CreateVolumeErrorMsg specifies error caused when invalid attribute values are provided
+	CreateVolumeErrorMsg = "Error creating volume"
+
 	//CreateResourceMissingErrorMsg specifies error caused when required attribute value is not provided
 	CreateResourceMissingErrorMsg = "Missing required argument"
 
