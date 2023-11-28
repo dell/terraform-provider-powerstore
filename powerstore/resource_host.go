@@ -20,6 +20,11 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
+
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -27,10 +32,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"log"
-	"strings"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 )
 
 // newHostResource returns host new resource instance
@@ -291,7 +292,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	hostID := state.ID.ValueString()
 
 	// Get host Details
-	hostResponse, err := r.client.PStoreClient.GetHost(context.Background(), hostID)
+	_, err := r.client.PStoreClient.GetHost(context.Background(), hostID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting host after update",
@@ -348,7 +349,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// Get host Details
-	hostResponse, err = r.client.PStoreClient.GetHost(context.Background(), hostID)
+	hostResponse, err := r.client.PStoreClient.GetHost(context.Background(), hostID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting host after update",
@@ -403,11 +404,22 @@ func (r *resourceHost) ImportState(ctx context.Context, req resource.ImportState
 
 // Update details to state from the API repsonse
 func (r resourceHost) serverToState(plan, state *models.Host, response gopowerstore.Host, operation operation) {
-	state.ID = types.StringValue(response.ID)
-	state.Name = types.StringValue(response.Name)
-	state.Description = types.StringValue(response.Description)
-	state.OsType = types.StringValue(string(response.OsType))
-	state.HostConnectivity = types.StringValue(string(response.HostConnectivity))
+
+	if response.ID != "" {
+		state.ID = types.StringValue(response.ID)
+	}
+	if response.Name != "" {
+		state.Name = types.StringValue(response.Name)
+	}
+	if response.Description != "" {
+		state.Description = types.StringValue(response.Description)
+	}
+	if response.OsType != "" {
+		state.OsType = types.StringValue(string(response.OsType))
+	}
+	if response.HostConnectivity != "" {
+		state.HostConnectivity = types.StringValue(string(response.HostConnectivity))
+	}
 	initiators := make([]models.InitiatorCreateModify, 0, len(response.Initiators))
 
 	// fetch the plan data to get password value.
@@ -422,7 +434,7 @@ func (r resourceHost) serverToState(plan, state *models.Host, response gopowerst
 	// fetch the plan data to get password value.
 	// Passwords are not queryable so in order to maintain state it is taken from the plan.
 	stateInitiatorMap := make(map[types.String]models.InitiatorCreateModify)
-	if state != nil && len(state.Initiators) != 0 {
+	if state != nil && state.Initiators != nil && len(state.Initiators) != 0 {
 		for i := 0; i < len(state.Initiators); i++ {
 			stateInitiatorMap[state.Initiators[i].PortName] = state.Initiators[i]
 		}
@@ -505,8 +517,6 @@ func (r resourceHost) addInitiators(plan, state models.Host) *gopowerstore.HostM
 // Attributes to be updated in update operation
 func (r resourceHost) removeInitiators(plan, state models.Host) *gopowerstore.HostModify {
 
-	hostUpdate := &gopowerstore.HostModify{}
-
 	// Create a map of initiators from plan with PortName as key, as it is unique
 	planInitiatorsMap := r.getInitiatorMap(plan.Initiators)
 
@@ -525,7 +535,7 @@ func (r resourceHost) removeInitiators(plan, state models.Host) *gopowerstore.Ho
 		removeInitiators = append(removeInitiators, removeID.ValueString())
 	}
 
-	hostUpdate = &gopowerstore.HostModify{
+	hostUpdate := &gopowerstore.HostModify{
 		RemoveInitiators: &removeInitiators,
 	}
 
@@ -550,14 +560,10 @@ func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.Up
 			chapSinglePassword := initiator.ChapSinglePassword.ValueString()
 			chapSingleUsername := initiator.ChapSingleUsername.ValueString()
 
-			var chapSingleUsername1 *string
-			chapSingleUsername1 = &chapSingleUsername
-			var chapSinglePassword1 *string
-			chapSinglePassword1 = &chapSinglePassword
-			var chapMutualUsername1 *string
-			chapMutualUsername1 = &chapMutualUsername
-			var chapMutualPassword1 *string
-			chapMutualPassword1 = &chapMutualPassword
+			var chapSingleUsername1 *string = &chapSingleUsername
+			var chapSinglePassword1 *string = &chapSinglePassword
+			var chapMutualUsername1 *string = &chapMutualUsername
+			var chapMutualPassword1 *string = &chapMutualPassword
 
 			// update is supported only for CHAP credentials and they are absent in case of `NVME` and `FC` so modification is not applicable for them
 			if portType == string(gopowerstore.InitiatorProtocolTypeEnumISCSI) {
@@ -651,37 +657,22 @@ func (r resourceHost) addInitiatorFromPlan(v models.InitiatorCreateModify) gopow
 	chapSinglePassword := v.ChapSinglePassword.ValueString()
 	chapSingleUsername := v.ChapSingleUsername.ValueString()
 
-	var chapSingleUsername1 *string
-	chapSingleUsername1 = &chapSingleUsername
-	var chapSinglePassword1 *string
-	chapSinglePassword1 = &chapSinglePassword
-	var chapMutualUsername1 *string
-	chapMutualUsername1 = &chapMutualUsername
-	var chapMutualPassword1 *string
-	chapMutualPassword1 = &chapMutualPassword
-
 	// When port type is iSCSI only then look for CHAP Username and Password
 	if portType != "iSCSI" || (chapMutualUsername == "" && chapSingleUsername == "") {
-		initiator = gopowerstore.InitiatorCreateModify{
-			PortName: &portName,
-			PortType: (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-		}
+		initiator.PortName = &portName
+		initiator.PortType = (*gopowerstore.InitiatorProtocolTypeEnum)(&portType)
 	} else if chapMutualUsername == "" {
-		initiator = gopowerstore.InitiatorCreateModify{
-			PortName:           &portName,
-			PortType:           (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-			ChapSinglePassword: chapSinglePassword1,
-			ChapSingleUsername: chapSingleUsername1,
-		}
+		initiator.PortName = &portName
+		initiator.PortType = (*gopowerstore.InitiatorProtocolTypeEnum)(&portType)
+		initiator.ChapSinglePassword = &chapSinglePassword
+		initiator.ChapSingleUsername = &chapSingleUsername
 	} else {
-		initiator = gopowerstore.InitiatorCreateModify{
-			PortName:           &portName,
-			PortType:           (*gopowerstore.InitiatorProtocolTypeEnum)(&portType),
-			ChapMutualPassword: chapMutualPassword1,
-			ChapMutualUsername: chapMutualUsername1,
-			ChapSinglePassword: chapSinglePassword1,
-			ChapSingleUsername: chapSingleUsername1,
-		}
+		initiator.PortName = &portName
+		initiator.PortType = (*gopowerstore.InitiatorProtocolTypeEnum)(&portType)
+		initiator.ChapMutualPassword = &chapMutualPassword
+		initiator.ChapMutualUsername = &chapMutualUsername
+		initiator.ChapSinglePassword = &chapSinglePassword
+		initiator.ChapSingleUsername = &chapSingleUsername
 	}
 	return initiator
 }
