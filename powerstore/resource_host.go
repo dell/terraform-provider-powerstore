@@ -411,9 +411,7 @@ func (r resourceHost) serverToState(plan, state *models.Host, response gopowerst
 	if response.Name != "" {
 		state.Name = types.StringValue(response.Name)
 	}
-	if response.Description != "" {
-		state.Description = types.StringValue(response.Description)
-	}
+	state.Description = types.StringValue(response.Description)
 	if response.OsType != "" {
 		state.OsType = types.StringValue(string(response.OsType))
 	}

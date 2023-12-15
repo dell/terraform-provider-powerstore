@@ -1,3 +1,6 @@
+# v1.1.1
+## Release Summary
+The release address security vulnerability reported in gRPC library.
 # v1.1.0
 ## Release Summary
 The release supports resources and data sources mentioned in the Features section for Dell PowerStore.
