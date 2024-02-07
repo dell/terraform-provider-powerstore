@@ -40,7 +40,7 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.1.1 | 3.0/3.2/3.5/3.6 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.x <br> 1.4.x <br> | 1.19.x
+| v1.1.2 | 3.0/3.2/3.5/3.6 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.x <br> 1.4.x <br> | 1.19.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
   * Volume
@@ -75,7 +75,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.1.1"
+      version = "1.1.2"
       source = "registry.terraform.io/dell/powerstore"
     }
   }

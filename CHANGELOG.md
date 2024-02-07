@@ -1,3 +1,6 @@
+# v1.1.2
+## Release Summary
+The release upgrades go version to 1.21 and gopowerstore version to 1.14
 # v1.1.1
 ## Release Summary
 The release address security vulnerability reported in gRPC library.
