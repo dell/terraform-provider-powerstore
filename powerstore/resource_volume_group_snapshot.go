@@ -284,7 +284,7 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	volumeGroupSnapshotID := state.ID.ValueString()
 
 	//Update volume group snapshot by calling API
-	_, err := r.client.PStoreClient.ModifyVolumeGroup(context.Background(), volModify, volumeGroupSnapshotID)
+	_, err := r.client.PStoreClient.ModifyVolumeGroupSnapshot(context.Background(), volModify, volumeGroupSnapshotID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating volume group snapshot resource",
@@ -367,12 +367,12 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 	}
 }
 
-func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *gopowerstore.VolumeGroupModify {
+func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *models.VolumeGroupModifyLocal {
 	name := plan.Name.ValueString()
 	description := plan.Description.ValueString()
 	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
 
-	volGroupSnapshotUpdate := &gopowerstore.VolumeGroupModify{
+	volGroupSnapshotUpdate := &models.VolumeGroupModifyLocal{
 		Description:         description,
 		Name:                name,
 		ExpirationTimestamp: &expirationTimeStamp,

@@ -32,3 +32,11 @@ type Volumegroup struct {
 	VolumeNames            types.Set    `tfsdk:"volume_names"`
 	ProtectionPolicyName   types.String `tfsdk:"protection_policy_name"`
 }
+
+// VolumeGroupModifyLocal - VolumeGroupModifyLocal properties needed since gopowermax causes issue with setting Protection policy on patch for VolumeGroupSnapshots
+type VolumeGroupModifyLocal struct {
+	Description            string  `json:"description"`
+	Name                   string  `json:"name,omitempty"`
+	IsWriteOrderConsistent bool    `json:"is_write_order_consistent,omitempty"`
+	ExpirationTimestamp    *string `json:"expiration_timestamp,omitempty"`
+}
