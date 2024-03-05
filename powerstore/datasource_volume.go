@@ -497,8 +497,8 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 
 		for _, history := range volumeValue.LocationHistory {
 			volumeState.LocationHistory = append(volumeState.LocationHistory, models.LocationHistory{
-				FromApplianceID: types.StringValue(history.FromApplianceId),
-				ToApplianceID:   types.StringValue(history.ToApplianceId),
+				FromApplianceID: types.StringValue(history.FromApplianceID),
+				ToApplianceID:   types.StringValue(history.ToApplianceID),
 			})
 		}
 		for _, volume := range volumeValue.MappedVolumes {
