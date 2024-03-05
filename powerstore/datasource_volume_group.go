@@ -324,8 +324,8 @@ func updateVolGroupState(volumeGroups []gopowerstore.VolumeGroup, p *client.Clie
 
 		for _, history := range volumeGroupValue.LocationHistory {
 			volumeGroupState.LocationHistory = append(volumeGroupState.LocationHistory, models.LocationHistory{
-				FromApplianceID: types.StringValue(history.FromApplianceId),
-				ToApplianceID:   types.StringValue(history.ToApplianceId),
+				FromApplianceID: types.StringValue(history.FromApplianceID),
+				ToApplianceID:   types.StringValue(history.ToApplianceID),
 			})
 		}
 

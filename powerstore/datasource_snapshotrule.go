@@ -265,7 +265,7 @@ func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (respons
 			daysOfWeekList = append(daysOfWeekList, types.StringValue(string(day)))
 		}
 		daysOfWeekL10NList := []attr.Value{}
-		for _, day := range SnapshotRuleValue.DaysOfWeek_l10n {
+		for _, day := range SnapshotRuleValue.DaysOfWeekL10n {
 			daysOfWeekL10NList = append(daysOfWeekL10NList, types.StringValue(day))
 		}
 		var snapshotRuleState = models.SnapshotRuleDataSource{
@@ -279,11 +279,11 @@ func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (respons
 			NASAccessType:    types.StringValue(string(SnapshotRuleValue.NASAccessType)),
 			IsReadOnly:       types.BoolValue(SnapshotRuleValue.IsReadOnly),
 			ManagedBy:        types.StringValue(string(SnapshotRuleValue.ManagedBy)),
-			ManagedByID:      types.StringValue(SnapshotRuleValue.ManagedById),
-			IntervalL10N:     types.StringValue(SnapshotRuleValue.Interval_l10n),
-			TimeZoneL10N:     types.StringValue(SnapshotRuleValue.Timezone_l10n),
-			NASAccessType10N: types.StringValue(SnapshotRuleValue.NASAccessType_l10n),
-			ManagedByID10N:   types.StringValue(SnapshotRuleValue.ManagedNy_l10n),
+			ManagedByID:      types.StringValue(SnapshotRuleValue.ManagedByID),
+			IntervalL10N:     types.StringValue(SnapshotRuleValue.IntervalL10n),
+			TimeZoneL10N:     types.StringValue(SnapshotRuleValue.TimezoneL10n),
+			NASAccessType10N: types.StringValue(SnapshotRuleValue.NASAccessTypeL10n),
+			ManagedByID10N:   types.StringValue(SnapshotRuleValue.ManagedNyL10n),
 		}
 		snapshotRuleState.DaysOfWeek, _ = types.ListValue(types.StringType, daysOfWeekList)
 		snapshotRuleState.DaysOfWeek10N, _ = types.ListValue(types.StringType, daysOfWeekL10NList)
