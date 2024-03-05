@@ -36,8 +36,8 @@ github.com/cyphar/filepath-securejoin v0.2.4/go.mod h1:aPGpWjXOXUn2NCNjFvBE6aRxG
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dell/gopowerstore v1.14.0 h1:j4wSn25X2AH2t3/ySNPHmNWjqM0zHDkYyDPt+0uE8cc=
-github.com/dell/gopowerstore v1.14.0/go.mod h1:YH3SpMX2dr3ouYWWPhk5lzjip3aaVVksFOSoenRDY5w=
+github.com/dell/gopowerstore v1.15.0 h1:9RmpAPiHQifrpHBd1XEkwVBCDSjql4nf3ZeqEcQaQrk=
+github.com/dell/gopowerstore v1.15.0/go.mod h1:6oAr11lwtpjmlE+s+pDKx7qfQ1HvLFWtlFoNdI03ByQ=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=

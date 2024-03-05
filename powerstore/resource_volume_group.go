@@ -429,7 +429,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 
 	volumeGroupUpdate := &gopowerstore.VolumeGroupModify{
 		Description:            plan.Description.ValueString(),
-		ProtectionPolicyId:     plan.ProtectionPolicyID.ValueString(),
+		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 		Name:                   plan.Name.ValueString(),
 		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
 	}
