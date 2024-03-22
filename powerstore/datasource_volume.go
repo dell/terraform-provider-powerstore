@@ -19,6 +19,7 @@ package powerstore
 
 import (
 	"context"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
@@ -431,6 +432,12 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 		size, unit := convertFromBytes(volumeValue.Size)
 		hostMapping, err := p.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volumeValue.ID)
 		if err != nil {
+			// Ignore the error if the volume cannot be found by id. Instead just continue.
+			// This could be a failure that happens with alot of volumes and stale ids are in the cache.
+			// In this case we should still return all volumes that are valid to the user
+			if strings.Contains(err.Error(), "was not found.") {
+				continue
+			}
 			return nil, err
 		}
 		if len(hostMapping) > 0 {
@@ -438,6 +445,12 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 		}
 		volGroupMapping, err := p.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volumeValue.ID)
 		if err != nil {
+			// Ignore the error if the volume cannot be found by id. Instead just continue.
+			// This could be a failure that happens with alot of volumes and stale ids are in the cache.
+			// In this case we should still return all volumes that are valid to the user
+			if strings.Contains(err.Error(), "was not found.") {
+				continue
+			}
 			return nil, err
 		}
 		if len(volGroupMapping.VolumeGroup) > 0 {
