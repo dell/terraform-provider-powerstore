@@ -383,8 +383,8 @@ func (r resourceProtectionPolicy) planToProtectionPolicyParam(plan models.Protec
 	protectionPolicyCreate := &gopowerstore.ProtectionPolicyCreate{
 		Name:               plan.Name.ValueString(),
 		Description:        plan.Description.ValueString(),
-		ReplicationRuleIds: replicationRuleIds,
-		SnapshotRuleIds:    snapshotRuleIds,
+		ReplicationRuleIDs: replicationRuleIds,
+		SnapshotRuleIDs:    snapshotRuleIds,
 	}
 	return protectionPolicyCreate, nil
 }

@@ -3,7 +3,7 @@ module terraform-provider-powerstore
 go 1.22
 
 require (
-	github.com/dell/gopowerstore v1.15.0
+    github.com/dell/gopowerstore v1.15.1
 	github.com/hashicorp/terraform-plugin-docs v0.18.0
 	github.com/hashicorp/terraform-plugin-framework v1.5.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.12.0
@@ -25,7 +25,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/yuin/goldmark v1.6.0 // indirect
 	github.com/yuin/goldmark-meta v1.1.0 // indirect
-	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231106174013-bbf56f31fb17 // indirect
@@ -88,8 +88,8 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/zclconf/go-cty v1.14.2 // indirect
 	go.mongodb.org/mongo-driver v1.9.1 // indirect
-	golang.org/x/net v0.21.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/grpc v1.61.0 // indirect
