@@ -187,7 +187,7 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 	volumeGroupCreate := &gopowerstore.VolumeGroupCreate{
 		Name:                   plan.Name.ValueString(),
 		Description:            plan.Description.ValueString(),
-		VolumeIds:              volumeIds,
+		VolumeIDs:              volumeIds,
 		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 	}
@@ -269,7 +269,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 			volumeIDs = append(volumeIDs, vol.ID)
 		}
 		volGroupMembers := &gopowerstore.VolumeGroupMembers{
-			VolumeIds: volumeIDs,
+			VolumeIDs: volumeIDs,
 		}
 		_, err = r.client.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), volGroupMembers, volumeGroupID)
 		if err != nil {
@@ -417,11 +417,11 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	removeVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
-		VolumeIds: removeVolumeIdsSlice,
+		VolumeIDs: removeVolumeIdsSlice,
 	}
 
 	addVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
-		VolumeIds: addVolumeIdsSlice,
+		VolumeIDs: addVolumeIdsSlice,
 	}
 
 	// Get Volume Group ID from from state
