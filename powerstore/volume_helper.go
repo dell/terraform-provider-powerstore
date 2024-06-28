@@ -305,12 +305,12 @@ func attachHostFromVolume(stateVol, planVol models.Volume, client client.Client,
 }
 
 func attachVolumeGroup(ctx context.Context, planVol models.Volume, client client.Client, volID string) error {
-	_, err := client.PStoreClient.AddMembersToVolumeGroup(ctx, &pstore.VolumeGroupMembers{VolumeIds: []string{volID}}, planVol.VolumeGroupID.ValueString())
+	_, err := client.PStoreClient.AddMembersToVolumeGroup(ctx, &pstore.VolumeGroupMembers{VolumeIDs: []string{volID}}, planVol.VolumeGroupID.ValueString())
 	return err
 }
 
 func detachVolumeGroup(ctx context.Context, stateVol models.Volume, client client.Client, volID string) error {
-	_, err := client.PStoreClient.RemoveMembersFromVolumeGroup(ctx, &pstore.VolumeGroupMembers{VolumeIds: []string{volID}}, stateVol.VolumeGroupID.ValueString())
+	_, err := client.PStoreClient.RemoveMembersFromVolumeGroup(ctx, &pstore.VolumeGroupMembers{VolumeIDs: []string{volID}}, stateVol.VolumeGroupID.ValueString())
 	return err
 }
 
