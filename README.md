@@ -40,29 +40,29 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.1.2 | 3.0/3.2/3.5/3.6 | Ubuntu 22.04 <br> RHEL 8.x <br> RHEL 7.x | 1.3.x <br> 1.4.x <br> | 1.19.x
+| v1.1.3 | 3.2/3.5/3.6/4.0 | Ubuntu 22.04 <br> RHEL 9.x | 1.5.x <br> 1.6.x <br> | 1.22.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
-  * Volume
-  * Snapshot Rule
-  * Protection Policy
-  * Storage Container
-  * Host
-  * Host Group
-  * Volume Group
-  * Volume Snapshot
-  * Volume Group Snapshot
-  * Storage Container
+  * [Volume](docs/resources/volume.md)
+  * [Volume Group](docs/resources/volumegroup.md)
+  * [Volume Snapshot](docs/resources/volume_snapshot.md)
+  * [Volume Group Snapshot](docs/resources/volumegroup_snapshot.md)
+  * [Snapshot Rule](docs/resources/snapshotrule.md)
+  * [Protection Policy](docs/resources/protectionpolicy.md)
+  * [Storage Container](docs/resources/storagecontainer.md)
+  * [Host](docs/resources/host.md)
+  * [Host Group](docs/resources/hostgroup.md)
 
 ## List of DataSources in Terraform Provider for Dell PowerStore
-  * Volume
-  * Volume Group
-  * Host
-  * Host Group
-  * Volume Snapshot
-  * Volume Group Snapshot
-  * Snapshot Rule
-  * Protection Policy
+  * [Volume](docs/data-sources/volume.md)
+  * [Volume Group](docs/data-sources/volumegroup.md)
+  * [Volume Snapshot](docs/data-sources/volume_snapshot.md)
+  * [Volume Group Snapshot](docs/data-sources/volumegroup_snapshot.md)
+  * [Host](docs/data-sources/host.md)
+  * [Host Group](docs/data-sources/hostgroup.md)
+  * [Snapshot Rule](docs/data-sources/snapshotrule.md)
+  * [Protection Policy](docs/data-sources/protectionpolicy.md)
+
 
 ## Installation of Terraform Provider for Dell PowerStore
 
@@ -75,7 +75,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.1.2"
+      version = "1.1.3"
       source = "registry.terraform.io/dell/powerstore"
     }
   }
@@ -95,7 +95,7 @@ For more details on how to upgrade provider versions, please check out https://d
 
 ## Installation from source code
 
-Dependencies: Go 1.19.x, make, Terraform 1.2.9/1.3.2
+Dependencies: Go 1.22.x, make, Terraform 1.5.x/1.6.x
 <br>
 <br>
 Run
