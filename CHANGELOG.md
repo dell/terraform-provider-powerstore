@@ -1,3 +1,6 @@
+# v1.1.3
+## Release Summary
+The release supports PowerStore 4.0, upgrades to gopowerstore version 1.15.1, and addresses security vulnerablilites.
 # v1.1.2
 ## Release Summary
 The release upgrades go version to 1.22 and gopowerstore version to 1.15 and addresses security vulnerabilities.
