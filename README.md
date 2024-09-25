@@ -29,6 +29,7 @@ The Terraform Provider can be used to manage volumes, snapshot rules, protection
 * [List of DataSources in Terraform Provider for Dell PowerStore](#list-of-datasources-in-terraform-provider-for-dell-powerstore)
 * [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
 * [Documentation](#documentation)
+* [New to Terraform?](#new-to-terraform)
 
 ## Support
 For any Terraform Provider for Dell PowerStore issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md)
@@ -131,3 +132,15 @@ Released code versions are located on tags with names of the form "vx.y.z" where
 
 ## Documentation
 For more detailed information, please refer to [Dell Terraform Providers Documentation](https://dell.github.io/terraform-docs/).
+
+## New to Terraform?
+**Here are some helpful links to get you started if you are new to terraform before using our provider:**
+
+- Intro to Terraform: https://developer.hashicorp.com/terraform/intro 
+- Providers: https://developer.hashicorp.com/terraform/language/providers 
+- Resources: https://developer.hashicorp.com/terraform/language/resources
+- Datasources: https://developer.hashicorp.com/terraform/language/data-sources
+- Import: https://developer.hashicorp.com/terraform/language/import
+- Variables: https://developer.hashicorp.com/terraform/language/values/variables
+- Modules: https://developer.hashicorp.com/terraform/language/modules
+- State: https://developer.hashicorp.com/terraform/language/state
