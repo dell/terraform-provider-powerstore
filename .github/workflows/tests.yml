@@ -39,7 +39,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Run the formatter, linter, and vetter
-        uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
+        uses: dell/common-github-actions/go-code-formatter-vetter@main
         with:
           directories: ./...
   sanitize:
