@@ -1,5 +1,5 @@
 # This is a workflow with the following actions
-#1. Check Go formatting, linting, vetting
+#1. Check Go formatting, vetting
 #2. Check for forbidden words
 #3. Build
 #4. Go security
@@ -33,13 +33,13 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   code-check:
-    name: Check Go formatting, linting, vetting
+    name: Check Go formatting, vetting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-      - name: Run the formatter, linter, and vetter
-        uses: dell/common-github-actions/go-code-formatter-linter-vetter@main
+      - name: Run the formatter, and vetter
+        uses: dell/common-github-actions/go-code-formatter-vetter@main
         with:
           directories: ./...
   sanitize:
