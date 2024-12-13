@@ -2,6 +2,8 @@ module terraform-provider-powerstore
 
 go 1.23
 
+toolchain go1.23.2
+
 require (
 	github.com/dell/gopowerstore v1.15.1
 	github.com/hashicorp/terraform-plugin-docs v0.20.1
