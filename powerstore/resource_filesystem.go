@@ -495,7 +495,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		LockingPolicy:              plan.LockingPolicy.ValueString(),
 		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
 		IsAsyncMtimeEnabled:        GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-		ProtectionPolicyId:         plan.ProtectionPolicyID.ValueString(),
+		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
 		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
 		IsSmbSyncWritesEnabled:     GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
 		IsSmbNoNotifyEnabled:       GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
