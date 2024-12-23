@@ -433,38 +433,37 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	if plan.Name.ValueString() != state.Name.ValueString(){
+	if plan.Name.ValueString() != state.Name.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
 			"Name of the file system can't be updated",
 		)
-		return	
+		return
 	}
 
-	if plan.NASServerID.ValueString() != state.NASServerID.ValueString(){
+	if plan.NASServerID.ValueString() != state.NASServerID.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
 			"NAS server ID can't be updated",
 		)
-		return	
+		return
 	}
 
-	if plan.HostIOSize.ValueString() != state.HostIOSize.ValueString(){
+	if plan.HostIOSize.ValueString() != state.HostIOSize.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
 			"Host IO size can't be updated",
 		)
-		return	
+		return
 	}
-	if plan.ConfigType.ValueString() != state.ConfigType.ValueString(){
+	if plan.ConfigType.ValueString() != state.ConfigType.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
 			"Config type can't be updated",
 		)
-		return	
+		return
 	}
 
-	
 	var FlrCreate models.FlrAttributes
 	plan.FlrAttributes.As(ctx, &FlrCreate, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
 

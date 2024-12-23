@@ -22,9 +22,9 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-		"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-		"github.com/stretchr/testify/assert"
-		"regexp"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
+	"regexp"
 )
 
 func TestAccFileSystem_CreateFS(t *testing.T) {
@@ -68,7 +68,7 @@ func TestAccFileSystem_InvalidUpdate(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + FsParams,
+				Config: ProviderConfigForTesting + FsParams,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "name", "test_fs"),
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "size", "5"),
@@ -108,14 +108,14 @@ func TestAccFileSystem_Update(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + FsParams,
+				Config: ProviderConfigForTesting + FsParams,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "name", "test_fs"),
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "size", "5"),
 				),
 			},
 			{
-				Config:      ProviderConfigForTesting + FsParamsValidUpdate,
+				Config: ProviderConfigForTesting + FsParamsValidUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "description", "testing file system Update"),
 				),
@@ -138,7 +138,7 @@ func TestAccFileSystem_CreateErr(t *testing.T) {
 				ExpectError: regexp.MustCompile(".*Error creating file system.*"),
 			},
 			{
-				Config:      ProviderConfigForTesting + FsParams,
+				Config: ProviderConfigForTesting + FsParams,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "name", "test_fs"),
 					resource.TestCheckResourceAttr("powerstore_filesystem.test_fs_create", "size", "5"),
@@ -151,7 +151,6 @@ func TestAccFileSystem_CreateErr(t *testing.T) {
 		},
 	})
 }
-
 
 var FsParams = `
 resource "powerstore_filesystem" "test_fs_create" {
@@ -346,7 +345,7 @@ resource "powerstore_filesystem" "test_fs_create" {
 }
 `
 
-var FsParamsModifyErr= `
+var FsParamsModifyErr = `
 resource "powerstore_filesystem" "test_fs_create" {
 	name                 = "test_fs"
 	description = "testing file system"
