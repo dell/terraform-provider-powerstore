@@ -51,22 +51,25 @@ limitations under the License.
 
 
 resource "powerstore_filesystem" "test" {
-  name                  = "test_fs"
-  description           = "testing file system"
-  size                  = 5
-  nas_server_id         = "654b2182-f674-f39a-66fc-52518d324736"
-  flr_attributes        = {
-    mode                = "Enterprise"
+  name          = "test_fs"
+  description   = "testing file system updated"
+  size          = 4
+  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+  flr_attributes = {
+    mode              = "Enterprise"
+    minimum_retention = "1D"
+    default_retention = "1D"
+    maximum_retention = "infinite"
   }
-  config_type           = "General"
-  access_policy         = "UNIX"
-  locking_policy        = "Advisory"
-  folder_rename_policy  = "All_Allowed"
-  is_smb_sync_writes_enabled  = false
-  is_smb_no_notify_enabled    = false
-  is_smb_op_locks_enabled     = false
-  is_smb_notify_on_access_enabled = true
-  is_smb_notify_on_write_enabled  = true
+  config_type                     = "General"
+  access_policy                   = "UNIX"
+  locking_policy                  = "Advisory"
+  folder_rename_policy            = "All_Allowed"
+  is_smb_sync_writes_enabled      = false
+  is_smb_no_notify_enabled        = false
+  is_smb_op_locks_enabled         = true
+  is_smb_notify_on_access_enabled = false
+  is_smb_notify_on_write_enabled  = false
   smb_notify_on_change_dir_depth  = 12
   is_async_mtime_enabled          = false
   file_events_publishing_mode     = "All"
@@ -115,6 +118,9 @@ After the execution of above resource block replication rule would have been cre
 
 Optional:
 
+- `default_retention` (String) The FLR type of the file system.
+- `maximum_retention` (String) The FLR type of the file system.
+- `minimum_retention` (String) The FLR type of the file system.
 - `mode` (String) The FLR type of the file system.
 
 ## Import
