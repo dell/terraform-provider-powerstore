@@ -69,6 +69,18 @@ func (r *resourceReplicationRule) Schema(ctx context.Context, req resource.Schem
 				Required:            true,
 				Description:         "Recovery Point Objective (RPO) of the replication rule.",
 				MarkdownDescription: "Recovery Point Objective (RPO) of the replication rule.",
+				Validators: []validator.String{
+					stringvalidator.OneOf([]string{
+						string(gopowerstore.RpoFiveMinutes),
+						string(gopowerstore.RpoFifteenMinutes),
+						string(gopowerstore.RpoThirtyMinutes),
+						string(gopowerstore.RpoOneHour),
+						string(gopowerstore.RpoSixHours),
+						string(gopowerstore.RpoTwelveHours),
+						string(gopowerstore.RpoOneDay),
+						string(gopowerstore.RpoZero),
+					}...),
+				},
 			},
 			"remote_system_id": schema.StringAttribute{
 				Required:            true,
