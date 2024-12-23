@@ -19,7 +19,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// Volume - volume properties
+// FileSystem - file system properties
 type FileSystem struct {
 	ID                         types.String  `tfsdk:"id"`
 	Name                       types.String  `tfsdk:"name"`
@@ -46,6 +46,10 @@ type FileSystem struct {
 	FlrAttributes              types.Object  `tfsdk:"flr_attributes"`
 }
 
+// FlrAttributes - struct for flr attributes
 type FlrAttributes struct {
-	Mode types.String `tfsdk:"mode"`
+	Mode             types.String `tfsdk:"mode"`
+	MinimumRetention types.String `tfsdk:"minimum_retention"`
+	DefaultRetention types.String `tfsdk:"default_retention"`
+	MaximumRetention types.String `tfsdk:"maximum_retention"`
 }

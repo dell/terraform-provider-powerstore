@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
@@ -266,6 +267,58 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 						MarkdownDescription: "The FLR type of the file system.",
 						Optional:            true,
 						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.OneOf([]string{
+								"None",
+								"Enterprise",
+								"Compliance",
+							}...),
+						},
+						PlanModifiers: []planmodifier.String{
+							DefaultAttribute("Enterprise"),
+						},
+					},
+					"minimum_retention": schema.StringAttribute{
+						Description:         "The FLR type of the file system.",
+						MarkdownDescription: "The FLR type of the file system.",
+						Optional:            true,
+						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(
+								regexp.MustCompile(`(^\d+[DMY])|(^infinite$)`),
+								"must only contain only alphanumeric characters",
+							),
+						},
+						PlanModifiers: []planmodifier.String{
+							DefaultAttribute("1D"),
+						},
+					},
+					"default_retention": schema.StringAttribute{
+						Description:         "The FLR type of the file system.",
+						MarkdownDescription: "The FLR type of the file system.",
+						Optional:            true,
+						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(
+								regexp.MustCompile(`(^\d+[DMY])|(^infinite$)`),
+								"must only contain only alphanumeric characters",
+							),
+						},
+					},
+					"maximum_retention": schema.StringAttribute{
+						Description:         "The FLR type of the file system.",
+						MarkdownDescription: "The FLR type of the file system.",
+						Optional:            true,
+						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(
+								regexp.MustCompile(`(^\d+[DMY])|(^infinite$)`),
+								"must only contain only alphanumeric characters",
+							),
+						},
+						PlanModifiers: []planmodifier.String{
+							DefaultAttribute("infinite"),
+						},
 					},
 				},
 			},
@@ -344,7 +397,10 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		IsSmbNotifyOnWriteEnabled:  GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
 		FlrCreate: gopowerstore.FlrAttributes{
-			Mode: FlrCreate.Mode.ValueString(),
+			Mode:             FlrCreate.Mode.ValueString(),
+			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
+			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
+			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
 		},
 	}
 
@@ -502,6 +558,11 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		IsSmbNotifyOnAccessEnabled: GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
 		IsSmbNotifyOnWriteEnabled:  GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+		FlrCreate: gopowerstore.FlrAttributes{
+			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
+			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
+			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
+		},
 	}
 
 	_, err := r.client.PStoreClient.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
@@ -622,9 +683,15 @@ func updateFsState(fsState *models.FileSystem, fsResponse gopowerstore.FileSyste
 	fsState.ParentID = types.StringValue(fsResponse.ParentID)
 	fsState.FilesystemType = types.StringValue(string(fsResponse.FilesystemType))
 	fsState.FlrAttributes, _ = types.ObjectValue(map[string]attr.Type{
-		"mode": types.StringType,
+		"mode":              types.StringType,
+		"minimum_retention": types.StringType,
+		"default_retention": types.StringType,
+		"maximum_retention": types.StringType,
 	}, map[string]attr.Value{
-		"mode": types.StringValue(fsResponse.FlrCreate.Mode),
+		"mode":              types.StringValue(fsResponse.FlrCreate.Mode),
+		"minimum_retention": types.StringValue(fsResponse.FlrCreate.MinimumRetention),
+		"default_retention": types.StringValue(fsResponse.FlrCreate.DefaultRetention),
+		"maximum_retention": types.StringValue(fsResponse.FlrCreate.MaximumRetention),
 	})
 
 }
