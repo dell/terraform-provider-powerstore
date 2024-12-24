@@ -55,6 +55,8 @@ var volumeGroupSnapshotID = setDefault(os.Getenv("VOLUME_GROUP_SNAPSHOT_ID"), "t
 var volumeSnapshotID = setDefault(os.Getenv("VOLUME_SNAPSHOT_ID"), "tfacc_volume_snapshot_id")
 var volumeSnapshotName = setDefault(os.Getenv("VOLUME_SNAPSHOT_NAME"), "tfacc_volume_snapshot_name")
 var fileSystemID = setDefault(os.Getenv("FILESYSTEM_ID"), "tfacc_filesystem_id")
+var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "")
+
 var ProviderConfigForTesting = ``
 
 func init() {
