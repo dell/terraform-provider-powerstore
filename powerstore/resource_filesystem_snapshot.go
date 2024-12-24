@@ -30,11 +30,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // newFileSystemSnapshotResource returns snapshot new resource instance
@@ -72,20 +70,13 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
 			},
 			"filesystem_id": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 				Description:         "ID of the filesystem to take snapshot. Cannot be updated.",
 				MarkdownDescription: "ID of the filesystem to take snapshot. Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-				},
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
 				},
 			},
 			"description": schema.StringAttribute{
@@ -93,12 +84,15 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 				Computed:            true,
 				Description:         "Description of the filesystem snapshot.",
 				MarkdownDescription: "Description of the filesystem snapshot.",
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"expiration_timestamp": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Expiration Timestamp of the filesystem snapshot.Only UTC (+Z) format is allowed",
-				MarkdownDescription: "Expiration Timestamp of the filesystem snapshot.Only UTC (+Z) format is allowed.",
+				Description:         "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
+				MarkdownDescription: "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
@@ -109,14 +103,12 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 			"access_type": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Access type of the filesystem snapshot.Cannot be updated.",
-				MarkdownDescription: "Access type of the filesystem snapshot.Cannot be updated.",
+				Description:         "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'.Cannot be updated.",
+				MarkdownDescription: "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.OneOf("Snapshot", "Protocol"),
 				},
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
+				Default: stringdefault.StaticString("Snapshot"),
 			},
 		},
 	}
@@ -160,25 +152,12 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
 	accessType := plan.AccessType.ValueString()
 
-	// If name of the snapshot is not present, the default name of the filesystem snapshot is the date and time when the snapshot is taken.
-	if name == "" {
-		cluster, err := r.client.PStoreClient.GetCluster(ctx)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error creating filesystem snapshot",
-				"Could not fetch name of the cluster, unexpected error: "+err.Error(),
-			)
-			return
-		}
-		name = cluster.SystemTime
-	}
-
 	// Create new filesystem snapshot
 	snapCreate := &gopowerstore.SnapshotFSCreate{
-		Name:           name,
-		Description:    description,
-		ExpirationTime: expirationTimestamp,
-		AccessType:     accessType,
+		Name:                name,
+		Description:         description,
+		ExpirationTimestamp: expirationTimestamp,
+		AccessType:          accessType,
 	}
 
 	snapCreateResponse, err := r.client.PStoreClient.CreateFsSnapshot(context.Background(), snapCreate, fileSystemID)
@@ -198,7 +177,6 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 		)
 		return
 	}
-	tflog.Debug(ctx, "Created filesystem snapshot zzzz: "+snapshotResponse.Description)
 
 	// Update details to state
 	result := models.FileSystemSnapshot{}
@@ -263,6 +241,16 @@ func (r *resourceFileSystemSnapshot) Update(ctx context.Context, req resource.Up
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	// Check not modifiable attributes
+	if !plan.Name.Equal(state.Name) || !plan.FileSystemID.Equal(state.FileSystemID) || !plan.AccessType.Equal(state.AccessType) {
+		resp.Diagnostics.AddError(
+			"Error updating filesystem snapshot resource",
+			"filesystem snapshot attributes [name, filesystem_id, access_type] are not modifiable",
+		)
+		return
+
 	}
 
 	snapshotModify := r.planToServer(plan)
@@ -337,7 +325,7 @@ func (r *resourceFileSystemSnapshot) ImportState(ctx context.Context, req resour
 // updateSnapshotState - method to update terraform state
 func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSystemSnapshot, response gopowerstore.FileSystem) {
 
-	expTime := response.ExpirationTime
+	expTime := response.ExpirationTimestamp
 	state.ID = types.StringValue(response.ID)
 	state.Name = types.StringValue(response.Name)
 	state.Description = types.StringValue(response.Description)
