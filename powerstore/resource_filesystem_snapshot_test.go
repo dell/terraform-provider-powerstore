@@ -94,7 +94,7 @@ var FileSystemSnapParamsCreate = `
 resource "powerstore_filesystem_snapshot" "test" {
   name = "tf_fs_snap_acc"
   description = "Test File System Snapshot Resource"
-  filesystem_id="`+ fileSystemID +`" 
+  filesystem_id="` + fileSystemID + `" 
   expiration_timestamp="2035-05-06T09:01:47Z"
   access_type = "Snapshot"
 }
@@ -103,7 +103,7 @@ var FileSystemSnapParamsUpdate = `
 resource "powerstore_filesystem_snapshot" "test" {
   name = "tf_fs_snap_acc"
   description = "Test File System Snapshot Resource Updated"
-  filesystem_id="`+ fileSystemID +`" 
+  filesystem_id="` + fileSystemID + `" 
   expiration_timestamp="2035-10-06T09:01:47Z"
   access_type = "Snapshot"
 }
