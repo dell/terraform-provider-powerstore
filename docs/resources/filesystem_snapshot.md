@@ -49,7 +49,7 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check powerstore_filesystem_snapshot/import.tf for more info
-# filesystem_id is the required attribute to create volume snapshot.
+# filesystem_id is the required attribute to create file system snapshot.
 # name, expiration_timestamp, access_type and description are the optional attributes
 # if name is present in the config it cannot be blank("").
 # During create operation, if expiration_timestamp is not specified or set to blank(""), snapshot will be created with infinite retention.
@@ -108,7 +108,7 @@ Import is supported using the following syntax:
 
 # Below are the steps to import snapshot :
 # Step 1 - To import a filesystem snapshot , we need the id of that filesystem snapshot
-# Step 2 - To check the id of the filesystem snapshot we can make Get request to filesystem snapshot endpoint. eg. https://10.0.0.1/api/rest/filesystem and 'filesystem_type: Snapshot' which will return list of all filesystem snapshots ids.
+# Step 2 - To check the id of the filesystem snapshot we can make Get request to filesystem snapshot endpoint. eg. https://10.0.0.1/api/rest/file_system and 'filesystem_type: Snapshot' which will return list of all filesystem snapshots ids.
 # Step 3 - Add empty resource block in tf file.
 # eg.
 # resource "powerstore_filesystem_snapshot" "resource_block_name" {

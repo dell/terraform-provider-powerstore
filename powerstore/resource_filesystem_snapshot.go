@@ -147,17 +147,13 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 	}
 
 	fileSystemID := plan.FileSystemID.ValueString()
-	name := plan.Name.ValueString()
-	description := plan.Description.ValueString()
-	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
-	accessType := plan.AccessType.ValueString()
 
 	// Create new filesystem snapshot
 	snapCreate := &gopowerstore.SnapshotFSCreate{
-		Name:                name,
-		Description:         description,
-		ExpirationTimestamp: expirationTimestamp,
-		AccessType:          accessType,
+		Name:                plan.Name.ValueString(),
+		Description:         plan.Description.ValueString(),
+		ExpirationTimestamp: plan.ExpirationTimestamp.ValueString(),
+		AccessType:          plan.AccessType.ValueString(),
 	}
 
 	snapCreateResponse, err := r.client.PStoreClient.CreateFsSnapshot(context.Background(), snapCreate, fileSystemID)
