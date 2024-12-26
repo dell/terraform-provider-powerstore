@@ -16,7 +16,7 @@
 
 # Below are the steps to import snapshot :
 # Step 1 - To import a filesystem snapshot , we need the id of that filesystem snapshot
-# Step 2 - To check the id of the filesystem snapshot we can make Get request to filesystem snapshot endpoint. eg. https://10.0.0.1/api/rest/filesystem and 'filesystem_type: Snapshot' which will return list of all filesystem snapshots ids.
+# Step 2 - To check the id of the filesystem snapshot we can make Get request to filesystem snapshot endpoint. eg. https://10.0.0.1/api/rest/file_system and 'filesystem_type: Snapshot' which will return list of all filesystem snapshots ids.
 # Step 3 - Add empty resource block in tf file.
 # eg.
 # resource "powerstore_filesystem_snapshot" "resource_block_name" {

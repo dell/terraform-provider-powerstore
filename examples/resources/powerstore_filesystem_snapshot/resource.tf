@@ -18,7 +18,7 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete is supported for this resource
 # To import , check powerstore_filesystem_snapshot/import.tf for more info
-# filesystem_id is the required attribute to create volume snapshot.
+# filesystem_id is the required attribute to create file system snapshot.
 # name, expiration_timestamp, access_type and description are the optional attributes
 # if name is present in the config it cannot be blank("").
 # During create operation, if expiration_timestamp is not specified or set to blank(""), snapshot will be created with infinite retention.
