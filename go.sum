@@ -45,6 +45,10 @@ github.com/dell/gopowerstore v1.16.1-0.20241226114322-4a6a9478d375 h1:7jFPZEjy3U
 github.com/dell/gopowerstore v1.16.1-0.20241226114322-4a6a9478d375/go.mod h1:RYodZ8GgJG5p85AviydL43Mt8ldcTqr5a+Cv+vqWacE=
 github.com/dell/gopowerstore v1.16.1-0.20241226120050-f4c219edd2e1 h1:2y13ugJIpIRJx9mAn963ZRh1EK8am95VgRKiUNcpMRs=
 github.com/dell/gopowerstore v1.16.1-0.20241226120050-f4c219edd2e1/go.mod h1:RYodZ8GgJG5p85AviydL43Mt8ldcTqr5a+Cv+vqWacE=
+github.com/dell/gopowerstore v1.16.1-0.20241227064011-3c3808a39067 h1:FcRAYtZkdr+p2NQjngNlhZNiz2I50X9AgsxGCW0l6/4=
+github.com/dell/gopowerstore v1.16.1-0.20241227064011-3c3808a39067/go.mod h1:RYodZ8GgJG5p85AviydL43Mt8ldcTqr5a+Cv+vqWacE=
+github.com/dell/gopowerstore v1.16.1-0.20241227083619-36c4ea66275f h1:wr07YuRpeBb5sEgBahBGPWMZKomPC2TfbpBjMWMqwVE=
+github.com/dell/gopowerstore v1.16.1-0.20241227083619-36c4ea66275f/go.mod h1:RYodZ8GgJG5p85AviydL43Mt8ldcTqr5a+Cv+vqWacE=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=
