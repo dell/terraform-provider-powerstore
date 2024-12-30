@@ -78,9 +78,10 @@ func TestAccHostDs_FetchHostNegative(t *testing.T) {
 	})
 }
 
-var HostDataSourceParamsName = `
+var HostDataSourceParamsName = HostParamsCreate + `
 data "powerstore_host" "test1" {
-	name = "` + hostNameRead + `"
+	depends_on = [powerstore_host.test]
+	name = powerstore_host.test.name
 }
 `
 var HostDataSourceParamsNameNegative = `
@@ -95,9 +96,9 @@ data "powerstore_host" "test1" {
 }
 `
 
-var HostDataSourceParamsID = `
+var HostDataSourceParamsID = HostParamsCreate + `
 data "powerstore_host" "test1" {
-	id = "` + hostIDRead + `"
+	id = powerstore_host.test.id
 }
 `
 
@@ -113,7 +114,8 @@ data "powerstore_host" "test1" {
 }
 `
 
-var HostDataSourceParamsAll = `
+var HostDataSourceParamsAll = HostParamsCreate + `
 data "powerstore_host" "test1" {
+	depends_on = [powerstore_host.test]
 }
 `

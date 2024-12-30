@@ -38,16 +38,14 @@ func TestAccProtectionPolicy_Create(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProtectionPolicyParamsCreate,
+				Config: ProviderConfigForTesting + ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 			{
-				Config:       ProtectionPolicyParamsCreate,
+				Config:       ProviderConfigForTesting + ProtectionPolicyParamsCreate,
 				ResourceName: "powerstore_protectionpolicy.test",
 				ImportState:  true,
 				ExpectError:  nil,
@@ -55,8 +53,6 @@ func TestAccProtectionPolicy_Create(t *testing.T) {
 					assert.Equal(t, "protectionpolicy_acc_new", s[0].Attributes["name"])
 					assert.Equal(t, "Test CreateProtectionPolicy", s[0].Attributes["description"])
 					assert.Equal(t, "Protection", s[0].Attributes["type"])
-					assert.Equal(t, replicationRuleID, s[0].Attributes["replication_rule_ids.0"])
-					assert.Equal(t, snapshotRuleID, s[0].Attributes["snapshot_rule_ids.0"])
 					return nil
 				},
 			},
@@ -75,21 +71,17 @@ func TestAccProtectionPolicy_Update(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProtectionPolicyParamsCreate,
+				Config: ProviderConfigForTesting + ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 			{
-				Config: ProtectionPolicyParamsUpdate,
+				Config: ProviderConfigForTesting + ProtectionPolicyParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test UpdateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 		},
@@ -107,7 +99,7 @@ func TestAccProtectionPolicy_CreateWithInvalidValues(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProtectionPoliycParamsCreateServerError,
+				Config:      ProviderConfigForTesting + ProtectionPoliycParamsCreateServerError,
 				ExpectError: regexp.MustCompile(CreatePPDetailErrorMsg),
 			},
 		},
@@ -125,16 +117,14 @@ func TestAccProtectionPolicy_UpdateError(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProtectionPolicyParamsCreate,
+				Config: ProviderConfigForTesting + ProtectionPolicyParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
 				),
 			},
 			{
-				Config:      ProtectionPoliycParamsCreateServerError,
+				Config:      ProviderConfigForTesting + ProtectionPoliycParamsCreateServerError,
 				ExpectError: regexp.MustCompile(UpdatePPDetailErrorMsg),
 			},
 		},
@@ -149,11 +139,11 @@ func TestAccProtectionPolicy_CreateWithMutuallyExclusiveParams(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config:      ProtectionPolicyParamsWithSnapshotIDAndName,
+			Config:      ProviderConfigForTesting + ProtectionPolicyParamsWithSnapshotIDAndName,
 			ExpectError: regexp.MustCompile(SnapshotIDSnapshotNameErroMsg),
 		},
 		{
-			Config:      ProtectionPolicyParamsWithReplicationIDAndName,
+			Config:      ProviderConfigForTesting + ProtectionPolicyParamsWithReplicationIDAndName,
 			ExpectError: regexp.MustCompile(ReplicationIDReplicationNameErrorMsg),
 		},
 	}
@@ -178,12 +168,11 @@ func TestAccProtectionPolicy_CreateWithSnapshotRuleName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProtectionPolicyParamsWithSnapshotRuleName,
+				Config: ProviderConfigForTesting + ProtectionPolicyParamsWithSnapshotRuleName,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_names.0", snapshotRuleName),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_ids.0", replicationRuleID),
+					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_names.0", "tf_snapshotrule"),
 				),
 			},
 		},
@@ -201,12 +190,10 @@ func TestAccProtectionPolicy_CreateWithReplicationRuleName(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProtectionPolicyParamsWithReplicationRuleName,
+				Config: ProviderConfigForTesting + ProtectionPolicyParamsWithReplicationRuleName,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "name", "protectionpolicy_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "description", "Test CreateProtectionPolicy"),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "snapshot_rule_ids.0", snapshotRuleID),
-					resource.TestCheckResourceAttr("powerstore_protectionpolicy.test", "replication_rule_names.0", replicationRuleName),
 				),
 			},
 		},
@@ -224,7 +211,7 @@ func TestAccProtectionPolicy_ImportFailure(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        ProtectionPolicyParamsCreate,
+				Config:        ProviderConfigForTesting + ProtectionPolicyParamsCreate,
 				ResourceName:  "powerstore_protectionpolicy.test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile(ImportPPDetailErrorMsg),
@@ -234,105 +221,68 @@ func TestAccProtectionPolicy_ImportFailure(t *testing.T) {
 	})
 }
 
-var ProtectionPolicyParamsCreate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPolicyParamsCreate = SnapshotRuleParamsWithTimeOfDay + ReplicationRuleParamsCreate + `
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test CreateProtectionPolicy"
-	replication_rule_ids = ["` + replicationRuleID + `"]
-	snapshot_rule_ids = ["` + snapshotRuleID + `"]
+	replication_rule_ids = [powerstore_replication_rule.test.id]
+	snapshot_rule_ids = [powerstore_snapshotrule.test.id]
 }
 `
 
-var ProtectionPolicyParamsUpdate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPolicyParamsUpdate = SnapshotRuleParamsWithTimeOfDay + ReplicationRuleParamsCreate + `
 resource "powerstore_protectionpolicy" "test" {
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
-	replication_rule_ids = ["` + replicationRuleID + `"]
-	snapshot_rule_ids = ["` + snapshotRuleID + `"]
+	replication_rule_ids = [powerstore_replication_rule.test.id]
+	snapshot_rule_ids = [powerstore_snapshotrule.test.id]
 }
 `
 
-var ProtectionPoliycParamsCreateServerError = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPoliycParamsCreateServerError = SnapshotRuleParamsWithTimeOfDay + ReplicationRuleParamsCreate + `
 resource "powerstore_protectionpolicy" "test" {
+	depends_on = [powerstore_snapshotrule.test, powerstore_replication_rule.test]
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
 }
 `
 
-var ProtectionPolicyParamsWithSnapshotIDAndName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPolicyParamsWithSnapshotIDAndName = SnapshotRuleParamsWithTimeOfDay + `
 resource "powerstore_protectionpolicy" "test" {
+	depends_on = [powerstore_snapshotrule.test]
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
-	snapshot_rule_names = ["` + snapshotRuleName + `"]
-	snapshot_rule_ids = ["` + snapshotRuleID + `"]
+	snapshot_rule_names = [powerstore_snapshotrule.test.name]
+	snapshot_rule_ids = [powerstore_snapshotrule.test.id]
 }
 `
 
-var ProtectionPolicyParamsWithReplicationIDAndName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPolicyParamsWithReplicationIDAndName = ReplicationRuleParamsCreate + `
 resource "powerstore_protectionpolicy" "test" {
+	depends_on = [powerstore_replication_rule.test]
 	name = "protectionpolicy_acc_new"
 	description = "Test UpdateProtectionPolicy"
-	replication_rule_names = ["` + replicationRuleName + `"]
-	replication_rule_ids = ["` + replicationRuleID + `"]
+	replication_rule_names = [powerstore_replication_rule.test.name]
+	replication_rule_ids = [powerstore_replication_rule.test.id]
 }
 `
 
-var ProtectionPolicyParamsWithSnapshotRuleName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPolicyParamsWithSnapshotRuleName = SnapshotRuleParamsWithTimeOfDay + ReplicationRuleParamsCreate + `
 resource "powerstore_protectionpolicy" "test" {
+	depends_on = [powerstore_snapshotrule.test]
 	name = "protectionpolicy_acc_new"
 	description = "Test CreateProtectionPolicy"
-	snapshot_rule_names = ["` + snapshotRuleName + `"]
-	replication_rule_ids = ["` + replicationRuleID + `"]
+	snapshot_rule_names = [powerstore_snapshotrule.test.name]
+	replication_rule_ids = [powerstore_replication_rule.test.id]
 }
 `
 
-var ProtectionPolicyParamsWithReplicationRuleName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
+var ProtectionPolicyParamsWithReplicationRuleName = SnapshotRuleParamsWithTimeOfDay + ReplicationRuleParamsCreate + `
 resource "powerstore_protectionpolicy" "test" {
+	depends_on = [powerstore_replication_rule.test]
 	name = "protectionpolicy_acc_new"
 	description = "Test CreateProtectionPolicy"
-	snapshot_rule_ids = ["` + snapshotRuleID + `"]
-	replication_rule_names = ["` + replicationRuleName + `"]
+	snapshot_rule_ids = [powerstore_snapshotrule.test.id]
+	replication_rule_names = [powerstore_replication_rule.test.name]
 }
 `

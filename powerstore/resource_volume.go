@@ -468,37 +468,14 @@ func (r volumeResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	// Get volume details from API and then update what is in state from what the API returns
 	volID := state.ID.ValueString()
-	volResponse, err := r.client.PStoreClient.GetVolume(context.Background(), volID)
-
+	err := r.performRead(ctx, volID, &state)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading volume",
 			"Could not read volume with error "+volID+": "+err.Error(),
 		)
-		return
 	}
-	// Get Host Mapping details from API
-	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error fetching volume host mapping",
-			"Could not create volume, unexpected error: "+err.Error(),
-		)
-		return
-	}
-	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error fetching volume host mapping",
-			"Could not create volume, unexpected error: "+err.Error(),
-		)
-		return
-	}
-
-	updateVolState(&state, volResponse, hostMapping, volGroupMapping, nil, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -613,6 +590,17 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	// Get vg ID from state
 	volID := state.ID.ValueString()
+
+	// perform read refresh to update state before deletion
+	err := r.performRead(ctx, volID, &state)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error reading volume",
+			"Could not read volume with error "+volID+": "+err.Error(),
+		)
+	}
+
+	// Detach protection policy from volume
 	if state.ProtectionPolicyID.ValueString() != "" {
 		state.ProtectionPolicyID = types.StringNull()
 		err := modifyVolume(state, 0, volID, *r.client)
@@ -649,7 +637,7 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete volume by calling API
-	_, err := r.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
+	_, err = r.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting volume",

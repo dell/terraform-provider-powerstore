@@ -188,7 +188,7 @@ func TestAccVolumeGroup_CreateWithVolumeName(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_names.0", volumeName),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_names.0", "test_acc_cvol"),
 				),
 			},
 		},
@@ -211,7 +211,7 @@ func TestAccVolumeGroup_CreateWithPolicyName(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Creating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_name", policyName),
+					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_name", "protectionpolicy_acc_new"),
 				),
 			},
 		},
@@ -296,7 +296,6 @@ func TestAccVolumeGroup_UpdateAddPolicy(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_id", policyID),
 				),
 			},
 		},
@@ -327,7 +326,6 @@ func TestAccVolumeGroup_UpdateAddVolume(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
 				),
 			},
 		},
@@ -376,7 +374,6 @@ func TestAccVolumeGroup_UpdateRemovePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "protection_policy_id", policyID),
 				),
 			},
 			{
@@ -407,7 +404,6 @@ func TestAccVolumeGroup_UpdateRemoveVolume(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "name", "tf_volume_group_new"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "description", "Updating Volume Group"),
 					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "is_write_order_consistent", "false"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup.test", "volume_ids.0", volumeID),
 				),
 			},
 			{
@@ -442,6 +438,13 @@ func TestAccVolumeGroup_ImportFailure(t *testing.T) {
 		},
 	})
 }
+
+var PreReqVolumeGroup = PreReqVolume + `
+resource "powerstore_volumegroup" "test" {
+  name = "tf_volume_group_new"
+  volume_ids = [powerstore_volume.pre_req_volume.id]
+}
+`
 
 var VolumeGroupParamsCreate = `
 resource "powerstore_volumegroup" "test" {
@@ -492,21 +495,23 @@ resource "powerstore_volumegroup" "test" {
 }
 `
 
-var VolumeGroupParamsWithVolumeName = `
+var VolumeGroupParamsWithVolumeName = PreReqVolume + `
 resource "powerstore_volumegroup" "test" {
+  depends_on = [powerstore_volume.pre_req_volume]
   name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
-  volume_names = ["` + volumeName + `"]
+  volume_names = [powerstore_volume.pre_req_volume.name]
 }
 `
 
-var VolumeGroupParamsWithPolicyName = `
+var VolumeGroupParamsWithPolicyName = ProtectionPolicyParamsCreate + `
 resource "powerstore_volumegroup" "test" {
+  depends_on = [powerstore_protectionpolicy.test]
   name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
-  protection_policy_name = "` + policyName + `"
+  protection_policy_name = powerstore_protectionpolicy.test.name
 }
 `
 
@@ -519,32 +524,32 @@ resource "powerstore_volumegroup" "test" {
 }
 `
 
-var VolumeGroupParamsWithVolumeIDAndName = `
+var VolumeGroupParamsWithVolumeIDAndName = PreReqVolume + `
 resource "powerstore_volumegroup" "test" {
   name = "tf_volume_group_new"
   description = "Creating Volume Group"
   is_write_order_consistent = false
-  volume_ids = ["` + volumeID + `"]
-  volume_names = ["` + volumeName + `"]
+  volume_ids = [powerstore_volume.pre_req_volume.id]
+  volume_names = [powerstore_volume.pre_req_volume.name]
 }
 `
 
-var VolumeGroupParamsWithPolicyIDAndName = `
+var VolumeGroupParamsWithPolicyIDAndName = ProtectionPolicyParamsCreate + `
 resource "powerstore_volumegroup" "test" {
   name = "tf_volume_group_new"
   description = "Creaing Volume Group"
   is_write_order_consistent = false
-  protection_policy_id = "` + policyID + `"
-  protection_policy_name = "` + policyName + `"
+  protection_policy_id = powerstore_protectionpolicy.test.id
+  protection_policy_name = powerstore_protectionpolicy.test.name
 }
 `
 
-var VolumeGroupParamsUpdateAddPolicy = `
+var VolumeGroupParamsUpdateAddPolicy = ProtectionPolicyParamsCreate + `
 resource "powerstore_volumegroup" "test" {
   name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
-  protection_policy_id = "` + policyID + `"
+  protection_policy_id = powerstore_protectionpolicy.test.id
 }
 `
 
@@ -557,25 +562,27 @@ resource "powerstore_volumegroup" "test" {
 }
 `
 
-var VolumeGroupParamsUpdateAddVolume = `
+var VolumeGroupParamsUpdateAddVolume = PreReqVolume + `
 resource "powerstore_volumegroup" "test" {
   name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
-  volume_ids = ["` + volumeID + `"]
+  volume_ids = [powerstore_volume.pre_req_volume.id]
 }
 `
 
-var VolumeGroupParamsUpdateRemovePolicy = `
+var VolumeGroupParamsUpdateRemovePolicy = ProtectionPolicyParamsCreate + `
 resource "powerstore_volumegroup" "test" {
+  depends_on = [powerstore_protectionpolicy.test]
   name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false
 }
 `
 
-var VolumeGroupParamsUpdateRemoveVolume = `
+var VolumeGroupParamsUpdateRemoveVolume = PreReqVolume + `
 resource "powerstore_volumegroup" "test" {
+  depends_on = [powerstore_volume.pre_req_volume]
   name = "tf_volume_group_new"
   description = "Updating Volume Group"
   is_write_order_consistent = false

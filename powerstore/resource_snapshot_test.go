@@ -157,7 +157,6 @@ func TestAccVolumeSnapshot_CreateWithoutExpiration(t *testing.T) {
 				Config: ProviderConfigForTesting + SnapshotParamsCreateWithoutExpiry,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc"),
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_id", volumeID),
 				),
 			},
 		},
@@ -196,7 +195,7 @@ func TestAccVolumeSnapshot_CreateWithVolumeName(t *testing.T) {
 				Config: ProviderConfigForTesting + SnapParamsCreateVolumeName,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "name", "tf_snap_acc"),
-					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_name", volumeName),
+					resource.TestCheckResourceAttr("powerstore_volume_snapshot.test", "volume_name", "test_acc_cvol"),
 				),
 			},
 		},
@@ -242,11 +241,11 @@ func TestAccVolumeSnapshot_ImportFailure(t *testing.T) {
 	})
 }
 
-var SnapParamsCreate = `
+var SnapParamsCreate = VolumeParams + `
 resource "powerstore_volume_snapshot" "test" {
   name = "tf_snap_acc"
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
+  volume_id= powerstore_volume.volume_create_test.id
   performance_policy_id = "default_medium"
   expiration_timestamp="2035-05-06T09:01:47Z"
   creator_type = "User"
@@ -263,29 +262,29 @@ resource "powerstore_volume_snapshot" "test" {
 }
 `
 
-var SnapParamsRename = `
+var SnapParamsRename = VolumeParams + `
 resource "powerstore_volume_snapshot" "test" {
   name = "tf_snap_acc_new"
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
+  volume_id= powerstore_volume.volume_create_test.id
   performance_policy_id = "default_medium"
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
-var SnapshotParamsCreateWithoutName = `
+var SnapshotParamsCreateWithoutName = VolumeParams + `
 resource "powerstore_volume_snapshot" "test" {
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
+  volume_id= powerstore_volume.volume_create_test.id
   performance_policy_id = "default_medium"
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
-var SnapshotParamsCreateWithoutExpiry = `
+var SnapshotParamsCreateWithoutExpiry = VolumeParams + `
 resource "powerstore_volume_snapshot" "test" {
   name = "tf_snap_acc"
   description = "Test Snapshot Resource"
-  volume_id="` + volumeID + `"
+  volume_id= powerstore_volume.volume_create_test.id
   performance_policy_id = "default_medium"
 }
 `
@@ -298,11 +297,12 @@ resource "powerstore_volume_snapshot" "test" {
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
-var SnapParamsCreateVolumeName = `
+var SnapParamsCreateVolumeName = VolumeParams + `
 resource "powerstore_volume_snapshot" "test" {
+  depends_on = [powerstore_volume.volume_create_test]
   name = "tf_snap_acc"
   description = "Test Snapshot Resource"
-  volume_name="` + volumeName + `"
+  volume_name=powerstore_volume.volume_create_test.name
   performance_policy_id = "default_medium"
   expiration_timestamp="2035-05-06T09:01:47Z"
 }

@@ -68,9 +68,9 @@ func TestAccVolumeDs_FetchVolumeSnapshot(t *testing.T) {
 	})
 }
 
-var VolumeSnapshotDataSourceparamsID = `
+var VolumeSnapshotDataSourceparamsID = SnapParamsCreate + `
 data "powerstore_volume_snapshot" "test1" {
-	id = "` + volumeSnapshotID + `"
+	id = powerstore_volume_snapshot.test.id
 }
 `
 
@@ -86,9 +86,10 @@ data "powerstore_volume_snapshot" "test1" {
 }
 `
 
-var VolumeSnapshotDataSourceparamsName = `
+var VolumeSnapshotDataSourceparamsName = SnapParamsCreate + `
 data "powerstore_volume_snapshot" "test1" {
-	name = "` + volumeSnapshotName + `"
+	depends_on = [powerstore_volume_snapshot.test]
+	name = powerstore_volume_snapshot.test.name
 }
 `
 
@@ -104,14 +105,15 @@ data "powerstore_volume_snapshot" "test1" {
 }
 `
 
-var VolumeSnapshotDataSourceparamsAll = `
+var VolumeSnapshotDataSourceparamsAll = SnapParamsCreate + `
 data "powerstore_volume_snapshot" "test1" {
+	depends_on = [powerstore_volume_snapshot.test]
 }
 `
 
-var VolumeSnapshotDataSourceparamsIDAndName = `
+var VolumeSnapshotDataSourceparamsIDAndName = SnapParamsCreate + `
 data "powerstore_volume_snapshot" "test1" {
-	id = "` + volumeSnapshotID + `"
-	name = "` + volumeSnapshotName + `"
+	id = powerstore_volume_snapshot.test.id
+	name = powerstore_volume_snapshot.test.name
 }
 `

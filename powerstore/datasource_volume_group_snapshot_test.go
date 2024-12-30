@@ -68,9 +68,10 @@ func TestAccVolumeGroupSnapshotDs_FetchVolumeGroupSnapshot(t *testing.T) {
 	})
 }
 
-var VolumeGroupSnapshotDataSourceparamsName = `
+var VolumeGroupSnapshotDataSourceparamsName = PreReqVolumeGroupSnap + `
 data "powerstore_volumegroup_snapshot" "test1" {
-	name = "` + volumeGroupSnapshotName + `"
+	depends_on = [powerstore_volumegroup_snapshot.test]
+	name = powerstore_volumegroup_snapshot.test.name
 }
 `
 
@@ -80,14 +81,15 @@ data "powerstore_volumegroup_snapshot" "test1" {
 }
 `
 
-var VolumeGroupSnapshotDataSourceparamsID = `
+var VolumeGroupSnapshotDataSourceparamsID = PreReqVolumeGroupSnap + `
 data "powerstore_volumegroup_snapshot" "test1" {
-	id = "` + volumeGroupSnapshotID + `"
+	id = powerstore_volumegroup_snapshot.test.id
 }
 `
 
-var VolumeGroupSnapshotDataSourceparamsAll = `
+var VolumeGroupSnapshotDataSourceparamsAll = PreReqVolumeGroupSnap + `
 data "powerstore_volumegroup_snapshot" "test1" {
+	depends_on = [powerstore_volumegroup_snapshot.test]
 }
 `
 
@@ -97,10 +99,10 @@ data "powerstore_volumegroup_snapshot" "test1" {
 }
 `
 
-var VolumeGroupSnapshotDataSourceparamsIDAndNameNegative = `
+var VolumeGroupSnapshotDataSourceparamsIDAndNameNegative = PreReqVolumeGroupSnap + `
 data "powerstore_volumegroup_snapshot" "test1" {
-	id = "` + volumeGroupSnapshotID + `"
-	name = "` + volumeGroupSnapshotName + `"
+	id = powerstore_volumegroup_snapshot.test.id
+	name = powerstore_volumegroup_snapshot.test.name
 }
 `
 

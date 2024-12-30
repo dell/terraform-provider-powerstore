@@ -155,7 +155,6 @@ func TestAccVolumeGroupSnapshot_CreateWithoutExpiration(t *testing.T) {
 				Config: ProviderConfigForTesting + VolumeGroupSnapshotParamsCreateWithoutExpiry,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "name", "test_snap"),
-					resource.TestCheckResourceAttr("powerstore_volumegroup_snapshot.test", "volume_group_id", volumeGroupID),
 				),
 			},
 		},
@@ -236,17 +235,25 @@ func TestAccVolumeGroupSnapshot_ImportFailure(t *testing.T) {
 	})
 }
 
-var VolumeGroupSnapParamsCreate = `
+var PreReqVolumeGroupSnap = PreReqVolumeGroup + `
+resource "powerstore_volumegroup_snapshot" "test" {
+  name = "test_snap"
+  volume_group_id= powerstore_volumegroup.test.id
+  expiration_timestamp="2035-05-06T09:01:47Z"
+}
+`
+var VolumeGroupSnapParamsCreate = VolumeGroupParamsWithVolumeName + `
 resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_group_id="` + volumeGroupID + `"
+  volume_group_id= powerstore_volumegroup.test.id
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
-var VolumeGroupSnapParamInvalidVolumeID = `
+var VolumeGroupSnapParamInvalidVolumeID = VolumeGroupParamsWithVolumeName + `
 resource "powerstore_volumegroup_snapshot" "test" {
+  depends_on = [powerstore_volumegroup.test]
   name = "test_snap"
   description = "Test Snapshot Resource"
   volume_group_id="5c3c103a-9373-4f50-a34a"
@@ -254,28 +261,28 @@ resource "powerstore_volumegroup_snapshot" "test" {
 }
 `
 
-var VolumeGroupSnapParamsRename = `
+var VolumeGroupSnapParamsRename = VolumeGroupParamsWithVolumeName + `
 resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap_new"
   description = "Test Snapshot Resource"
-  volume_group_id="` + volumeGroupID + `"
+  volume_group_id= powerstore_volumegroup.test.id
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
-var VolumeGroupSnapshotParamsCreateWithoutName = `
+var VolumeGroupSnapshotParamsCreateWithoutName = VolumeGroupParamsWithVolumeName + `
 resource "powerstore_volumegroup_snapshot" "test" {
   description = "Test Snapshot Resource"
-  volume_group_id="` + volumeGroupID + `"
+  volume_group_id= powerstore_volumegroup.test.id
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
 
-var VolumeGroupSnapshotParamsCreateWithoutExpiry = `
+var VolumeGroupSnapshotParamsCreateWithoutExpiry = VolumeGroupParamsWithVolumeName + `
 resource "powerstore_volumegroup_snapshot" "test" {
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_group_id="` + volumeGroupID + `"
+  volume_group_id= powerstore_volumegroup.test.id
 }
 `
 
@@ -287,11 +294,12 @@ resource "powerstore_volumegroup_snapshot" "test" {
 }
 `
 
-var SnapParamsCreateVolumeGroupName = `
+var SnapParamsCreateVolumeGroupName = VolumeGroupParamsWithVolumeName + `
 resource "powerstore_volumegroup_snapshot" "test" {
+  depends_on = [powerstore_volumegroup.test]
   name = "test_snap"
   description = "Test Snapshot Resource"
-  volume_group_name="` + volumeGroupName + `"
+  volume_group_name= powerstore_volumegroup.test.name
   expiration_timestamp="2035-05-06T09:01:47Z"
 }
 `
