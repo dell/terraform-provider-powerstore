@@ -68,9 +68,10 @@ func TestAccVolumeGroupDs_FetchVolumeGroup(t *testing.T) {
 	})
 }
 
-var VolumeGroupDataSourceparamsName = `
+var VolumeGroupDataSourceparamsName = VolumeGroupParamsWithVolumeName + `
 data "powerstore_volumegroup" "test1" {
-	name = "` + volumeGroupName + `"
+	depends_on = [powerstore_volumegroup.test]
+	name = powerstore_volumegroup.test.name
 }
 `
 
@@ -80,14 +81,15 @@ data "powerstore_volumegroup" "test1" {
 }
 `
 
-var VolumeGroupDataSourceparamsID = `
+var VolumeGroupDataSourceparamsID = VolumeGroupParamsWithVolumeName + `
 data "powerstore_volumegroup" "test1" {
-	id = "` + volumeGroupID + `"
+	id = powerstore_volumegroup.test.id
 }
 `
 
-var VolumeGroupDataSourceparamsAll = `
+var VolumeGroupDataSourceparamsAll = VolumeGroupParamsWithVolumeName + `
 data "powerstore_volumegroup" "test1" {
+	depends_on = [powerstore_volumegroup.test]
 }
 `
 
@@ -97,10 +99,10 @@ data "powerstore_volumegroup" "test1" {
 }
 `
 
-var VolumeGroupDataSourceparamsIDAndNameNegative = `
+var VolumeGroupDataSourceparamsIDAndNameNegative = VolumeGroupParamsWithVolumeName + `
 data "powerstore_volumegroup" "test1" {
-	id = "` + volumeGroupID + `"
-	name = "` + volumeGroupName + `"
+	id = powerstore_volumegroup.test.id
+	name = powerstore_volumegroup.test.name
 }
 `
 

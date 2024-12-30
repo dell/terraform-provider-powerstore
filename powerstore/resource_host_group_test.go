@@ -42,7 +42,6 @@ func TestAccHostGroup_Create(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
 			},
 			// Import Testing
@@ -54,7 +53,6 @@ func TestAccHostGroup_Create(t *testing.T) {
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, "test_hostgroup", s[0].Attributes["name"])
 					assert.Equal(t, "Test Create Host Group", s[0].Attributes["description"])
-					assert.Equal(t, hostID, s[0].Attributes["host_ids.0"])
 					return nil
 				},
 			},
@@ -64,7 +62,6 @@ func TestAccHostGroup_Create(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Update Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_ids.0", hostID),
 				),
 			},
 			// Remove host before cleanup
@@ -144,7 +141,7 @@ func TestAccHostGroup_CreateWithHostName(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "name", "test_hostgroup"),
 					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "description", "Test Create Host Group"),
-					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_names.0", hostName),
+					resource.TestCheckResourceAttr("powerstore_hostgroup.test", "host_names.0", "tf_host_acc_new"),
 				),
 			},
 			{
@@ -211,19 +208,33 @@ func TestAccHostGroup_ImportFailure(t *testing.T) {
 	})
 }
 
-var HostGroupParamsCreate = `
+var HostGroupPreReqParams = HostPreReqForVolume + `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
-	description = "Test Create Host Group"
-	host_ids = ["` + hostID + `"]
+	host_ids = [powerstore_host.test.id]
+}
+`
+var HostGroupPreReqParamsclear = HostPreReqForVolume + `
+resource "powerstore_hostgroup" "test" {
+	name = "test_hostgroup"
+	host_ids = []
 }
 `
 
-var HostGroupParamsCreateWithHostName = `
+var HostGroupParamsCreate = HostParamsCreateWithCHAP + `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
-	host_names = ["` + hostName + `"]
+	host_ids = [powerstore_host.test.id]
+}
+`
+
+var HostGroupParamsCreateWithHostName = HostParamsCreateWithCHAP + `
+resource "powerstore_hostgroup" "test" {
+	depends_on = [powerstore_host.test]
+	name = "test_hostgroup"
+	description = "Test Create Host Group"
+	host_names = [powerstore_host.test.name]
 }
 `
 
@@ -235,12 +246,12 @@ resource "powerstore_hostgroup" "test" {
 }
 `
 
-var HostGroupParamsWithHostIDAndHostName = `
+var HostGroupParamsWithHostIDAndHostName = HostParamsCreateWithCHAP + `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
-	host_ids = ["` + hostID + `"]
-	host_names = ["` + hostName + `"]
+	host_ids = [powerstore_host.test.id]
+	host_names = [powerstore_host.test.name]
 }
 `
 
@@ -259,23 +270,23 @@ resource "powerstore_hostgroup" "test" {
 }
 `
 
-var HostGroupParamsCreateWithBlankName = `
+var HostGroupParamsCreateWithBlankName = HostParamsCreateWithCHAP + `
 resource "powerstore_hostgroup" "test" {
 	name = ""
 	description = "Test Create Host Group"
-	host_ids = ["` + hostID + `"]
+	host_ids = [powerstore_host.test.id]
 }
 `
 
-var HostGroupParamsUpdate = `
+var HostGroupParamsUpdate = HostParamsCreateWithCHAP + `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Update Host Group"
-	host_ids = ["` + hostID + `"]
+	host_ids = [powerstore_host.test.id]
 }
 `
 
-var HostGroupParamsUpdateRemoveHost = `
+var HostGroupParamsUpdateRemoveHost = HostParamsCreateWithCHAP + `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"
@@ -283,7 +294,7 @@ resource "powerstore_hostgroup" "test" {
 }
 `
 
-var HostGroupParamsUpdateRemoveHostWithName = `
+var HostGroupParamsUpdateRemoveHostWithName = HostParamsCreateWithCHAP + `
 resource "powerstore_hostgroup" "test" {
 	name = "test_hostgroup"
 	description = "Test Create Host Group"

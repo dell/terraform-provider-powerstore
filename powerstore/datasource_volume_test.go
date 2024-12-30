@@ -36,68 +36,41 @@ func TestAccVolumeDs_FetchVolume(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeDataSourceparamsName,
+				Config: ProviderConfigForTesting + VolumeDataSourceparamsName,
 			},
 			{
-				Config: VolumeDataSourceparamsID,
+				Config: ProviderConfigForTesting + VolumeDataSourceparamsID,
 			},
 			{
-				Config: VolumeDataSourceparamsAll,
+				Config: ProviderConfigForTesting + VolumeDataSourceparamsAll,
 			},
 			{
-				Config:      VolumeDataSourceparamsNameNegative,
+				Config:      ProviderConfigForTesting + VolumeDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Volumes"),
 			},
 		},
 	})
 }
 
-var VolumeDataSourceparamsName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeDataSourceparamsName = VolumeParams + `
 data "powerstore_volume" "test1" {
-	name = "` + volumeName + `"
+	name = powerstore_volume.volume_create_test.name
 }
 `
 var VolumeDataSourceparamsNameNegative = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 data "powerstore_volume" "test1" {
 	name = "invalid-name"
 }
 `
 
-var VolumeDataSourceparamsID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeDataSourceparamsID = VolumeParams + `
 data "powerstore_volume" "test1" {
-	id = "` + volumeID + `"
+	id = powerstore_volume.volume_create_test.id
 }
 `
 
-var VolumeDataSourceparamsAll = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeDataSourceparamsAll = VolumeParams + `
 data "powerstore_volume" "test1" {
+	depends_on = [powerstore_volume.volume_create_test]
 }
 `
