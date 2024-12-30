@@ -100,5 +100,3 @@ require (
 	google.golang.org/grpc v1.67.1 // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
 )
-
-replace github.com/dell/gopowerstore => github.com/dell/gopowerstore v1.16.1-0.20241230141729-c80926792fd6
