@@ -54,6 +54,7 @@ var volumeGroupSnapshotName = setDefault(os.Getenv("VOLUME_GROUP_SNAPSHOT_NAME")
 var volumeGroupSnapshotID = setDefault(os.Getenv("VOLUME_GROUP_SNAPSHOT_ID"), "tfacc_volume_group_snapshot_id")
 var volumeSnapshotID = setDefault(os.Getenv("VOLUME_SNAPSHOT_ID"), "tfacc_volume_snapshot_id")
 var volumeSnapshotName = setDefault(os.Getenv("VOLUME_SNAPSHOT_NAME"), "tfacc_volume_snapshot_name")
+var nasServerID = setDefault(os.Getenv("NAS_SERVER_ID"), "tfacc_nas_server_id")
 var fileSystemID = setDefault(os.Getenv("FILESYSTEM_ID"), "tfacc_filesystem_id")
 var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "")
 
