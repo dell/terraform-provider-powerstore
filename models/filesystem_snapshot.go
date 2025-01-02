@@ -15,22 +15,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-variable "username" {
-  type        = string
-  description = "Stores the username of PowerStore host."
-}
+package models
 
-variable "password" {
-  type        = string
-  description = "Stores the password of PowerStore host."
-}
+import "github.com/hashicorp/terraform-plugin-framework/types"
 
-variable "timeout" {
-  type        = string
-  description = "Stores the timeout of PowerStore host."
-}
-
-variable "endpoint" {
-  type        = string
-  description = "Stores the endpoint of PowerStore host. eg: https://10.1.1.1/api/rest"
+// FileSystemSnapshot - FileSystem Snapshot properties
+type FileSystemSnapshot struct {
+	ID                  types.String `tfsdk:"id"`
+	Name                types.String `tfsdk:"name"`
+	Description         types.String `tfsdk:"description"`
+	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
+	FileSystemID        types.String `tfsdk:"filesystem_id"`
+	AccessType          types.String `tfsdk:"access_type"`
 }

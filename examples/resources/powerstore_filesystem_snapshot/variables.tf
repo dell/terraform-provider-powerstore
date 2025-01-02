@@ -32,5 +32,5 @@ variable "timeout" {
 
 variable "endpoint" {
   type        = string
-  description = "Stores the endpoint of PowerStore host. eg: https://10.1.1.1/api/rest"
+  description = "Stores the endpoint of PowerStore host. eg: https://10.1.1.1/api/rest/"
 }
