@@ -92,6 +92,7 @@ resource "powerstore_replication_rule" "test" {
 
 var ReplicationRuleCreateError = ReplicationRuleParamsCreate + `
 resource "powerstore_replication_rule" "test2" {
+	depends_on = ["powerstore_replication_rule.test"]
 	name = "tfacc_replication_rule"
     rpo = "One_Hour"
     remote_system_id = "` + remoteSystemID + `"
