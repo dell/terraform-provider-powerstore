@@ -21,10 +21,11 @@ import (
 	"os"
 	"testing"
 
+	"regexp"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
-	"regexp"
 )
 
 func TestAccFileSystem_CreateFS(t *testing.T) {
@@ -160,6 +161,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
@@ -184,6 +188,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
@@ -208,6 +215,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "Id Updated"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
@@ -232,6 +242,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "None"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
@@ -256,6 +269,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "VMware"
 	access_policy = "UNIX"
@@ -280,6 +296,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
@@ -305,6 +324,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
@@ -329,6 +351,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "VMware"
 	access_policy = "UNIX"
@@ -353,6 +378,9 @@ resource "powerstore_filesystem" "test_fs_create" {
 	nas_server_id = "` + nasServerID + `"
 	flr_attributes = {
 	  mode = "Enterprise"
+	  minimum_retention = "1D"
+      default_retention = "1D"
+      maximum_retention = "infinite"
 	}
 	config_type = "General"
 	access_policy = "UNIX"
