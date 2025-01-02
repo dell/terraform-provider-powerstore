@@ -386,7 +386,7 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		AccessPolicy:               plan.AccessPolicy.ValueString(),
 		LockingPolicy:              plan.LockingPolicy.ValueString(),
 		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-		IsAsyncMTimeEnabled:        GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
+		IsAsyncMTimeEnabled:        plan.IsAsyncMTimeEnabled.ValueBool(),
 		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
 		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
 		HostIOSize:                 plan.HostIOSize.ValueString(),
