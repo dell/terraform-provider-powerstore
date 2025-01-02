@@ -55,7 +55,7 @@ limitations under the License.
 # Only one of the attribute can be provided among id and name
 
 data "powerstore_volumegroup_snapshot" "test1" {
-#  name = "test_volumegroup_snap"
+  #  name = "test_volumegroup_snap"
 }
 
 output "volumeGroupSnapshotResult" {

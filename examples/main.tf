@@ -135,7 +135,7 @@ data "powerstore_snapshotrule" "test1" {
 resource "powerstore_host" "test" {
   name       = "new-host1"
   os_type    = "Linux"
-  initiators = [{ port_name = "iqn.1994-05.com.redhat:88cb605", port_type = "NVMe" }]
+  initiators = [{ port_name = "iqn.1994-05.com.redhat:88cb605" }]
 }
 
 data "powerstore_host" "test1" {

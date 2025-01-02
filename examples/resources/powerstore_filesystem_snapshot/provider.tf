@@ -15,22 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-variable "username" {
-  type        = string
-  description = "Stores the username of PowerStore host."
+terraform {
+  required_providers {
+    powerstore = {
+      version = "1.2.0"
+      source  = "registry.terraform.io/dell/powerstore"
+    }
+  }
 }
 
-variable "password" {
-  type        = string
-  description = "Stores the password of PowerStore host."
-}
-
-variable "timeout" {
-  type        = string
-  description = "Stores the timeout of PowerStore host."
-}
-
-variable "endpoint" {
-  type        = string
-  description = "Stores the endpoint of PowerStore host. eg: https://10.1.1.1/api/rest"
+provider "powerstore" {
+  username = var.username
+  password = var.password
+  endpoint = var.endpoint
+  insecure = true
+  timeout  = var.timeout
 }
