@@ -49,7 +49,7 @@ type ReplicationRuleDataSource struct {
 	ManagedByID        types.String         `tfsdk:"managed_by_id"`
 	Policies           []Policy             `tfsdk:"policies"`
 	RemoteSystem       RemoteSystem         `tfsdk:"remote_system"`
-	ReplicationSession []ReplicationSession `tfsdk:"replication_session"`
+	ReplicationSession []ReplicationSession `tfsdk:"replication_sessions"`
 }
 
 // Policy defines the model for policy

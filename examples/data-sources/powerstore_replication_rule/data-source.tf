@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,30 +22,14 @@ limitations under the License.
 # Only one of the attribute can be provided among id and  name 
 
 # Get replication rule details using name
-resource "powerstore_replication_rule" "test" {
-  name             = "terraform_replication_rule"
-  rpo              = "One_Hour"
-  remote_system_id = "db11abb3-789e-47f9-96b5-84b5374cbcd2"
-  alert_threshold  = 1000
-  is_read_only     = false
-}
-
 data "powerstore_replication_rule" "test" {
   depends_on = [powerstore_replication_rule.test]
   name       = "terraform_replication_rule"
 }
 
 # Get replication rule details using ID
-resource "powerstore_replication_rule" "test" {
-  name             = "terraform_replication_rule"
-  rpo              = "One_Hour"
-  remote_system_id = "db11abb3-789e-47f9-96b5-84b5374cbcd2"
-  alert_threshold  = 1000
-  is_read_only     = false
-}
-
 data "powerstore_replication_rule" "test" {
-  id = powerstore_replication_rule.test.id
+  id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e26a9"
 }
 
 output "replicationRule" {
