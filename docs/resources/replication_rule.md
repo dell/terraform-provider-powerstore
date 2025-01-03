@@ -61,7 +61,7 @@ resource "powerstore_replication_rule" "test" {
 }
 
 //Below example is for import operation
-/*resource "powerstore_snapshotrule" "terraform-provider-test-import" {
+/*resource "powerstore_replication_rule" "terraform-provider-test-import" {
 }*/
 ```
 
