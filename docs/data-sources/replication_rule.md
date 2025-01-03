@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ This datasource is used to query the existing replication rule from PowerStore a
 
 ```terraform
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -54,30 +54,14 @@ limitations under the License.
 # Only one of the attribute can be provided among id and  name 
 
 # Get replication rule details using name
-resource "powerstore_replication_rule" "test" {
-  name             = "terraform_replication_rule"
-  rpo              = "One_Hour"
-  remote_system_id = "db11abb3-789e-47f9-96b5-84b5374cbcd2"
-  alert_threshold  = 1000
-  is_read_only     = false
-}
-
 data "powerstore_replication_rule" "test" {
   depends_on = [powerstore_replication_rule.test]
   name       = "terraform_replication_rule"
 }
 
 # Get replication rule details using ID
-resource "powerstore_replication_rule" "test" {
-  name             = "terraform_replication_rule"
-  rpo              = "One_Hour"
-  remote_system_id = "db11abb3-789e-47f9-96b5-84b5374cbcd2"
-  alert_threshold  = 1000
-  is_read_only     = false
-}
-
 data "powerstore_replication_rule" "test" {
-  id = powerstore_replication_rule.test.id
+  id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e26a9"
 }
 
 output "replicationRule" {
@@ -104,16 +88,16 @@ After the successful execution of above said block, We can see the output by exe
 Read-Only:
 
 - `alert_threshold` (Number) The alert threshold for the replication rule.
-- `id` (String) Unique identifier of the replication rule. Conflicts with `name`.
+- `id` (String) Unique identifier of the replication rule.
 - `is_read_only` (Boolean) Indicates whether the replication rule is read-only.
 - `is_replica` (Boolean) Indicates whether the replication rule is a replica.
 - `managed_by` (String) The entity that manages the replication rule.
 - `managed_by_id` (String) The ID of the managing entity.
-- `name` (String) Name of the replication rule. Conflicts with `id`.
+- `name` (String) Name of the replication rule.
 - `policies` (Attributes List) The protection policies associated with the replication rule. (see [below for nested schema](#nestedatt--replication_rules--policies))
 - `remote_system` (Attributes) The remote system associated with the replication rule. (see [below for nested schema](#nestedatt--replication_rules--remote_system))
 - `remote_system_id` (String) The ID of the remote system associated with the replication rule.
-- `replication_session` (Attributes List) The replication session associated with the replication rule. (see [below for nested schema](#nestedatt--replication_rules--replication_session))
+- `replication_sessions` (Attributes List) The replication session associated with the replication rule. (see [below for nested schema](#nestedatt--replication_rules--replication_sessions))
 - `rpo` (String) The RPO (Recovery Point Objective) of the replication rule.
 
 <a id="nestedatt--replication_rules--policies"></a>
@@ -134,8 +118,8 @@ Read-Only:
 - `name` (String) The name of the remote system.
 
 
-<a id="nestedatt--replication_rules--replication_session"></a>
-### Nested Schema for `replication_rules.replication_session`
+<a id="nestedatt--replication_rules--replication_sessions"></a>
+### Nested Schema for `replication_rules.replication_sessions`
 
 Read-Only:
 
