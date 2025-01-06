@@ -28,3 +28,44 @@ type ReplicationRule struct {
 	AlertThreshold types.Int64  `tfsdk:"alert_threshold"`
 	IsReadOnly     types.Bool   `tfsdk:"is_read_only"`
 }
+
+// ReplicationRuleDataSourceModel defines the model for replication rule data source
+type ReplicationRuleDataSourceModel struct {
+	ReplicationRules []ReplicationRuleDataSource `tfsdk:"replication_rules"`
+	ID               types.String                `tfsdk:"id"`
+	Name             types.String                `tfsdk:"name"`
+}
+
+// ReplicationRuleDataSource defines the model for replication rule details
+type ReplicationRuleDataSource struct {
+	ID                 types.String         `tfsdk:"id"`
+	Name               types.String         `tfsdk:"name"`
+	RPO                types.String         `tfsdk:"rpo"`
+	RemoteSystemID     types.String         `tfsdk:"remote_system_id"`
+	AlertThreshold     types.Int64          `tfsdk:"alert_threshold"`
+	IsReadOnly         types.Bool           `tfsdk:"is_read_only"`
+	IsReplica          types.Bool           `tfsdk:"is_replica"`
+	ManagedBy          types.String         `tfsdk:"managed_by"`
+	ManagedByID        types.String         `tfsdk:"managed_by_id"`
+	Policies           []Policy             `tfsdk:"policies"`
+	RemoteSystem       RemoteSystem         `tfsdk:"remote_system"`
+	ReplicationSession []ReplicationSession `tfsdk:"replication_sessions"`
+}
+
+// Policy defines the model for policy
+type Policy struct {
+	ID   types.String `tfsdk:"id"`
+	Name types.String `tfsdk:"name"`
+}
+
+// RemoteSystem defines the model for remote system
+type RemoteSystem struct {
+	ID   types.String `tfsdk:"id"`
+	Name types.String `tfsdk:"name"`
+}
+
+// ReplicationSession defines the model for replication session
+type ReplicationSession struct {
+	ID    types.String `tfsdk:"id"`
+	State types.String `tfsdk:"state"`
+}
