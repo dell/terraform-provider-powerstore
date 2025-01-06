@@ -606,7 +606,7 @@ func (r fileSystemResource) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	// Get vg ID from state
+	// Get ID from state
 	fsID := state.ID.ValueString()
 
 	// Delete file system  by calling API
