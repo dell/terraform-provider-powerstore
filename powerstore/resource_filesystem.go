@@ -367,7 +367,7 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error creating file system",
-			"Could not create file system "+errmsg,
+			"Error in converting the given size into bytes"+errmsg,
 		)
 		return
 	}
@@ -538,7 +538,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 	if errmsg != "" {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
-			"Could not update file system "+errmsg,
+			"Error in converting the given size into bytes "+errmsg,
 		)
 		return
 	}
