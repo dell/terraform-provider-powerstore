@@ -36,6 +36,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"terraform-provider-powerstore/powerstore/helper"
 )
 
 type fileSystemResource struct {
@@ -390,11 +391,11 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
 		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
 		HostIOSize:                 plan.HostIOSize.ValueString(),
-		IsSmbSyncWritesEnabled:     GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-		IsSmbNoNotifyEnabled:       GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-		IsSmbOpLocksEnabled:        GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
-		IsSmbNotifyOnAccessEnabled: GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
-		IsSmbNotifyOnWriteEnabled:  GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
+		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
+		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
+		IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
+		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
+		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
 		FlrCreate: gopowerstore.FlrAttributes{
 			Mode:             FlrCreate.Mode.ValueString(),
@@ -549,14 +550,14 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		AccessPolicy:               plan.AccessPolicy.ValueString(),
 		LockingPolicy:              plan.LockingPolicy.ValueString(),
 		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-		IsAsyncMtimeEnabled:        GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
+		IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
 		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
 		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
-		IsSmbSyncWritesEnabled:     GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-		IsSmbNoNotifyEnabled:       GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-		IsSmbOpLocksEnabled:        GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
-		IsSmbNotifyOnAccessEnabled: GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
-		IsSmbNotifyOnWriteEnabled:  GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
+		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
+		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
+		IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
+		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
+		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
 		FlrCreate: gopowerstore.FlrAttributes{
 			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
@@ -694,11 +695,4 @@ func updateFsState(fsState *models.FileSystem, fsResponse gopowerstore.FileSyste
 		"maximum_retention": types.StringValue(fsResponse.FlrCreate.MaximumRetention),
 	})
 
-}
-
-func GetKnownBoolPointer(in types.Bool) *bool {
-	if in.IsUnknown() {
-		return nil
-	}
-	return in.ValueBoolPointer()
 }

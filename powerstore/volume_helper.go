@@ -329,3 +329,26 @@ func modifyVolume(planVol models.Volume, valInBytes int64, volID string, client 
 	_, err := client.PStoreClient.ModifyVolume(context.Background(), vgModify, volID)
 	return err
 }
+
+func (r volumeResource) performRead(ctx context.Context, volID string, state *models.Volume) error {
+	// Get volume details from API and then update what is in state from what the API returns
+
+	volResponse, err := r.client.PStoreClient.GetVolume(context.Background(), volID)
+
+	if err != nil {
+
+		return fmt.Errorf("Error fetching volume details: %s", err.Error())
+	}
+	// Get Host Mapping details from API
+	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
+	if err != nil {
+		return fmt.Errorf("Error fetching volume host mapping: %s", err.Error())
+	}
+	// Get Volume Group Mapping details from API
+	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
+	if err != nil {
+		return fmt.Errorf("Error fetching volume group mapping: %s", err.Error())
+	}
+	updateVolState(state, volResponse, hostMapping, volGroupMapping, nil, operationRead)
+	return nil
+}

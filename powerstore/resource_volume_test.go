@@ -38,14 +38,14 @@ func TestAccVolume_CreateVolume(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 			},
 			// Import Succes Test
 			{
-				Config:            VolumeParams,
+				Config:            ProviderConfigForTesting + VolumeParams,
 				ResourceName:      "powerstore_volume.volume_create_test",
 				ImportState:       true,
 				ExpectError:       nil,
@@ -72,13 +72,13 @@ func TestAccVolume_UpdateVolumeRename(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 			},
 			{
-				Config: VolumeParamsRename,
+				Config: ProviderConfigForTesting + VolumeParamsRename,
 				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol_updated")),
 			},
 		},
@@ -96,7 +96,7 @@ func TestAccVolume_CreateVolumeWithMBInInt(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithMBInInt,
+				Config: ProviderConfigForTesting + VolumeParamsWithMBInInt,
 				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test_mb", "name", "test_acc_cvol_mb")),
 			},
 		},
@@ -114,7 +114,7 @@ func TestAccVolume_CreateVolumeWithTBInFloat(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithTBInFloat,
+				Config: ProviderConfigForTesting + VolumeParamsWithTBInFloat,
 				Check:  resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test_tb_float", "name", "test_acc_cvol_tb_float")),
 			},
 		},
@@ -132,7 +132,7 @@ func TestAccVolume_CreateVolumeWithPB(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      VolumeParamsWithPB,
+				Config:      ProviderConfigForTesting + VolumeParamsWithPB,
 				ExpectError: regexp.MustCompile(InvalidAttributeErrorMsg),
 			},
 		},
@@ -150,7 +150,7 @@ func TestAccVolume_CreateVolumeWithInvalidCapUnit(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      VolumeParamsWithInvalidCapUnit,
+				Config:      ProviderConfigForTesting + VolumeParamsWithInvalidCapUnit,
 				ExpectError: regexp.MustCompile(InvalidAttributeErrorMsg),
 			},
 		},
@@ -168,12 +168,12 @@ func TestAccVolume_UpdateVolumeGb(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeCreateForUpdateGb,
+				Config: ProviderConfigForTesting + VolumeCreateForUpdateGb,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_update_test_gb", "name", "test_acc_uvol_gb"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_update_test_gb", "size", "2")),
 			},
 			{
-				Config: VolumeUpdateGb,
+				Config: ProviderConfigForTesting + VolumeUpdateGb,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_update_test_gb", "name", "test_acc_uvol_gb_updated"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_update_test_gb", "size", "2.5")),
 			},
@@ -192,12 +192,12 @@ func TestAccVolume_UpdateVolumeGbError1(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeCreateForUpdateGb,
+				Config: ProviderConfigForTesting + VolumeCreateForUpdateGb,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_update_test_gb", "name", "test_acc_uvol_gb"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_update_test_gb", "size", "2")),
 			},
 			{
-				Config:      VolumeUpdateGbError,
+				Config:      ProviderConfigForTesting + VolumeUpdateGbError,
 				ExpectError: regexp.MustCompile(InvalidSizeErrorMsg),
 			},
 		},
@@ -215,13 +215,13 @@ func TestAccVolume_UpdateVolumeSizeGbToTb(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 			},
 			{
-				Config: VolumeUpdateGbToTb,
+				Config: ProviderConfigForTesting + VolumeUpdateGbToTb,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "TB"))),
 			},
@@ -240,7 +240,7 @@ func TestAccVolume_UpdateVolumeApplianceID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithApplianceID,
+				Config: ProviderConfigForTesting + VolumeParamsWithApplianceID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB"),
@@ -261,7 +261,7 @@ func TestAccVolume_UpdateVolumeInvalidApplianceID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithInvalidApplianceID,
+				Config: ProviderConfigForTesting + VolumeParamsWithInvalidApplianceID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB"),
@@ -283,7 +283,7 @@ func TestAccVolume_UpdateVolumePerformancePolicyID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithInvalidPerformancePolicy,
+				Config: ProviderConfigForTesting + VolumeParamsWithInvalidPerformancePolicy,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
@@ -304,7 +304,7 @@ func TestAccVolume_AddVolumeGroupID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithVolumeGroupID,
+				Config: ProviderConfigForTesting + VolumeParamsWithVolumeGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
@@ -324,18 +324,18 @@ func TestAccVolume_UpdateVolumeGroupID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 			},
 			// Add Volume Group
 			{
-				Config: VolumeParamsWithVolumeGroupID,
+				Config: ProviderConfigForTesting + VolumeParamsWithVolumeGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 			},
 			// Remove Volume Group
 			{
-				Config: VolumeParamsWithVolumeGroupID,
+				Config: ProviderConfigForTesting + VolumeParamsWithVolumeGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
@@ -355,7 +355,7 @@ func TestAccVolume_AddHostID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithHostName,
+				Config: ProviderConfigForTesting + VolumeParamsWithHostName,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
@@ -375,16 +375,13 @@ func TestAccVolume_UpdateHostID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 			},
 			{
-				Config: VolumeParamsWithHostID,
+				Config: ProviderConfigForTesting + VolumeParamsWithHostID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
-			},
-			{
-				Config: VolumeParams,
 			},
 		},
 	})
@@ -401,13 +398,17 @@ func TestAccVolume_UpdateHostGroupID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 			},
 			{
-				Config: VolumeParamsWithHostGroupName,
+				Config: ProviderConfigForTesting + VolumeParamsWithHostGroupName,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
+			},
+			// Remove host IDs from the host group before hotgroup deletion
+			{
+				Config: ProviderConfigForTesting + HostGroupPreReqParamsclear,
 			},
 		},
 	})
@@ -424,14 +425,18 @@ func TestAccVolume_UpdateHostAndHostGroupID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParams,
+				Config: ProviderConfigForTesting + VolumeParams,
 			},
 			{
-				Config: VolumeParamsWithHostAndHostGroupID,
+				Config: ProviderConfigForTesting + VolumeParamsWithHostAndHostGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 				ExpectError: regexp.MustCompile(HostIDHostGroupErrorMsg),
+			},
+			// Remove host IDs from the host group before hotgroup deletion
+			{
+				Config: ProviderConfigForTesting + HostGroupPreReqParamsclear,
 			},
 		},
 	})
@@ -448,10 +453,14 @@ func TestAccVolume_AddHostGroupID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithHostGroupID,
+				Config: ProviderConfigForTesting + VolumeParamsWithHostGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
+			},
+			// Remove host IDs from the host group before hotgroup deletion
+			{
+				Config: ProviderConfigForTesting + HostGroupPreReqParamsclear,
 			},
 		},
 	})
@@ -468,11 +477,15 @@ func TestAccVolume_AddHostAndHostGroupID(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: VolumeParamsWithHostAndHostGroupID,
+				Config: ProviderConfigForTesting + VolumeParamsWithHostAndHostGroupID,
 				Check: resource.ComposeTestCheckFunc(resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "name", "test_acc_cvol"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "size", "2.5"),
 					resource.TestCheckResourceAttr("powerstore_volume.volume_create_test", "capacity_unit", "GB")),
 				ExpectError: regexp.MustCompile(CreateVolumeHostIDErrorMsg),
+			},
+			// Remove host IDs from the host group before hotgroup deletion
+			{
+				Config: ProviderConfigForTesting + HostGroupPreReqParamsclear,
 			},
 		},
 	})
@@ -489,7 +502,7 @@ func TestAccVolume_ImportFailure(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        VolumeParams,
+				Config:        ProviderConfigForTesting + VolumeParams,
 				ResourceName:  "powerstore_volume.volume_create_test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile(ImportVolumeDetailErrorMsg),
@@ -499,14 +512,15 @@ func TestAccVolume_ImportFailure(t *testing.T) {
 	})
 }
 
-var VolumeParams = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
+var PreReqVolume = `
+resource "powerstore_volume" "pre_req_volume" {
+	name = "test_acc_cvol"
+	size = 2.5
+	capacity_unit = "GB"
 }
+`
 
+var VolumeParams = `
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
@@ -519,13 +533,6 @@ resource "powerstore_volume" "volume_create_test" {
 `
 
 var VolumeParamsRename = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol_updated"
 	size = 2.5
@@ -534,13 +541,6 @@ resource "powerstore_volume" "volume_create_test" {
 `
 
 var VolumeParamsWithPB = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test_mb" {
 	name = "test_acc_cvol_pb"
 	size = 1
@@ -549,13 +549,6 @@ resource "powerstore_volume" "volume_create_test_mb" {
 `
 
 var VolumeParamsWithTBInFloat = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test_tb_float" {
 	name = "test_acc_cvol_tb_float"
 	size = 2.5
@@ -564,13 +557,6 @@ resource "powerstore_volume" "volume_create_test_tb_float" {
 `
 
 var VolumeParamsWithMBInInt = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test_mb" {
 	name = "test_acc_cvol_mb"
 	size = 200
@@ -579,13 +565,6 @@ resource "powerstore_volume" "volume_create_test_mb" {
 `
 
 var VolumeParamsWithInvalidCapUnit = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
@@ -594,13 +573,6 @@ resource "powerstore_volume" "volume_create_test" {
 `
 
 var VolumeUpdateGbToTb = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol_tb_float"
 	size = 2.5
@@ -609,13 +581,6 @@ resource "powerstore_volume" "volume_create_test" {
 `
 
 var VolumeCreateForUpdateGb = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_update_test_gb" {
 	name = "test_acc_uvol_gb"
 	size = 2
@@ -624,13 +589,6 @@ resource "powerstore_volume" "volume_update_test_gb" {
 `
 
 var VolumeUpdateGb = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_update_test_gb" {
 	name = "test_acc_uvol_gb_updated"
 	size = 2.5
@@ -639,13 +597,6 @@ resource "powerstore_volume" "volume_update_test_gb" {
 `
 
 var VolumeUpdateGbError = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_update_test_gb" {
 	name = "test_acc_uvol_gb"
 	size = 1
@@ -653,13 +604,6 @@ resource "powerstore_volume" "volume_update_test_gb" {
 }
 `
 var VolumeParamsWithApplianceID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
@@ -668,13 +612,6 @@ resource "powerstore_volume" "volume_create_test" {
 }
 `
 var VolumeParamsWithInvalidApplianceID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
@@ -683,76 +620,41 @@ resource "powerstore_volume" "volume_create_test" {
 }
 `
 
-var VolumeParamsWithVolumeGroupID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeParamsWithVolumeGroupID = VolumeGroupParamsCreate + `
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	volume_group_id = "` + volumeGroupID + `"
+	volume_group_id = powerstore_volumegroup.test.id
 }
 `
 
-var VolumeParamsWithHostID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeParamsWithHostID = HostPreReqForVolume + `
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_id = "` + hostIDRead + `"
+	host_id = powerstore_host.test.id
 }
 `
-var VolumeParamsWithHostGroupID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeParamsWithHostGroupID = HostGroupPreReqParams + `
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_id = "` + hostGroupID + `"
+	host_group_id = powerstore_hostgroup.test.id
 }
 `
-var VolumeParamsWithHostAndHostGroupID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeParamsWithHostAndHostGroupID = HostGroupPreReqParams + `
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_id = "` + hostGroupID + `"
-	host_id =  "` + hostIDRead + `"
+	host_group_id = powerstore_hostgroup.test.id
+	host_id =  powerstore_host.test.name
 }
 `
 var VolumeParamsWithInvalidPerformancePolicy = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_volume" "volume_create_test" {
 	name = "test_acc_cvol"
 	size = 2.5
@@ -760,33 +662,21 @@ resource "powerstore_volume" "volume_create_test" {
 	performance_policy_id = ""
 }
 `
-var VolumeParamsWithHostGroupName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeParamsWithHostGroupName = HostGroupPreReqParams + `
 resource "powerstore_volume" "volume_create_test" {
+	depends_on = [powerstore_hostgroup.test]
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_group_name = "` + hostGroupName + `"
+	host_group_name = powerstore_hostgroup.test.name
 }
 `
-var VolumeParamsWithHostName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var VolumeParamsWithHostName = HostPreReqForVolume + `
 resource "powerstore_volume" "volume_create_test" {
+	depends_on = [powerstore_host.test]
 	name = "test_acc_cvol"
 	size = 2.5
 	capacity_unit = "GB"
-	host_name = "` + hostNameRead + `"
+	host_name = powerstore_host.test.name
 }
 `

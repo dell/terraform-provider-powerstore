@@ -38,7 +38,7 @@ func TestAccStorageContainer_Create(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: StorageContainerParamsCreate,
+				Config: ProviderConfigForTesting + StorageContainerParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
@@ -48,7 +48,7 @@ func TestAccStorageContainer_Create(t *testing.T) {
 			},
 			// Import test
 			{
-				Config:            StorageContainerParamsCreate,
+				Config:            ProviderConfigForTesting + StorageContainerParamsCreate,
 				ResourceName:      "powerstore_storagecontainer.test",
 				ImportState:       true,
 				ExpectError:       nil,
@@ -75,7 +75,7 @@ func TestAccStorageContainer_Update(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: StorageContainerParamsCreate,
+				Config: ProviderConfigForTesting + StorageContainerParamsCreate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418240"),
@@ -84,7 +84,7 @@ func TestAccStorageContainer_Update(t *testing.T) {
 				),
 			},
 			{
-				Config: StorageContainerParamsUpdate,
+				Config: ProviderConfigForTesting + StorageContainerParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "name", "scterraform_acc_new"),
 					resource.TestCheckResourceAttr("powerstore_storagecontainer.test", "quota", "10737418242"),
@@ -94,7 +94,7 @@ func TestAccStorageContainer_Update(t *testing.T) {
 			},
 			// Test to update existing StorageContainer params but will result in error
 			{
-				Config:      StorageContainerParamsCreateServerError,
+				Config:      ProviderConfigForTesting + StorageContainerParamsCreateServerError,
 				ExpectError: regexp.MustCompile(UpdateSCDetailErrorMsg),
 			},
 		},
@@ -109,11 +109,11 @@ func TestAccStorageContainer_CreateWithInvalidValues(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config:      StorageContainerParamsInvalidStorageProtocol,
+			Config:      ProviderConfigForTesting + StorageContainerParamsInvalidStorageProtocol,
 			ExpectError: regexp.MustCompile(InvalidStorageProtocolErrorMsg),
 		},
 		{
-			Config:      StorageContainerParamsCreateServerError,
+			Config:      ProviderConfigForTesting + StorageContainerParamsCreateServerError,
 			ExpectError: regexp.MustCompile(CreateSCDetailErrorMsg),
 		},
 	}
@@ -138,7 +138,7 @@ func TestAccStorageContainer_ImportFailure(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        StorageContainerParamsCreate,
+				Config:        ProviderConfigForTesting + StorageContainerParamsCreate,
 				ResourceName:  "powerstore_storagecontainer.test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile(ImportSCDetailErrorMsg),
@@ -149,13 +149,6 @@ func TestAccStorageContainer_ImportFailure(t *testing.T) {
 }
 
 var StorageContainerParamsCreate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_storagecontainer" "test" {
 	name = "scterraform_acc"
 	quota = 10737418240
@@ -165,13 +158,6 @@ resource "powerstore_storagecontainer" "test" {
 `
 
 var StorageContainerParamsUpdate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_storagecontainer" "test" {
 	name = "scterraform_acc_new"
 	quota = 10737418242
@@ -181,13 +167,6 @@ resource "powerstore_storagecontainer" "test" {
 `
 
 var StorageContainerParamsInvalidStorageProtocol = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_storagecontainer" "test" {
 	name = "scterraform_acc_new"
 	quota = 10737418242
@@ -196,13 +175,6 @@ resource "powerstore_storagecontainer" "test" {
 `
 
 var StorageContainerParamsCreateServerError = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_storagecontainer" "test" {
 	name = "scterraform_acc_new12312313212313121213212312312312312313131321212121"
 	quota = 10737418240
