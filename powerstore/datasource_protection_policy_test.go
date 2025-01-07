@@ -77,9 +77,10 @@ func TestAccProtectionPolicyDs_FetchPolicyNegative(t *testing.T) {
 	})
 }
 
-var ProtectionPolicyDataSourceparamsName = `
+var ProtectionPolicyDataSourceparamsName = ProtectionPolicyParamsCreate + `
 data "powerstore_protectionpolicy" "test1" {
-	name = "` + policyName + `"
+	depends_on = [powerstore_protectionpolicy.test]
+	name = powerstore_protectionpolicy.test.name
 }
 `
 var ProtectionPolicyDataSourceparamsNameNegative = `
@@ -94,9 +95,9 @@ data "powerstore_protectionpolicy" "test1" {
 }
 `
 
-var ProtectionPolicyDataSourceparamsID = `
+var ProtectionPolicyDataSourceparamsID = ProtectionPolicyParamsCreate + `
 data "powerstore_protectionpolicy" "test1" {
-	id = "` + policyID + `"
+	id = powerstore_protectionpolicy.test.id
 }
 `
 
@@ -112,7 +113,8 @@ data "powerstore_protectionpolicy" "test1" {
 }
 `
 
-var ProtectionPolicyDataSourceparamsAll = `
+var ProtectionPolicyDataSourceparamsAll = ProtectionPolicyParamsCreate + `
 data "powerstore_protectionpolicy" "test1" {
+	depends_on = [powerstore_protectionpolicy.test]
 }
 `
