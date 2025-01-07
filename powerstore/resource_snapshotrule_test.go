@@ -35,7 +35,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config: SnapshotRuleParamsWithTimeOfDay,
+			Config: ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
 			Check: resource.ComposeTestCheckFunc(
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
@@ -48,7 +48,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 			),
 		},
 		{
-			Config: SnapshotRuleParamsWithInterval,
+			Config: ProviderConfigForTesting + SnapshotRuleParamsWithInterval,
 			Check: resource.ComposeTestCheckFunc(
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 				resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
@@ -81,7 +81,7 @@ func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: SnapshotRuleParamsWithTimeOfDay,
+				Config: ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "21:00"),
@@ -93,7 +93,7 @@ func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 				),
 			},
 			{
-				Config: SnapshotRuleParamsUpdate,
+				Config: ProviderConfigForTesting + SnapshotRuleParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule_updated"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "time_of_day", "22:00"),
@@ -116,19 +116,19 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 
 	tests := []resource.TestStep{
 		{
-			Config:      SnapshotRuleParamsWithInvalidInterval,
+			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidInterval,
 			ExpectError: regexp.MustCompile(InvalidIntervalErrorMsg),
 		},
 		{
-			Config:      SnapshotRuleParamsWithInvalidTimezone,
+			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidTimezone,
 			ExpectError: regexp.MustCompile(InvalidTimezoneErrorMsg),
 		},
 		{
-			Config:      SnapshotRuleParamsWithInvalidDaysOfWeek,
+			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidDaysOfWeek,
 			ExpectError: regexp.MustCompile(InvalidDaysOfWeekErrorMsg),
 		},
 		{
-			Config:      SnapshotRuleParamsWithInvalidNasAccessType,
+			Config:      ProviderConfigForTesting + SnapshotRuleParamsWithInvalidNasAccessType,
 			ExpectError: regexp.MustCompile(InvalidNasAccessTypeErrorMsg),
 		},
 	}
@@ -153,7 +153,7 @@ func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:        SnapshotRuleParamsWithTimeOfDay,
+				Config:        ProviderConfigForTesting + SnapshotRuleParamsWithTimeOfDay,
 				ResourceName:  "powerstore_snapshotrule.test",
 				ImportState:   true,
 				ExpectError:   regexp.MustCompile(ImportSRDetailErrorMsg),
@@ -175,7 +175,7 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: SnapshotRuleParamsWithInterval,
+				Config: ProviderConfigForTesting + SnapshotRuleParamsWithInterval,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "name", "tf_snapshotrule"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test", "interval", "Four_Hours"),
@@ -186,7 +186,7 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 				),
 			},
 			{
-				Config:            SnapshotRuleParamsWithInterval,
+				Config:            ProviderConfigForTesting + SnapshotRuleParamsWithInterval,
 				ResourceName:      "powerstore_snapshotrule.test",
 				ImportState:       true,
 				ExpectError:       nil,
@@ -204,13 +204,6 @@ func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
 }
 
 var SnapshotRuleParamsWithTimeOfDay = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"	
 	time_of_day = "21:00"
@@ -224,13 +217,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithInterval = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"	
 	interval = "Four_Hours"
@@ -243,13 +229,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsUpdate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule_updated"	
 	time_of_day = "22:00"
@@ -262,13 +241,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithInvalidInterval = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"	
 	interval = "invalid"
@@ -280,13 +252,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithInvalidTimezone = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	time_of_day = "22:00"
@@ -299,13 +264,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithInvalidNasAccessType = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	time_of_day = "22:00"
@@ -318,13 +276,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithInvalidDaysOfWeek = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	time_of_day = "22:00"
@@ -337,13 +288,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithEmptyStringTimeZone = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	time_of_day = "21:00"
@@ -356,13 +300,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithEmptyStringNasAccessType = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	time_of_day = "21:00"
@@ -375,13 +312,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithTimeOfDayAndInterval = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	interval = "Four_Hours"
@@ -395,13 +325,6 @@ resource "powerstore_snapshotrule" "test" {
 `
 
 var SnapshotRuleParamsWithInvalidUpdate = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 resource "powerstore_snapshotrule" "test" {
 	name = "tf_snapshotrule"
 	interval = "Four_Hours"

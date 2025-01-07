@@ -25,6 +25,7 @@ import (
 
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -188,7 +189,7 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		Name:                   plan.Name.ValueString(),
 		Description:            plan.Description.ValueString(),
 		VolumeIDs:              volumeIds,
-		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
+		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 	}
 
@@ -431,7 +432,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		Description:            plan.Description.ValueString(),
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 		Name:                   plan.Name.ValueString(),
-		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
+		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
 	}
 
 	//Update Volume Group by calling API
