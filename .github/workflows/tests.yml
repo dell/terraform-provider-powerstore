@@ -1,5 +1,5 @@
 # This is a workflow with the following actions
-#1. Check Go formatting, linting, vetting
+#1. Check Go formatting, vetting
 #2. Check for forbidden words
 #3. Build
 #4. Go security
@@ -7,7 +7,7 @@
 #6. Malware Scanner
 
 
-name: Terraform-main-CI
+name: Terraform-dev-CI
 
 # Controls when the workflow will run
 on:
@@ -33,30 +33,25 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   code-check:
-    name: Check Go formatting, linting, vetting
+    name: Check Go formatting, vetting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-      - name: Extract go client
-        run: make clean extract-client
-      - name: Run the formatter and vetter
+      - name: Run the formatter, and vetter
         uses: dell/common-github-actions/go-code-formatter-vetter@main
         with:
-          directories: ./powerstore/...
-
+          directories: ./...
   sanitize:
     name: Check for forbidden words
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-      - name: Replace "master" with "main" in ATTRIBUTION.md
-        run: sed -i 's/\/master/\/main/g' about/ATTRIBUTION.md
       - name: Run the forbidden words scan
         uses: dell/common-github-actions/code-sanitizer@main
         with:
-          args: /github/workspace/powerstore
+          args: /github/workspace
 
   build:
     name: Build
@@ -86,16 +81,12 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
-      - uses: hashicorp/setup-terraform@v3
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - run: make clean extract-client
       - run: go generate
       - name: git diff
         run: |
           git diff --compact-summary --exit-code || \
-            (echo; echo "Unexpected difference in directories after code generation. Run 'go generate ./...' command and commit."; exit 1)
+            (echo; echo "Unexpected difference in directories after code generation. Run 'go generate ./...' command and commit."; exit 1) 
 
   malware_security_scan:
     name: Malware Scanner
