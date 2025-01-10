@@ -25,6 +25,7 @@ import (
 
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -184,13 +185,11 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		volumeIds = append(volumeIds, strings.Trim(volume.String(), "\""))
 	}
 
-	isWriteOrderConsistent := plan.IsWriteOrderConsistent.ValueBool()
-
 	volumeGroupCreate := &gopowerstore.VolumeGroupCreate{
 		Name:                   plan.Name.ValueString(),
 		Description:            plan.Description.ValueString(),
 		VolumeIDs:              volumeIds,
-		IsWriteOrderConsistent: &isWriteOrderConsistent,
+		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 	}
 
@@ -429,12 +428,11 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	// Get Volume Group ID from from state
 	volumeGroupID := state.ID.ValueString()
 
-	IsWriteOrderConsistent := plan.IsWriteOrderConsistent.ValueBool()
 	volumeGroupUpdate := &gopowerstore.VolumeGroupModify{
 		Description:            plan.Description.ValueString(),
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 		Name:                   plan.Name.ValueString(),
-		IsWriteOrderConsistent: &IsWriteOrderConsistent,
+		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
 	}
 
 	//Update Volume Group by calling API

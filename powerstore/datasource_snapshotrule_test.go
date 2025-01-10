@@ -36,102 +36,62 @@ func TestAccSnapshotRuleDs_FetchSnapshotRule(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: SnapshotRuleDataSourceparamsName,
+				Config: ProviderConfigForTesting + SnapshotRuleDataSourceparamsName,
 			},
 			{
-				Config:      SnapshotRuleDataSourceparamsNameEmpty,
+				Config:      ProviderConfigForTesting + SnapshotRuleDataSourceparamsNameEmpty,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
 			},
 			{
-				Config: SnapshotRuleDataSourceparamsID,
+				Config: ProviderConfigForTesting + SnapshotRuleDataSourceparamsID,
 			},
 			{
-				Config:      SnapshotRuleDataSourceparamsIDEmpty,
+				Config:      ProviderConfigForTesting + SnapshotRuleDataSourceparamsIDEmpty,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
 			},
 			{
-				Config: SnapshotRuleDataSourceparamsAll,
+				Config: ProviderConfigForTesting + SnapshotRuleDataSourceparamsAll,
 			},
 			{
-				Config:      SnapshotRuleDataSourceparamsNameNegative,
+				Config:      ProviderConfigForTesting + SnapshotRuleDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
 			},
 		},
 	})
 }
 
-var SnapshotRuleDataSourceparamsName = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var SnapshotRuleDataSourceparamsName = SnapshotRuleParamsWithTimeOfDay + `
 data "powerstore_snapshotrule" "test1" {
-	name = "` + snapshotRuleName + `"
+	depends_on = [powerstore_snapshotrule.test]
+	name = powerstore_snapshotrule.test.name
 }
 `
 var SnapshotRuleDataSourceparamsNameEmpty = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 data "powerstore_snapshotrule" "test1" {
 	name = " "
 }
 `
 
 var SnapshotRuleDataSourceparamsIDEmpty = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 data "powerstore_snapshotrule" "test1" {
 	id = " "
 }
 `
 
 var SnapshotRuleDataSourceparamsNameNegative = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
 data "powerstore_snapshotrule" "test1" {
 	name = "invalid-name"
 }
 `
 
-var SnapshotRuleDataSourceparamsID = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var SnapshotRuleDataSourceparamsID = SnapshotRuleParamsWithTimeOfDay + `
 data "powerstore_snapshotrule" "test1" {
-	id = "` + snapshotRuleID + `"
+	id = powerstore_snapshotrule.test.id
 }
 `
 
-var SnapshotRuleDataSourceparamsAll = `
-provider "powerstore" {
-	username = "` + username + `"
-	password = "` + password + `"
-	endpoint = "` + endpoint + `"
-	insecure = true
-}
-
+var SnapshotRuleDataSourceparamsAll = SnapshotRuleParamsWithTimeOfDay + `
 data "powerstore_snapshotrule" "test1" {
+	depends_on = [powerstore_snapshotrule.test]
 }
 `
