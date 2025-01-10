@@ -44,12 +44,27 @@ type FileSystemDatasource struct {
 	SizeTotal                  types.Int64             `tfsdk:"size_total"`
 	SizeUsed                   types.Int64             `tfsdk:"size_used"`
 	SmbNotifyOnChangeDirDepth  types.Int64             `tfsdk:"smb_notify_on_change_dir_depth"`
+	IsQuotaEnabled             types.Bool              `tfsdk:"is_quota_enabled"`
+	GracePeriod                types.Int64             `tfsdk:"grace_period"`
+	DefaultHardLimit           types.Int64             `tfsdk:"default_hard_limit"`
+	DefaultSoftLimit           types.Int64             `tfsdk:"default_soft_limit"`
+	CreationTimestamp          types.String            `tfsdk:"creation_timestamp"`
+	LastRefreshTimestamp       types.String            `tfsdk:"last_refresh_timestamp"`
+	LastWritableTimestamp      types.String            `tfsdk:"last_writable_timestamp"`
+	IsModified                 types.Bool              `tfsdk:"is_modified"`
+	CreatorType                types.String            `tfsdk:"creator_type"`
 }
 
 // FLRAttributesDatasource represents flr attributes
 type FLRAttributesDatasource struct {
-	DefaultRetention types.String `tfsdk:"default_retention"`
-	MaximumRetention types.String `tfsdk:"maximum_retention"`
-	MinimumRetention types.String `tfsdk:"minimum_retention"`
-	Mode             types.String `tfsdk:"mode"`
+	DefaultRetention     types.String `tfsdk:"default_retention"`
+	MaximumRetention     types.String `tfsdk:"maximum_retention"`
+	MinimumRetention     types.String `tfsdk:"minimum_retention"`
+	Mode                 types.String `tfsdk:"mode"`
+	AutoLock             types.Bool   `tfsdk:"auto_lock"`
+	AutoDelete           types.Bool   `tfsdk:"auto_delete"`
+	PolicyInterval       types.Int64  `tfsdk:"policy_interval"`
+	HasProtectedFiles    types.Bool   `tfsdk:"has_protected_files"`
+	ClockTime            types.String `tfsdk:"clock_time"`
+	MaximumRetentionDate types.String `tfsdk:"maximum_retention_date"`
 }

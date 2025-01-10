@@ -184,11 +184,13 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		volumeIds = append(volumeIds, strings.Trim(volume.String(), "\""))
 	}
 
+	isWriteOrderConsistent := plan.IsWriteOrderConsistent.ValueBool()
+
 	volumeGroupCreate := &gopowerstore.VolumeGroupCreate{
 		Name:                   plan.Name.ValueString(),
 		Description:            plan.Description.ValueString(),
 		VolumeIDs:              volumeIds,
-		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
+		IsWriteOrderConsistent: &isWriteOrderConsistent,
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 	}
 
@@ -427,11 +429,12 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	// Get Volume Group ID from from state
 	volumeGroupID := state.ID.ValueString()
 
+	IsWriteOrderConsistent := plan.IsWriteOrderConsistent.ValueBool()
 	volumeGroupUpdate := &gopowerstore.VolumeGroupModify{
 		Description:            plan.Description.ValueString(),
 		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
 		Name:                   plan.Name.ValueString(),
-		IsWriteOrderConsistent: plan.IsWriteOrderConsistent.ValueBool(),
+		IsWriteOrderConsistent: &IsWriteOrderConsistent,
 	}
 
 	//Update Volume Group by calling API

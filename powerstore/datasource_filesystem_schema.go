@@ -138,6 +138,51 @@ func FileSystemDatasourceSchema() map[string]schema.Attribute {
 			Description:         "Smb Notify On Change Dir Depth",
 			Computed:            true,
 		},
+		"is_quota_enabled": schema.BoolAttribute{
+			MarkdownDescription: "Is Quota Enabled",
+			Description:         "Is Quota Enabled",
+			Computed:            true,
+		},
+		"grace_period": schema.Int64Attribute{
+			MarkdownDescription: "Grace Period",
+			Description:         "Grace Period",
+			Computed:            true,
+		},
+		"default_hard_limit": schema.Int64Attribute{
+			MarkdownDescription: "Default Hard Limit",
+			Description:         "Default Hard Limit",
+			Computed:            true,
+		},
+		"default_soft_limit": schema.Int64Attribute{
+			MarkdownDescription: "Default Soft Limit",
+			Description:         "Default Soft Limit",
+			Computed:            true,
+		},
+		"creation_timestamp": schema.StringAttribute{
+			MarkdownDescription: "Creation Timestamp",
+			Description:         "Creation Timestamp",
+			Computed:            true,
+		},
+		"last_refresh_timestamp": schema.StringAttribute{
+			MarkdownDescription: "Last Refresh Timestamp",
+			Description:         "Last Refresh Timestamp",
+			Computed:            true,
+		},
+		"last_writable_timestamp": schema.StringAttribute{
+			MarkdownDescription: "Last Writable Timestamp",
+			Description:         "Last Writable Timestamp",
+			Computed:            true,
+		},
+		"is_modified": schema.BoolAttribute{
+			MarkdownDescription: "Is Modified",
+			Description:         "Is Modified",
+			Computed:            true,
+		},
+		"creator_type": schema.StringAttribute{
+			MarkdownDescription: "Creator Type",
+			Description:         "Creator Type",
+			Computed:            true,
+		},
 	}
 }
 
@@ -162,6 +207,36 @@ func FLRAttributeSchema() map[string]schema.Attribute {
 		"mode": schema.StringAttribute{
 			MarkdownDescription: "Mode",
 			Description:         "Mode",
+			Computed:            true,
+		},
+		"auto_lock": schema.BoolAttribute{
+			MarkdownDescription: "Auto Lock",
+			Description:         "Auto Lock",
+			Computed:            true,
+		},
+		"auto_delete": schema.BoolAttribute{
+			MarkdownDescription: "Auto Delete",
+			Description:         "Auto Delete",
+			Computed:            true,
+		},
+		"policy_interval": schema.Int64Attribute{
+			MarkdownDescription: "Policy Interval",
+			Description:         "Policy Interval",
+			Computed:            true,
+		},
+		"has_protected_files": schema.BoolAttribute{
+			MarkdownDescription: "Has Protected Files",
+			Description:         "Has Protected Files",
+			Computed:            true,
+		},
+		"clock_time": schema.StringAttribute{
+			MarkdownDescription: "Clock Time",
+			Description:         "Clock Time",
+			Computed:            true,
+		},
+		"maximum_retention_date": schema.StringAttribute{
+			MarkdownDescription: "Maximum Retention Date",
+			Description:         "Maximum Retention Date",
 			Computed:            true,
 		},
 	}
