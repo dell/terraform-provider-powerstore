@@ -125,18 +125,27 @@ Read-Only:
 - `access_policy` (String) Access Policy
 - `access_type` (String) Access Type
 - `config_type` (String) Config Type
+- `creation_timestamp` (String) Creation Timestamp
+- `creator_type` (String) Creator Type
+- `default_hard_limit` (Number) Default Hard Limit
+- `default_soft_limit` (Number) Default Soft Limit
 - `description` (String) Description
 - `expiration_timestamp` (String) Expiration Timestamp
 - `filesystem_type` (String) Filesystem Type
 - `flr_attributes` (Attributes) Flr Attributes (see [below for nested schema](#nestedatt--filesystem_snapshots--flr_attributes))
 - `folder_rename_policy` (String) Folder Rename Policy
+- `grace_period` (Number) Grace Period
 - `id` (String) ID
 - `is_async_m_time_enabled` (Boolean) Is Async MTime Enabled
+- `is_modified` (Boolean) Is Modified
+- `is_quota_enabled` (Boolean) Is Quota Enabled
 - `is_smb_no_notify_enabled` (Boolean) Is Smb No Notify Enabled
 - `is_smb_notify_on_access_enabled` (Boolean) Is Smb Notify On Access Enabled
 - `is_smb_notify_on_write_enabled` (Boolean) Is Smb Notify On Write Enabled
 - `is_smb_op_locks_enabled` (Boolean) Is Smb Op Locks Enabled
 - `is_smb_sync_writes_enabled` (Boolean) Is Smb Sync Writes Enabled
+- `last_refresh_timestamp` (String) Last Refresh Timestamp
+- `last_writable_timestamp` (String) Last Writable Timestamp
 - `locking_policy` (String) Locking Policy
 - `name` (String) Name
 - `nas_server_id` (String) Nas Server ID
@@ -151,7 +160,13 @@ Read-Only:
 
 Read-Only:
 
+- `auto_delete` (Boolean) Auto Delete
+- `auto_lock` (Boolean) Auto Lock
+- `clock_time` (String) Clock Time
 - `default_retention` (String) Default Retention
+- `has_protected_files` (Boolean) Has Protected Files
 - `maximum_retention` (String) Maximum Retention
+- `maximum_retention_date` (String) Maximum Retention Date
 - `minimum_retention` (String) Minimum Retention
 - `mode` (String) Mode
+- `policy_interval` (Number) Policy Interval
