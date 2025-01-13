@@ -37,8 +37,6 @@ var password = setDefault(os.Getenv("POWERSTORE_PASSWORD"), "test")
 var nasServerID = setDefault(os.Getenv("NAS_SERVER_ID"), "tfacc_nas_server_id")
 var fileSystemID = setDefault(os.Getenv("FILESYSTEM_ID"), "tfacc_filesystem_id")
 var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "")
-var fileSystemSnapshotID = setDefault(os.Getenv("FILESYSTEM_SNAPSHOT_ID"), "tfacc_filesystem_snapshot_id")
-var fileSystemSnapshotName = setDefault(os.Getenv("FILESYSTEM_SNAPSHOT_NAME"), "tfacc_filesystem_snapshot_name")
 
 var ProviderConfigForTesting = ``
 
