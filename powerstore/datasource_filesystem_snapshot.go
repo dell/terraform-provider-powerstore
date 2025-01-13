@@ -79,8 +79,8 @@ func (d *fileSystemSnapshotDataSource) Schema(_ context.Context, _ datasource.Sc
 			},
 
 			"filesystem_id": schema.StringAttribute{
-				Description:         "Parent ID of the Snapshot. Conflicts with `id` and `nas_server_id`.",
-				MarkdownDescription: "Parent ID of the Snapshot. Conflicts with `id` and `nas_server_id`.",
+				Description:         "File System ID of the Snapshot. Conflicts with `id` and `nas_server_id`.",
+				MarkdownDescription: "File System ID of the Snapshot. Conflicts with `id` and `nas_server_id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),

@@ -44,7 +44,7 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsFileSystemID,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test1", "filesystem_snapshots.0.filesystem_id", "powerstore_filesystem.test_fs_create", "id"),
+					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test1", "filesystem_snapshots.0.parent_id", "powerstore_filesystem.test_fs_create", "id"),
 				),
 			},
 			{
