@@ -100,7 +100,7 @@ resource "powerstore_filesystem_snapshot" "test" {
   depends_on = [powerstore_filesystem.test_fs_create]
 }
 `
-var FileSystemSnapParamsUpdate =  FsParams + `
+var FileSystemSnapParamsUpdate = FsParams + `
 resource "powerstore_filesystem_snapshot" "test" {
   name = "tf_fs_snap_acc"
   description = "Test File System Snapshot Resource Updated"

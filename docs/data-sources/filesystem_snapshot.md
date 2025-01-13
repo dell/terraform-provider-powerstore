@@ -109,9 +109,10 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
-- `filesystem_id` (String) File System Snapshot name. Conflicts with `id` and  `name`.
+- `filesystem_id` (String) File System ID of the Snapshot. Conflicts with `id` and `nas_server_id`.
 - `id` (String) Unique identifier of the File System Snapshot. Conflicts with `name` and `filesystem_id`.
-- `name` (String) File System Snapshot name. Conflicts with `id` and `filesystem_id`.
+- `name` (String) File System Snapshot name. Conflicts with `id`.
+- `nas_server_id` (String) Nas Server ID of the Snapshot. Conflicts with `id` and `filesystem_id`.
 
 ### Read-Only
 
@@ -122,51 +123,51 @@ After the successful execution of above said block, We can see the output by exe
 
 Read-Only:
 
-- `access_policy` (String) Access Policy
-- `access_type` (String) Access Type
-- `config_type` (String) Config Type
-- `creation_timestamp` (String) Creation Timestamp
-- `creator_type` (String) Creator Type
-- `default_hard_limit` (Number) Default Hard Limit
-- `default_soft_limit` (Number) Default Soft Limit
-- `description` (String) Description
-- `expiration_timestamp` (String) Expiration Timestamp
-- `filesystem_type` (String) Filesystem Type
-- `flr_attributes` (Attributes) Flr Attributes (see [below for nested schema](#nestedatt--filesystem_snapshots--flr_attributes))
-- `folder_rename_policy` (String) Folder Rename Policy
-- `grace_period` (Number) Grace Period
-- `id` (String) ID
-- `is_async_m_time_enabled` (Boolean) Is Async MTime Enabled
-- `is_modified` (Boolean) Is Modified
-- `is_quota_enabled` (Boolean) Is Quota Enabled
-- `is_smb_no_notify_enabled` (Boolean) Is Smb No Notify Enabled
-- `is_smb_notify_on_access_enabled` (Boolean) Is Smb Notify On Access Enabled
-- `is_smb_notify_on_write_enabled` (Boolean) Is Smb Notify On Write Enabled
-- `is_smb_op_locks_enabled` (Boolean) Is Smb Op Locks Enabled
-- `is_smb_sync_writes_enabled` (Boolean) Is Smb Sync Writes Enabled
-- `last_refresh_timestamp` (String) Last Refresh Timestamp
-- `last_writable_timestamp` (String) Last Writable Timestamp
-- `locking_policy` (String) Locking Policy
-- `name` (String) Name
-- `nas_server_id` (String) Nas Server ID
-- `parent_id` (String) Parent ID
-- `protection_policy_id` (String) Protection Policy ID
-- `size_total` (Number) Size Total
-- `size_used` (Number) Size Used
-- `smb_notify_on_change_dir_depth` (Number) Smb Notify On Change Dir Depth
+- `access_policy` (String) Access Policy of the File System
+- `access_type` (String) Access Type of the File System
+- `config_type` (String) Config Type of the File System
+- `creation_timestamp` (String) Creation Timestamp of the File System
+- `creator_type` (String) Creator Type of the File System
+- `default_hard_limit` (Number) Default Hard Limit of the File System
+- `default_soft_limit` (Number) Default Soft Limit of the File System
+- `description` (String) Description of the File System
+- `expiration_timestamp` (String) Expiration Timestamp of the File System
+- `filesystem_type` (String) Filesystem Type of the File System
+- `flr_attributes` (Attributes) Flr Attributes of the File System (see [below for nested schema](#nestedatt--filesystem_snapshots--flr_attributes))
+- `folder_rename_policy` (String) Folder Rename Policy of the File System
+- `grace_period` (Number) Grace Period of the File System
+- `id` (String) ID of the File System
+- `is_async_m_time_enabled` (Boolean) Is Async MTime Enabled of the File System
+- `is_modified` (Boolean) Is Modified of the File System
+- `is_quota_enabled` (Boolean) Is Quota Enabled of the File System
+- `is_smb_no_notify_enabled` (Boolean) Is Smb No Notify Enabled of the File System
+- `is_smb_notify_on_access_enabled` (Boolean) Is Smb Notify On Access Enabled of the File System
+- `is_smb_notify_on_write_enabled` (Boolean) Is Smb Notify On Write Enabled of the File System
+- `is_smb_op_locks_enabled` (Boolean) Is Smb Op Locks Enabled of the File System
+- `is_smb_sync_writes_enabled` (Boolean) Is Smb Sync Writes Enabled of the File System
+- `last_refresh_timestamp` (String) Last Refresh Timestamp of the File System
+- `last_writable_timestamp` (String) Last Writable Timestamp of the File System
+- `locking_policy` (String) Locking Policy of the File System
+- `name` (String) Name of the File System
+- `nas_server_id` (String) Nas Server ID of the File System
+- `parent_id` (String) Parent ID of the File System
+- `protection_policy_id` (String) Protection Policy ID of the File System
+- `size_total` (Number) Size Total of the File System
+- `size_used` (Number) Size Used of the File System
+- `smb_notify_on_change_dir_depth` (Number) Smb Notify On Change Dir Depth of the File System
 
 <a id="nestedatt--filesystem_snapshots--flr_attributes"></a>
 ### Nested Schema for `filesystem_snapshots.flr_attributes`
 
 Read-Only:
 
-- `auto_delete` (Boolean) Auto Delete
-- `auto_lock` (Boolean) Auto Lock
-- `clock_time` (String) Clock Time
-- `default_retention` (String) Default Retention
-- `has_protected_files` (Boolean) Has Protected Files
-- `maximum_retention` (String) Maximum Retention
-- `maximum_retention_date` (String) Maximum Retention Date
-- `minimum_retention` (String) Minimum Retention
-- `mode` (String) Mode
-- `policy_interval` (Number) Policy Interval
+- `auto_delete` (Boolean) Auto Delete of the File System
+- `auto_lock` (Boolean) Auto Lock of the File System
+- `clock_time` (String) Clock Time of the File System
+- `default_retention` (String) Default Retention of the File System
+- `has_protected_files` (Boolean) Has Protected Files of the File System
+- `maximum_retention` (String) Maximum Retention of the File System
+- `maximum_retention_date` (String) Maximum Retention Date of the File System
+- `minimum_retention` (String) Minimum Retention of the File System
+- `mode` (String) Mode of the File System
+- `policy_interval` (Number) Policy Interval of the File System
