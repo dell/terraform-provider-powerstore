@@ -19,6 +19,7 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
@@ -29,6 +30,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 var (
@@ -63,23 +65,32 @@ func (d *fileSystemSnapshotDataSource) Schema(_ context.Context, _ datasource.Sc
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.MatchRoot("name"), path.MatchRoot("filesystem_id")),
+					stringvalidator.ConflictsWith(path.MatchRoot("name"), path.MatchRoot("filesystem_id"), path.MatchRoot("nas_server_id")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "File System Snapshot name. Conflicts with `id` and `filesystem_id`.",
-				MarkdownDescription: "File System Snapshot name. Conflicts with `id` and `filesystem_id`.",
+				Description:         "File System Snapshot name. Conflicts with `id`.",
+				MarkdownDescription: "File System Snapshot name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-					stringvalidator.ConflictsWith(path.MatchRoot("id"), path.MatchRoot("filesystem_id")),
 				},
 			},
 
 			"filesystem_id": schema.StringAttribute{
-				Description:         "File System Snapshot name. Conflicts with `id` and `name`.",
-				MarkdownDescription: "File System Snapshot name. Conflicts with `id` and  `name`.",
+				Description:         "Parent ID of the Snapshot. Conflicts with `id` and `nas_server_id`.",
+				MarkdownDescription: "Parent ID of the Snapshot. Conflicts with `id` and `nas_server_id`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("nas_server_id")),
+				},
+			},
+
+			"nas_server_id": schema.StringAttribute{
+				Description:         "Nas Server ID of the Snapshot. Conflicts with `id` and `filesystem_id`.",
+				MarkdownDescription: "Nas Server ID of the Snapshot. Conflicts with `id` and `filesystem_id`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -118,27 +129,37 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	//Read the snapshot based on snapshot id/name/filesystem id and if nothing is mentioned, then it returns all the snapshots
-	if state.Name.ValueString() != "" {
-		fileSystemSnapshot, err = d.client.PStoreClient.GetFSByName(context.Background(), state.Name.ValueString())
-		fileSystemSnapshots = append(fileSystemSnapshots, fileSystemSnapshot)
-	} else if state.ID.ValueString() != "" {
+	if state.ID.ValueString() != "" {
 		fileSystemSnapshot, err = d.client.PStoreClient.GetFsSnapshot(context.Background(), state.ID.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Unable to Read PowerStore File System Snapshot by ID: "+state.ID.ValueString(),
+				err.Error(),
+			)
+			return
+		}
 		fileSystemSnapshots = append(fileSystemSnapshots, fileSystemSnapshot)
-	} else if state.FileSystemID.ValueString() != "" {
-		fileSystemSnapshots, err = d.client.PStoreClient.GetFsSnapshotsByVolumeID(context.Background(), state.FileSystemID.ValueString())
 	} else {
-		fileSystemSnapshots, err = d.client.PStoreClient.GetFsSnapshots(context.Background())
-	}
-
-	//check if there is any error while getting the fileSystemSnapshot snapshot
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to Read PowerStore fileSystemSnapshot Snapshots",
-			err.Error(),
-		)
-		return
+		filterMap := make(map[string]string)
+		filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumSnapshot)
+		if state.Name.ValueString() != "" {
+			filterMap["name"] = fmt.Sprintf("eq.%s", state.Name.ValueString())
+		}
+		if state.FileSystemID.ValueString() != "" {
+			filterMap["parent_id"] = fmt.Sprintf("eq.%s", state.FileSystemID.ValueString())
+		}
+		if state.NasServerID.ValueString() != "" {
+			filterMap["nas_server_id"] = fmt.Sprintf("eq.%s", state.NasServerID.ValueString())
+		}
+		tflog.Debug(ctx, fmt.Sprintf("PK Filter Map: %v", filterMap))
+		fileSystemSnapshots, err = d.client.PStoreClient.GetFsByFilter(context.Background(), filterMap)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Unable to Read PowerStore File System Snapshots",
+				err.Error(),
+			)
+			return
+		}
 	}
 
 	state.FileSystemSnapshots = updateFileSystemState(fileSystemSnapshots)

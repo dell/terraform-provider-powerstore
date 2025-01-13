@@ -24,5 +24,6 @@ type FileSysteSnapshotDataSource struct {
 	ID                  types.String           `tfsdk:"id"`
 	Name                types.String           `tfsdk:"name"`
 	FileSystemID        types.String           `tfsdk:"filesystem_id"`
+	NasServerID         types.String           `tfsdk:"nas_server_id"`
 	FileSystemSnapshots []FileSystemDatasource `tfsdk:"filesystem_snapshots"`
 }

@@ -36,16 +36,35 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsName,
-			},
-			{
-				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsID,
+				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceParamsNasServerID,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.powerstore_filesystem_snapshot.test", "filesystem_snapshots.0.nas_server_id", nasServerID),
+				),
 			},
 			{
 				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsFileSystemID,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test1", "filesystem_snapshots.0.filesystem_id", "powerstore_filesystem.test_fs_create", "id"),
+				),
 			},
 			{
+				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsName,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test2", "filesystem_snapshots.0.name", "powerstore_filesystem_snapshot.test", "name"),
+				),
+			},
+			{
+				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsID,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test3", "filesystem_snapshots.0.id", "powerstore_filesystem_snapshot.test", "id"),
+				),
+			},
+
+			{
 				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsAll,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.powerstore_filesystem_snapshot.test4", "filesystem_snapshots.#"),
+				),
 			},
 			{
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsIDAndNameNegative,
@@ -60,67 +79,75 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 				ExpectError: regexp.MustCompile("Invalid Attribute Value Length"),
 			},
 			{
-				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsNameNegative,
-				ExpectError: regexp.MustCompile("Unable to Read PowerStore fileSystemSnapshot Snapshots"),
+				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsNameNegative,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("data.powerstore_filesystem_snapshot.test6", "filesystem_snapshots.#", "0"),
+				),
 			},
 			{
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsIDNegative,
-				ExpectError: regexp.MustCompile("Unable to Read PowerStore fileSystemSnapshot Snapshots"),
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore File System Snapshot by ID"),
 			},
 		},
 	})
 }
 
-var FileSystemSnapshotDataSourceparamsFileSystemID = `
+var FileSystemSnapshotDataSourceParamsNasServerID = `	
+data "powerstore_filesystem_snapshot" "test" {
+	nas_server_id = "` + nasServerID + `"
+}`
+
+var FileSystemSnapshotDataSourceparamsFileSystemID = FileSystemSnapParamsCreate + `
 data "powerstore_filesystem_snapshot" "test1" {
-	filesystem_id = "` + fileSystemID + `"
+	filesystem_id = powerstore_filesystem.test_fs_create.id
+	depends_on = [powerstore_filesystem.test_fs_create, powerstore_filesystem_snapshot.test]
 }
 `
 
-var FileSystemSnapshotDataSourceparamsName = `
-data "powerstore_filesystem_snapshot" "test1" {
-	name = "` + fileSystemSnapshotName + `"
+var FileSystemSnapshotDataSourceparamsName = FileSystemSnapParamsCreate + `
+data "powerstore_filesystem_snapshot" "test2" {
+	name = powerstore_filesystem_snapshot.test.name
 }
 `
 
-var FileSystemSnapshotDataSourceparamsNameNegative = `
-data "powerstore_filesystem_snapshot" "test1" {
-	name = "invalid-name"
-}
-`
-
-var FileSystemSnapshotDataSourceparamsID = `
-data "powerstore_filesystem_snapshot" "test1" {
-	id = "` + fileSystemSnapshotID + `"
+var FileSystemSnapshotDataSourceparamsID = FileSystemSnapParamsCreate + `
+data "powerstore_filesystem_snapshot" "test3" {
+	id = powerstore_filesystem_snapshot.test.id
 }
 `
 
 var FileSystemSnapshotDataSourceparamsAll = `
-data "powerstore_filesystem_snapshot" "test1" {
-}
-`
-
-var FileSystemSnapshotDataSourceparamsIDNegative = `
-data "powerstore_filesystem_snapshot" "test1" {
-	id = "invalid-id"
+data "powerstore_filesystem_snapshot" "test4" {
 }
 `
 
 var FileSystemSnapshotDataSourceparamsIDAndNameNegative = `
-data "powerstore_filesystem_snapshot" "test1" {
-	id = "` + fileSystemSnapshotID + `"
-	name = "` + fileSystemSnapshotName + `"
+data "powerstore_filesystem_snapshot" "test5" {
+	id = "unique-id"
+	name = "unique-name"
+}
+`
+
+var FileSystemSnapshotDataSourceparamsNameNegative = `
+data "powerstore_filesystem_snapshot" "test6" {
+	name = "invalid-name"
+}
+`
+
+var FileSystemSnapshotDataSourceparamsIDNegative = `
+data "powerstore_filesystem_snapshot" "test7" {
+	id = "invalid-id"
 }
 `
 
 var FileSystemSnapshotDataSourceparamsEmptyIDNegative = `
-data "powerstore_filesystem_snapshot" "test1" {
+data "powerstore_filesystem_snapshot" "test8" {
 	id = ""
 }
 `
 
 var FileSystemSnapshotDataSourceparamsEmptyNameNegative = `
-data "powerstore_filesystem_snapshot" "test1" {
+data "powerstore_filesystem_snapshot" "test9" {
 	name = ""
 }
 `
