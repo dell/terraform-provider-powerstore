@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -97,6 +98,9 @@ func (r *resourceStorageContainer) Schema(ctx context.Context, req resource.Sche
 				Computed:            true,
 				Description:         "The percentage of the quota that can be consumed before an alert is raised.",
 				MarkdownDescription: "The percentage of the quota that can be consumed before an alert is raised",
+				Validators: []validator.Int64{
+					int64validator.Between(0, 100),
+				},
 			},
 		},
 	}
@@ -138,7 +142,7 @@ func (r *resourceStorageContainer) Create(ctx context.Context, req resource.Crea
 		Name:            plan.Name.ValueString(),
 		Quota:           plan.Quota.ValueInt64(),
 		StorageProtocol: gopowerstore.StorageContainerStorageProtocolEnum(plan.StorageProtocol.ValueString()),
-		HighWaterMark:   int16(plan.HighWaterMark.ValueInt64()),
+		HighWaterMark:   r.getTruncatedWatermark(plan),
 	}
 
 	storageContainerCreateResponse, err := r.client.PStoreClient.CreateStorageContainer(context.Background(), storageContainerCreate)
@@ -326,8 +330,12 @@ func (r resourceStorageContainer) planToServer(plan, state models.StorageContain
 	}
 
 	if plan.HighWaterMark.ValueInt64() != state.HighWaterMark.ValueInt64() {
-		storageContainerUpdate.HighWaterMark = int16(plan.HighWaterMark.ValueInt64())
+		storageContainerUpdate.HighWaterMark = r.getTruncatedWatermark(plan)
 	}
 
 	return storageContainerUpdate
+}
+
+func (r resourceStorageContainer) getTruncatedWatermark(plan models.StorageContainer) int16 {
+	return int16(plan.HighWaterMark.ValueInt64()) // #nosec G115 --- validated to be between 0 and 100
 }
