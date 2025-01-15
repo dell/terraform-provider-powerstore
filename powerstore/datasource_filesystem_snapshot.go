@@ -151,7 +151,7 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 		if state.NasServerID.ValueString() != "" {
 			filterMap["nas_server_id"] = fmt.Sprintf("eq.%s", state.NasServerID.ValueString())
 		}
-		tflog.Debug(ctx, fmt.Sprintf("PK Filter Map: %v", filterMap))
+		tflog.Debug(ctx, fmt.Sprintf("Filter Map: %v", filterMap))
 		fileSystemSnapshots, err = d.client.PStoreClient.GetFsByFilter(context.Background(), filterMap)
 		if err != nil {
 			resp.Diagnostics.AddError(
