@@ -266,7 +266,7 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 				},
 			},
 
-			"desired_retention": schema.Int64Attribute{
+			"desired_retention": schema.Int32Attribute{
 				Required:            true,
 				Description:         "The Desired snapshot retention period in hours to retain snapshots for this time period.",
 				MarkdownDescription: "The Desired snapshot retention period in hours to retain snapshots for this time period.",
@@ -591,7 +591,7 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 
 	state.DaysOfWeek, _ = types.ListValue(types.StringType, attributeList)
 
-	state.DesiredRetention = types.Int64Value(int64(response.DesiredRetention))
+	state.DesiredRetention = types.Int32Value(response.DesiredRetention)
 	state.IsReplica = types.BoolValue(response.IsReplica)
 	state.ManagedBy = types.StringValue(string(response.ManagedBy))
 	state.ManagedByID = types.StringValue(string(response.ManagedByID))
@@ -613,7 +613,7 @@ func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *gopowersto
 		Interval:         gopowerstore.SnapshotRuleIntervalEnum(plan.Interval.ValueString()),
 		TimeOfDay:        plan.TimeOfDay.ValueString(),
 		TimeZone:         gopowerstore.TimeZoneEnum(plan.TimeZone.ValueString()),
-		DesiredRetention: int32(plan.DesiredRetention.ValueInt64()),
+		DesiredRetention: plan.DesiredRetention.ValueInt32(),
 		NASAccessType:    gopowerstore.NASAccessTypeEnum(plan.NASAccessType.ValueString()),
 	}
 
