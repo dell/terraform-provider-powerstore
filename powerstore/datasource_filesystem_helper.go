@@ -66,6 +66,8 @@ func newFileSystem(input gopowerstore.FileSystem) models.FileSystemDatasource {
 		LastWritableTimestamp:      types.StringValue(input.LastWritableTimestamp),
 		IsModified:                 types.BoolValue(input.IsModified),
 		CreatorType:                types.StringValue(input.CreatorType),
+		FileEventsPublishingMode:   types.StringValue(input.FileEventsPublishingMode),
+		HostIOSize:                 types.StringValue(input.HostIOSize),
 		FlrAttributes: models.FLRAttributesDatasource{
 			DefaultRetention:     types.StringValue(input.FlrCreate.DefaultRetention),
 			MaximumRetention:     types.StringValue(input.FlrCreate.MaximumRetention),

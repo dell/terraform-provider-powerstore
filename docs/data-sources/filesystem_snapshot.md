@@ -132,10 +132,12 @@ Read-Only:
 - `default_soft_limit` (Number) Default Soft Limit of the File System
 - `description` (String) Description of the File System
 - `expiration_timestamp` (String) Expiration Timestamp of the File System
+- `file_events_publishing_mode` (String) State of the event notification services for all file systems
 - `filesystem_type` (String) Filesystem Type of the File System
 - `flr_attributes` (Attributes) Flr Attributes of the File System (see [below for nested schema](#nestedatt--filesystem_snapshots--flr_attributes))
 - `folder_rename_policy` (String) Folder Rename Policy of the File System
 - `grace_period` (Number) Grace Period of the File System
+- `host_io_size` (String) Typical size of writes
 - `id` (String) ID of the File System
 - `is_async_m_time_enabled` (Boolean) Is Async MTime Enabled of the File System
 - `is_modified` (Boolean) Is Modified of the File System

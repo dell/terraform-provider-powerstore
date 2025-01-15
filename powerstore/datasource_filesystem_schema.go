@@ -183,6 +183,16 @@ func FileSystemDatasourceSchema() map[string]schema.Attribute {
 			Description:         "Creator Type of the File System",
 			Computed:            true,
 		},
+		"file_events_publishing_mode": schema.StringAttribute{
+			MarkdownDescription: "State of the event notification services for all file systems",
+			Description:         "State of the event notification services for all file systems",
+			Computed:            true,
+		},
+		"host_io_size": schema.StringAttribute{
+			MarkdownDescription: "Typical size of writes",
+			Description:         "Typical size of writes",
+			Computed:            true,
+		},
 	}
 }
 

@@ -19,6 +19,14 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
+// FileSystemConfigDataSource is the schema for the providing the details in the config for fetching the filesystems based on id, name or nas server id.
+type FileSystemConfigDataSource struct {
+	ID          types.String           `tfsdk:"id"`
+	Name        types.String           `tfsdk:"name"`
+	NasServerID types.String           `tfsdk:"nas_server_id"`
+	FileSystems []FileSystemDatasource `tfsdk:"filesystems"`
+}
+
 // FileSystemDatasource represents filesystem
 type FileSystemDatasource struct {
 	AccessPolicy               types.String            `tfsdk:"access_policy"`
@@ -53,6 +61,8 @@ type FileSystemDatasource struct {
 	LastWritableTimestamp      types.String            `tfsdk:"last_writable_timestamp"`
 	IsModified                 types.Bool              `tfsdk:"is_modified"`
 	CreatorType                types.String            `tfsdk:"creator_type"`
+	FileEventsPublishingMode   types.String            `tfsdk:"file_events_publishing_mode"`
+	HostIOSize                 types.String            `tfsdk:"host_io_size"`
 }
 
 // FLRAttributesDatasource represents flr attributes
