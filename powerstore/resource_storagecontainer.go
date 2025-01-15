@@ -83,8 +83,8 @@ func (r *resourceStorageContainer) Schema(ctx context.Context, req resource.Sche
 			"storage_protocol": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The storage protocol of Storage Container.",
-				MarkdownDescription: "The storage protocol of Storage Container. eg: SCSI, NVMe",
+				Description:         "The storage protocol of Storage Container. Accepted values are 'SCSI' and 'NVMe'.",
+				MarkdownDescription: "The storage protocol of Storage Container. Accepted values are `SCSI` and `NVMe`.",
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
 						string(gopowerstore.StorageContainerStorageProtocolEnumNVME),
@@ -96,10 +96,10 @@ func (r *resourceStorageContainer) Schema(ctx context.Context, req resource.Sche
 			"high_water_mark": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "The percentage of the quota that can be consumed before an alert is raised.",
-				MarkdownDescription: "The percentage of the quota that can be consumed before an alert is raised",
+				Description:         "The percentage of the quota that can be consumed before an alert is raised. Allowed values are between '50' and '100' (inclusive).",
+				MarkdownDescription: "The percentage of the quota that can be consumed before an alert is raised. Allowed values are between `50` and `100` (inclusive).",
 				Validators: []validator.Int64{
-					int64validator.Between(0, 100),
+					int64validator.Between(50, 100),
 				},
 			},
 		},
@@ -337,5 +337,5 @@ func (r resourceStorageContainer) planToServer(plan, state models.StorageContain
 }
 
 func (r resourceStorageContainer) getTruncatedWatermark(plan models.StorageContainer) int16 {
-	return int16(plan.HighWaterMark.ValueInt64()) // #nosec G115 --- validated to be between 0 and 100
+	return int16(plan.HighWaterMark.ValueInt64()) // #nosec G115 --- validated to be between 50 and 100
 }
