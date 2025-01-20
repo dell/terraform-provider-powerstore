@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ After the execution of above resource block, storage container container would h
 
 ### Optional
 
-- `high_water_mark` (Number) The percentage of the quota that can be consumed before an alert is raised
+- `high_water_mark` (Number) The percentage of the quota that can be consumed before an alert is raised. Allowed values are between `50` and `100` (inclusive).
 - `quota` (Number) The total number of bytes that can be provisioned/reserved against this storage container. A value of 0 means there is no limit.
-- `storage_protocol` (String) The storage protocol of Storage Container. eg: SCSI, NVMe
+- `storage_protocol` (String) The storage protocol of Storage Container. Accepted values are `SCSI` and `NVMe`.
 
 ### Read-Only
 
