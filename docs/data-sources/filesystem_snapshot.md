@@ -77,13 +77,13 @@ data "powerstore_filesystem_snapshot" "test3" {
 
 #Fetching filesystem snapshot using name and nas server id
 data "powerstore_filesystem_snapshot" "test4" {
-  name = "co015nap5hot"
+  name          = "co015nap5hot"
   nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
 }
 
 #Fetching filesystem snapshot using name and file system id
 data "powerstore_filesystem_snapshot" "test4" {
-  name = "co015nap5hot"
+  name          = "co015nap5hot"
   filesystem_id = "65637292e-c982-62ce-5ar3-52518f44229"
 }
 
