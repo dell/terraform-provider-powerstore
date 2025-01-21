@@ -26,7 +26,7 @@ description: |-
 
 This datasource is used to query the existing File System Snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
-> **Note:** Only one of `name` or `id` or `filesystem_id` can be provided at a time.
+> **Note:** Only one of `name` or `id` can be provided at a time.
 
 ## Example Usage
 
@@ -53,53 +53,48 @@ limitations under the License.
 # If it is a empty datsource block , then it will read all the filesystem 
 # If id or name is provided then it reads a particular file system snapshot with that id or name
 # If filesystem_id is provided then it will read all the filesystem snapshots within filesystem
-# Only one of the attribute can be provided among id or name or filesystem_id
+# Only one of the attribute can be provided among id or name 
 
-
-// create filesystem
-resource "powerstore_filesystem" "test" {
-  name          = "test_fs"
-  description   = "testing file system"
-  size          = 3
-  nas_server_id = "<nas_server_id>"
-  flr_attributes = {
-    mode              = "Enterprise"
-    minimum_retention = "1D"
-    default_retention = "1D"
-    maximum_retention = "infinite"
-  }
-  config_type                     = "General"
-  access_policy                   = "UNIX"
-  locking_policy                  = "Advisory"
-  folder_rename_policy            = "All_Allowed"
-  is_smb_sync_writes_enabled      = true
-  is_smb_no_notify_enabled        = true
-  is_smb_op_locks_enabled         = false
-  is_smb_notify_on_access_enabled = true
-  is_smb_notify_on_write_enabled  = false
-  smb_notify_on_change_dir_depth  = 12
-  is_async_mtime_enabled          = true
-  file_events_publishing_mode     = "All"
-}
-
-// create snapshot from filesystem
-resource "powerstore_filesystem_snapshot" "test" {
-  name                 = "tf_fs_snap"
-  description          = "Test File System Snapshot Resource"
-  filesystem_id        = resource.powerstore_filesystem.test.id
-  expiration_timestamp = "2035-05-06T09:01:47Z"
-  access_type          = "Snapshot"
-}
-
+#Fetching filesystem snapshot using name
 data "powerstore_filesystem_snapshot" "test1" {
-  name = resource.powerstore_filesystem_snapshot.test.name
-  # id = resource.powerstore_filesystem_snapshot.test.id
-  # filesystem_id= resource.powerstore_filesystem.test.id
+  name = "co015nap5hot"
+}
+
+#Fetching filesystem snapshot using id
+data "powerstore_filesystem_snapshot" "test2" {
+  id = "6568282e-c982-62ce-5ar3-52518f324723"
+}
+
+#Fetching filesystem snapshot using filesystem id
+data "powerstore_filesystem_snapshot" "test2" {
+  filesystem_id = "65637292e-c982-62ce-5ar3-52518f44229"
+}
+
+#Fetching filesystem snapshot using nas server id
+data "powerstore_filesystem_snapshot" "test3" {
+  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+}
+
+#Fetching filesystem snapshot using name and nas server id
+data "powerstore_filesystem_snapshot" "test4" {
+  name = "co015nap5hot"
+  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+}
+
+#Fetching filesystem snapshot using name and file system id
+data "powerstore_filesystem_snapshot" "test4" {
+  name = "co015nap5hot"
+  filesystem_id = "65637292e-c982-62ce-5ar3-52518f44229"
 }
 
 
-output "fileSystemSnapshotResult" {
-  value = data.powerstore_filesystem_snapshot.test1.filesystem_snapshots
+# Fetching all filesystems
+data "powerstore_filesystem_snapshot" "test4" {
+}
+
+
+output "result" {
+  value = data.powerstore_filesystem_snapshot.test3.filesystems
 }
 ```
 After the successful execution of above said block, We can see the output by executing `terraform output` command. Also, we can fetch information via the variable: `data.powerstore_filesystem_snapshot.test1` where name is the attribute which user wants to fetch.
