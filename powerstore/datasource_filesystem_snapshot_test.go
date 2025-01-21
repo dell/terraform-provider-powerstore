@@ -86,7 +86,7 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 	})
 }
 
-var FileSystemSnapshotDataSourceParamsNasServerID = `	
+var FileSystemSnapshotDataSourceParamsNasServerID = FileSystemSnapParamsCreate + `	
 data "powerstore_filesystem_snapshot" "test" {
 	nas_server_id = "` + nasServerID + `"
 }`
