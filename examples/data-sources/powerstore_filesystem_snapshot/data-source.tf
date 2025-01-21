@@ -32,9 +32,13 @@ data "powerstore_filesystem_snapshot" "test2" {
   id = "6568282e-c982-62ce-5ar3-52518f324723"
 }
 
+
 #Fetching filesystem snapshot using filesystem id
+data "powerstore_filesystem" "test_fs" {
+}
+
 data "powerstore_filesystem_snapshot" "test2" {
-  filesystem_id = "65637292e-c982-62ce-5ar3-52518f44229"
+  filesystem_id = data.powerstore_filesystem.test_fs.filesystems[0].id
 }
 
 #Fetching filesystem snapshot using nas server id
