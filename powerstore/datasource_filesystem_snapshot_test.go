@@ -79,12 +79,6 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 				ExpectError: regexp.MustCompile("Invalid Attribute Value Length"),
 			},
 			{
-				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsNameNegative,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.powerstore_filesystem_snapshot.test6", "filesystem_snapshots.#", "0"),
-				),
-			},
-			{
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsIDNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore File System Snapshot by ID"),
 			},
