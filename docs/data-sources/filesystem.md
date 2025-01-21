@@ -26,8 +26,6 @@ description: |-
 
 This datasource is used to query the existing File System from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
-> **Note:** Only one of `name` or `id` or `nas_server_id` can be provided at a time.
-
 ## Example Usage
 
 ```terraform
@@ -91,7 +89,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Read-Only
 
-- `filesystems` (Attributes List) List of File System. (see [below for nested schema](#nestedatt--filesystems))
+- `filesystems` (Attributes List) List of File Systems. (see [below for nested schema](#nestedatt--filesystems))
 
 <a id="nestedatt--filesystems"></a>
 ### Nested Schema for `filesystems`
