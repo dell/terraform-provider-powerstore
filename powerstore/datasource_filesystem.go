@@ -83,12 +83,11 @@ func (d *fileSystemDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-					stringvalidator.ConflictsWith(path.MatchRoot("id"), path.MatchRoot("name")),
 				},
 			},
 			"filesystems": schema.ListNestedAttribute{
-				Description:         "List of File System.",
-				MarkdownDescription: "List of File System.",
+				Description:         "List of File Systems.",
+				MarkdownDescription: "List of File Systems.",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: FileSystemDatasourceSchema()},
