@@ -26,9 +26,9 @@ limitations under the License.
 # To check which attributes of the file system snapshot resource can be updated, please refer Product Guide in the documentation
 
 resource "powerstore_filesystem_snapshot" "test1" {
-  name = "tf_fs_snap"
-  description = "Test File System Snapshot Resource"
-  filesystem_id="67608dc7-b69c-b762-0522-42848bc63a0b" 
-  expiration_timestamp="2035-05-06T09:01:47Z"
-  access_type = "Snapshot"
+  name                 = "tf_fs_snap"
+  description          = "Test File System Snapshot Resource"
+  filesystem_id        = "67608dc7-b69c-b762-0522-42848bc63a0b"
+  expiration_timestamp = "2035-05-06T09:01:47Z"
+  access_type          = "Snapshot"
 }
