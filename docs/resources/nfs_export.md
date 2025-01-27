@@ -30,7 +30,7 @@ This resource is used to manage the nfs export entity of PowerStore Array. We ca
 
 ```terraform
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ After the execution of above resource block, nfs export would have been created 
 Import is supported using the following syntax:
 
 ```shell
-#Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+#Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 #
 #Licensed under the Mozilla Public License Version 2.0 (the "License");
 #you may not use this file except in compliance with the License.
