@@ -68,8 +68,8 @@ func NFSExportSchema() map[string]schema.Attribute {
 			MarkdownDescription: "The unique identifier of the NFS Export.",
 		},
 		"file_system_id": schema.StringAttribute{
-			MarkdownDescription: "The unique identifier of the nfs export on which the NFS Export will be created. The nfs export ID can be used instead of the nfs export name. For example: 'file_system_id':'name:file_system_name'",
-			Description:         "The unique identifier of the nfs export on which the NFS Export will be created. The nfs export ID can be used instead of the nfs export name. For example: 'file_system_id':'name:file_system_name'",
+			MarkdownDescription: "The unique identifier of the file	system on which the NFS Export will be created.",
+			Description:         "The unique identifier of the file system on which the NFS Export will be created.",
 			Required:            true,
 			Validators: []validator.String{
 				stringvalidator.LengthAtLeast(1),

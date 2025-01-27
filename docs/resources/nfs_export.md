@@ -49,10 +49,13 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
+data "powerstore_filesystem" "test4" {
+}
+
 
 resource "powerstore_nfs_export" "test1" {
   // Required
-  file_system_id = "6795320a-2186-5411-fb3c-5692f12c6aa4"
+  file_system_id = data.powerstore_filesystem.test3.filesystems[0].id
   name = "terraform-nfs"
   path = "/terraform-fs"
 
@@ -74,7 +77,7 @@ After the execution of above resource block, nfs export would have been created 
 
 ### Required
 
-- `file_system_id` (String) The unique identifier of the nfs export on which the NFS Export will be created. The nfs export ID can be used instead of the nfs export name. For example: 'file_system_id':'name:file_system_name'
+- `file_system_id` (String) The unique identifier of the file	system on which the NFS Export will be created.
 - `name` (String) The name of the NFS Export.
 - `path` (String) The local path to export relative to the nfs export root directory. With NFS, each export of a file_system or file_nfs must have a unique local path. Before you can create additional Exports within an NFS shared folder, you must create directories within it from a Linux/Unix host that is connected to the nfs export. After a directory has been created from a mounted host, you can create a corresponding Export and Set access permissions accordingly.
 

@@ -18,10 +18,13 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
+data "powerstore_filesystem" "test4" {
+}
+
 
 resource "powerstore_nfs_export" "test1" {
   // Required
-  file_system_id = "6795320a-2186-5411-fb3c-5692f12c6aa4"
+  file_system_id = data.powerstore_filesystem.test3.filesystems[0].id
   name = "terraform-nfs"
   path = "/terraform-fs"
 
