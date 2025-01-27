@@ -224,7 +224,7 @@ func TestAccHost_ImportFailure(t *testing.T) {
 
 var HostPreReqForVolume = `
 resource "powerstore_host" "test" {
-	name = "tf_host_acc_volume"
+	name = "tf_host_acc_new"
 	description = "Test Host Resource"
 	os_type = "Linux"
 	initiators = [{port_name= "iqn.1994-05.com.redhat:88cb606"}]
