@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.23.2
 
 require (
-	github.com/dell/gopowerstore v1.17.1-0.20250123083527-a5e1229f93a7
+	github.com/dell/gopowerstore v1.17.1-0.20250124042754-bc06754dea20
 	github.com/hashicorp/terraform-plugin-docs v0.20.1
 	github.com/hashicorp/terraform-plugin-framework v1.13.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.15.0

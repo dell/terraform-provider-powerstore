@@ -143,7 +143,7 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			Validators: []validator.String{
-				stringvalidator.OneOf("No_Access", "Read_Only", "Read_Write", "Root", "Read_Only_Root"),
+				stringvalidator.OneOf(string(gopowerstore.NoAccess), string(gopowerstore.ReadOnly), string(gopowerstore.ReadWrite), string(gopowerstore.Root), string(gopowerstore.ReadOnlyRoot)),
 			},
 		},
 	}

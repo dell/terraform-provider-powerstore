@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,6 +37,12 @@ func TestAccNFSExport_Create(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
+			// Create Error
+			{
+				Config:      ProviderConfigForTesting + nfsCreateError,
+				ExpectError: regexp.MustCompile(".*Error creating nfs export.*"),
+			},
+			// Create Testing
 			{
 				Config: ProviderConfigForTesting + nfsCreate,
 				Check: resource.ComposeTestCheckFunc(
@@ -67,7 +73,15 @@ func TestAccNFSExport_Create(t *testing.T) {
 			// Update Error
 			{
 				Config:      ProviderConfigForTesting + nfsInvalidUpate,
-				ExpectError: regexp.MustCompile(".*rror updating nfs export resource.*"),
+				ExpectError: regexp.MustCompile(".*Error updating nfs export resource.*"),
+			},
+			// Import Error
+			{
+				Config:        ProviderConfigForTesting + nfsCreate,
+				ResourceName:  "powerstore_nfs_export.test1",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(".*Error reading nfs export.*"),
+				ImportStateId: "invalid-id",
 			},
 		},
 	})
@@ -86,6 +100,14 @@ resource "powerstore_nfs_export" "test1" {
 
   min_security = "Sys"
   default_access = "Read_Only"
+}
+`
+
+var nfsCreateError = `
+resource "powerstore_nfs_export" "test2" {
+  file_system_id = "invalid"
+  name = "terraform_nfs"
+  path = "/test_fs"
 }
 `
 
