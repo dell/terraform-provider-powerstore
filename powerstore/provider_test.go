@@ -35,8 +35,8 @@ var endpoint = setDefault(os.Getenv("POWERSTORE_ENDPOINT"), "http://localhost:30
 var username = setDefault(os.Getenv("POWERSTORE_USERNAME"), "test")
 var password = setDefault(os.Getenv("POWERSTORE_PASSWORD"), "test")
 var nasServerID = setDefault(os.Getenv("NAS_SERVER_ID"), "tfacc_nas_server_id")
-var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "")
 var nasServerName = setDefault(os.Getenv("NAS_SERVER_NAME"), "tfacc_nas")
+var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "db11abb3-789e-47f9-96b5-84b5374cbcd2")
 
 var ProviderConfigForTesting = ``
 
