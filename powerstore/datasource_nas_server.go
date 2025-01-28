@@ -73,7 +73,6 @@ func (d *nasServerDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-					stringvalidator.ConflictsWith(path.MatchRoot("id")),
 				},
 			},
 
