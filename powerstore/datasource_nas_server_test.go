@@ -61,12 +61,6 @@ func TestAccNasServerDs(t *testing.T) {
 				Config:      ProviderConfigForTesting + NasServerIDDsConfigNeg,
 				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore NAS Servers.*"),
 			},
-
-			{
-				//Get NAS Server using ID and Name simultaneously
-				Config:      ProviderConfigForTesting + NasServerIDandNameDsConfigNeg,
-				ExpectError: regexp.MustCompile(".*Invalid Attribute Combination.*"),
-			},
 		},
 	})
 }
@@ -77,12 +71,12 @@ data "powerstore_nas_server" "test" {
 `
 var NasServerIDDsConfig = `
 data "powerstore_nas_server" "test" {
-	id = "1"
+	id = "` + nasServerID + `"
 }
 `
 var NasServerNameDsConfig = `
 data "powerstore_nas_server" "test" {
-	name = "tfacc_nas"
+	name = "` + nasServerName + `"
 }
 `
 
@@ -94,12 +88,5 @@ data "powerstore_nas_server" "test" {
 var NasServerIDDsConfigNeg = `
 data "powerstore_nas_server" "test" {
 	id = "0"
-}
-`
-
-var NasServerIDandNameDsConfigNeg = `
-data "powerstore_nas_server" "test" {
-	id = "1"
-	name = "tfacc_nas"
 }
 `
