@@ -90,29 +90,32 @@ resource "powerstore_filesystem_snapshot" "test" {
 }
 `
 
-var FileSystemSnapParamsCreate = `
+var FileSystemSnapParamsCreate = FsParams + `
 resource "powerstore_filesystem_snapshot" "test" {
   name = "tf_fs_snap_acc"
   description = "Test File System Snapshot Resource"
-  filesystem_id="` + fileSystemID + `" 
+  filesystem_id=powerstore_filesystem.test_fs_create.id 
   expiration_timestamp="2035-05-06T09:01:47Z"
   access_type = "Snapshot"
+  depends_on = [powerstore_filesystem.test_fs_create]
 }
 `
-var FileSystemSnapParamsUpdate = `
+var FileSystemSnapParamsUpdate = FsParams + `
 resource "powerstore_filesystem_snapshot" "test" {
   name = "tf_fs_snap_acc"
   description = "Test File System Snapshot Resource Updated"
-  filesystem_id="` + fileSystemID + `" 
+  filesystem_id=powerstore_filesystem.test_fs_create.id
   expiration_timestamp="2035-10-06T09:01:47Z"
   access_type = "Snapshot"
+  depends_on = [powerstore_filesystem.test_fs_create]
 }
 `
-var FileSystemSnapParamsUpdateError = `
+var FileSystemSnapParamsUpdateError = FsParams + `
 resource "powerstore_filesystem_snapshot" "test" {
   name = "invalid"
   description = "Test File System Snapshot Resource Updated"
   filesystem_id="invalid" 
   expiration_timestamp="2035-10-06T09:01:47Z"
+  depends_on = [powerstore_filesystem.test_fs_create]
 }
 `

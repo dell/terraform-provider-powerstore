@@ -151,6 +151,7 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 		newFileSystemResource,
 		newFileSystemSnapshotResource,
 		newReplicationRuleResource,
+		newNFSExportResource,
 	}
 }
 
@@ -166,6 +167,9 @@ func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.Da
 		newVolumeGroupSnapshotDataSource,
 		newVolumeSnapshotDataSource,
 		newReplicationRuleDataSource,
+		newFileSystemSnapshotDataSource,
+		newFileSystemDataSource,
+		newNasServerDataSource,
 	}
 }
 
