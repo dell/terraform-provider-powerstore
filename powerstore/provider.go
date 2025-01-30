@@ -169,6 +169,7 @@ func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.Da
 		newReplicationRuleDataSource,
 		newFileSystemSnapshotDataSource,
 		newFileSystemDataSource,
+		newNasServerDataSource,
 	}
 }
 
