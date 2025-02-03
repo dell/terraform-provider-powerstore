@@ -1,13 +1,13 @@
 ---
 # Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
-#
+# 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
+# 
 #     http://mozilla.org/MPL/2.0/
-#
-#
+# 
+# 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,12 +26,12 @@ description: |-
 
 This resource is used to manage the volumegroup snapshot entity of PowerStore Array. We can Create, Update and Delete the volumegroup snapshot using this resource. We can also import an existing host from volumegroup snapshot array.
 
-~> **Note:** `volume_group_id`/`volume_group_name` is the required attribute to create volume group snapshot.  
-~> **Note:** `expiration_timestamp` if present in config cannot be blank(""). if absent, default value is allocated to it.  
-~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to blank(""), snapshot will be created with infinite retention.  
-~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank("").  
-~> **Note:** Volume group DataSource can be used to fetch volume group ID/Name.  
-~> **Note:** Exactly one of `volume_group_id` and `volume_group_name` should be provided.  
+~> **Note:** `volume_group_id`/`volume_group_name` is the required attribute to create volume group snapshot.
+~> **Note:** `expiration_timestamp` if present in config cannot be blank(""). if absent, default value is allocated to it.
+~> **Note:** During create operation, if `expiration_timestamp` is not specified or set to blank(""), snapshot will be created with infinite retention.
+~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank("").
+~> **Note:** Volume group DataSource can be used to fetch volume group ID/Name.
+~> **Note:** Exactly one of `volume_group_id` and `volume_group_name` should be provided.
 
 ## Example Usage
 

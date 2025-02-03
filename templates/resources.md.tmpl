@@ -16,7 +16,7 @@
 
 title: "{{.Name }} {{.Type | lower}}"
 linkTitle: "{{.Name }}"
-page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+page_title: "{{.Name}} {{.Type}} - powerstore"
 subcategory: ""
 description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
@@ -24,14 +24,11 @@ description: |-
 
 # {{.Name }} ({{.Type}})
 
-{{ .Description | trimspace }}
+{{ .Description | trimspace }}<note>
 
-
-{{ if .HasExample -}}
 ## Example Usage
 
-{{ printf "{{tffile %q}}" .ExampleFile }}
-{{- end }}
+{{ printf "{{tffile %q}}" .ExampleFile }}<example-ending>
 
 {{ .SchemaMarkdown | trimspace }}
 
@@ -41,5 +38,4 @@ description: |-
 Import is supported using the following syntax:
 
 {{ printf "{{codefile \"shell\" %q}}" .ImportFile }}
-
-{{- end }}
+{{ end }}

@@ -26,8 +26,8 @@ description: |-
 
 This resource is used to manage the host group entity of PowerStore Array. We can Create, Update and Delete the host group using this resource. We can also import an existing host group from PowerStore array.
 
-~> **Note:** Exactly one of `host_ids` and `host_names` is required.  
-~> **Note:** `host_connectivity` cannot be used while creating host group resource but it can be used while updating the host group resource.  
+~> **Note:** Exactly one of `host_ids` and `host_names` is required.
+~> **Note:** `host_connectivity` cannot be used while creating host group resource but it can be used while updating the host group resource.
 
 ## Example Usage
 
@@ -115,4 +115,4 @@ Import is supported using the following syntax:
 # }
 # Step 4 - Execute the command: terraform import "powerstore_hostgroup.resource_block_name" "id_of_the_hostgroup" (resource_block_name must be taken from step 3 and id must be taken from step 2)
 # Step 5 - After successful execution of the command , check the state file
-``` 
+```

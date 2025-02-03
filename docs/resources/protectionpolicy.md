@@ -115,4 +115,4 @@ Import is supported using the following syntax:
 # }
 # Step 4 - Execute the command: terraform import "powerstore_protectionpolicy.resource_block_name" "id_of_the_protection_policy" (resource_block_name must be taken from step 3 and id must be taken from step 2)
 # Step 5 - After successful execution of the command , check the state file
-``` 
+```

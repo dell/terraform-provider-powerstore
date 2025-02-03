@@ -26,8 +26,8 @@ description: |-
 
 This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.
 
-> **Note:** Exactly one of `volume_ids` and `volume_names` is required.  
-> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.  
+> **Note:** Exactly one of `volume_ids` and `volume_names` is required.
+> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.
 
 ## Example Usage
 
