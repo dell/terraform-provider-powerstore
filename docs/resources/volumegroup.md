@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ description: |-
 
 This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.
 
-> **Note:** Exactly one of `volume_ids` and `volume_names` is required.  
-> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.  
+> **Note:** Exactly one of `volume_ids` and `volume_names` is required.
+> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.
 
 ## Example Usage
 

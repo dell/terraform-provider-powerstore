@@ -25,15 +25,15 @@ data "powerstore_filesystem" "test4" {
 resource "powerstore_nfs_export" "test1" {
   // Required
   file_system_id = data.powerstore_filesystem.test3.filesystems[0].id
-  name = "terraform-nfs"
-  path = "/terraform-fs"
+  name           = "terraform-nfs"
+  path           = "/terraform-fs"
 
   // Optional
-  anonymous_gid = -24
-  anonymous_uid = -24 
-  description = "nfs export"
-  is_no_suid = false 
-  min_security = "Sys" # Options: "Sys", "Kerberos", "Kerberos_With_Integrity", "Kerberos_With_Encryption"
+  anonymous_gid  = -24
+  anonymous_uid  = -24
+  description    = "nfs export"
+  is_no_suid     = false
+  min_security   = "Sys"        # Options: "Sys", "Kerberos", "Kerberos_With_Integrity", "Kerberos_With_Encryption"
   default_access = "Read_Write" # Options: "No_Access", "Read_Only", "Read_Write", "Root", "Read_Only_Root"
 
 }
