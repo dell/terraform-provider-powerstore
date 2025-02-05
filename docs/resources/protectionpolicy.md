@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,4 +115,4 @@ Import is supported using the following syntax:
 # }
 # Step 4 - Execute the command: terraform import "powerstore_protectionpolicy.resource_block_name" "id_of_the_protection_policy" (resource_block_name must be taken from step 3 and id must be taken from step 2)
 # Step 5 - After successful execution of the command , check the state file
-``` 
+```
