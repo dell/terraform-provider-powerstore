@@ -52,13 +52,13 @@ func (r *datasourceNFSExport) Metadata(ctx context.Context, req datasource.Metad
 func (r *datasourceNFSExport) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 
-		MarkdownDescription: "This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.",
-		Description:         "This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.",
+		MarkdownDescription: "This datasource is used to query the existing NFS Exports from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.",
+		Description:         "This datasource is used to query the existing NFS Exports from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the NAS Server. Conflicts with `name`, `file_system_id` and `filter_expression`.",
-				MarkdownDescription: "Unique identifier of the NAS Server. Conflicts with `name`, `file_system_id` and `filter_expression`.",
+				Description:         "Unique identifier of the NFS export to be fetched. Conflicts with `name`, `file_system_id` and `filter_expression`.",
+				MarkdownDescription: "Unique identifier of the NFS export to be fetched. Conflicts with `name`, `file_system_id` and `filter_expression`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -71,8 +71,8 @@ func (r *datasourceNFSExport) Schema(ctx context.Context, req datasource.SchemaR
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Name of the NFS export to fetch. Conflicts with `id` and `filter_expression`.",
-				MarkdownDescription: "Name of the NFS export to fetch. Conflicts with `id` and `filter_expression`.",
+				Description:         "Name of the NFS export to be fetch. Conflicts with `id` and `filter_expression`.",
+				MarkdownDescription: "Name of the NFS export to be fetch. Conflicts with `id` and `filter_expression`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -82,8 +82,8 @@ func (r *datasourceNFSExport) Schema(ctx context.Context, req datasource.SchemaR
 				},
 			},
 			"file_system_id": schema.StringAttribute{
-				Description:         "The unique identifier of the file system on which the NFS Export is created. Conflicts with `id` and `filter_expression`.",
-				MarkdownDescription: "The unique identifier of the file system on which the NFS Export is created. Conflicts with `id` and `filter_expression`.",
+				Description:         "The ID of the file system whose NFS Exports are to be fetched. Conflicts with `id` and `filter_expression`.",
+				MarkdownDescription: "The ID of the file system whose NFS Exports are to be fetched. Conflicts with `id` and `filter_expression`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -93,14 +93,14 @@ func (r *datasourceNFSExport) Schema(ctx context.Context, req datasource.SchemaR
 				},
 			},
 			"filter_expression": schema.StringAttribute{
-				Description:         "PowerStore filter expression to filter NFS exports by. Conflicts with `id`.",
-				MarkdownDescription: "PowerStore filter expression to filter NFS exports by. Conflicts with `id`.",
+				Description:         "PowerStore filter expression to filter NFS exports by. Conflicts with `id`, `name` and `file_system_id`.",
+				MarkdownDescription: "PowerStore filter expression to filter NFS exports by. Conflicts with `id`, `name` and `file_system_id`.",
 				Optional:            true,
 				CustomType:          models.FilterExpressionType{},
 			},
 			"nfs_exports": schema.ListNestedAttribute{
-				Description:         "List of NFS exports.",
-				MarkdownDescription: "List of NFS exports.",
+				Description:         "List of NFS exports fetched from PowerStore array.",
+				MarkdownDescription: "List of NFS exports fetched from PowerStore array.",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: r.nfsExportDsSchema()},
@@ -118,8 +118,8 @@ func (r *datasourceNFSExport) nfsExportDsSchema() map[string]schema.Attribute {
 			MarkdownDescription: "The unique identifier of the NFS Export.",
 		},
 		"file_system_id": schema.StringAttribute{
-			MarkdownDescription: "The unique identifier of the file	system on which the NFS Export will be created.",
-			Description:         "The unique identifier of the file system on which the NFS Export will be created.",
+			MarkdownDescription: "The unique identifier of the file	system on which the NFS Export is created.",
+			Description:         "The unique identifier of the file system on which the NFS Export is created.",
 			Computed:            true,
 		},
 		"name": schema.StringAttribute{
@@ -128,8 +128,8 @@ func (r *datasourceNFSExport) nfsExportDsSchema() map[string]schema.Attribute {
 			Computed:            true,
 		},
 		"path": schema.StringAttribute{
-			MarkdownDescription: "The local path to export relative to the nfs export root directory. With NFS, each export of a file_system or file_nfs must have a unique local path. Before you can create additional Exports within an NFS shared folder, you must create directories within it from a Linux/Unix host that is connected to the nfs export. After a directory has been created from a mounted host, you can create a corresponding Export and Set access permissions accordingly.",
-			Description:         "The local path to export relative to the nfs export root directory. With NFS, each export of a file_system or file_nfs must have a unique local path. Before you can create additional Exports within an NFS shared folder, you must create directories within it from a Linux/Unix host that is connected to the nfs export. After a directory has been created from a mounted host, you can create a corresponding Export and Set access permissions accordingly.",
+			MarkdownDescription: "The local path of the filesystem exported via the NFS Export.",
+			Description:         "The local path of the filesystem exported via the NFS Export.",
 			Computed:            true,
 		},
 		"read_write_hosts": schema.ListAttribute{
@@ -145,8 +145,8 @@ func (r *datasourceNFSExport) nfsExportDsSchema() map[string]schema.Attribute {
 			ElementType:         types.StringType,
 		},
 		"no_access_hosts": schema.ListAttribute{
-			MarkdownDescription: "List of hosts with no access to the NFS export or its snapshots.",
-			Description:         "List of hosts with no access to the NFS export or its snapshots.",
+			MarkdownDescription: "List of hosts with no access to this NFS export or its snapshots.",
+			Description:         "List of hosts with no access to this NFS export or its snapshots.",
 			Computed:            true,
 			ElementType:         types.StringType,
 		},
@@ -168,8 +168,8 @@ func (r *datasourceNFSExport) nfsExportDsSchema() map[string]schema.Attribute {
 			Computed:            true,
 		},
 		"min_security": schema.StringAttribute{
-			MarkdownDescription: "The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.",
-			Description:         "The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.",
+			MarkdownDescription: "The NFS enforced security type for users accessing the NFS Export.",
+			Description:         "The NFS enforced security type for users accessing the NFS Export.",
 			Computed:            true,
 		},
 		"anonymous_gid": schema.Int32Attribute{
@@ -188,8 +188,8 @@ func (r *datasourceNFSExport) nfsExportDsSchema() map[string]schema.Attribute {
 			Computed:            true,
 		},
 		"nfs_owner_username": schema.StringAttribute{
-			MarkdownDescription: "The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.",
-			Description:         "The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.",
+			MarkdownDescription: "The default owner of the NFS Export associated with the datastore. For NFSv3 or NFSv4 without Kerberos, the default owner is root.",
+			Description:         "The default owner of the NFS Export associated with the datastore. For NFSv3 or NFSv4 without Kerberos, the default owner is root.",
 			Computed:            true,
 		},
 		"default_access": schema.StringAttribute{
