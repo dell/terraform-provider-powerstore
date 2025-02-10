@@ -17,18 +17,27 @@ limitations under the License.
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/powerstore/customtype"
+)
 
 type NFSExport struct {
-	ID               types.String `tfsdk:"id"`
-	FileSystemID     types.String `tfsdk:"file_system_id"`
-	Name             types.String `tfsdk:"name"`
-	Path             types.String `tfsdk:"path"`
-	AnonymousGID     types.Int32  `tfsdk:"anonymous_gid"`
-	AnonymousUID     types.Int32  `tfsdk:"anonymous_uid"`
-	Description      types.String `tfsdk:"description"`
-	IsNoSUID         types.Bool   `tfsdk:"is_no_suid"`
-	MinSecurity      types.String `tfsdk:"min_security"`
-	NfsOwnerUsername types.String `tfsdk:"nfs_owner_username"`
-	DefaultAccess    types.String `tfsdk:"default_access"`
+	ID                 types.String     `tfsdk:"id"`
+	FileSystemID       types.String     `tfsdk:"file_system_id"`
+	Name               types.String     `tfsdk:"name"`
+	Path               types.String     `tfsdk:"path"`
+	AnonymousGID       types.Int32      `tfsdk:"anonymous_gid"`
+	AnonymousUID       types.Int32      `tfsdk:"anonymous_uid"`
+	Description        types.String     `tfsdk:"description"`
+	IsNoSUID           types.Bool       `tfsdk:"is_no_suid"`
+	MinSecurity        types.String     `tfsdk:"min_security"`
+	NfsOwnerUsername   types.String     `tfsdk:"nfs_owner_username"`
+	DefaultAccess      types.String     `tfsdk:"default_access"`
+	NoAccessHosts      customtype.Hosts `tfsdk:"no_access_hosts"`
+	ReadOnlyHosts      customtype.Hosts `tfsdk:"read_only_hosts"`
+	ReadOnlyRootHosts  customtype.Hosts `tfsdk:"read_only_root_hosts"`
+	ReadWriteHosts     customtype.Hosts `tfsdk:"read_write_hosts"`
+	ReadWriteRootHosts customtype.Hosts `tfsdk:"read_write_root_hosts"`
 }
