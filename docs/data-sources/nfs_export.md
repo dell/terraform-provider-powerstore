@@ -67,6 +67,12 @@ data powerstore_nfs_export nfs_export_by_name {
 # fetching all NFS exports from a filesystem
 data powerstore_filesystem us_east_sales_catalog {
   name = "us-east-sales-catalog"
+  lifecycle {
+      postcondition {
+        condition     = length(self.filesystems) == 1
+        error_message = "error: US East sales catalog filesystem list length should be 1, received: ${length(self.filesystems)}"
+      }
+    }
 }
 
 data powerstore_nfs_export nfs_export_by_filesystem {
@@ -80,8 +86,10 @@ data powerstore_nfs_export nfs_export_by_filesystem_and_name {
 }
 
 # fetching NFS exports using filter expression
+# here, we are fetching all NFS exports of subdirectories of /us-east-revenue/sports_cars
+# with min_security as Sys and default_access as Root
 data powerstore_nfs_export nfs_export_by_name_regex {
-  filter_expression = "name=ilike.us-east*"
+  filter_expression = "path=ilike./us-east-revenue/sports_cars/*&min_security=eq.Sys&default_access=eq.Root"
 }
 
 output "nfs_exports_with_name_regex" {
