@@ -66,4 +66,8 @@ var datasourceFacts = map[string]Facts{
 	"nas_server": {
 		ExampleVar: "data.powerstore_nas_server.test1.attribute_name",
 	},
+	"nfs_export": {
+		Note:       "> **Note:** `id` and `filter_expression` cannot be used with any other attribute. `name` and `file_system_id` can be used together.",
+		ExampleVar: "data.powerstore_nfs_export.nfs_export_by_name_regex.attribute_name",
+	},
 }
