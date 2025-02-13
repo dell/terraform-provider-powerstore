@@ -70,4 +70,8 @@ var datasourceFacts = map[string]Facts{
 		Note:       "> **Note:** `id` and `filter_expression` cannot be used with any other attribute. `name` and `file_system_id` can be used together.",
 		ExampleVar: "data.powerstore_nfs_export.nfs_export_by_name_regex.attribute_name",
 	},
+	"smb_share": {
+		Note:       "> **Note:** Only one of `name`, `id`, `file_system_id` or `filter_expression` can be provided at a time.",
+		ExampleVar: "data.powerstore_smb_share.smb_share_by_filters.attribute_name",
+	},
 }
