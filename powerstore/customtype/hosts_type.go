@@ -5,64 +5,99 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/attr/xattr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
 var (
-	_ basetypes.ListTypable = (*HostsType)(nil)
+	_ basetypes.ListTypable  = (*HostsType)(nil)
+	_ xattr.TypeWithValidate = (*HostsType)(nil)
 )
 
 type HostsType struct {
 	basetypes.ListType
 }
 
-// String returns a human readable string of the type name.
 func (t HostsType) String() string {
-	return "powerstore.HostsType"
+	return "powerstore.Hosts"
 }
 
-// ValueType returns the Value type.
+func (l HostsType) ElementType() attr.Type {
+	return basetypes.StringType{}
+}
+
+func (l HostsType) WithElementType(typ attr.Type) attr.TypeWithElementType {
+	return HostsType{
+		ListType: basetypes.ListType{
+			ElemType: basetypes.StringType{},
+		},
+	}
+}
+
+
 func (t HostsType) ValueType(ctx context.Context) attr.Value {
 	return Hosts{}
 }
 
-// Equal returns true if the given type is equivalent.
 func (t HostsType) Equal(o attr.Type) bool {
-	other, ok := o.(HostsType)
+	_, ok := o.(HostsType)
 
-	if !ok {
-		return false
-	}
-
-	return t.ListType.Equal(other.ListType)
+	return ok
 }
 
-// ValueFromString returns a ListValuable type given a ListValue.
+func (t HostsType) Validate(ctx context.Context, in tftypes.Value, path path.Path) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	if in.Type() == nil {
+		return diags
+	}
+
+	return diags
+}
+
 func (t HostsType) ValueFromList(ctx context.Context, in basetypes.ListValue) (basetypes.ListValuable, diag.Diagnostics) {
 	return Hosts{
 		ListValue: in,
 	}, nil
 }
 
-// ValueFromTerraform returns a Value given a tftypes.Value.  This is meant to convert the tftypes.Value into a more convenient Go type
-// for the provider to consume the data with.
 func (t HostsType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
-	attrValue, err := t.ListType.ValueFromTerraform(ctx, in)
+	if in.Type() == nil {
+		return basetypes.NewListNull(t.ElementType()), nil
+	}
 
+	if !in.Type().Is(tftypes.List{}) {
+		return nil, fmt.Errorf("can't use %s as value of List with ElementType %T", in.String(), t.ElementType())
+	}
+
+	if !in.IsKnown() {
+		return basetypes.NewListUnknown(t.ElementType()), nil
+	}
+
+	if in.IsNull() {
+		return basetypes.NewListNull(t.ElementType()), nil
+	}
+
+	val := []tftypes.Value{}
+	err := in.As(&val)
 	if err != nil {
 		return nil, err
 	}
-
-	ListValue, ok := attrValue.(basetypes.ListValue)
-
-	if !ok {
-		return nil, fmt.Errorf("unexpected value type of %T", attrValue)
+	elems := make([]attr.Value, 0, len(val))
+	for _, elem := range val {
+		av, err := t.ElementType().ValueFromTerraform(ctx, elem)
+		if err != nil {
+			return nil, err
+		}
+		elems = append(elems, av)
 	}
 
-	listValuable, diags := t.ValueFromList(ctx, ListValue)
+	listValue := basetypes.NewListValueMust(t.ElementType(), elems)
 
+	listValuable, diags := t.ValueFromList(ctx, listValue)
 	if diags.HasError() {
 		return nil, fmt.Errorf("unexpected error converting ListValue to ListValuable: %v", diags)
 	}

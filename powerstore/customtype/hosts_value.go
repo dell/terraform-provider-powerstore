@@ -2,32 +2,29 @@ package customtype
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/attr/xattr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
 var (
-	_ basetypes.ListValuable                   = (*Hosts)(nil)
-	_ basetypes.ListValuableWithSemanticEquals = (*Hosts)(nil)
-	_ xattr.ValidateableAttribute              = (*Hosts)(nil)
-	_ function.ValidateableParameter           = (*Hosts)(nil)
+	_ basetypes.ListValuable = (*Hosts)(nil)
 )
 
 type Hosts struct {
 	basetypes.ListValue
 }
 
-// Type returns an HostsType.
 func (v Hosts) Type(_ context.Context) attr.Type {
-	return HostsType{}
+	return HostsType{
+		ListType: basetypes.ListType{
+			ElemType: basetypes.StringType{},
+		},
+	}
 }
 
-// Equal returns true if the given value is equivalent.
 func (v Hosts) Equal(o attr.Value) bool {
 	other, ok := o.(Hosts)
 
@@ -38,107 +35,76 @@ func (v Hosts) Equal(o attr.Value) bool {
 	return v.ListValue.Equal(other.ListValue)
 }
 
-func (v Hosts) ListSemanticEquals(_ context.Context, newValuable basetypes.ListValuable) (bool, diag.Diagnostics) {
-	var diags diag.Diagnostics
+func (v Hosts) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+	listType := tftypes.List{ElementType: v.ElementType(ctx).TerraformType(ctx)}
 
-	newValue, ok := newValuable.(Hosts)
-	if !ok {
-		diags.AddError(
-			"Semantic Equality Check Error",
-			"An unexpected value type was received while performing semantic equality checks. "+
-				"Please report this to the provider developers.\n\n"+
-				"Expected Value Type: "+fmt.Sprintf("%T", v)+"\n"+
-				"Got Value Type: "+fmt.Sprintf("%T", newValuable),
-		)
-
-		return false, diags
+	if v.ListValue.IsNull() {
+		return tftypes.NewValue(tftypes.List{ElementType: tftypes.DynamicPseudoType}, nil), nil
 	}
-	v.ElementsAs(context.Background(), nil, true)
-	newValue.ElementsAs(context.Background(), nil, true)
-	// newIpAddr, _ := netip.ParseAddr(newValue.ValueString())
-	// currentIpAddr, _ := netip.ParseAddr(v.ValueString())
 
-	return true, diags
+	if v.ListValue.IsUnknown() {
+		return tftypes.NewValue(tftypes.List{ElementType: tftypes.DynamicPseudoType}, tftypes.UnknownValue), nil
+	}
+
+	var elemTfType tftypes.Type = tftypes.DynamicPseudoType
+
+	// Since the element type is dynamic, the final list element type will be determined by the value.
+	for _, elem := range v.Elements() {
+		val, err := elem.ToTerraformValue(ctx)
+		// Find the first non-dynamic value and use that as the type
+		if err == nil && !val.Type().Is(tftypes.DynamicPseudoType) {
+			elemTfType = val.Type()
+			break
+		}
+	}
+
+	vals := make([]tftypes.Value, 0, len(v.Elements()))
+
+	for _, elem := range v.Elements() {
+		val, err := elem.ToTerraformValue(ctx)
+
+		if err != nil {
+			return tftypes.NewValue(listType, tftypes.UnknownValue), err
+		}
+
+		// If the value is an unknown/nil DynamicPseudoType, we need to append a unknown/nil that matches the concrete value type
+		if val.Type().Is(tftypes.DynamicPseudoType) {
+			if val.IsNull() {
+				val = tftypes.NewValue(elemTfType, nil)
+			} else if !val.IsKnown() {
+				val = tftypes.NewValue(elemTfType, tftypes.UnknownValue)
+			}
+		}
+
+		vals = append(vals, val)
+	}
+
+	if err := tftypes.ValidateValue(listType, vals); err != nil {
+		return tftypes.NewValue(listType, tftypes.UnknownValue), err
+	}
+
+	return tftypes.NewValue(listType, vals), nil
 }
 
-func (v Hosts) ValidateAttribute(ctx context.Context, req xattr.ValidateAttributeRequest, resp *xattr.ValidateAttributeResponse) {
-	if v.IsUnknown() || v.IsNull() {
-		return
+func NewHostsNull() Hosts {
+	return Hosts{
+		ListValue: basetypes.NewListNull(basetypes.StringType{}),
 	}
-
-	// ipAddr, err := netip.ParseAddr(v.ValueString())
-	// if err != nil {
-	// 	resp.Diagnostics.AddAttributeError(
-	// 		req.Path,
-	// 		"Invalid IPv6 Address String Value",
-	// 		"A string value was provided that is not valid IPv6 string format (RFC 4291).\n\n"+
-	// 			"Given Value: "+v.ValueString()+"\n"+
-	// 			"Error: "+err.Error(),
-	// 	)
-
-	// 	return
-	// }
-
-	// if ipAddr.Is4() {
-	// 	resp.Diagnostics.AddAttributeError(
-	// 		req.Path,
-	// 		"Invalid IPv6 Address String Value",
-	// 		"An IPv4 string format was provided, string value must be IPv6 string format or IPv4-Mapped IPv6 string format (RFC 4291).\n\n"+
-	// 			"Given Value: "+v.ValueString()+"\n",
-	// 	)
-
-	// 	return
-	// }
-
-	// if !ipAddr.IsValid() || !ipAddr.Is6() {
-	// 	resp.Diagnostics.AddAttributeError(
-	// 		req.Path,
-	// 		"Invalid IPv6 Address String Value",
-	// 		"A string value was provided that is not valid IPv6 string format (RFC 4291).\n\n"+
-	// 			"Given Value: "+v.ValueString()+"\n",
-	// 	)
-
-	// 	return
-	// }
 }
 
-func (v Hosts) ValidateParameter(ctx context.Context, req function.ValidateParameterRequest, resp *function.ValidateParameterResponse) {
-	if v.IsUnknown() || v.IsNull() {
-		return
+func NewHostsUnknown() Hosts {
+	return Hosts{
+		ListValue: basetypes.NewListUnknown(basetypes.NewStringUnknown().Type(context.Background())),
+	}
+}
+
+func NewHostsValue(elements []attr.Value) (Hosts, diag.Diagnostics) {
+	listValue, diags := basetypes.NewListValue(basetypes.StringType{}, elements)
+	if diags.HasError() {
+		return NewHostsUnknown(), diags
 	}
 
-	// ipAddr, err := netip.ParseAddr(v.ValueString())
-	// if err != nil {
-	// 	resp.Error = function.NewArgumentFuncError(
-	// 		req.Position,
-	// 		"Invalid IPv6 Address String Value: "+
-	// 			"A string value was provided that is not valid IPv6 string format (RFC 4291).\n\n"+
-	// 			"Given Value: "+v.ValueString()+"\n"+
-	// 			"Error: "+err.Error(),
-	// 	)
-
-	// 	return
-	// }
-
-	// if ipAddr.Is4() {
-	// 	resp.Error = function.NewArgumentFuncError(
-	// 		req.Position,
-	// 		"Invalid IPv6 Address String Value: "+
-	// 			"An IPv4 string format was provided, string value must be IPv6 string format or IPv4-Mapped IPv6 string format (RFC 4291).\n\n"+
-	// 			"Given Value: "+v.ValueString()+"\n",
-	// 	)
-
-	// 	return
-	// }
-
-	// if !ipAddr.IsValid() || !ipAddr.Is6() {
-	// 	resp.Error = function.NewArgumentFuncError(
-	// 		req.Position,
-	// 		"Invalid IPv6 Address String Value: "+
-	// 			"A string value was provided that is not valid IPv6 string format (RFC 4291).\n\n"+
-	// 			"Given Value: "+v.ValueString()+"\n",
-	// 	)
-
-	// 	return
-	// }
+	return Hosts{
+		ListValue: listValue,
+	}, nil
 }
