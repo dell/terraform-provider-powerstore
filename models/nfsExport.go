@@ -33,6 +33,11 @@ type NFSExport struct {
 	MinSecurity      types.String `tfsdk:"min_security"`
 	NfsOwnerUsername types.String `tfsdk:"nfs_owner_username"`
 	DefaultAccess    types.String `tfsdk:"default_access"`
+	RWHosts          types.Set    `tfsdk:"read_write_hosts"`
+	ROHosts          types.Set    `tfsdk:"read_only_hosts"`
+	RWRootHosts      types.Set    `tfsdk:"read_write_root_hosts"`
+	RORootHosts      types.Set    `tfsdk:"read_only_root_hosts"`
+	NoAccessHosts    types.Set    `tfsdk:"no_access_hosts"`
 }
 
 type NFSExportDs struct {
