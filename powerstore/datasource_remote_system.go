@@ -119,6 +119,11 @@ func (r *datasourceRemoteSystem) RemoteSystemDsSchema() map[string]schema.Attrib
 			MarkdownDescription: "Serial number of the remote system instance.",
 			Description:         "Serial number of the remote system instance.",
 		},
+		"type": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "Type of the remote system instance.",
+			Description:         "Type of the remote system instance.",
+		},
 		"management_address": schema.StringAttribute{
 			Computed:            true,
 			MarkdownDescription: "Management IP address of the remote system instance.",
@@ -126,8 +131,13 @@ func (r *datasourceRemoteSystem) RemoteSystemDsSchema() map[string]schema.Attrib
 		},
 		"data_connection_state": schema.StringAttribute{
 			Computed:            true,
-			MarkdownDescription: "Data connection state of a remote system.",
-			Description:         "Data connection state of a remote system.",
+			MarkdownDescription: "Data connection state of the remote system.",
+			Description:         "Data connection state of the remote system.",
+		},
+		"data_network_latency": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "Data network latency of the remote system.",
+			Description:         "Data network latency of the remote system.",
 		},
 		"capabilities": schema.ListAttribute{
 			ElementType:         types.StringType,
@@ -241,8 +251,10 @@ func (r *datasourceRemoteSystem) getItemState(input gopowerstore.RemoteSystem) m
 		Name:                input.Name,
 		Description:         input.Description,
 		SerialNumber:        input.SerialNumber,
+		Type:                input.Type,
 		ManagementAddress:   input.ManagementAddress,
 		DataConnectionState: input.DataConnectionState,
+		DataNetworkLatency:  input.DataNetworkLatency,
 		Capabilities:        input.Capabilities,
 	}
 }

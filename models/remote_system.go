@@ -29,25 +29,13 @@ type RemoteSystemDs struct {
 
 // RemoteSystem - RemoteSystem properties
 type RemoteSystemDsItem struct {
-	// // Unique identifier of the remote system instance.
-	// ID string `json:"id,omitempty"`
-	ID string `tfsdk:"id"`
-	// // User-specified name of the remote system instance.
-	// // This property supports case-insensitive filtering
-	// Name string `json:"name,omitempty"`
-	Name string `tfsdk:"name"`
-	// // User-specified description of the remote system instance.
-	// Description string `json:"description,omitempty"`
-	Description string `tfsdk:"description"`
-	// // Serial number of the remote system instance
-	// SerialNumber string `json:"serial_number,omitempty"`
-	SerialNumber string `tfsdk:"serial_number"`
-	// // Management IP address of the remote system instance
-	// ManagementAddress string `json:"management_address,omitempty"`
-	ManagementAddress string `tfsdk:"management_address"`
-	// // Possible data connection states of a remote system
-	// DataConnectionState string `json:"data_connection_state,omitempty"`
-	DataConnectionState string `tfsdk:"data_connection_state"`
-	// // List of supported remote protection capabilities
-	Capabilities []string `tfsdk:"capabilities"`
+	ID                  string   `tfsdk:"id"`
+	Name                string   `tfsdk:"name"`
+	Description         string   `tfsdk:"description"`
+	SerialNumber        string   `tfsdk:"serial_number"`
+	Type                string   `tfsdk:"type"`
+	ManagementAddress   string   `tfsdk:"management_address"`
+	DataConnectionState string   `tfsdk:"data_connection_state"`
+	DataNetworkLatency  string   `tfsdk:"data_network_latency"`
+	Capabilities        []string `tfsdk:"capabilities"`
 }
