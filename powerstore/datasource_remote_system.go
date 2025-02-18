@@ -197,7 +197,7 @@ func (r *datasourceRemoteSystem) Read(ctx context.Context, req datasource.ReadRe
 		remoteSystems = append(remoteSystems, remoteSystemResponse)
 		conf.Name = types.StringValue(remoteSystemResponse.Name)
 	} else if !conf.Name.IsNull() && !conf.Name.IsUnknown() {
-		remoteSystemResponse, err := r.client.PStoreClient.GetRemoteSystemByName(context.Background(), conf.Name.ValueString())
+		remoteSystemResponse, err := r.client.PStoreClient.GetRemoteSystem(context.Background(), "name:"+conf.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error reading Remote System",

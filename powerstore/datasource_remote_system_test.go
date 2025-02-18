@@ -49,7 +49,7 @@ func TestAccRemoteSystemDs(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				// Get all Remote Systemss
+				// Get all Remote Systems
 				Config: ProviderConfigForTesting + `
 				data "powerstore_remote_system" "test" {
 				}
@@ -96,6 +96,14 @@ func TestAccRemoteSystemDs(t *testing.T) {
 				Config: ProviderConfigForTesting + dsPreq + `
 				data "powerstore_remote_system" "test" {
 					name = ` + preqItem + `.name
+				}
+				`,
+			},
+			{
+				// Get Remote Systems by filter expression
+				Config: ProviderConfigForTesting + dsPreq + `
+				data "powerstore_remote_system" "test" {
+					filter_expression = "management_address=eq.${` + preqItem + `.management_address}"
 				}
 				`,
 			},
