@@ -75,7 +75,7 @@ var datasourceFacts = map[string]Facts{
 		ExampleVar: "data.powerstore_smb_share.smb_share_by_filters.attribute_name",
 	},
 	"remote_system": {
-		Note:       "> **Note:** Only one of `name` or `id` can be provided at a time.",
+		Note:       "> **Note:** Only one of `name`, `id` or `filter_expression` can be provided at a time.",
 		ExampleVar: "data.powerstore_remote_system.remote_system_by_filters.attribute_name",
 	},
 }

@@ -26,7 +26,7 @@ description: |-
 
 This datasource is used to query the existing Remote Systems from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 
-> **Note:** Only one of `name` or `id` can be provided at a time.
+> **Note:** Only one of `name`, `id` or `filter_expression` can be provided at a time.
 
 ## Example Usage
 
@@ -82,9 +82,9 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
-- `filter_expression` (String) PowerStore filter expression to filter Remote Systems by. Conflicts with `id`, `name` and `management_address`.
-- `id` (String) Unique identifier of the Remote System to be fetched. Conflicts with `name`, `management_address` and `filter_expression`.
-- `name` (String) Name of the Remote System to be fetched. Conflicts with `id`, `management_address` and `filter_expression`.
+- `filter_expression` (String) PowerStore filter expression to filter Remote Systems by. Conflicts with `id` and `name`.
+- `id` (String) Unique identifier of the Remote System to be fetched. Conflicts with `name` and `filter_expression`.
+- `name` (String) Name of the Remote System to be fetched. Conflicts with `id` and `filter_expression`.
 
 ### Read-Only
 

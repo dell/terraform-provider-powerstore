@@ -56,8 +56,8 @@ func (r *datasourceRemoteSystem) Schema(ctx context.Context, req datasource.Sche
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description:         "Unique identifier of the Remote System to be fetched. Conflicts with `name`, `management_address` and `filter_expression`.",
-				MarkdownDescription: "Unique identifier of the Remote System to be fetched. Conflicts with `name`, `management_address` and `filter_expression`.",
+				Description:         "Unique identifier of the Remote System to be fetched. Conflicts with `name` and `filter_expression`.",
+				MarkdownDescription: "Unique identifier of the Remote System to be fetched. Conflicts with `name` and `filter_expression`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -69,8 +69,8 @@ func (r *datasourceRemoteSystem) Schema(ctx context.Context, req datasource.Sche
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:         "Name of the Remote System to be fetched. Conflicts with `id`, `management_address` and `filter_expression`.",
-				MarkdownDescription: "Name of the Remote System to be fetched. Conflicts with `id`, `management_address` and `filter_expression`.",
+				Description:         "Name of the Remote System to be fetched. Conflicts with `id` and `filter_expression`.",
+				MarkdownDescription: "Name of the Remote System to be fetched. Conflicts with `id` and `filter_expression`.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
@@ -80,8 +80,8 @@ func (r *datasourceRemoteSystem) Schema(ctx context.Context, req datasource.Sche
 				},
 			},
 			"filter_expression": schema.StringAttribute{
-				Description:         "PowerStore filter expression to filter Remote Systems by. Conflicts with `id`, `name` and `management_address`.",
-				MarkdownDescription: "PowerStore filter expression to filter Remote Systems by. Conflicts with `id`, `name` and `management_address`.",
+				Description:         "PowerStore filter expression to filter Remote Systems by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Remote Systems by. Conflicts with `id` and `name`.",
 				Optional:            true,
 				CustomType:          models.FilterExpressionType{},
 			},
