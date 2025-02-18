@@ -21,9 +21,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
+	"sort"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -146,6 +150,71 @@ func NFSExportSchema() map[string]schema.Attribute {
 				stringvalidator.OneOf(string(gopowerstore.NoAccess), string(gopowerstore.ReadOnly), string(gopowerstore.ReadWrite), string(gopowerstore.Root), string(gopowerstore.ReadOnlyRoot)),
 			},
 		},
+		"no_access_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Optional:            true,
+			Computed:            true,
+			ElementType:         types.StringType,
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
+					stringvalidator.LengthAtMost(255),
+				),
+				listvalidator.SizeAtLeast(1),
+			},
+		},
+		"read_only_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Optional:            true,
+			Computed:            true,
+			ElementType:         types.StringType,
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
+					stringvalidator.LengthAtMost(255),
+				),
+				listvalidator.SizeAtLeast(1),
+			},
+		},
+		"read_only_root_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Optional:            true,
+			Computed:            true,
+			ElementType:         types.StringType,
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
+					stringvalidator.LengthAtMost(255),
+				),
+				listvalidator.SizeAtLeast(1),
+			},
+		},
+		"read_write_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Optional:            true,
+			Computed:            true,
+			ElementType:         types.StringType,
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
+					stringvalidator.LengthAtMost(255),
+				),
+				listvalidator.SizeAtLeast(1),
+			},
+		},
+		"read_write_root_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Optional:            true,
+			Computed:            true,
+			ElementType:         types.StringType,
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
+					stringvalidator.LengthAtMost(255),
+				),
+				listvalidator.SizeAtLeast(1),
+			},
+		},
 	}
 }
 
@@ -204,7 +273,7 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 
 	// Update details to state
 	state := NFSExportState(nfsExportResponse)
-
+	state = NFSExportSementicEquality(plan, state)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -216,14 +285,14 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 // Read - reads nfs export resource information
 func (r *resourceNFSExport) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
-	var state models.NFSExport
-	diags := req.State.Get(ctx, &state)
+	var oldstate models.NFSExport
+	diags := req.State.Get(ctx, &oldstate)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	nfsExportID := state.ID.ValueString()
+	nfsExportID := oldstate.ID.ValueString()
 
 	// Get nfsExport details from API and then update what is in state from what the API returns
 	nfsExportResponse, err := r.client.PStoreClient.GetNFSExport(context.Background(), nfsExportID)
@@ -234,10 +303,10 @@ func (r *resourceNFSExport) Read(ctx context.Context, req resource.ReadRequest, 
 		)
 		return
 	}
-	state = NFSExportState(nfsExportResponse)
-
-	// Set state
-	diags = resp.State.Set(ctx, &state)
+	newState := NFSExportState(nfsExportResponse)
+	semState := NFSExportSementicEquality(oldstate, newState)
+	// List state
+	diags = resp.State.Set(ctx, &semState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -298,6 +367,7 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 
 	// Update details to state
 	state = NFSExportState(nfsExportResponse)
+	state = NFSExportSementicEquality(plan, state)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -348,31 +418,40 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 		Path:         plan.Path.ValueString(),
 
 		// Optional
-		AnonymousGID:     plan.AnonymousGID.ValueInt32(),
-		AnonymousUID:     plan.AnonymousUID.ValueInt32(),
-		Description:      plan.Description.ValueString(),
-		IsNoSUID:         plan.IsNoSUID.ValueBool(),
-		NFSOwnerUsername: plan.NfsOwnerUsername.ValueString(),
-		MinSecurity:      plan.MinSecurity.ValueString(),
-		DefaultAccess:    gopowerstore.NFSExportDefaultAccessEnum(plan.DefaultAccess.ValueString()),
+		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
+		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
+		Description:        plan.Description.ValueString(),
+		IsNoSUID:           plan.IsNoSUID.ValueBool(),
+		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
+		MinSecurity:        plan.MinSecurity.ValueString(),
+		DefaultAccess:      gopowerstore.NFSExportDefaultAccessEnum(plan.DefaultAccess.ValueString()),
+		NoAccessHosts:      tfListToSlice(plan.NoAccessHosts),
+		ReadOnlyHosts:      tfListToSlice(plan.ROHosts),
+		ReadOnlyRootHosts:  tfListToSlice(plan.RORootHosts),
+		ReadWriteHosts:     tfListToSlice(plan.RWHosts),
+		ReadWriteRootHosts: tfListToSlice(plan.RWRootHosts),
 	}
 	return nfsCreate
 }
 
 func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *gopowerstore.NFSExportModify {
 	nfsModify := &gopowerstore.NFSExportModify{
-		AnonymousGID:     plan.AnonymousGID.ValueInt32(),
-		AnonymousUID:     plan.AnonymousUID.ValueInt32(),
-		Description:      plan.Description.ValueString(),
-		IsNoSUID:         plan.IsNoSUID.ValueBool(),
-		NFSOwnerUsername: plan.NfsOwnerUsername.ValueString(),
-		MinSecurity:      plan.MinSecurity.ValueString(),
-		DefaultAccess:    plan.DefaultAccess.ValueString(),
+		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
+		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
+		Description:        plan.Description.ValueString(),
+		IsNoSUID:           plan.IsNoSUID.ValueBool(),
+		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
+		MinSecurity:        plan.MinSecurity.ValueString(),
+		DefaultAccess:      plan.DefaultAccess.ValueString(),
+		NoAccessHosts:      tfListToSlice(plan.NoAccessHosts),
+		ReadOnlyHosts:      tfListToSlice(plan.ROHosts),
+		ReadOnlyRootHosts:  tfListToSlice(plan.RORootHosts),
+		ReadWriteHosts:     tfListToSlice(plan.RWHosts),
+		ReadWriteRootHosts: tfListToSlice(plan.RWRootHosts),
 	}
 	return nfsModify
 }
 
-// updateNFSExportState - method to update terraform state
 func NFSExportState(input gopowerstore.NFSExport) models.NFSExport {
 	return models.NFSExport{
 		ID:               types.StringValue(input.ID),
@@ -386,5 +465,113 @@ func NFSExportState(input gopowerstore.NFSExport) models.NFSExport {
 		Name:             types.StringValue(input.Name),
 		NfsOwnerUsername: types.StringValue(input.NFSOwnerUsername),
 		Path:             types.StringValue(input.Path),
+		RWHosts:          sliceToTFList(input.RWHosts),
+		ROHosts:          sliceToTFList(input.ROHosts),
+		RWRootHosts:      sliceToTFList(input.RWRootHosts),
+		RORootHosts:      sliceToTFList(input.RORootHosts),
+		NoAccessHosts:    sliceToTFList(input.NoAccessHosts),
 	}
+}
+
+// NFSExportSementicEquality updates the hosts in the state based on the plan semantic equality.
+func NFSExportSementicEquality(plan, state models.NFSExport) models.NFSExport {
+	state.ROHosts = updateHosts(plan.ROHosts, state.ROHosts)
+	state.RWHosts = updateHosts(plan.RWHosts, state.RWHosts)
+	state.RORootHosts = updateHosts(plan.RORootHosts, state.RORootHosts)
+	state.RWRootHosts = updateHosts(plan.RWRootHosts, state.RWRootHosts)
+	state.NoAccessHosts = updateHosts(plan.NoAccessHosts, state.NoAccessHosts)
+	return state
+}
+
+// updateHosts updates the hosts in the state based on the plan.
+func updateHosts(plan, state types.List) types.List {
+	if !plan.IsUnknown() && isEqualHosts(parseIPList(tfListToSlice(plan)), tfListToSlice(state)) {
+		return plan
+	}
+	return state
+}
+
+// isEqualHosts checks if two slices of strings contain the same unique hosts.
+func isEqualHosts(hosts1, hosts2 []string) bool {
+	hosts1 = uniqueHosts(hosts1)
+	hosts2 = uniqueHosts(hosts2)
+	if len(hosts1) != len(hosts2) {
+		return false
+	}
+	for i := range hosts1 {
+		if hosts1[i] != hosts2[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// uniqueHosts returns a sorted list of unique strings from the given slice.
+func uniqueHosts(hosts []string) []string {
+	unique := make(map[string]bool)
+	for _, host := range hosts {
+		unique[host] = true
+	}
+	result := make([]string, 0, len(unique))
+	for host := range unique {
+		result = append(result, host)
+	}
+	sort.Strings(result)
+	return result
+}
+
+// parseIPList takes a slice of strings, each of which can be a valid IP address or CIDR notation, and returns a slice of strings in the same order.
+// The resulting slice of strings is guaranteed to have the same number of elements as the input slice.
+// If a string in the input slice is not a valid IP address or CIDR notation, it is added to the resulting slice as-is.
+func parseIPList(input []string) []string {
+	var ipList []string
+
+	for _, line := range input {
+		if ip := net.ParseIP(line); ip != nil {
+			if ip.To4() != nil {
+				ipList = append(ipList, ip.String()+"/255.255.255.255")
+			} else {
+				ipList = append(ipList, ip.String()+"/128")
+			}
+		} else if ipNet, parse, err := net.ParseCIDR(line); err == nil {
+			if ipNet.To4() != nil {
+				ipList = append(ipList, parse.IP.String()+"/"+toIPMask(parse.Mask))
+			} else {
+				ipList = append(ipList, parse.String())
+			}
+		} else {
+			ipList = append(ipList, line)
+		}
+	}
+
+	return ipList
+}
+
+// toIPMask converts a net.IPMask to a string representation.
+func toIPMask(mask net.IPMask) string {
+	maskBytes := make([]byte, 4)
+	for i := range mask {
+		maskBytes[i] = byte(mask[i])
+	}
+	return fmt.Sprintf("%d.%d.%d.%d", maskBytes[0], maskBytes[1], maskBytes[2], maskBytes[3])
+}
+
+// sliceToTFList converts a slice of strings to a TFList.
+func sliceToTFList(inputs []string) types.List {
+	out := make([]attr.Value, len(inputs))
+	for i, input := range inputs {
+		out[i] = types.StringValue(input)
+	}
+	List, _ := types.ListValue(types.StringType, out)
+	return List
+}
+
+// tfListToSlice converts a TFList to a slice of strings.
+func tfListToSlice(list types.List) []string {
+	slice := make([]string, 0)
+	list.ElementsAs(context.Background(), &slice, true)
+	if len(slice) == 0 {
+		return nil
+	}
+	return slice
 }
