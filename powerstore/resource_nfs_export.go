@@ -25,7 +25,7 @@ import (
 	"sort"
 
 	"github.com/dell/gopowerstore"
-	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -150,69 +150,69 @@ func NFSExportSchema() map[string]schema.Attribute {
 				stringvalidator.OneOf(string(gopowerstore.NoAccess), string(gopowerstore.ReadOnly), string(gopowerstore.ReadWrite), string(gopowerstore.Root), string(gopowerstore.ReadOnlyRoot)),
 			},
 		},
-		"no_access_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
-			Description:         "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
+		"no_access_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
 			ElementType:         types.StringType,
-			Validators: []validator.Set{
-				setvalidator.ValueStringsAre(
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
 					stringvalidator.LengthAtMost(255),
 				),
-				setvalidator.SizeAtLeast(1),
+				listvalidator.SizeAtLeast(1),
 			},
 		},
-		"read_only_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
-			Description:         "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
+		"read_only_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
 			ElementType:         types.StringType,
-			Validators: []validator.Set{
-				setvalidator.ValueStringsAre(
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
 					stringvalidator.LengthAtMost(255),
 				),
-				setvalidator.SizeAtLeast(1),
+				listvalidator.SizeAtLeast(1),
 			},
 		},
-		"read_only_root_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
-			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
+		"read_only_root_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
 			ElementType:         types.StringType,
-			Validators: []validator.Set{
-				setvalidator.ValueStringsAre(
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
 					stringvalidator.LengthAtMost(255),
 				),
-				setvalidator.SizeAtLeast(1),
+				listvalidator.SizeAtLeast(1),
 			},
 		},
-		"read_write_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
-			Description:         "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
+		"read_write_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
 			ElementType:         types.StringType,
-			Validators: []validator.Set{
-				setvalidator.ValueStringsAre(
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
 					stringvalidator.LengthAtMost(255),
 				),
-				setvalidator.SizeAtLeast(1),
+				listvalidator.SizeAtLeast(1),
 			},
 		},
-		"read_write_root_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
-			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
+		"read_write_root_hosts": schema.ListAttribute{
+			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
+			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the List is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
 			ElementType:         types.StringType,
-			Validators: []validator.Set{
-				setvalidator.ValueStringsAre(
+			Validators: []validator.List{
+				listvalidator.ValueStringsAre(
 					stringvalidator.LengthAtMost(255),
 				),
-				setvalidator.SizeAtLeast(1),
+				listvalidator.SizeAtLeast(1),
 			},
 		},
 	}
@@ -285,14 +285,14 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 // Read - reads nfs export resource information
 func (r *resourceNFSExport) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
-	var state models.NFSExport
-	diags := req.State.Get(ctx, &state)
+	var oldstate models.NFSExport
+	diags := req.State.Get(ctx, &oldstate)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	nfsExportID := state.ID.ValueString()
+	nfsExportID := oldstate.ID.ValueString()
 
 	// Get nfsExport details from API and then update what is in state from what the API returns
 	nfsExportResponse, err := r.client.PStoreClient.GetNFSExport(context.Background(), nfsExportID)
@@ -303,10 +303,10 @@ func (r *resourceNFSExport) Read(ctx context.Context, req resource.ReadRequest, 
 		)
 		return
 	}
-	state = NFSExportState(nfsExportResponse)
-
-	// Set state
-	diags = resp.State.Set(ctx, &state)
+	newState := NFSExportState(nfsExportResponse)
+	semState := NFSExportSementicEquality(oldstate, newState)
+	// List state
+	diags = resp.State.Set(ctx, &semState)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -425,11 +425,11 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
 		MinSecurity:        plan.MinSecurity.ValueString(),
 		DefaultAccess:      gopowerstore.NFSExportDefaultAccessEnum(plan.DefaultAccess.ValueString()),
-		NoAccessHosts:      tfSetToSlice(plan.NoAccessHosts),
-		ReadOnlyHosts:      tfSetToSlice(plan.ROHosts),
-		ReadOnlyRootHosts:  tfSetToSlice(plan.RORootHosts),
-		ReadWriteHosts:     tfSetToSlice(plan.RWHosts),
-		ReadWriteRootHosts: tfSetToSlice(plan.RWRootHosts),
+		NoAccessHosts:      tfListToSlice(plan.NoAccessHosts),
+		ReadOnlyHosts:      tfListToSlice(plan.ROHosts),
+		ReadOnlyRootHosts:  tfListToSlice(plan.RORootHosts),
+		ReadWriteHosts:     tfListToSlice(plan.RWHosts),
+		ReadWriteRootHosts: tfListToSlice(plan.RWRootHosts),
 	}
 	return nfsCreate
 }
@@ -443,11 +443,11 @@ func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *g
 		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
 		MinSecurity:        plan.MinSecurity.ValueString(),
 		DefaultAccess:      plan.DefaultAccess.ValueString(),
-		NoAccessHosts:      tfSetToSlice(plan.NoAccessHosts),
-		ReadOnlyHosts:      tfSetToSlice(plan.ROHosts),
-		ReadOnlyRootHosts:  tfSetToSlice(plan.RORootHosts),
-		ReadWriteHosts:     tfSetToSlice(plan.RWHosts),
-		ReadWriteRootHosts: tfSetToSlice(plan.RWRootHosts),
+		NoAccessHosts:      tfListToSlice(plan.NoAccessHosts),
+		ReadOnlyHosts:      tfListToSlice(plan.ROHosts),
+		ReadOnlyRootHosts:  tfListToSlice(plan.RORootHosts),
+		ReadWriteHosts:     tfListToSlice(plan.RWHosts),
+		ReadWriteRootHosts: tfListToSlice(plan.RWRootHosts),
 	}
 	return nfsModify
 }
@@ -465,11 +465,11 @@ func NFSExportState(input gopowerstore.NFSExport) models.NFSExport {
 		Name:             types.StringValue(input.Name),
 		NfsOwnerUsername: types.StringValue(input.NFSOwnerUsername),
 		Path:             types.StringValue(input.Path),
-		RWHosts:          sliceToTFSet(input.RWHosts),
-		ROHosts:          sliceToTFSet(input.ROHosts),
-		RWRootHosts:      sliceToTFSet(input.RWRootHosts),
-		RORootHosts:      sliceToTFSet(input.RORootHosts),
-		NoAccessHosts:    sliceToTFSet(input.NoAccessHosts),
+		RWHosts:          sliceToTFList(input.RWHosts),
+		ROHosts:          sliceToTFList(input.ROHosts),
+		RWRootHosts:      sliceToTFList(input.RWRootHosts),
+		RORootHosts:      sliceToTFList(input.RORootHosts),
+		NoAccessHosts:    sliceToTFList(input.NoAccessHosts),
 	}
 }
 
@@ -484,8 +484,8 @@ func NFSExportSementicEquality(plan, state models.NFSExport) models.NFSExport {
 }
 
 // updateHosts updates the hosts in the state based on the plan.
-func updateHosts(plan, state types.Set) types.Set {
-	if !plan.IsUnknown() && isEqualHosts(parseIPList(tfSetToSlice(plan)), tfSetToSlice(state)) {
+func updateHosts(plan, state types.List) types.List {
+	if !plan.IsUnknown() && isEqualHosts(parseIPList(tfListToSlice(plan)), tfListToSlice(state)) {
 		return plan
 	}
 	return state
@@ -556,19 +556,22 @@ func toIPMask(mask net.IPMask) string {
 	return fmt.Sprintf("%d.%d.%d.%d", maskBytes[0], maskBytes[1], maskBytes[2], maskBytes[3])
 }
 
-// sliceToTFSet converts a slice of strings to a TFSet.
-func sliceToTFSet(inputs []string) types.Set {
+// sliceToTFList converts a slice of strings to a TFList.
+func sliceToTFList(inputs []string) types.List {
 	out := make([]attr.Value, len(inputs))
 	for i, input := range inputs {
 		out[i] = types.StringValue(input)
 	}
-	Set, _ := types.SetValue(types.StringType, out)
-	return Set
+	List, _ := types.ListValue(types.StringType, out)
+	return List
 }
 
-// tfSetToSlice converts a TFSet to a slice of strings.
-func tfSetToSlice(Set types.Set) []string {
+// tfListToSlice converts a TFList to a slice of strings.
+func tfListToSlice(list types.List) []string {
 	slice := make([]string, 0)
-	Set.ElementsAs(context.Background(), &slice, true)
+	list.ElementsAs(context.Background(), &slice, true)
+	if len(slice) == 0 {
+		return nil
+	}
 	return slice
 }
