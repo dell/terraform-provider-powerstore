@@ -172,6 +172,7 @@ func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.Da
 		newNasServerDataSource,
 		newNFSExportDatasource,
 		newSmbShareDatasource,
+		newRemoteSystemDatasource,
 	}
 }
 
