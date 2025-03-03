@@ -22,8 +22,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -33,6 +31,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
+)
+
+const (
+	// DefaultExpirationTimestamp is the default expiration timestamp when not specified
+	DefaultExpirationTimestamp = "1970-01-01T00:00:00.000Z"
+	// SpaceDescription is the default description when not specified
+	SpaceDescription = " "
 )
 
 // newFileSystemSnapshotResource returns snapshot new resource instance
@@ -84,9 +92,6 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 				Computed:            true,
 				Description:         "Description of the filesystem snapshot.",
 				MarkdownDescription: "Description of the filesystem snapshot.",
-				Validators: []validator.String{
-					stringvalidator.LengthAtLeast(1),
-				},
 			},
 			"expiration_timestamp": schema.StringAttribute{
 				Optional:            true,
@@ -336,11 +341,18 @@ func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSys
 }
 
 func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {
-	description := plan.Description.ValueString()
-	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
+	description := r.getNonEmptyString(plan.Description.ValueString(), SpaceDescription)
+	expirationTimeStamp := r.getNonEmptyString(plan.ExpirationTimestamp.ValueString(), DefaultExpirationTimestamp)
 	volSnapshotUpdate := &gopowerstore.FSModify{
 		Description:         description,
 		ExpirationTimestamp: expirationTimeStamp,
 	}
 	return volSnapshotUpdate
+}
+
+func (r resourceFileSystemSnapshot) getNonEmptyString(value, defaultValue string) string {
+	if value == "" {
+		return defaultValue
+	}
+	return value
 }
