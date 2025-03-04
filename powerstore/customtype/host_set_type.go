@@ -189,14 +189,14 @@ func (t HostSetType) normalizeStrings(in []string) ([]string, error) {
 	// deduplicate CIDRs by removing subnets
 	uniqueCidrs := make([]*net.IPNet, 0, len(cidrs))
 candidateLoop:
-	for i, _ := range cidrs {
+	for i := range cidrs {
 		sizei, _ := cidrs[i].Mask.Size()
 		for j := 0; j < len(cidrs); j++ {
 			if i == j {
 				continue
 			}
 			sizej, _ := cidrs[j].Mask.Size()
-			if cidrs[j].Contains(cidrs[i].IP) && (sizej > sizei || (sizej == sizei && i > j)) { // superset exists
+			if cidrs[j].Contains(cidrs[i].IP) && (sizej < sizei || (sizej == sizei && i > j)) { // superset exists
 				continue candidateLoop
 			}
 		}
@@ -204,10 +204,11 @@ candidateLoop:
 	}
 	// deduplicate IPs by removing those that are already in CIDRs
 	uniqueIps := make([]net.IP, 0, len(ips))
+ipcandidateLoop:
 	for _, ip := range ips {
 		for _, cidr := range uniqueCidrs {
 			if cidr.Contains(ip) {
-				continue
+				continue ipcandidateLoop
 			}
 		}
 		uniqueIps = append(uniqueIps, ip)
