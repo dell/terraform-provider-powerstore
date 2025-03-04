@@ -23,6 +23,18 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dell/gopowerstore v1.17.1-0.20250124070544-cbc9398777ae h1:OMbxaqhAvpzE69EMKKoj3JRi58Rwl+xrk34/3n1/Yes=
 github.com/dell/gopowerstore v1.17.1-0.20250124070544-cbc9398777ae/go.mod h1:Ul7yw0rAboFV9sSB5Li2TkteDxL3/Ic+Q2bFdada3ZU=
+github.com/dell/gopowerstore v1.17.1-0.20250211155936-462550bebd56 h1:AGSkOpx10MoHje9tb0QCUU19UU2/vwEY3Qc+UCYJ3Q0=
+github.com/dell/gopowerstore v1.17.1-0.20250211155936-462550bebd56/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250212065818-7454c54020d5 h1:OwoOm/i8kAigg/fJFostmFF/gArxfQX1b3vImd6FSZk=
+github.com/dell/gopowerstore v1.17.1-0.20250212065818-7454c54020d5/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250213052215-f97d6061cbab h1:8ovg9OVo0N4rF9N8P0y/QFgGkKk6Y2AuzNy6ueR2pR4=
+github.com/dell/gopowerstore v1.17.1-0.20250213052215-f97d6061cbab/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250217161331-27bb27b938e3 h1:JemlC7ydQvwvyjVIhMCK4xqNEzp6Og1I/QqDTn+3+u0=
+github.com/dell/gopowerstore v1.17.1-0.20250217161331-27bb27b938e3/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250217170101-78b629f4e7b3 h1:ej7QRdTlh+OIil7Dp0+sqxyv9w7iyGH/4Xu56HzUysw=
+github.com/dell/gopowerstore v1.17.1-0.20250217170101-78b629f4e7b3/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250218155721-3545eab38216 h1:bYsbOG/pQomYu1klwYZRL9Q+/Hb4sV6flCSD7bFQfpY=
+github.com/dell/gopowerstore v1.17.1-0.20250218155721-3545eab38216/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=
@@ -209,6 +221,8 @@ golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.29.0 h1:TPYlXGxvx1MGTn2GiZDhnjPA9wZzZeGKHHmKhHYvgaU=
 golang.org/x/sys v0.29.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
+golang.org/x/sys v0.30.0 h1:QjkSwP/36a20jFYWkSue1YwXzLmsV5Gfq7Eiy72C1uc=
+golang.org/x/sys v0.30.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuXm/mYQcufACuNUgVhRMnK/tPxf8=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

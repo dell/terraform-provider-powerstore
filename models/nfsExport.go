@@ -41,3 +41,30 @@ type NFSExport struct {
 	ReadWriteHosts     customtype.HostSetValue `tfsdk:"read_write_hosts"`
 	ReadWriteRootHosts customtype.HostSetValue `tfsdk:"read_write_root_hosts"`
 }
+
+type NFSExportDs struct {
+	ID           types.String          `tfsdk:"id"`
+	FileSystemID types.String          `tfsdk:"file_system_id"`
+	Name         types.String          `tfsdk:"name"`
+	Filters      FilterExpressionValue `tfsdk:"filter_expression"`
+	Items        []NFSExportDsData     `tfsdk:"nfs_exports"`
+}
+
+type NFSExportDsData struct {
+	ID               types.String `tfsdk:"id"`
+	FileSystemID     types.String `tfsdk:"file_system_id"`
+	Name             types.String `tfsdk:"name"`
+	Path             types.String `tfsdk:"path"`
+	RWHosts          []string     `tfsdk:"read_write_hosts"`
+	ROHosts          []string     `tfsdk:"read_only_hosts"`
+	RWRootHosts      []string     `tfsdk:"read_write_root_hosts"`
+	RORootHosts      []string     `tfsdk:"read_only_root_hosts"`
+	NoAccessHosts    []string     `tfsdk:"no_access_hosts"`
+	AnonymousGID     types.Int32  `tfsdk:"anonymous_gid"`
+	AnonymousUID     types.Int32  `tfsdk:"anonymous_uid"`
+	Description      types.String `tfsdk:"description"`
+	IsNoSUID         types.Bool   `tfsdk:"is_no_suid"`
+	MinSecurity      types.String `tfsdk:"min_security"`
+	NfsOwnerUsername types.String `tfsdk:"nfs_owner_username"`
+	DefaultAccess    types.String `tfsdk:"default_access"`
+}
