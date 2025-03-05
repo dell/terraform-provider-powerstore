@@ -96,8 +96,8 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 			"expiration_timestamp": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
-				MarkdownDescription: "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
+				Description:         "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot. To remove the expiration timestamp, specify it as an empty string. Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
+				MarkdownDescription: "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot. To remove the expiration timestamp, specify it as an empty string. Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
@@ -108,7 +108,7 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 			"access_type": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'.Cannot be updated.",
+				Description:         "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.",
 				MarkdownDescription: "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.OneOf("Snapshot", "Protocol"),
@@ -341,18 +341,13 @@ func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSys
 }
 
 func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {
-	description := r.getNonEmptyString(plan.Description.ValueString(), SpaceDescription)
-	expirationTimeStamp := r.getNonEmptyString(plan.ExpirationTimestamp.ValueString(), DefaultExpirationTimestamp)
-	volSnapshotUpdate := &gopowerstore.FSModify{
-		Description:         description,
-		ExpirationTimestamp: expirationTimeStamp,
+	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
+	if !plan.ExpirationTimestamp.IsNull() && expirationTimestamp == "" {
+		expirationTimestamp = "1970-01-01T00:00:00.000Z"
 	}
-	return volSnapshotUpdate
-}
-
-func (r resourceFileSystemSnapshot) getNonEmptyString(value, defaultValue string) string {
-	if value == "" {
-		return defaultValue
+	fsSnapshotUpdate := &gopowerstore.FSModify{
+		Description:         plan.Description.ValueStringPointer(),
+		ExpirationTimestamp: expirationTimestamp,
 	}
-	return value
+	return fsSnapshotUpdate
 }
