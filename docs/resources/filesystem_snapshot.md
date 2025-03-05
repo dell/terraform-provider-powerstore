@@ -78,7 +78,7 @@ After the execution of above resource block, filesystem snapshot would have been
 
 - `access_type` (String) Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.
 - `description` (String) Description of the filesystem snapshot.
-- `expiration_timestamp` (String) Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z
+- `expiration_timestamp` (String) Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot. To remove the expiration timestamp, specify it as an empty string. Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z
 - `name` (String) Name of the filesystem snapshot.The default name of the filesystem snapshot is the date and time when the snapshot is taken.
 
 ### Read-Only
