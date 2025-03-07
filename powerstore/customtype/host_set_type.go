@@ -158,9 +158,16 @@ func (t HostSetType) normalizeStrings(in []string) ([]string, error) {
 	retCommon := make([]string, 0, len(in))
 	cidrs, ips := make([]*net.IPNet, 0, len(in)), make([]net.IP, 0, len(in))
 	for _, val := range in {
-		// if val contains /, it is a cidr
-		if strings.Contains(val, "/") {
-			// check if both parts are valid IPv4
+		// if val ends in /128, it is an IPv6 address with 128 mask
+		if strings.HasSuffix(val, "/128") {
+			ip := net.ParseIP(strings.TrimSuffix(val, "/128"))
+			if ip == nil || ip.To16() == nil {
+				return nil, fmt.Errorf("invalid IPv6 address entry %s", val)
+			}
+			ips = append(ips, ip)
+		} else if strings.Contains(val, "/") {
+			// if val contains /, it is a cidr
+			// first check if both parts are valid IPv4
 			// if so, convert to prefix length format
 			splitCidr := strings.SplitN(val, "/", 2)
 			if ip, mask := net.ParseIP(splitCidr[0]), net.ParseIP(splitCidr[1]); ip != nil && ip.To4() != nil && mask != nil && mask.To4() != nil {
@@ -230,7 +237,7 @@ func (v HostSetType) equal(ins, outs []attr.Value) bool {
 outerLoop:
 	for _, elem := range ins {
 		if elem.IsNull() || elem.IsUnknown() {
-			continue
+			return false
 		}
 		for _, out := range outs {
 			if elem.Equal(out) {

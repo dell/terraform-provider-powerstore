@@ -28,6 +28,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -66,6 +71,9 @@ func (r *resourceNFSExport) Schema(ctx context.Context, req resource.SchemaReque
 func NFSExportSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"id": schema.StringAttribute{
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			Computed:            true,
 			Description:         "The unique identifier of the NFS Export.",
 			MarkdownDescription: "The unique identifier of the NFS Export.",
@@ -95,6 +103,9 @@ func NFSExportSchema() map[string]schema.Attribute {
 			},
 		},
 		"description": schema.StringAttribute{
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			MarkdownDescription: "A user-defined description of the NFS Export.",
 			Description:         "A user-defined description of the NFS Export.",
 			Optional:            true,
@@ -104,6 +115,9 @@ func NFSExportSchema() map[string]schema.Attribute {
 			},
 		},
 		"min_security": schema.StringAttribute{
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			MarkdownDescription: "The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.",
 			Description:         "The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.",
 			Optional:            true,
@@ -113,6 +127,9 @@ func NFSExportSchema() map[string]schema.Attribute {
 			},
 		},
 		"anonymous_gid": schema.Int32Attribute{
+			PlanModifiers: []planmodifier.Int32{
+				int32planmodifier.UseStateForUnknown(),
+			},
 			MarkdownDescription: "The GID (Group ID) of the anonymous user. This is the group ID of the anonymous user. The anonymous user is the user ID (UID) that is used when the true user's identity cannot be determined.",
 			Description:         "The GID (Group ID) of the anonymous user. This is the group ID of the anonymous user. The anonymous user is the user ID (UID) that is used when the true user's identity cannot be determined.",
 			Optional:            true,
@@ -123,18 +140,27 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "The UID (User ID) of the anonymous user. This is the user ID of the anonymous user. The anonymous user is the user ID (UID) that is used when the true user's identity cannot be determined.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.Int32{
+				int32planmodifier.UseStateForUnknown(),
+			},
 		},
 		"is_no_suid": schema.BoolAttribute{
 			MarkdownDescription: "If Set, do not allow access to Set SUID. Otherwise, allow access.",
 			Description:         "If Set, do not allow access to Set SUID. Otherwise, allow access.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.Bool{
+				boolplanmodifier.UseStateForUnknown(),
+			},
 		},
 		"nfs_owner_username": schema.StringAttribute{
 			MarkdownDescription: "The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.",
 			Description:         "The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			Validators: []validator.String{
 				stringvalidator.LengthAtMost(32),
 				stringvalidator.LengthAtLeast(1),
@@ -145,6 +171,9 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "The default access level for all hosts that can access the NFS Export. The default access level is the access level that is assigned to a host that is not explicitly Seted in the 'no_access_hosts', 'read_only_hosts', 'read_only_root_hosts', 'read_write_hosts', or 'read_write_root_hosts' Sets. Valid values are: 'No_Access', 'Read_Only', 'Read_Write', 'Root', 'Read_Only_Root'.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			Validators: []validator.String{
 				stringvalidator.OneOf(string(gopowerstore.NoAccess), string(gopowerstore.ReadOnly), string(gopowerstore.ReadWrite), string(gopowerstore.Root), string(gopowerstore.ReadOnlyRoot)),
 			},
@@ -155,6 +184,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			CustomType:          customtype.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				customtype.HostSetPlanModifier{},
+			},
 		},
 		"read_only_hosts": schema.SetAttribute{
 			MarkdownDescription: "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
@@ -162,6 +195,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			CustomType:          customtype.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				customtype.HostSetPlanModifier{},
+			},
 		},
 		"read_only_root_hosts": schema.SetAttribute{
 			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
@@ -169,6 +206,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			CustomType:          customtype.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				customtype.HostSetPlanModifier{},
+			},
 		},
 		"read_write_hosts": schema.SetAttribute{
 			MarkdownDescription: "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
@@ -176,6 +217,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			CustomType:          customtype.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				customtype.HostSetPlanModifier{},
+			},
 		},
 		"read_write_root_hosts": schema.SetAttribute{
 			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
@@ -183,6 +228,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			CustomType:          customtype.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				customtype.HostSetPlanModifier{},
+			},
 		},
 	}
 }
@@ -306,10 +355,10 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	// Check not modifiable attributes
-	if !plan.Name.Equal(state.Name) || !plan.FileSystemID.Equal(state.FileSystemID) || !plan.Path.Equal(state.Path) {
+	if !plan.Name.Equal(state.Name) || !plan.FileSystemID.Equal(state.FileSystemID) || !plan.Path.Equal(state.Path) || !plan.NfsOwnerUsername.Equal(state.NfsOwnerUsername) {
 		resp.Diagnostics.AddError(
 			"Error updating nfs export resource",
-			"nfs export attributes [name, filesystem_id, path] are not modifiable",
+			"nfs export attributes [name, filesystem_id, path, nfs_owner_username] are not modifiable",
 		)
 		return
 
@@ -405,11 +454,11 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 
 func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *gopowerstore.NFSExportModify {
 	nfsModify := &gopowerstore.NFSExportModify{
-		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
-		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
-		Description:        plan.Description.ValueString(),
-		IsNoSUID:           plan.IsNoSUID.ValueBool(),
-		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
+		AnonymousGID: plan.AnonymousGID.ValueInt32(),
+		AnonymousUID: plan.AnonymousUID.ValueInt32(),
+		Description:  plan.Description.ValueString(),
+		IsNoSUID:     plan.IsNoSUID.ValueBool(),
+		// NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
 		MinSecurity:        plan.MinSecurity.ValueString(),
 		DefaultAccess:      plan.DefaultAccess.ValueString(),
 		NoAccessHosts:      TFListToSlice(plan.NoAccessHosts),

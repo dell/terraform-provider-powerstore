@@ -130,8 +130,10 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 			name: "Test with full IPv6 address",
 			args: args{in: []string{
 				"2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+				"2001:db8:85a3::8a2e:370:7334/128",
 			}},
 			want: []string{
+				"2001:db8:85a3::8a2e:370:7334",
 				"2001:db8:85a3::8a2e:370:7334",
 			},
 		},
@@ -170,6 +172,44 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 				"2001:db8:85a3::/64",
 			},
 		},
+		// {
+		// 	name: "Another test state",
+		// 	args: args{in: []string{
+		// 		"192.168.1.0/255.255.255.0",
+		// 		"192.168.1.0/255.255.255.192",
+		// 		"192.168.1.0/255.255.255.252",
+		// 		"2001:db8:85a3::8a2e:370:7334/128",
+		// 		"@netgroup1",
+		// 		"dellinv.gov",
+		// 		"dellinv.gov.in",
+		// 		"hostname1",
+		// 	}},
+		// 	want: []string{
+		// 		// "hostname1",
+		// 		// "192.168.1.0/255.255.255.0",
+		// 		// "192.168.1.0/255.255.255.192",
+		// 		// "192.168.1.0/255.255.255.252",
+		// 		// "2001:db8:85a3::8a2e:370:7334/128",
+		// 	},
+		// },
+		// {
+		// 	name: "Another test plan",
+		// 	args: args{in: []string{
+		// 		"192.168.1.0/24",
+		// 		"192.168.1.0/26",
+		// 		"192.168.1.0/30",
+		// 		"192.168.1.1/24",
+		// 		"192.168.1.2/24",
+		// 		"192.168.1.54/255.255.255.0",
+		// 		"2001:db8:85a3::8a2e:370:7334",
+		// 		"hostname1",
+		// 		"@netgroup1",
+		// 		"dellinv.gov.in",
+		// 		"dellinv.gov",
+		// 	}},
+		// 	want: []string{
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
