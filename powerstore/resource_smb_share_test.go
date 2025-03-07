@@ -172,7 +172,7 @@ func TestAccSMBShare_AddRemoveACL(t *testing.T) {
 	})
 }
 
-var smbShareCreate = FsParams +`
+var smbShareCreate = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
@@ -181,7 +181,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareRename = FsParams +`
+var smbShareRename = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb1"
@@ -199,7 +199,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareCreateWithoutName = FsParams +`
+var smbShareCreateWithoutName = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   path = "/test_fs"
@@ -207,7 +207,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareCreateWithInvalidumask = FsParams +`
+var smbShareCreateWithInvalidumask = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
@@ -217,7 +217,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareUpdate = FsParams +`
+var smbShareUpdate = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
@@ -226,7 +226,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareCreateWithACl = FsParams +`
+var smbShareCreateWithACl = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
@@ -236,7 +236,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareUpdateWithACl = FsParams +`
+var smbShareUpdateWithACl = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
@@ -246,7 +246,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareUpdateAddACl = FsParams +`
+var smbShareUpdateAddACl = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
@@ -256,7 +256,7 @@ resource "powerstore_smb_share" "test1" {
 }
 `
 
-var smbShareUpdateRemoveACl = FsParams +`
+var smbShareUpdateRemoveACl = FsParams + `
 resource "powerstore_smb_share" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
   name = "terraform_smb"
