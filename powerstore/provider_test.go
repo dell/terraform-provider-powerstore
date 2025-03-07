@@ -22,6 +22,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
@@ -37,6 +38,7 @@ var password = setDefault(os.Getenv("POWERSTORE_PASSWORD"), "test")
 var nasServerID = setDefault(os.Getenv("NAS_SERVER_ID"), "tfacc_nas_server_id")
 var nasServerName = setDefault(os.Getenv("NAS_SERVER_NAME"), "tfacc_nas")
 var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "db11abb3-789e-47f9-96b5-84b5374cbcd2")
+var FunctionMocker *mockey.Mocker
 
 var ProviderConfigForTesting = ``
 
@@ -75,6 +77,10 @@ func testAccPreCheck(t *testing.T) {
 		t.Fatal("POWERSTORE_ENDPOINT must be set for acceptance tests")
 	}
 
+	// Before each test clear out the mocker
+	if FunctionMocker != nil {
+		FunctionMocker.UnPatch()
+	}
 }
 
 func setDefault(osInput string, defaultStr string) string {

@@ -43,3 +43,25 @@ type SMBShareDsData struct {
 	OfflineAvailabilityLocalized    types.String `tfsdk:"offline_availability_l10n"`
 	Umask                           types.String `tfsdk:"umask"`
 }
+
+type SMBShare struct {
+	ID                              types.String `tfsdk:"id"`
+	FileSystemID                    types.String `tfsdk:"file_system_id"`
+	Name                            types.String `tfsdk:"name"`
+	Path                            types.String `tfsdk:"path"`
+	Description                     types.String `tfsdk:"description"`
+	IsContinuousAvailabilityEnabled types.Bool   `tfsdk:"is_continuous_availability_enabled"`
+	IsEncryptionEnabled             types.Bool   `tfsdk:"is_encryption_enabled"`
+	IsABEEnabled                    types.Bool   `tfsdk:"is_abe_enabled"`
+	IsBranchCacheEnabled            types.Bool   `tfsdk:"is_branch_cache_enabled"`
+	Umask                           types.String `tfsdk:"umask"`
+	OfflineAvailability             types.String `tfsdk:"offline_availability"`
+	SMBShareACL                     types.Set    `tfsdk:"aces"`
+}
+
+type SMBShareAce struct {
+	TrusteeType types.String `tfsdk:"trustee_type"`
+	TrusteeName types.String `tfsdk:"trustee_name"`
+	AccessLevel types.String `tfsdk:"access_level"`
+	AccessType  types.String `tfsdk:"access_type"`
+}
