@@ -29,12 +29,12 @@ resource "powerstore_smb_share" "test1" {
   path           = "/terraform-fs"
 
   // Optional
-  description    = "smb share"
-  aces           = [{"access_level":"Full","access_type":"Allow","trustee_name":"Everyone","trustee_type":"WellKnown"}]
-  is_abe_enabled = true
+  description                        = "smb share"
+  aces                               = [{ "access_level" : "Full", "access_type" : "Allow", "trustee_name" : "Everyone", "trustee_type" : "WellKnown" }]
+  is_abe_enabled                     = true
   is_continuous_availability_enabled = true
-  is_encryption_enabled = true
-  is_branch_cache_enabled = true
-  offline_availability = "Manual"
-  umask = "077"
+  is_encryption_enabled              = true
+  is_branch_cache_enabled            = true
+  offline_availability               = "Manual"
+  umask                              = "077"
 }
