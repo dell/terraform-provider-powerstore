@@ -58,16 +58,6 @@ func (t HostSetType) Equal(o attr.Type) bool {
 	return ok
 }
 
-// func (t HostSetType) Validate(ctx context.Context, in tftypes.Value, path path.Path) diag.Diagnostics {
-// 	var diags diag.Diagnostics
-
-// 	if in.Type() == nil {
-// 		return diags
-// 	}
-
-// 	return diags
-// }
-
 func (t HostSetType) ValueFromSet(ctx context.Context, in basetypes.SetValue) (basetypes.SetValuable, diag.Diagnostics) {
 	if in.ElementType(ctx) != t.ElementType() {
 		return nil, diag.Diagnostics{
@@ -88,36 +78,6 @@ func (t HostSetType) ValueFromSet(ctx context.Context, in basetypes.SetValue) (b
 }
 
 func (t HostSetType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
-	// if in.Type() == nil {
-	// 	return basetypes.NewSetNull(t.ElementType()), nil
-	// }
-
-	// if !in.Type().Equal(t.TerraformType(ctx)) {
-	// 	return nil, fmt.Errorf("can't use %s as value of Set with ElementType %T, can only use %s values", in.String(), t.ElementType(), t.ElementType().TerraformType(ctx).String())
-	// }
-
-	// if !in.IsKnown() {
-	// 	return basetypes.NewSetUnknown(t.ElementType()), nil
-	// }
-
-	// if in.IsNull() {
-	// 	return basetypes.NewSetNull(t.ElementType()), nil
-	// }
-
-	// val := []tftypes.Value{}
-	// err := in.As(&val)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// elems := make([]attr.Value, 0, len(val))
-	// for _, elem := range val {
-	// 	av, err := t.ElementType().ValueFromTerraform(ctx, elem)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	elems = append(elems, av)
-	// }
-
 	// setValue := basetypes.NewSetValueMust(t.ElementType(), elems)
 	setVal, err := t.SetType.ValueFromTerraform(ctx, in)
 	if err != nil {

@@ -48,32 +48,6 @@ func (v HostSetValue) Type(_ context.Context) attr.Type {
 	return NewHostSetType()
 }
 
-// func (v HostSetValue) Equal(o attr.Value) bool {
-// 	other, ok := o.(HostSetValue)
-
-// 	if !ok {
-// 		return false
-// 	}
-
-// 	// return v.SetValue.Equal(other.SetValue)
-// 	if !((v.IsNull() && other.IsNull()) || (v.IsUnknown() && other.IsUnknown())) {
-// 		return false
-// 	}
-
-// 	if v.IsNull() || v.IsUnknown() {
-// 		return true
-// 	}
-
-// 	onorm, _ := NewHostSetType().normalizeValues(other.Elements())
-// 	vnorm, _ := NewHostSetType().normalizeValues(v.Elements())
-
-// 	return NewHostSetType().equal(vnorm, onorm)
-// }
-
-// func (v HostSetValue) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
-// 	return v.SetValue.ToTerraformValue(ctx)
-// }
-
 func NewHostSetValueNull() HostSetValue {
 	return HostSetValue{
 		SetValue: basetypes.NewSetNull(basetypes.StringType{}),
@@ -87,30 +61,9 @@ func NewHostSetValueUnknown() HostSetValue {
 }
 
 func NewHostSetValue(elements []attr.Value) (HostSetValue, diag.Diagnostics) {
-	// elements, err := NewHostSetType().normalizeValues(elements)
-	// if err != nil {
-	// 	return HostSetValue{}, diag.Diagnostics{
-	// 		diag.NewErrorDiagnostic(
-	// 			"Invalid Host Set Value",
-	// 			err.Error(),
-	// 		),
-	// 	}
-	// }
 	SetValue, diags := basetypes.NewSetValue(basetypes.StringType{}, elements)
 
 	return HostSetValue{
 		SetValue: SetValue,
 	}, diags
 }
-
-// func NewHostSetValueFullyKnown(elements []string) HostSetValue {
-// 	elemAttrs := make([]attr.Value, 0, len(elements))
-// 	for _, elem := range elements {
-// 		elemAttrs = append(elemAttrs, elem)
-// 	}
-// 	SetValue, diags := basetypes.NewSetValue(basetypes.StringType{}, elemAttrs)
-
-// 	return HostSetValue{
-// 		SetValue: SetValue,
-// 	}, diags
-// }
