@@ -2,6 +2,7 @@ package customtype
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -157,12 +158,14 @@ func (t HostSetType) normalizeValues(in []attr.Value) ([]attr.Value, error) {
 func (t HostSetType) normalizeStrings(in []string) ([]string, error) {
 	retCommon := make([]string, 0, len(in))
 	cidrs, ips := make([]*net.IPNet, 0, len(in)), make([]net.IP, 0, len(in))
+	var perr error
 	for _, val := range in {
 		// if val ends in /128, it is an IPv6 address with 128 mask
 		if strings.HasSuffix(val, "/128") {
 			ip := net.ParseIP(strings.TrimSuffix(val, "/128"))
 			if ip == nil || ip.To16() == nil {
-				return nil, fmt.Errorf("invalid IPv6 address entry %s", val)
+				perr = errors.Join(perr, fmt.Errorf("invalid IPv6 address entry %s", val))
+				continue
 			}
 			ips = append(ips, ip)
 		} else if strings.Contains(val, "/") {
@@ -175,23 +178,30 @@ func (t HostSetType) normalizeStrings(in []string) ([]string, error) {
 				maskBytes := net.IPMask(mask.To4())
 				ones, mlen := maskBytes.Size()
 				if mlen == 0 {
-					return nil, fmt.Errorf("invalid IPv4 mask %s in CIDR entry %s", mask.String(), val)
+					// return nil, fmt.Errorf("invalid IPv4 mask %s in CIDR entry %s", mask.String(), val)
+					perr = errors.Join(perr, fmt.Errorf("invalid IPv4 mask %s in CIDR entry %s", mask.String(), val))
+					continue
 				}
 				val = fmt.Sprintf("%s/%d", splitCidr[0], ones)
 			}
 			// convert to CIDR
 			_, ipNet, err := net.ParseCIDR(val)
 			if err != nil {
-				return nil, err
+				perr = errors.Join(perr, fmt.Errorf("unable to parse CIDR: %w", err))
+				continue
 			}
 			cidrs = append(cidrs, ipNet)
 		} else if ipVal := net.ParseIP(val); ipVal != nil {
 			// check if it is a valid IP address
 			ips = append(ips, ipVal)
 		} else {
-			// these are custom hostnames
+			// these are custom hostnames, dns domains or netgroups
 			retCommon = append(retCommon, val)
 		}
+	}
+	// if any values were invalid, return error
+	if perr != nil {
+		return nil, perr
 	}
 	// deduplicate CIDRs by removing subnets
 	uniqueCidrs := make([]*net.IPNet, 0, len(cidrs))
