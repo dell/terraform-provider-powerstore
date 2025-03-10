@@ -22,8 +22,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -33,6 +31,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
+)
+
+const (
+	// DefaultExpirationTimestamp is the default expiration timestamp when not specified
+	DefaultExpirationTimestamp = "1970-01-01T00:00:00.000Z"
+	// SpaceDescription is the default description when not specified
+	SpaceDescription = " "
 )
 
 // newFileSystemSnapshotResource returns snapshot new resource instance
@@ -84,15 +92,12 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 				Computed:            true,
 				Description:         "Description of the filesystem snapshot.",
 				MarkdownDescription: "Description of the filesystem snapshot.",
-				Validators: []validator.String{
-					stringvalidator.LengthAtLeast(1),
-				},
 			},
 			"expiration_timestamp": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
-				MarkdownDescription: "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot.Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
+				Description:         "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot. To remove the expiration timestamp, specify it as an empty string. Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
+				MarkdownDescription: "Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot. To remove the expiration timestamp, specify it as an empty string. Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(
 						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
@@ -103,7 +108,7 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 			"access_type": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'.Cannot be updated.",
+				Description:         "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.",
 				MarkdownDescription: "Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.",
 				Validators: []validator.String{
 					stringvalidator.OneOf("Snapshot", "Protocol"),
@@ -336,11 +341,13 @@ func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSys
 }
 
 func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {
-	description := plan.Description.ValueString()
-	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
-	volSnapshotUpdate := &gopowerstore.FSModify{
-		Description:         description,
-		ExpirationTimestamp: expirationTimeStamp,
+	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
+	if !plan.ExpirationTimestamp.IsNull() && expirationTimestamp == "" {
+		expirationTimestamp = "1970-01-01T00:00:00.000Z"
 	}
-	return volSnapshotUpdate
+	fsSnapshotUpdate := &gopowerstore.FSModify{
+		Description:         plan.Description.ValueStringPointer(),
+		ExpirationTimestamp: expirationTimestamp,
+	}
+	return fsSnapshotUpdate
 }

@@ -25,6 +25,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dell/gopowerstore v1.17.1-0.20250218155721-3545eab38216 h1:bYsbOG/pQomYu1klwYZRL9Q+/Hb4sV6flCSD7bFQfpY=
 github.com/dell/gopowerstore v1.17.1-0.20250218155721-3545eab38216/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250304082303-2d980715c3e1 h1:B+6qujCEf9dYBE8mB/6h/aCN8eP+nSYqeqbdlF7SBgI=
+github.com/dell/gopowerstore v1.17.1-0.20250304082303-2d980715c3e1/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
+github.com/dell/gopowerstore v1.17.1-0.20250304113024-bed4dd01d316 h1:X5oam5xfhqbeWOLrUTryJYth6ALS6lEoMIA+xjPE2x8=
+github.com/dell/gopowerstore v1.17.1-0.20250304113024-bed4dd01d316/go.mod h1:b1+xAG8+447LpvdKFwIp0dq6wCpQyAcDXa/jgPkJo8Q=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=

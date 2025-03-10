@@ -25,6 +25,8 @@ import (
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
+	"terraform-provider-powerstore/powerstore/helper"
+
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -36,7 +38,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"terraform-provider-powerstore/powerstore/helper"
 )
 
 type fileSystemResource struct {
@@ -545,13 +546,13 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	fsModify := &gopowerstore.FSModify{
-		Description:                plan.Description.ValueString(),
+		Description:                plan.Description.ValueStringPointer(),
 		Size:                       int(valInBytes),
 		AccessPolicy:               plan.AccessPolicy.ValueString(),
 		LockingPolicy:              plan.LockingPolicy.ValueString(),
 		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
 		IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
+		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueStringPointer(),
 		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
 		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
 		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
