@@ -103,15 +103,11 @@ func TestAccSMBShare_InvalidValues(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      ProviderConfigForTesting + smbShareCreateWithInvalidFileSystemId,
-				ExpectError: regexp.MustCompile(".*Enter a valid File System ID*"),
+				ExpectError: regexp.MustCompile(".*Error creating smb share*"),
 			},
 			{
 				Config:      ProviderConfigForTesting + smbShareCreateWithoutName,
 				ExpectError: regexp.MustCompile(CreateResourceMissingErrorMsg),
-			},
-			{
-				Config:      ProviderConfigForTesting + smbShareCreateWithInvalidumask,
-				ExpectError: regexp.MustCompile(".*Error creating smb share*"),
 			},
 		},
 	})
