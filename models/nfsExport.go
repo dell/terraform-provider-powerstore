@@ -20,7 +20,7 @@ package models
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"terraform-provider-powerstore/powerstore/customtype"
+	"terraform-provider-powerstore/powerstore/customtypes/nfshostset"
 )
 
 type NFSExport struct {
@@ -35,11 +35,11 @@ type NFSExport struct {
 	MinSecurity        types.String            `tfsdk:"min_security"`
 	NfsOwnerUsername   types.String            `tfsdk:"nfs_owner_username"`
 	DefaultAccess      types.String            `tfsdk:"default_access"`
-	NoAccessHosts      customtype.HostSetValue `tfsdk:"no_access_hosts"`
-	ReadOnlyHosts      customtype.HostSetValue `tfsdk:"read_only_hosts"`
-	ReadOnlyRootHosts  customtype.HostSetValue `tfsdk:"read_only_root_hosts"`
-	ReadWriteHosts     customtype.HostSetValue `tfsdk:"read_write_hosts"`
-	ReadWriteRootHosts customtype.HostSetValue `tfsdk:"read_write_root_hosts"`
+	NoAccessHosts      nfshostset.HostSetValue `tfsdk:"no_access_hosts"`
+	ReadOnlyHosts      nfshostset.HostSetValue `tfsdk:"read_only_hosts"`
+	ReadOnlyRootHosts  nfshostset.HostSetValue `tfsdk:"read_only_root_hosts"`
+	ReadWriteHosts     nfshostset.HostSetValue `tfsdk:"read_write_hosts"`
+	ReadWriteRootHosts nfshostset.HostSetValue `tfsdk:"read_write_root_hosts"`
 }
 
 type NFSExportDs struct {

@@ -24,7 +24,6 @@ import (
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -35,11 +34,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
-	"terraform-provider-powerstore/powerstore/customtype"
+	"terraform-provider-powerstore/powerstore/customtypes/nfshostset"
+	"terraform-provider-powerstore/powerstore/helper"
 )
 
 // newNFSExportResource returns nfsExport new resource instance
@@ -63,12 +62,12 @@ func (r *resourceNFSExport) Schema(ctx context.Context, req resource.SchemaReque
 		MarkdownDescription: "This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.",
 		Description:         "This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.",
 
-		Attributes: NFSExportSchema(),
+		Attributes: NFSExportResourceSchema(),
 	}
 }
 
-// NFSExportSchema defines resource interface Schema method
-func NFSExportSchema() map[string]schema.Attribute {
+// NFSExportResourceSchema defines resource interface Schema method
+func NFSExportResourceSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"id": schema.StringAttribute{
 			PlanModifiers: []planmodifier.String{
@@ -183,10 +182,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "Hosts with no access to the NFS Export or its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
-			CustomType:          customtype.NewHostSetType(),
+			CustomType:          nfshostset.NewHostSetType(),
 			PlanModifiers: []planmodifier.Set{
 				setplanmodifier.UseStateForUnknown(),
-				customtype.HostSetPlanModifier{},
+				nfshostset.HostSetPlanModifier{},
 			},
 		},
 		"read_only_hosts": schema.SetAttribute{
@@ -194,10 +193,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "Hosts with read-only access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
-			CustomType:          customtype.NewHostSetType(),
+			CustomType:          nfshostset.NewHostSetType(),
 			PlanModifiers: []planmodifier.Set{
 				setplanmodifier.UseStateForUnknown(),
-				customtype.HostSetPlanModifier{},
+				nfshostset.HostSetPlanModifier{},
 			},
 		},
 		"read_only_root_hosts": schema.SetAttribute{
@@ -205,10 +204,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
-			CustomType:          customtype.NewHostSetType(),
+			CustomType:          nfshostset.NewHostSetType(),
 			PlanModifiers: []planmodifier.Set{
 				setplanmodifier.UseStateForUnknown(),
-				customtype.HostSetPlanModifier{},
+				nfshostset.HostSetPlanModifier{},
 			},
 		},
 		"read_write_hosts": schema.SetAttribute{
@@ -216,10 +215,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "Hosts with read and write access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
-			CustomType:          customtype.NewHostSetType(),
+			CustomType:          nfshostset.NewHostSetType(),
 			PlanModifiers: []planmodifier.Set{
 				setplanmodifier.UseStateForUnknown(),
-				customtype.HostSetPlanModifier{},
+				nfshostset.HostSetPlanModifier{},
 			},
 		},
 		"read_write_root_hosts": schema.SetAttribute{
@@ -227,10 +226,10 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its nfsExports. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @. The maximum length of an Host name is 255 bytes, and the sum of lengths of all the items in the Set is limited to 4096 bytes.",
 			Optional:            true,
 			Computed:            true,
-			CustomType:          customtype.NewHostSetType(),
+			CustomType:          nfshostset.NewHostSetType(),
 			PlanModifiers: []planmodifier.Set{
 				setplanmodifier.UseStateForUnknown(),
-				customtype.HostSetPlanModifier{},
+				nfshostset.HostSetPlanModifier{},
 			},
 		},
 	}
@@ -268,7 +267,6 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprint(plan.NoAccessHosts.ElementType(ctx))+"PPPP") // Create new nfs export
 	nfsCreate := r.planToNFSExportCreateParam(plan)
 
 	nfsCreateResponse, err := r.client.PStoreClient.CreateNFSExport(context.Background(), nfsCreate)
@@ -290,13 +288,10 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// Update details to state
-	state := NFSExportState(nfsExportResponse)
+	state := r.nfsExportState(ctx, nfsExportResponse)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Done with Create")
 }
@@ -322,14 +317,11 @@ func (r *resourceNFSExport) Read(ctx context.Context, req resource.ReadRequest, 
 		)
 		return
 	}
-	state = NFSExportState(nfsExportResponse)
+	state = r.nfsExportState(ctx, nfsExportResponse)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Done with Read")
 }
@@ -385,12 +377,9 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	// Update details to state
-	state = NFSExportState(nfsExportResponse)
+	state = r.nfsExportState(ctx, nfsExportResponse)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Successfully done with Update")
 }
@@ -443,11 +432,11 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
 		MinSecurity:        plan.MinSecurity.ValueString(),
 		DefaultAccess:      gopowerstore.NFSExportDefaultAccessEnum(plan.DefaultAccess.ValueString()),
-		NoAccessHosts:      TFListToSlice(plan.NoAccessHosts),
-		ReadOnlyHosts:      TFListToSlice(plan.ReadOnlyHosts),
-		ReadOnlyRootHosts:  TFListToSlice(plan.ReadOnlyRootHosts),
-		ReadWriteHosts:     TFListToSlice(plan.ReadWriteHosts),
-		ReadWriteRootHosts: TFListToSlice(plan.ReadWriteRootHosts),
+		NoAccessHosts:      helper.TFListToSlice[string](plan.NoAccessHosts),
+		ReadOnlyHosts:      helper.TFListToSlice[string](plan.ReadOnlyHosts),
+		ReadOnlyRootHosts:  helper.TFListToSlice[string](plan.ReadOnlyRootHosts),
+		ReadWriteHosts:     helper.TFListToSlice[string](plan.ReadWriteHosts),
+		ReadWriteRootHosts: helper.TFListToSlice[string](plan.ReadWriteRootHosts),
 	}
 	return nfsCreate
 }
@@ -461,17 +450,17 @@ func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *g
 		// NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
 		MinSecurity:        plan.MinSecurity.ValueString(),
 		DefaultAccess:      plan.DefaultAccess.ValueString(),
-		NoAccessHosts:      TFListToSlice(plan.NoAccessHosts),
-		ReadOnlyHosts:      TFListToSlice(plan.ReadOnlyHosts),
-		ReadOnlyRootHosts:  TFListToSlice(plan.ReadOnlyRootHosts),
-		ReadWriteHosts:     TFListToSlice(plan.ReadWriteHosts),
-		ReadWriteRootHosts: TFListToSlice(plan.ReadWriteRootHosts),
+		NoAccessHosts:      helper.TFListToSlice[string](plan.NoAccessHosts),
+		ReadOnlyHosts:      helper.TFListToSlice[string](plan.ReadOnlyHosts),
+		ReadOnlyRootHosts:  helper.TFListToSlice[string](plan.ReadOnlyRootHosts),
+		ReadWriteHosts:     helper.TFListToSlice[string](plan.ReadWriteHosts),
+		ReadWriteRootHosts: helper.TFListToSlice[string](plan.ReadWriteRootHosts),
 	}
 	return nfsModify
 }
 
-// updateNFSExportState - method to update terraform state
-func NFSExportState(input gopowerstore.NFSExport) models.NFSExport {
+// nfsExportState - method to convert gopowerstore.NFSExport to terraform state
+func (r *resourceNFSExport) nfsExportState(ctx context.Context, input gopowerstore.NFSExport) models.NFSExport {
 	return models.NFSExport{
 		ID:                 types.StringValue(input.ID),
 		AnonymousGID:       types.Int32Value(input.AnonymousGID),
@@ -484,40 +473,10 @@ func NFSExportState(input gopowerstore.NFSExport) models.NFSExport {
 		Name:               types.StringValue(input.Name),
 		NfsOwnerUsername:   types.StringValue(input.NFSOwnerUsername),
 		Path:               types.StringValue(input.Path),
-		NoAccessHosts:      SliceToHosts(input.NoAccessHosts),
-		ReadOnlyHosts:      SliceToHosts(input.ROHosts),
-		ReadOnlyRootHosts:  SliceToHosts(input.RORootHosts),
-		ReadWriteHosts:     SliceToHosts(input.RWHosts),
-		ReadWriteRootHosts: SliceToHosts(input.RWRootHosts),
+		NoAccessHosts:      nfshostset.NewHostSetValueFullyKnown(ctx, input.NoAccessHosts),
+		ReadOnlyHosts:      nfshostset.NewHostSetValueFullyKnown(ctx, input.ROHosts),
+		ReadOnlyRootHosts:  nfshostset.NewHostSetValueFullyKnown(ctx, input.RORootHosts),
+		ReadWriteHosts:     nfshostset.NewHostSetValueFullyKnown(ctx, input.RWHosts),
+		ReadWriteRootHosts: nfshostset.NewHostSetValueFullyKnown(ctx, input.RWRootHosts),
 	}
-}
-
-// func SliceToHosts(inputs []string) customtype.Hosts {
-// 	out := make([]attr.Value, len(inputs))
-// 	for i, input := range inputs {
-// 		out[i] = types.StringValue(input)
-// 	}
-// 	hosts, _ := customtype.NewHostsValue(out)
-// 	return hosts
-// }
-
-// func TFListToSlice(input customtype.Hosts) []string {
-// 	list := make([]string, 0)
-// 	input.ElementsAs(context.Background(), &list, false)
-// 	return list
-// }
-
-func SliceToHosts(inputs []string) customtype.HostSetValue {
-	out := make([]attr.Value, len(inputs))
-	for i, input := range inputs {
-		out[i] = types.StringValue(input)
-	}
-	hosts, _ := customtype.NewHostSetValue(out)
-	return hosts
-}
-
-func TFListToSlice(input customtype.HostSetValue) []string {
-	list := make([]string, 0)
-	input.ElementsAs(context.Background(), &list, false)
-	return list
 }
