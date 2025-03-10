@@ -251,24 +251,6 @@ resource "powerstore_nfs_export" "test2" {
 }
 `
 
-var nfsUpdate1 = FsParams + `
-resource "powerstore_nfs_export" "test1" {
-  file_system_id = powerstore_filesystem.test_fs_create.id
-  name = "terraform_nfs"
-  path = "/test_fs"
-  description = "terraform nfs export update 1"
-}
-`
-
-var nfsUpdate2 = FsParams + `
-resource "powerstore_nfs_export" "test1" {
-  file_system_id = powerstore_filesystem.test_fs_create.id
-  name = "terraform_nfs"
-  path = "/test_fs"
-  description = "terraform nfs export update 2"
-}
-`
-
 var nfsUpdate = FsParams + `
 resource "powerstore_nfs_export" "test1" {
   file_system_id = powerstore_filesystem.test_fs_create.id
