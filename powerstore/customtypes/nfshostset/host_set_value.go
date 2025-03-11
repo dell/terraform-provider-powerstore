@@ -44,7 +44,7 @@ func (v HostSetValue) ValidateAttribute(_ context.Context, req xattr.ValidateAtt
 		return
 	}
 
-	_, verr := NewHostSetType().normalizeValues(v.Elements())
+	_, verr, _ := NewHostSetType().normalizeValues(v.Elements())
 	if verr != nil {
 		resp.Diagnostics.AddAttributeError(req.Path, "Error parsing host values", verr.Error())
 	}
@@ -57,20 +57,26 @@ func (v HostSetValue) SetSemanticEquals(ctx context.Context, other basetypes.Set
 	// If resource was created from Terraform, the state value must be valid and in a format that we recognize.
 	// If resource plan is invalid, we would have got an error in the ValidateAttribute method.
 	// In any case, better to fail than to silently ignore.
-	onorm, oerr := NewHostSetType().normalizeValues(o.Elements())
+	onorm, oerr, ook := NewHostSetType().normalizeValues(o.Elements())
 	if oerr != nil {
 		return false, helper.NewDiagnosticsFromError(
 			"Got error normalizing values inside SetSemantic Equals.",
 			oerr,
 		)
 	}
-	vnorm, verr := NewHostSetType().normalizeValues(v.Elements())
+	vnorm, verr, vok := NewHostSetType().normalizeValues(v.Elements())
 	if verr != nil {
 		return false, helper.NewDiagnosticsFromError(
 			"Got error normalizing values inside SetSemantic Equals.",
 			verr,
 		)
 	}
+
+	// if either values lists have unknowns, they are not semantically equal
+	if !ook || !vok {
+		return false, nil
+	}
+	// tflog.Debug(ctx, fmt.Sprintf("SetSemanticEquals normalized state: %v and plan: %v", onorm, vnorm))
 
 	return NewHostSetType().equal(vnorm, onorm), nil
 }

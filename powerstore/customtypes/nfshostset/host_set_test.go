@@ -27,10 +27,11 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 		in []string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    []string
-		wantErr bool
+		name     string
+		args     args
+		want     []string
+		wantErr  bool
+		wantDiff bool
 	}{
 		{
 			name: "Test with empty input",
@@ -189,17 +190,38 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 				"2001:db8:85a3::/64",
 			},
 		},
+		{
+			name:     "Test that empty list differs from a non empty list",
+			args:     args{in: []string{}},
+			want:     []string{"whatever"},
+			wantDiff: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			hst := NewHostSetType()
 			got, err := hst.normalizeStrings(tt.args.in)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("HostSetType.normalizeStrings() error = %v, wantErr %v", err, tt.wantErr)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("HostSetType.normalizeStrings() got unexpected error = %s", err.Error())
+				}
+				return
+			} else if tt.wantErr {
+				t.Error("HostSetType.normalizeStrings() did not get expected error")
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("HostSetType.normalizeStrings() = %v, want %v", got, tt.want)
+			want, err := hst.normalizeStrings(tt.want)
+			if err != nil {
+				t.Errorf("Cannot normalize wanted output: %s", err.Error())
+				return
+			}
+			if !reflect.DeepEqual(got, want) {
+				if tt.wantDiff {
+					return
+				}
+				t.Errorf("HostSetType.normalizeStrings() = %+v, want %+v", got, want)
+			} else if tt.wantDiff {
+				t.Errorf("HostSetType.normalizeStrings() = %+v, do not want %+v", got, want)
 			}
 		})
 	}

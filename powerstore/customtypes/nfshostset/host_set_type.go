@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"reflect"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -110,29 +111,26 @@ func (t HostSetType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (
 	return setValuable, nil
 }
 
-func (t HostSetType) normalizeValues(in []attr.Value) ([]attr.Value, error) {
-	ret := make([]attr.Value, 0, len(in))
+// normalizes value list by removing all unknown and null values
+// also returns false in last return value if there are any unknown or null values
+func (t HostSetType) normalizeValues(in []attr.Value) (map[string]bool, error, bool) {
+	// ret, ok := make([]attr.Value, 0, len(in)), true
+	ok := true
 	toNormalize := make([]string, 0, len(in))
 	for _, val := range in {
 		strVal := val.(basetypes.StringValue)
 		if strVal.IsNull() || strVal.IsUnknown() {
-			ret = append(ret, val)
+			ok = false
 			continue
 		}
 		str := strVal.ValueString()
 		toNormalize = append(toNormalize, str)
 	}
 	normalized, err := t.normalizeStrings(toNormalize)
-	if err != nil {
-		return nil, err
-	}
-	for _, val := range normalized {
-		ret = append(ret, basetypes.NewStringValue(val))
-	}
-	return ret, nil
+	return normalized, err, ok
 }
 
-func (t HostSetType) normalizeStrings(in []string) ([]string, error) {
+func (t HostSetType) normalizeStrings(in []string) (map[string]bool, error) {
 	retCommon := make([]string, 0, len(in))
 	cidrs, ips := make([]*net.IPNet, 0, len(in)), make([]net.IP, 0, len(in))
 	var perr error
@@ -216,23 +214,18 @@ ipcandidateLoop:
 	for _, ip := range uniqueIps {
 		ret = append(ret, ip.String())
 	}
-	// sort the strings
-	return ret, nil
+	// dedupliacte strings and return map
+	return t.deduplicateStrings(ret), nil
 }
 
-func (v HostSetType) equal(ins, outs []attr.Value) bool {
-outerLoop:
-	for _, elem := range ins {
-		if elem.IsNull() || elem.IsUnknown() {
-			return false
-		}
-		for _, out := range outs {
-			if elem.Equal(out) {
-				continue outerLoop
-			}
-		}
-		return false
+func (t HostSetType) deduplicateStrings(in []string) map[string]bool {
+	ret := make(map[string]bool)
+	for _, val := range in {
+		ret[val] = true
 	}
+	return ret
+}
 
-	return true
+func (v HostSetType) equal(ins, outs map[string]bool) bool {
+	return reflect.DeepEqual(ins, outs)
 }
