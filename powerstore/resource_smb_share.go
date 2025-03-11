@@ -297,33 +297,26 @@ func (r *resourceSMBShare) Create(ctx context.Context, req resource.CreateReques
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-	var smbShareState *models.SMBShare
-	smbShareState = &state
 
+	toSet := true
 	// Check if ACL needs to be created
 	if !plan.SMBShareACL.IsUnknown() {
 		aclParams, diags = r.planToSMBShareACLUpdate(ctx, plan)
-		if diags.HasError() {
-			resp.Diagnostics.Append(diags...)
-			return
-		}
 		// Update SMBShare ACL
-		diags = r.updateSMBShareACL(ctx, resp, ID, aclParams)
-		if diags.HasError() {
-			resp.Diagnostics.Append(diags...)
-			return
+		if aclParams != nil {
+			smbShareState, diags, toRemove := r.updateSMBShareACL(ctx, resp, ID, aclParams)
+			toSet = !toRemove
+			if diags.HasError() {
+				resp.Diagnostics.Append(diags...)
+			} else {
+				state = *smbShareState
+			}
 		}
-	}
-	smbShareState, diags = r.getSMBShareDetails(ctx, ID)
-	if diags.HasError() {
-		resp.Diagnostics.Append(diags...)
-		return
 	}
 
-	diags = resp.State.Set(ctx, smbShareState)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	if toSet {
+		diags = resp.State.Set(ctx, state)
+		resp.Diagnostics.Append(diags...)
 	}
 	log.Printf("Done with Create")
 }
@@ -413,30 +406,28 @@ func (r *resourceSMBShare) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	var smbShareState *models.SMBShare
-	smbShareState = &state
-
 	aclParams, diags := r.planToSMBShareACLUpdate(ctx, plan)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
-		return
-	}
+	} else {
+		// Update SMBShare ACL
+		_, err = r.client.PStoreClient.SetSMBShareACL(context.Background(), SMBShareID, aclParams)
+		if err != nil {
+			diags.AddError(
+				"Error updating smb share ACL deatils",
+				"Could not update smb share ACL, unexpected error: "+err.Error(),
+			)
+		}
 
-	// Update SMBShare ACL
-	_, err = r.client.PStoreClient.SetSMBShareACL(context.Background(), SMBShareID, aclParams)
-	if err != nil {
-		diags.AddError(
-			"Error updating smb share ACL deatils",
-			"Could not update smb share ACL, unexpected error: "+err.Error(),
-		)
-	}
+		smbShareState, diags := r.getSMBShareDetails(ctx, SMBShareID)
+		if diags.HasError() {
+			resp.Diagnostics.Append(diags...)
 
-	smbShareState, diags = r.getSMBShareDetails(ctx, SMBShareID)
-	if diags.HasError() {
-		resp.Diagnostics.Append(diags...)
-		return
+		} else {
+			state = *smbShareState
+		}
 	}
-	diags = resp.State.Set(ctx, smbShareState)
+	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -541,7 +532,7 @@ func (r *resourceSMBShare) planToSMBShareACLUpdate(ctx context.Context, plan mod
 	aclParams = &gopowerstore.ModifySMBShareACL{
 		Aces: aces,
 	}
-	return aclParams, diags
+	return aclParams, nil
 }
 
 // SMBShareStateACL - method to update terraform state
@@ -623,7 +614,8 @@ func (r *resourceSMBShare) getSMBShareDetails(ctx context.Context, SMBShareID st
 }
 
 // updateSMBShareACL - method to update smb share ACL
-func (r *resourceSMBShare) updateSMBShareACL(ctx context.Context, resp *resource.CreateResponse, SMBShareID string, aclParams *gopowerstore.ModifySMBShareACL) diag.Diagnostics {
+func (r *resourceSMBShare) updateSMBShareACL(ctx context.Context, resp *resource.CreateResponse, SMBShareID string, aclParams *gopowerstore.ModifySMBShareACL) (*models.SMBShare, diag.Diagnostics, bool) {
+	toRemove := false
 	var diags diag.Diagnostics
 	var err error
 	_, err = r.client.PStoreClient.SetSMBShareACL(context.Background(), SMBShareID, aclParams)
@@ -639,11 +631,16 @@ func (r *resourceSMBShare) updateSMBShareACL(ctx context.Context, resp *resource
 				"Error deleting SMBShare",
 				"Could not delete SMBShareID "+SMBShareID+": "+err.Error(),
 			)
-			return diags
+			return nil, diags, toRemove
 		}
-		// delete has passed so we need to remove state and return SMBShare ACL update failure
-		resp.State.RemoveResource(ctx)
-		return diags
+		toRemove = true
+		return nil, diags, toRemove
 	}
-	return nil
+	smbShareState, diags := r.getSMBShareDetails(ctx, SMBShareID)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return nil, diags, toRemove
+	}
+
+	return smbShareState, nil, toRemove
 }
