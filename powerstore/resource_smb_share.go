@@ -106,7 +106,7 @@ func SMBShareSchema() map[string]schema.Attribute {
 			Optional:            true,
 			Computed:            true,
 			Validators: []validator.String{
-				stringvalidator.LengthBetween(1, 255),
+				stringvalidator.LengthBetween(0, 255),
 			},
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.UseStateForUnknown(),
@@ -297,13 +297,8 @@ func (r *resourceSMBShare) Create(ctx context.Context, req resource.CreateReques
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-
-	// update state
-	diags = resp.State.Set(ctx, state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	var smbShareState *models.SMBShare
+	smbShareState = &state
 
 	// Check if ACL needs to be created
 	if !plan.SMBShareACL.IsUnknown() {
@@ -319,7 +314,7 @@ func (r *resourceSMBShare) Create(ctx context.Context, req resource.CreateReques
 			return
 		}
 	}
-	smbShareState, diags := r.getSMBShareDetails(ctx, ID)
+	smbShareState, diags = r.getSMBShareDetails(ctx, ID)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -418,12 +413,8 @@ func (r *resourceSMBShare) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	// update state
-	diags = resp.State.Set(ctx, state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	var smbShareState *models.SMBShare
+	smbShareState = &state
 
 	aclParams, diags := r.planToSMBShareACLUpdate(ctx, plan)
 	if diags.HasError() {
@@ -440,7 +431,7 @@ func (r *resourceSMBShare) Update(ctx context.Context, req resource.UpdateReques
 		)
 	}
 
-	smbShareState, diags := r.getSMBShareDetails(ctx, SMBShareID)
+	smbShareState, diags = r.getSMBShareDetails(ctx, SMBShareID)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -532,7 +523,7 @@ func (r *resourceSMBShare) planToSMBShareACLUpdate(ctx context.Context, plan mod
 	diags = plan.SMBShareACL.ElementsAs(ctx, &acesModel, false)
 	if diags.HasError() {
 		diags.AddError(
-			"Error creating smb share",
+			"Error creating smb share ACL",
 			"unable to parse SMB share ACL elements from plan",
 		)
 		return nil, diags

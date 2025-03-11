@@ -49,13 +49,13 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
-data "powerstore_filesystem" "test4" {
+data "powerstore_filesystem" "filesystems" {
 }
 
 
-resource "powerstore_smb_share" "test1" {
+resource "powerstore_smb_share" "smbShare" {
   // Required
-  file_system_id = data.powerstore_filesystem.test3.filesystems[0].id
+  file_system_id = data.powerstore_filesystem.filesystems.filesystems[0].id
   name           = "terraform-smb"
   path           = "/terraform-fs"
 
