@@ -346,7 +346,7 @@ func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot)
 		expirationTimestamp = "1970-01-01T00:00:00.000Z"
 	}
 	fsSnapshotUpdate := &gopowerstore.FSModify{
-		Description:         plan.Description.ValueStringPointer(),
+		Description:         plan.Description.ValueString(),
 		ExpirationTimestamp: expirationTimestamp,
 	}
 	return fsSnapshotUpdate
