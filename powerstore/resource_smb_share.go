@@ -303,7 +303,7 @@ func (r *resourceSMBShare) Create(ctx context.Context, req resource.CreateReques
 	if !plan.SMBShareACL.IsUnknown() {
 		aclParams, diags = r.planToSMBShareACLUpdate(ctx, plan)
 		// Update SMBShare ACL
-		if aclParams != nil {
+		if aclParams != nil && diags == nil {
 			smbShareState, diags, toRemove := r.updateSMBShareACL(ctx, resp, ID, aclParams)
 			toSet = !toRemove
 			if diags.HasError() {
@@ -427,8 +427,7 @@ func (r *resourceSMBShare) Update(ctx context.Context, req resource.UpdateReques
 			state = *smbShareState
 		}
 	}
-	diags1 := resp.State.Set(ctx, state)
-	diags = append(diags, diags1...)
+	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
