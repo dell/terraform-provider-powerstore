@@ -427,7 +427,8 @@ func (r *resourceSMBShare) Update(ctx context.Context, req resource.UpdateReques
 			state = *smbShareState
 		}
 	}
-	diags = resp.State.Set(ctx, state)
+	diags1 := resp.State.Set(ctx, state)
+	diags = append(diags, diags1...)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
