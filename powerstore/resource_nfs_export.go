@@ -345,10 +345,10 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	// Check not modifiable attributes
-	if !plan.Name.Equal(state.Name) || !plan.FileSystemID.Equal(state.FileSystemID) || !plan.Path.Equal(state.Path) || !plan.NfsOwnerUsername.Equal(state.NfsOwnerUsername) {
+	if !plan.Name.Equal(state.Name) || !plan.FileSystemID.Equal(state.FileSystemID) || !plan.Path.Equal(state.Path) {
 		resp.Diagnostics.AddError(
 			"Error updating nfs export resource",
-			"nfs export attributes [name, filesystem_id, path, nfs_owner_username] are not modifiable",
+			"nfs export attributes [name, filesystem_id, path] are not modifiable",
 		)
 		return
 
