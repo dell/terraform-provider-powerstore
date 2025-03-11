@@ -109,9 +109,6 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			Description:         "A user-defined description of the NFS Export.",
 			Optional:            true,
 			Computed:            true,
-			Validators: []validator.String{
-				stringvalidator.LengthAtLeast(1),
-			},
 		},
 		"min_security": schema.StringAttribute{
 			PlanModifiers: []planmodifier.String{
@@ -443,11 +440,11 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 
 func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *gopowerstore.NFSExportModify {
 	nfsModify := &gopowerstore.NFSExportModify{
-		AnonymousGID: plan.AnonymousGID.ValueInt32(),
-		AnonymousUID: plan.AnonymousUID.ValueInt32(),
-		Description:  plan.Description.ValueString(),
-		IsNoSUID:     plan.IsNoSUID.ValueBool(),
-		// NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
+		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
+		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
+		Description:        plan.Description.ValueString(),
+		IsNoSUID:           plan.IsNoSUID.ValueBool(),
+		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
 		MinSecurity:        plan.MinSecurity.ValueString(),
 		DefaultAccess:      plan.DefaultAccess.ValueString(),
 		NoAccessHosts:      helper.TFListToSlice[string](plan.NoAccessHosts),

@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/bytedance/mockey v1.2.14
-	github.com/dell/gopowerstore v1.17.1-0.20250310150330-6496c4485777
+	github.com/dell/gopowerstore v1.17.1-0.20250311150623-a003d99c7516
 	github.com/hashicorp/terraform-plugin-framework v1.13.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.15.0
 	github.com/hashicorp/terraform-plugin-go v0.25.0
