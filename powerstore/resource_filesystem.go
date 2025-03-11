@@ -546,13 +546,13 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	fsModify := &gopowerstore.FSModify{
-		Description:                plan.Description.ValueStringPointer(),
+		Description:                plan.Description.ValueString(),
 		Size:                       int(valInBytes),
 		AccessPolicy:               plan.AccessPolicy.ValueString(),
 		LockingPolicy:              plan.LockingPolicy.ValueString(),
 		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
 		IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueStringPointer(),
+		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
 		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
 		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
 		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
