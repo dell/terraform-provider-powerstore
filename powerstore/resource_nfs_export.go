@@ -68,6 +68,7 @@ func (r *resourceNFSExport) Schema(ctx context.Context, req resource.SchemaReque
 
 // NFSExportResourceSchema defines resource interface Schema method
 func NFSExportResourceSchema() map[string]schema.Attribute {
+	hostsetValueDesc := " Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @."
 	return map[string]schema.Attribute{
 		"id": schema.StringAttribute{
 			PlanModifiers: []planmodifier.String{
@@ -175,8 +176,8 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			},
 		},
 		"no_access_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with no access to the NFS export or its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
-			Description:         "Hosts with no access to the NFS export or its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
+			MarkdownDescription: "Hosts with no access to the NFS export or its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with no access to the NFS export or its snapshots." + hostsetValueDesc,
 			Optional:            true,
 			Computed:            true,
 			CustomType:          nfshostset.NewHostSetType(),
@@ -186,8 +187,8 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			},
 		},
 		"read_only_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read-only access to the NFS export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
-			Description:         "Hosts with read-only access to the NFS export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
+			MarkdownDescription: "Hosts with read-only access to the NFS export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read-only access to the NFS export and its snapshots." + hostsetValueDesc,
 			Optional:            true,
 			Computed:            true,
 			CustomType:          nfshostset.NewHostSetType(),
@@ -197,8 +198,8 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			},
 		},
 		"read_only_root_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
-			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
+			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
 			Optional:            true,
 			Computed:            true,
 			CustomType:          nfshostset.NewHostSetType(),
@@ -208,8 +209,8 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			},
 		},
 		"read_write_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read and write access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
-			Description:         "Hosts with read and write access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
+			MarkdownDescription: "Hosts with read and write access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read and write access to the NFS Export and its snapshots." + hostsetValueDesc,
 			Optional:            true,
 			Computed:            true,
 			CustomType:          nfshostset.NewHostSetType(),
@@ -219,8 +220,8 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			},
 		},
 		"read_write_root_hosts": schema.SetAttribute{
-			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
-			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.",
+			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
 			Optional:            true,
 			Computed:            true,
 			CustomType:          nfshostset.NewHostSetType(),
