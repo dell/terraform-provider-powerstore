@@ -18,6 +18,7 @@ limitations under the License.
 package nfshostset
 
 import (
+	"context"
 	"reflect"
 	"testing"
 )
@@ -199,7 +200,7 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hst := NewHostSetType()
+			hst := NewHostSetValueFullyKnown(context.Background(), []string{"whatever"})
 			got, err := hst.normalizeStrings(tt.args.in)
 			if err != nil {
 				if !tt.wantErr {
