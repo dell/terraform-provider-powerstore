@@ -18,6 +18,7 @@ limitations under the License.
 package powerstore
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"regexp"
@@ -106,9 +107,23 @@ func TestAccNFSExport_Create(t *testing.T) {
 					return nil
 				},
 			},
+			// error in read after update - mocked
+			{
+				PreConfig: func() {
+					yesmocker = mockey.Mock((*client.Client).ModifyNFSExport).Return(nil).Build()
+					nomocker = mockey.Mock((*gopowerstore.ClientIMPL).GetNFSExport).Return(nil, fmt.Errorf("mock error")).Build()
+					nomocker.When(func(ctx context.Context, id string) bool {
+						return yesmocker.Times() == 1
+					})
+				},
+				Config:      ProviderConfigForTesting + nfsUpdate,
+				ExpectError: regexp.MustCompile(".*Error getting nfs export after modify.*"),
+			},
 			// error in update - mocked
 			{
 				PreConfig: func() {
+					nomocker.UnPatch()
+					yesmocker.UnPatch()
 					yesmocker = mockey.Mock((*client.Client).ModifyNFSExport).Return(fmt.Errorf("Error reading nfs export")).Build()
 				},
 				Config:      ProviderConfigForTesting + nfsUpdate,
