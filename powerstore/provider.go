@@ -152,6 +152,7 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 		newFileSystemSnapshotResource,
 		newReplicationRuleResource,
 		newNFSExportResource,
+		newSMBShareResource,
 	}
 }
 
