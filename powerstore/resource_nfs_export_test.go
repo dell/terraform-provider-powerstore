@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"terraform-provider-powerstore/client"
 	"testing"
 
 	"github.com/bytedance/mockey"
@@ -108,7 +109,7 @@ func TestAccNFSExport_Create(t *testing.T) {
 			// error in update - mocked
 			{
 				PreConfig: func() {
-					yesmocker = mockey.Mock((*gopowerstore.ClientIMPL).ModifyNFSExport).Return(nil, fmt.Errorf("Error reading nfs export")).Build()
+					yesmocker = mockey.Mock((*client.Client).ModifyNFSExport).Return(fmt.Errorf("Error reading nfs export")).Build()
 				},
 				Config:      ProviderConfigForTesting + nfsUpdate,
 				ExpectError: regexp.MustCompile(".*Error reading nfs export.*"),
