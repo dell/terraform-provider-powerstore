@@ -37,6 +37,7 @@ import (
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/models/jsonmodel"
 	"terraform-provider-powerstore/powerstore/customtypes/nfshostset"
 	"terraform-provider-powerstore/powerstore/helper"
 )
@@ -354,8 +355,8 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 
 	}
 
-	nfsModify := r.planToNFSExportModifyParam(plan)
-	_, err := r.client.PStoreClient.ModifyNFSExport(context.Background(), nfsModify, state.ID.ValueString())
+	nfsModify := r.planToNFSExportModifyParam(plan, state)
+	err := r.client.ModifyNFSExport(context.Background(), nfsModify, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating nfs export",
@@ -439,8 +440,8 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 	return nfsCreate
 }
 
-func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *gopowerstore.NFSExportModify {
-	nfsModify := &gopowerstore.NFSExportModify{
+func (r *resourceNFSExport) planToNFSExportModifyParam(plan, state models.NFSExport) *jsonmodel.NFSExportModify {
+	nfsModify := jsonmodel.NFSExportModify{
 		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
 		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
 		Description:        plan.Description.ValueString(),
@@ -454,7 +455,7 @@ func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *g
 		ReadWriteHosts:     helper.TFListToSlice[string](plan.ReadWriteHosts),
 		ReadWriteRootHosts: helper.TFListToSlice[string](plan.ReadWriteRootHosts),
 	}
-	return nfsModify
+	return &nfsModify
 }
 
 // nfsExportState - method to convert gopowerstore.NFSExport to terraform state
