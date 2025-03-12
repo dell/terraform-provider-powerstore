@@ -18,41 +18,41 @@ limitations under the License.
 # commands to run this tf file : terraform init && terraform apply --auto-approve
 
 # fetching all SMB Shares on the array
-data powerstore_smb_share all_smb_shares {
+data "powerstore_smb_share" "all_smb_shares" {
 }
 
 # fetching SMB Share using id
-data powerstore_smb_share smb_share_by_id {
+data "powerstore_smb_share" "smb_share_by_id" {
   id = "6732e829-29c9-7fed-686a-ee23cab1d298"
 }
 
 # fetching SMB Shares using name
-data powerstore_smb_share smb_share_by_name {
+data "powerstore_smb_share" "smb_share_by_name" {
   name = "smb-share-1"
 }
 
 # fetching all SMB Shares from a filesystem
-data powerstore_filesystem us_east_sales_catalog {
+data "powerstore_filesystem" "us_east_sales_catalog" {
   name = "us-east-sales-catalog"
   lifecycle {
-      postcondition {
-        condition     = length(self.filesystems) == 1
-        error_message = "error: US East sales catalog filesystem list length should be 1, received: ${length(self.filesystems)}"
-      }
+    postcondition {
+      condition     = length(self.filesystems) == 1
+      error_message = "error: US East sales catalog filesystem list length should be 1, received: ${length(self.filesystems)}"
     }
+  }
 }
 
-data powerstore_smb_share smb_share_by_filesystem {
+data "powerstore_smb_share" "smb_share_by_filesystem" {
   file_system_id = data.powerstore_filesystem.us_east_sales_catalog.filesystems[0].id
 }
 
 # fetching SMB Shares using filter expression
 # here, we are fetching all SMB Shares of subdirectories of /us-east-revenue/sports_cars
 # with encryption enabled and offline availability as either Documents or None.
-data powerstore_smb_share smb_share_by_filters {
+data "powerstore_smb_share" "smb_share_by_filters" {
   filter_expression = "path=ilike./us-east-revenue/sports_cars/*&is_encryption_enabled=is.true&offline_availability=in.(Documents,None)"
 }
 
-output all_smb_shares {
+output "all_smb_shares" {
   value = data.powerstore_smb_share.all_smb_shares.smb_shares
 }
