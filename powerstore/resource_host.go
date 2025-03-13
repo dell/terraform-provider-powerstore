@@ -114,7 +114,7 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Description:         "Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is mutual authentication.",
 							MarkdownDescription: "Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is mutual authentication.",
 							Optional:            true,
-							// Sensitive:           true,
+							Sensitive:           true,
 						},
 						"chap_mutual_username": schema.StringAttribute{
 							Description:         "Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is mutual authentication.",
@@ -130,7 +130,7 @@ func (r *resourceHost) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Description:         "Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is single authentication.",
 							MarkdownDescription: "Password for CHAP authentication. This value must be 12 to 64 UTF-8 characters. This password cannot be queried. CHAP password is required when the cluster CHAP mode is single authentication.",
 							Optional:            true,
-							// Sensitive:           true,
+							Sensitive:           true,
 						},
 					},
 				},
