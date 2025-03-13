@@ -36,4 +36,42 @@ resource "powerstore_nfs_export" "test1" {
   min_security   = "Sys"        # Options: "Sys", "Kerberos", "Kerberos_With_Integrity", "Kerberos_With_Encryption"
   default_access = "Read_Write" # Options: "No_Access", "Read_Only", "Read_Write", "Root", "Read_Only_Root"
 
+  # host access related fields (optional)
+  no_access_hosts = [
+    "192.168.1.0/24",
+    "192.168.1.0/26",
+    "192.168.1.54/255.255.255.0",
+    "192.168.1.54/255.1009.255.0",    
+    "2001:db8:85a3::8a2e:370:7334/255.255.255.0",
+    "2001:db8:85a3::8a2e:370:7334",
+    "2001:db8:85a3::/64",
+  ]
+
+  read_only_hosts = [
+    "10.168.1.0/24",
+    "11.28.1.0",
+  ]
+
+  read_only_root_hosts = [
+    "11.168.1.0/24",
+    "hostname1",
+    "hostname2",
+    "@netgroup1",
+  ]
+
+  read_write_hosts = [
+    "12.168.1.0/24",
+  ]
+
+  read_write_root_hosts = [
+    "13.168.1.0/24",
+  ]
+
+  # set the above lists to empty list to remove all hosts from the NFS export, as below
+  # no_access_hosts = []
+  # read_only_hosts = []
+  # read_only_root_hosts = []
+  # read_write_hosts = []
+  # read_write_root_hosts = []
+
 }
