@@ -222,6 +222,212 @@ func TestAccHost_ImportFailure(t *testing.T) {
 	})
 }
 
+func TestAccHost_Validations(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// validate with known port name and valid unknown chap creds
+			{
+				Config: ProviderConfigForTesting + `
+								resource terraform_data username {
+									input = null
+								}
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "nqn.1994-05.com.redhat:88cb606"
+										chap_single_username = terraform_data.username.output
+										chap_single_password = terraform_data.username.output
+										chap_mutual_username = terraform_data.username.output
+										chap_mutual_password = terraform_data.username.output
+									}]
+								}
+								`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			// validate with unknown iSCSI port name and known chap creds
+			{
+				Config: ProviderConfigForTesting + `
+								resource terraform_data portname {
+									input = "iqn.port"
+								}
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = terraform_data.portname.output
+										chap_single_username = "whatever"
+										chap_single_password = "whatever"
+										chap_mutual_username = "whatever"
+										chap_mutual_password = "whatever"
+									}]
+								}
+								`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			// validate with unknown iSCSI port name and unknown chap creds
+			{
+				Config: ProviderConfigForTesting + `
+								resource terraform_data portname {
+									input = "iqn.port"
+								}
+								resource terraform_data username {
+									input = null
+								}
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = terraform_data.portname.output
+										chap_single_username = terraform_data.username.output
+										chap_single_password = terraform_data.username.output
+										chap_mutual_username = terraform_data.username.output
+										chap_mutual_password = terraform_data.username.output
+									}]
+								}
+								`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			// validate with known nvme port name and known chap creds - neg
+			{
+				Config: ProviderConfigForTesting + `
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "nqn.1994-05.com.redhat:88cb606"
+										chap_single_username = "whatever"
+										chap_single_password = "whatever"
+										chap_mutual_username = "whatever"
+										chap_mutual_password = "whatever"
+									}]
+								}
+								`,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile("chap credentials are supported only with iSCSI protocol"),
+			},
+			// validate that chap creds work in loops
+			{
+				Config: ProviderConfigForTesting + `
+								resource "powerstore_host" "test" {
+									for_each = tomap({
+										"192.168.10.156" = "iqn.1993-08.org.debian.iscsi:01:107dc7e4254a"
+										"192.168.10.157" = "iqn.1993-08.org.debian.iscsi:01:107dc7e4254b"
+									})
+									name              = each.key
+									os_type           = "ESXi"
+									host_connectivity = "Local_Only"
+									description       = each.value
+									initiators =  [{port_name = "${each.value}", chap_single_username = "testuser", chap_single_password = "testuser123"}]
+								}
+								`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			// validate chap_mutual_username cannot be present without chap_single_username - neg
+			{
+				Config: ProviderConfigForTesting + `
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "iqn.1994-05.com.redhat:88cb606"
+										chap_mutual_username = "whatever"
+									}]
+								}
+								`,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile("chap_mutual_username.*cannot be present without.*chap_single_username"),
+			},
+			// validate chap_mutual_password cannot be present without chap_mutual_username - neg
+			{
+				Config: ProviderConfigForTesting + `
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "iqn.1994-05.com.redhat:88cb606"
+										chap_mutual_password = "whatever"
+									}]
+								}
+								`,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile("chap_mutual_password.*cannot be present without.*chap_mutual_username"),
+			},
+			// validate chap_single_password cannot be present without chap_single_username - neg
+			{
+				Config: ProviderConfigForTesting + `
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "iqn.1994-05.com.redhat:88cb606"
+										chap_single_password = "whatever"
+									}]
+								}
+								`,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile("chap_single_password.*cannot be present without.*chap_single_username"),
+			},
+			// validate with unknown null chap passwords
+			{
+				Config: ProviderConfigForTesting + `
+								resource terraform_data password {
+									input = null
+								}
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "iqn.1994-05.com.redhat:88cb606"
+										chap_single_username = "whatever"
+										chap_single_password = terraform_data.password.output
+										chap_mutual_username = "whatever"
+										chap_mutual_password = terraform_data.password.output
+									}]
+								}
+								`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			// validate with unknown non-null chap single username
+			{
+				Config: ProviderConfigForTesting + `
+								resource terraform_data username {
+									input = "whatever"
+								}
+								resource "powerstore_host" "test" {
+									name = "tf_host_acc_new"
+									description = "Test Host Resource"
+									os_type = "Linux"
+									initiators = [{
+										port_name = "iqn.1994-05.com.redhat:88cb606"
+										chap_single_username = terraform_data.username.output
+										chap_mutual_username = "whatever"
+									}]
+								}
+								`,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+		},
+	})
+}
+
 var HostPreReqForVolume = `
 resource "powerstore_host" "test" {
 	name = "tf_host_acc_new"
