@@ -164,12 +164,12 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 	}
 
 	if len(fileSystemSnapshots) == 0 {
-        resp.Diagnostics.AddError(
-            "Unable to find PowerStore File Systems Snapshots",
-            "Unable to find PowerStore File Systems Snapshots",
-        )
-        return
-    }
+		resp.Diagnostics.AddError(
+			"Unable to find PowerStore File Systems Snapshots",
+			"Unable to find PowerStore File Systems Snapshots",
+		)
+		return
+	}
 
 	state.FileSystemSnapshots = updateFileSystemState(fileSystemSnapshots)
 	state.ID = types.StringValue("placeholder")
