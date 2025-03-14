@@ -24,6 +24,7 @@ import (
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -63,6 +64,7 @@ func (r *resourceReplicationRule) Schema(ctx context.Context, req resource.Schem
 				MarkdownDescription: "The name of the replication rule.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.LengthAtMost(128),
 				},
 			},
 			"rpo": schema.StringAttribute{
@@ -95,6 +97,10 @@ func (r *resourceReplicationRule) Schema(ctx context.Context, req resource.Schem
 				Computed:            true,
 				Description:         "Alert threshold for the replication rule.",
 				MarkdownDescription: "Alert threshold for the replication rule.",
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+					int64validator.AtMost(1440),
+				},
 			},
 			"is_read_only": schema.BoolAttribute{
 				Optional:            true,
