@@ -20,8 +20,6 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -31,6 +29,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 )
 
 var (
@@ -161,6 +162,14 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 			return
 		}
 	}
+
+	if len(fileSystemSnapshots) == 0 {
+        resp.Diagnostics.AddError(
+            "Unable to find PowerStore File Systems Snapshots",
+            "Unable to find PowerStore File Systems Snapshots",
+        )
+        return
+    }
 
 	state.FileSystemSnapshots = updateFileSystemState(fileSystemSnapshots)
 	state.ID = types.StringValue("placeholder")
