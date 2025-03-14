@@ -67,6 +67,44 @@ resource "powerstore_nfs_export" "test1" {
   min_security   = "Sys"        # Options: "Sys", "Kerberos", "Kerberos_With_Integrity", "Kerberos_With_Encryption"
   default_access = "Read_Write" # Options: "No_Access", "Read_Only", "Read_Write", "Root", "Read_Only_Root"
 
+  # host access related fields (optional)
+  no_access_hosts = [
+    "192.168.1.0/24",
+    "192.168.1.0/26",
+    "192.168.1.54/255.255.255.0",
+    "192.168.1.54/255.1009.255.0",    
+    "2001:db8:85a3::8a2e:370:7334/255.255.255.0",
+    "2001:db8:85a3::8a2e:370:7334",
+    "2001:db8:85a3::/64",
+  ]
+
+  read_only_hosts = [
+    "10.168.1.0/24",
+    "11.28.1.0",
+  ]
+
+  read_only_root_hosts = [
+    "11.168.1.0/24",
+    "hostname1",
+    "hostname2",
+    "@netgroup1",
+  ]
+
+  read_write_hosts = [
+    "12.168.1.0/24",
+  ]
+
+  read_write_root_hosts = [
+    "13.168.1.0/24",
+  ]
+
+  # set the above lists to empty list to remove all hosts from the NFS export, as below
+  # no_access_hosts = []
+  # read_only_hosts = []
+  # read_only_root_hosts = []
+  # read_write_hosts = []
+  # read_write_root_hosts = []
+
 }
 ```
 
@@ -90,6 +128,11 @@ After the execution of above resource block, NFS Export would have been created 
 - `is_no_suid` (Boolean) If Set, do not allow access to Set SUID. Otherwise, allow access.
 - `min_security` (String) The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.
 - `nfs_owner_username` (String) The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.
+- `no_access_hosts` (Set of String) Hosts with no access to the NFS export or its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @.
+- `read_only_hosts` (Set of String) Hosts with read-only access to the NFS export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @.
+- `read_only_root_hosts` (Set of String) Hosts with read-only and read-only for root user access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @.
+- `read_write_hosts` (Set of String) Hosts with read and write access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @.
+- `read_write_root_hosts` (Set of String) Hosts with read and write and read and write for root user access to the NFS Export and its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @.
 
 ### Read-Only
 

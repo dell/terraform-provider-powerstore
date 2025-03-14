@@ -27,11 +27,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/models/jsonmodel"
+	"terraform-provider-powerstore/powerstore/customtypes/nfshostset"
+	"terraform-provider-powerstore/powerstore/helper"
 )
 
 // newNFSExportResource returns nfsExport new resource instance
@@ -55,14 +63,18 @@ func (r *resourceNFSExport) Schema(ctx context.Context, req resource.SchemaReque
 		MarkdownDescription: "This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.",
 		Description:         "This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.",
 
-		Attributes: NFSExportSchema(),
+		Attributes: NFSExportResourceSchema(),
 	}
 }
 
-// NFSExportSchema defines resource interface Schema method
-func NFSExportSchema() map[string]schema.Attribute {
+// NFSExportResourceSchema defines resource interface Schema method
+func NFSExportResourceSchema() map[string]schema.Attribute {
+	hostsetValueDesc := " Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLength, or IPv4/subnetmask), or Netgroups prefixed with @."
 	return map[string]schema.Attribute{
 		"id": schema.StringAttribute{
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			Computed:            true,
 			Description:         "The unique identifier of the NFS Export.",
 			MarkdownDescription: "The unique identifier of the NFS Export.",
@@ -92,15 +104,18 @@ func NFSExportSchema() map[string]schema.Attribute {
 			},
 		},
 		"description": schema.StringAttribute{
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			MarkdownDescription: "A user-defined description of the NFS Export.",
 			Description:         "A user-defined description of the NFS Export.",
 			Optional:            true,
 			Computed:            true,
-			Validators: []validator.String{
-				stringvalidator.LengthAtLeast(1),
-			},
 		},
 		"min_security": schema.StringAttribute{
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			MarkdownDescription: "The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.",
 			Description:         "The NFS enforced security type for users accessing the NFS Export. Valid values are: 'Sys', 'Kerberos', 'Kerberos_With_Integrity', 'Kerberos_With_Encryption'.",
 			Optional:            true,
@@ -110,6 +125,9 @@ func NFSExportSchema() map[string]schema.Attribute {
 			},
 		},
 		"anonymous_gid": schema.Int32Attribute{
+			PlanModifiers: []planmodifier.Int32{
+				int32planmodifier.UseStateForUnknown(),
+			},
 			MarkdownDescription: "The GID (Group ID) of the anonymous user. This is the group ID of the anonymous user. The anonymous user is the user ID (UID) that is used when the true user's identity cannot be determined.",
 			Description:         "The GID (Group ID) of the anonymous user. This is the group ID of the anonymous user. The anonymous user is the user ID (UID) that is used when the true user's identity cannot be determined.",
 			Optional:            true,
@@ -120,18 +138,27 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "The UID (User ID) of the anonymous user. This is the user ID of the anonymous user. The anonymous user is the user ID (UID) that is used when the true user's identity cannot be determined.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.Int32{
+				int32planmodifier.UseStateForUnknown(),
+			},
 		},
 		"is_no_suid": schema.BoolAttribute{
 			MarkdownDescription: "If Set, do not allow access to Set SUID. Otherwise, allow access.",
 			Description:         "If Set, do not allow access to Set SUID. Otherwise, allow access.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.Bool{
+				boolplanmodifier.UseStateForUnknown(),
+			},
 		},
 		"nfs_owner_username": schema.StringAttribute{
 			MarkdownDescription: "The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.",
 			Description:         "The default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root. Was added in version 3.0.0.0.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			Validators: []validator.String{
 				stringvalidator.LengthAtMost(32),
 				stringvalidator.LengthAtLeast(1),
@@ -142,8 +169,66 @@ func NFSExportSchema() map[string]schema.Attribute {
 			Description:         "The default access level for all hosts that can access the NFS Export. The default access level is the access level that is assigned to a host that is not explicitly Seted in the 'no_access_hosts', 'read_only_hosts', 'read_only_root_hosts', 'read_write_hosts', or 'read_write_root_hosts' Sets. Valid values are: 'No_Access', 'Read_Only', 'Read_Write', 'Root', 'Read_Only_Root'.",
 			Optional:            true,
 			Computed:            true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 			Validators: []validator.String{
 				stringvalidator.OneOf(string(gopowerstore.NoAccess), string(gopowerstore.ReadOnly), string(gopowerstore.ReadWrite), string(gopowerstore.Root), string(gopowerstore.ReadOnlyRoot)),
+			},
+		},
+		"no_access_hosts": schema.SetAttribute{
+			MarkdownDescription: "Hosts with no access to the NFS export or its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with no access to the NFS export or its snapshots." + hostsetValueDesc,
+			Optional:            true,
+			Computed:            true,
+			CustomType:          nfshostset.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				nfshostset.HostSetPlanModifier{},
+			},
+		},
+		"read_only_hosts": schema.SetAttribute{
+			MarkdownDescription: "Hosts with read-only access to the NFS export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read-only access to the NFS export and its snapshots." + hostsetValueDesc,
+			Optional:            true,
+			Computed:            true,
+			CustomType:          nfshostset.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				nfshostset.HostSetPlanModifier{},
+			},
+		},
+		"read_only_root_hosts": schema.SetAttribute{
+			MarkdownDescription: "Hosts with read-only and read-only for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read-only and read-only for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Optional:            true,
+			Computed:            true,
+			CustomType:          nfshostset.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				nfshostset.HostSetPlanModifier{},
+			},
+		},
+		"read_write_hosts": schema.SetAttribute{
+			MarkdownDescription: "Hosts with read and write access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read and write access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Optional:            true,
+			Computed:            true,
+			CustomType:          nfshostset.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				nfshostset.HostSetPlanModifier{},
+			},
+		},
+		"read_write_root_hosts": schema.SetAttribute{
+			MarkdownDescription: "Hosts with read and write and read and write for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Description:         "Hosts with read and write and read and write for root user access to the NFS Export and its snapshots." + hostsetValueDesc,
+			Optional:            true,
+			Computed:            true,
+			CustomType:          nfshostset.NewHostSetType(),
+			PlanModifiers: []planmodifier.Set{
+				setplanmodifier.UseStateForUnknown(),
+				nfshostset.HostSetPlanModifier{},
 			},
 		},
 	}
@@ -181,7 +266,6 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	// Create new nfs export
 	nfsCreate := r.planToNFSExportCreateParam(plan)
 
 	nfsCreateResponse, err := r.client.PStoreClient.CreateNFSExport(context.Background(), nfsCreate)
@@ -203,13 +287,11 @@ func (r *resourceNFSExport) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// Update details to state
-	state := NFSExportState(nfsExportResponse)
+	state := r.nfsExportState(ctx, nfsExportResponse)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+
 	log.Printf("Done with Create")
 }
 
@@ -234,14 +316,11 @@ func (r *resourceNFSExport) Read(ctx context.Context, req resource.ReadRequest, 
 		)
 		return
 	}
-	state = NFSExportState(nfsExportResponse)
+	state = r.nfsExportState(ctx, nfsExportResponse)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Done with Read")
 }
@@ -276,8 +355,8 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 
 	}
 
-	nfsModify := r.planToNFSExportModifyParam(plan)
-	_, err := r.client.PStoreClient.ModifyNFSExport(context.Background(), nfsModify, state.ID.ValueString())
+	nfsModify := r.planToNFSExportModifyParam(plan, state)
+	err := r.client.ModifyNFSExport(context.Background(), nfsModify, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating nfs export",
@@ -297,12 +376,9 @@ func (r *resourceNFSExport) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	// Update details to state
-	state = NFSExportState(nfsExportResponse)
+	state = r.nfsExportState(ctx, nfsExportResponse)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Successfully done with Update")
 }
@@ -348,43 +424,58 @@ func (r *resourceNFSExport) planToNFSExportCreateParam(plan models.NFSExport) *g
 		Path:         plan.Path.ValueString(),
 
 		// Optional
-		AnonymousGID:     plan.AnonymousGID.ValueInt32(),
-		AnonymousUID:     plan.AnonymousUID.ValueInt32(),
-		Description:      plan.Description.ValueString(),
-		IsNoSUID:         plan.IsNoSUID.ValueBool(),
-		NFSOwnerUsername: plan.NfsOwnerUsername.ValueString(),
-		MinSecurity:      plan.MinSecurity.ValueString(),
-		DefaultAccess:    gopowerstore.NFSExportDefaultAccessEnum(plan.DefaultAccess.ValueString()),
+		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
+		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
+		Description:        plan.Description.ValueString(),
+		IsNoSUID:           plan.IsNoSUID.ValueBool(),
+		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
+		MinSecurity:        plan.MinSecurity.ValueString(),
+		DefaultAccess:      gopowerstore.NFSExportDefaultAccessEnum(plan.DefaultAccess.ValueString()),
+		NoAccessHosts:      helper.TFListToSlice[string](plan.NoAccessHosts),
+		ReadOnlyHosts:      helper.TFListToSlice[string](plan.ReadOnlyHosts),
+		ReadOnlyRootHosts:  helper.TFListToSlice[string](plan.ReadOnlyRootHosts),
+		ReadWriteHosts:     helper.TFListToSlice[string](plan.ReadWriteHosts),
+		ReadWriteRootHosts: helper.TFListToSlice[string](plan.ReadWriteRootHosts),
 	}
 	return nfsCreate
 }
 
-func (r *resourceNFSExport) planToNFSExportModifyParam(plan models.NFSExport) *gopowerstore.NFSExportModify {
-	nfsModify := &gopowerstore.NFSExportModify{
-		AnonymousGID:     plan.AnonymousGID.ValueInt32(),
-		AnonymousUID:     plan.AnonymousUID.ValueInt32(),
-		Description:      plan.Description.ValueString(),
-		IsNoSUID:         plan.IsNoSUID.ValueBool(),
-		NFSOwnerUsername: plan.NfsOwnerUsername.ValueString(),
-		MinSecurity:      plan.MinSecurity.ValueString(),
-		DefaultAccess:    plan.DefaultAccess.ValueString(),
+func (r *resourceNFSExport) planToNFSExportModifyParam(plan, state models.NFSExport) *jsonmodel.NFSExportModify {
+	nfsModify := jsonmodel.NFSExportModify{
+		AnonymousGID:       plan.AnonymousGID.ValueInt32(),
+		AnonymousUID:       plan.AnonymousUID.ValueInt32(),
+		Description:        plan.Description.ValueString(),
+		IsNoSUID:           plan.IsNoSUID.ValueBool(),
+		NFSOwnerUsername:   plan.NfsOwnerUsername.ValueString(),
+		MinSecurity:        plan.MinSecurity.ValueString(),
+		DefaultAccess:      plan.DefaultAccess.ValueString(),
+		NoAccessHosts:      helper.TFListToSlice[string](plan.NoAccessHosts),
+		ReadOnlyHosts:      helper.TFListToSlice[string](plan.ReadOnlyHosts),
+		ReadOnlyRootHosts:  helper.TFListToSlice[string](plan.ReadOnlyRootHosts),
+		ReadWriteHosts:     helper.TFListToSlice[string](plan.ReadWriteHosts),
+		ReadWriteRootHosts: helper.TFListToSlice[string](plan.ReadWriteRootHosts),
 	}
-	return nfsModify
+	return &nfsModify
 }
 
-// updateNFSExportState - method to update terraform state
-func NFSExportState(input gopowerstore.NFSExport) models.NFSExport {
+// nfsExportState - method to convert gopowerstore.NFSExport to terraform state
+func (r *resourceNFSExport) nfsExportState(ctx context.Context, input gopowerstore.NFSExport) models.NFSExport {
 	return models.NFSExport{
-		ID:               types.StringValue(input.ID),
-		AnonymousGID:     types.Int32Value(input.AnonymousGID),
-		AnonymousUID:     types.Int32Value(input.AnonymousUID),
-		DefaultAccess:    types.StringValue(string(input.DefaultAccess)),
-		Description:      types.StringValue(input.Description),
-		FileSystemID:     types.StringValue(input.FileSystemID),
-		IsNoSUID:         types.BoolValue(input.IsNoSUID),
-		MinSecurity:      types.StringValue(input.MinSecurity),
-		Name:             types.StringValue(input.Name),
-		NfsOwnerUsername: types.StringValue(input.NFSOwnerUsername),
-		Path:             types.StringValue(input.Path),
+		ID:                 types.StringValue(input.ID),
+		AnonymousGID:       types.Int32Value(input.AnonymousGID),
+		AnonymousUID:       types.Int32Value(input.AnonymousUID),
+		DefaultAccess:      types.StringValue(string(input.DefaultAccess)),
+		Description:        types.StringValue(input.Description),
+		FileSystemID:       types.StringValue(input.FileSystemID),
+		IsNoSUID:           types.BoolValue(input.IsNoSUID),
+		MinSecurity:        types.StringValue(input.MinSecurity),
+		Name:               types.StringValue(input.Name),
+		NfsOwnerUsername:   types.StringValue(input.NFSOwnerUsername),
+		Path:               types.StringValue(input.Path),
+		NoAccessHosts:      nfshostset.NewHostSetValueFullyKnown(ctx, input.NoAccessHosts),
+		ReadOnlyHosts:      nfshostset.NewHostSetValueFullyKnown(ctx, input.ROHosts),
+		ReadOnlyRootHosts:  nfshostset.NewHostSetValueFullyKnown(ctx, input.RORootHosts),
+		ReadWriteHosts:     nfshostset.NewHostSetValueFullyKnown(ctx, input.RWHosts),
+		ReadWriteRootHosts: nfshostset.NewHostSetValueFullyKnown(ctx, input.RWRootHosts),
 	}
 }
