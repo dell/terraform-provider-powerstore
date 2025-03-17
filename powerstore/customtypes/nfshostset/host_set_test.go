@@ -56,7 +56,7 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 			name: "Test with valid IP addresses",
 			args: args{in: []string{
 				"192.168.1.1",
-				"10.0.0.1",
+				"10.0.0.1/255.255.255.255",
 				"172.16.0.1",
 			}},
 			want: []string{
