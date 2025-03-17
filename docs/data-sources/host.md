@@ -17,7 +17,7 @@
 title: "powerstore_host data source"
 linkTitle: "powerstore_host"
 page_title: "powerstore_host Data Source - powerstore"
-subcategory: ""
+subcategory: "Host Access Management"
 description: |-
   This datasource is used to query the existing host from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

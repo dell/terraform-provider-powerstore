@@ -17,7 +17,7 @@
 title: "powerstore_protectionpolicy data source"
 linkTitle: "powerstore_protectionpolicy"
 page_title: "powerstore_protectionpolicy Data Source - powerstore"
-subcategory: ""
+subcategory: "Data Protection"
 description: |-
   This datasource is used to query the existing protection policy from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

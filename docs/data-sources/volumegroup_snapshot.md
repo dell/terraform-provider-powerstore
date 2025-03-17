@@ -17,7 +17,7 @@
 title: "powerstore_volumegroup_snapshot data source"
 linkTitle: "powerstore_volumegroup_snapshot"
 page_title: "powerstore_volumegroup_snapshot Data Source - powerstore"
-subcategory: ""
+subcategory: "Storage Provisioning"
 description: |-
   This datasource is used to query the existing volumegroup snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

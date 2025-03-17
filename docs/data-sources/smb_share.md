@@ -17,7 +17,7 @@
 title: "powerstore_smb_share data source"
 linkTitle: "powerstore_smb_share"
 page_title: "powerstore_smb_share Data Source - powerstore"
-subcategory: ""
+subcategory: "Networking"
 description: |-
   This datasource is used to query the existing SMB Shares from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

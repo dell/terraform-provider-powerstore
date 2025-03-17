@@ -27,21 +27,26 @@ var resourceFacts = map[string]Facts{
 			"\n~> **Note:** `chap_single_password` must be present when `chap_single_username` is given and vice-versa." +
 			"\n~> **Note:** `chap_mutual_password` must be present when `chap_mutual_username` is given and vice-versa." +
 			"\n~> **Note:** `chap_mutual_username` and `chap_mutual_password` can be used only when `chap_single_username` and `chap_single_password` are present.",
-		ExampleVar: "host",
+		ExampleVar:  "host",
+		SubCategory: "Host Access Management",
 	},
 	"hostgroup": {
 		Note: "~> **Note:** Exactly one of `host_ids` and `host_names` is required." +
 			"\n~> **Note:** `host_connectivity` cannot be used while creating host group resource but it can be used while updating the host group resource.",
-		ExampleVar: "host group",
+		ExampleVar:  "host group",
+		SubCategory: "Host Access Management",
 	},
 	"protectionpolicy": {
-		ExampleVar: "protection policy",
+		ExampleVar:  "protection policy",
+		SubCategory: "Data Protection",
 	},
 	"replication_rule": {
-		ExampleVar: "replication rule",
+		ExampleVar:  "replication rule",
+		SubCategory: "Data Protection",
 	},
 	"snapshotrule": {
-		ExampleVar: "snapshot rule",
+		ExampleVar:  "snapshot rule",
+		SubCategory: "Data Protection",
 	},
 	"volume_snapshot": {
 		Note: "> **Note:** `volume_id`/`volume_name` is the required attribute to create volume snapshot." +
@@ -50,10 +55,12 @@ var resourceFacts = map[string]Facts{
 			"\n> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank(\"\")." +
 			"\n> **Note:** Volume DataSource can be used to fetch volume ID/Name for volume snapshot creation." +
 			"\n> **Note:** Exactly one of `volume_id` and `volume_name` should be provided.",
-		ExampleVar: "volume snapshot",
+		ExampleVar:  "volume snapshot",
+		SubCategory: "Storage Provisioning",
 	},
 	"volume": {
-		ExampleVar: "volume",
+		ExampleVar:  "volume",
+		SubCategory: "Storage Provisioning",
 	},
 	"volumegroup_snapshot": {
 		Note: "~> **Note:** `volume_group_id`/`volume_group_name` is the required attribute to create volume group snapshot." +
@@ -62,26 +69,36 @@ var resourceFacts = map[string]Facts{
 			"\n~> **Note:** During modify operation, to set infinite retention, `expiration_timestamp` can be set to blank(\"\")." +
 			"\n~> **Note:** Volume group DataSource can be used to fetch volume group ID/Name." +
 			"\n~> **Note:** Exactly one of `volume_group_id` and `volume_group_name` should be provided.",
-		ExampleVar: "volume group snapshot",
+		ExampleVar:  "volume group snapshot",
+		SubCategory: "Storage Provisioning",
 	},
 	"volumegroup": {
 		Note: "> **Note:** Exactly one of `volume_ids` and `volume_names` is required." +
 			"\n> **Note:** Exactly one of `protection_policy_id` and `protection_policy_name` is required.",
-		ExampleVar: "volume group",
+		ExampleVar:  "volume group",
+		SubCategory: "Storage Provisioning",
 	},
 	"filesystem": {
-		ExampleVar: "filesystem",
+		ExampleVar:  "filesystem",
+		SubCategory: "Storage Provisioning",
 	},
 	"filesystem_snapshot": {
-		ExampleVar: "filesystem snapshot",
+		ExampleVar:  "filesystem snapshot",
+		SubCategory: "Storage Provisioning",
 	},
 	"nas_server": {
-		ExampleVar: "NAS Server",
+		ExampleVar:  "NAS Server",
+		SubCategory: "Networking",
 	},
 	"nfs_export": {
-		ExampleVar: "NFS Export",
+		ExampleVar:  "NFS Export",
+		SubCategory: "Networking",
+	},
+	"smb_share": {
+		SubCategory: "Networking",
 	},
 	"storagecontainer": {
-		ExampleVar: "storage container",
+		ExampleVar:  "storage container",
+		SubCategory: "Storage Provisioning",
 	},
 }

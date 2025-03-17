@@ -17,7 +17,7 @@
 title: "powerstore_nas_server data source"
 linkTitle: "powerstore_nas_server"
 page_title: "powerstore_nas_server Data Source - powerstore"
-subcategory: ""
+subcategory: "Networking"
 description: |-
   This datasource is used to query the existing NAS Server from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

@@ -17,7 +17,7 @@
 title: "powerstore_filesystem data source"
 linkTitle: "powerstore_filesystem"
 page_title: "powerstore_filesystem Data Source - powerstore"
-subcategory: ""
+subcategory: "Storage Provisioning"
 description: |-
   This datasource is used to query the existing File System from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

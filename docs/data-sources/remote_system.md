@@ -17,7 +17,7 @@
 title: "powerstore_remote_system data source"
 linkTitle: "powerstore_remote_system"
 page_title: "powerstore_remote_system Data Source - powerstore"
-subcategory: ""
+subcategory: "Data Protection"
 description: |-
   This datasource is used to query the existing Remote Systems from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

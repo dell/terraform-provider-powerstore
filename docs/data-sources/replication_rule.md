@@ -17,7 +17,7 @@
 title: "powerstore_replication_rule data source"
 linkTitle: "powerstore_replication_rule"
 page_title: "powerstore_replication_rule Data Source - powerstore"
-subcategory: ""
+subcategory: "Data Protection"
 description: |-
   This datasource is used to query the existing replication rule from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

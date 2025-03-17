@@ -17,7 +17,7 @@
 title: "powerstore_storagecontainer resource"
 linkTitle: "powerstore_storagecontainer"
 page_title: "powerstore_storagecontainer Resource - powerstore"
-subcategory: ""
+subcategory: "Storage Provisioning"
 description: |-
   This resource is used to manage the storage container entity of PowerStore Array. We can Create, Update and Delete the storage container using this resource. We can also import an existing storage container from PowerStore array.
 ---
