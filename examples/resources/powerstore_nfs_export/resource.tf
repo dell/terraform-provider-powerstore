@@ -47,29 +47,29 @@ resource "powerstore_nfs_export" "sales_catalog_for_2024_march" {
 
   # host access related fields (optional)
   no_access_hosts = [
-    "192.168.1.0/24",
+    "192.168.1.0/24", # ipv4/prefixlength form CIDR
     "192.168.1.0/26",
-    "192.168.1.54/255.255.255.0",
-    "192.168.1.54/255.1009.255.0",    
-    "2001:db8:85a3::8a2e:370:7334/255.255.255.0",
-    "2001:db8:85a3::8a2e:370:7334",
-    "2001:db8:85a3::/64",
+    "192.168.1.54/255.255.255.0", # ipv4/subnet mask form CIDR  
+    "2001:db8:85a3::8a2e:370:7334/64", # ipv6/prefix length form CIDR
+    "2001:db8:85a3::8a2e:370:7334", # ipv6 address
+    "2001:db8:85a3::/64", # ipv6/prefix length normalized form CIDR
   ]
 
   read_only_hosts = [
     "10.168.1.0/24",
-    "11.28.1.0",
+    "11.28.1.0", # ipv4 address
   ]
 
   read_only_root_hosts = [
     "11.168.1.0/24",
-    "hostname1",
+    "hostname1", # hostname
     "hostname2",
-    "@netgroup1",
+    "@netgroup1", # netgroup (must be prefixed with @)
   ]
 
   read_write_hosts = [
     "12.168.1.0/24",
+    "dell.com" # dns domain
   ]
 
   read_write_root_hosts = [

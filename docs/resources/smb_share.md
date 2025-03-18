@@ -17,7 +17,7 @@
 title: "powerstore_smb_share resource"
 linkTitle: "powerstore_smb_share"
 page_title: "powerstore_smb_share Resource - powerstore"
-subcategory: "Networking"
+subcategory: "Network Management"
 description: |-
   This resource is used to manage the smb share entity of PowerStore Array. We can Create, Update and Delete the smb share using this resource. We can also import an existing smb share from PowerStore array.
 ---

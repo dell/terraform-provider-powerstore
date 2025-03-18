@@ -17,7 +17,7 @@
 title: "powerstore_filesystem_snapshot resource"
 linkTitle: "powerstore_filesystem_snapshot"
 page_title: "powerstore_filesystem_snapshot Resource - powerstore"
-subcategory: "Storage Provisioning"
+subcategory: "Storage Management"
 description: |-
   This resource is used to manage the filesystem snapshot entity of PowerStore Array. We can Create, Update and Delete the filesystem snapshot using this resource. We can also import an existing filesystem snapshot from PowerStore array.
 ---

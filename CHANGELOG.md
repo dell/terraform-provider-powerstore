@@ -12,7 +12,7 @@ The release supports PowerStore 4.1, addresses security vulnerabilities, and int
 * `powerstore_nas_server` for reading NAS servers in PowerStore.
 * `powerstore_nfs_export` for reading NFS exports of file systems in PowerStore.
 * `powerstore_smb_share` for reading SMB Shares of file systems in PowerStore.
-* `powerstore_remote_system` for reading snapshot remote systems in PowerStore.
+* `powerstore_remote_system` for reading remote systems in PowerStore.
 * `powerstore_replication_rule` for reading Replication Rules in PowerStore.
 
 ### Resources

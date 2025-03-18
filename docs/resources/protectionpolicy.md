@@ -17,7 +17,7 @@
 title: "powerstore_protectionpolicy resource"
 linkTitle: "powerstore_protectionpolicy"
 page_title: "powerstore_protectionpolicy Resource - powerstore"
-subcategory: "Data Protection"
+subcategory: "Data Protection Management"
 description: |-
   This resource is used to manage the protection policy entity of PowerStore Array. We can Create, Update and Delete the protection policy using this resource. We can also import an existing protection policy from PowerStore array.
 ---

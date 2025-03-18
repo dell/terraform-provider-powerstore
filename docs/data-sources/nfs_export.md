@@ -17,7 +17,7 @@
 title: "powerstore_nfs_export data source"
 linkTitle: "powerstore_nfs_export"
 page_title: "powerstore_nfs_export Data Source - powerstore"
-subcategory: "Networking"
+subcategory: "Network Management"
 description: |-
   This datasource is used to query the existing NFS Exports from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

@@ -17,7 +17,7 @@
 title: "powerstore_replication_rule resource"
 linkTitle: "powerstore_replication_rule"
 page_title: "powerstore_replication_rule Resource - powerstore"
-subcategory: "Data Protection"
+subcategory: "Data Protection Management"
 description: |-
   This resource is used to manage the replication rule entity of PowerStore Array. We can Create, Update and Delete the replication rule using this resource. We can also import an existing replication rule from PowerStore array.
 ---

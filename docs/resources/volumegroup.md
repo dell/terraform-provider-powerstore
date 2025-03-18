@@ -17,7 +17,7 @@
 title: "powerstore_volumegroup resource"
 linkTitle: "powerstore_volumegroup"
 page_title: "powerstore_volumegroup Resource - powerstore"
-subcategory: "Storage Provisioning"
+subcategory: "Storage Management"
 description: |-
   This resource is used to manage the volumegroup entity of PowerStore Array. We can Create, Update and Delete the volumegroup using this resource. We can also import an existing host from volumegroup array.
 ---

@@ -17,7 +17,7 @@
 title: "powerstore_filesystem resource"
 linkTitle: "powerstore_filesystem"
 page_title: "powerstore_filesystem Resource - powerstore"
-subcategory: "Storage Provisioning"
+subcategory: "Storage Management"
 description: |-
   This resource is used to manage the file system entity of PowerStore Array. We can Create, Update and Delete the file system using this resource. We can also import an existing file system from PowerStore array.
 ---
