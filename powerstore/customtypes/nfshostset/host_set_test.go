@@ -19,7 +19,6 @@ package nfshostset
 
 import (
 	"context"
-	"reflect"
 	"testing"
 )
 
@@ -216,7 +215,7 @@ func TestHostSetType_normalizeStrings(t *testing.T) {
 				t.Errorf("Cannot normalize wanted output: %s", err.Error())
 				return
 			}
-			if !reflect.DeepEqual(got, want) {
+			if !hst.equal(got, want) {
 				if tt.wantDiff {
 					return
 				}
