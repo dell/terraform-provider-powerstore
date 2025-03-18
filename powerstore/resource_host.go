@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -595,28 +596,36 @@ func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.Validate
 	var data models.Host
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 	for _, initiator := range data.Initiators {
-		if r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) && !(initiator.ChapSingleUsername.IsNull() && initiator.ChapMutualUsername.IsNull() && initiator.ChapMutualPassword.IsNull() && initiator.ChapSinglePassword.IsNull()) {
+		// PortName is required. It can be unknown, but not null. Ignore if unknown.
+		if !initiator.PortName.IsUnknown() &&
+			// if port type is not iSCSI then check further
+			r.getPortType(initiator.PortName.ValueString()) != string(gopowerstore.InitiatorProtocolTypeEnumISCSI) &&
+			// check if any of the chap creds have not been configured
+			(helper.IsKnownValue(initiator.ChapSingleUsername) ||
+				helper.IsKnownValue(initiator.ChapMutualUsername) ||
+				helper.IsKnownValue(initiator.ChapMutualPassword) ||
+				helper.IsKnownValue(initiator.ChapSinglePassword)) {
 			resp.Diagnostics.AddError(
 				"Error validating config host",
 				"chap credentials are supported only with iSCSI protocol",
 			)
 		}
-		if initiator.ChapMutualUsername != types.StringNull() && initiator.ChapSingleUsername == types.StringNull() {
+		if helper.IsKnownValue(initiator.ChapMutualUsername) && initiator.ChapSingleUsername.IsNull() {
 			resp.Diagnostics.AddError(
 				"Error validating config host",
-				"`chap_mutual_username` cannot pe present without `chap_single_username`",
+				"`chap_mutual_username` cannot be present without `chap_single_username`",
 			)
 		}
-		if initiator.ChapMutualUsername == types.StringNull() && initiator.ChapMutualPassword != types.StringNull() {
+		if helper.IsKnownValue(initiator.ChapMutualPassword) && initiator.ChapSinglePassword.IsNull() {
 			resp.Diagnostics.AddError(
 				"Error validating config host",
-				"`chap_mutual_password` cannot pe present without `chap_mutual_username`",
+				"`chap_mutual_password` cannot be present without `chap_mutual_username`",
 			)
 		}
-		if initiator.ChapSingleUsername == types.StringNull() && initiator.ChapSinglePassword != types.StringNull() {
+		if helper.IsKnownValue(initiator.ChapSinglePassword) && initiator.ChapSingleUsername.IsNull() {
 			resp.Diagnostics.AddError(
 				"Error validating config host",
-				"`chap_single_password` cannot pe present without `chap_single_username`",
+				"`chap_single_password` cannot be present without `chap_single_username`",
 			)
 		}
 	}

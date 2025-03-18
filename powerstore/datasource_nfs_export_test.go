@@ -44,6 +44,15 @@ func TestAccNFSExportDs(t *testing.T) {
 				`,
 				ExpectError: regexp.MustCompile(".*Invalid PowerStore filter expression.*"),
 			},
+			// validate nfs export with invalid url query expression (empty value)
+			{
+				Config: ProviderConfigForTesting + `
+				data "powerstore_nfs_export" "test" {
+					filter_expression = "invalid"
+				}
+				`,
+				ExpectError: regexp.MustCompile(".*Invalid PowerStore filter value for query parameter.*"),
+			},
 			// validate nfs export with empty filter
 			{
 				Config: ProviderConfigForTesting + `
