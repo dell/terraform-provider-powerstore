@@ -28,13 +28,16 @@ import (
 	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
@@ -74,17 +77,26 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Description:         "Name of the file system.",
 				MarkdownDescription: "Name of the file system.",
 				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"description": schema.StringAttribute{
 				Description:         "File system description.",
 				MarkdownDescription: "File system description.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"size": schema.Float64Attribute{
 				Description:         "Size that the file system presents to the host or end user.",
 				MarkdownDescription: "Size that the file system presents to the host or end user.",
 				Required:            true,
+				Validators: []validator.Float64{
+					float64validator.AtLeast(1),
+				},
 			},
 			"capacity_unit": schema.StringAttribute{
 				Description:         "The Capacity Unit corresponding to the size.",
@@ -106,6 +118,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Description:         "Unique identifier of the NAS Server on which the file system is mounted.",
 				MarkdownDescription: "Unique identifier of the NAS Server on which the file system is mounted.",
 				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"config_type": schema.StringAttribute{
 				Optional:            true,
@@ -221,6 +236,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Description:         "Unique identifier of the protection policy applied to the file system.",
 				MarkdownDescription: "Unique identifier of the protection policy applied to the file system.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"file_events_publishing_mode": schema.StringAttribute{
 				Optional:            true,
@@ -249,7 +267,7 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 						"VMware_8K",
 						"VMware_16K",
 						"VMware_32K",
-						"Vmware_64K",
+						"VMware_64K",
 					}...),
 				},
 			},
@@ -263,6 +281,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				Description:         "Type of filesystem: normal or snapshot.",
 				MarkdownDescription: "Type of filesystem: normal or snapshot.",
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
+				},
 				Attributes: map[string]schema.Attribute{
 					"mode": schema.StringAttribute{
 						Description:         "The FLR type of the file system.",
