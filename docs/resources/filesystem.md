@@ -51,10 +51,11 @@ limitations under the License.
 
 
 resource "powerstore_filesystem" "test" {
-  name          = "test_fs"
-  description   = "testing file system"
-  size          = 3
-  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+  name          = "testing_fs"
+  description   = "testing file systems"
+  size          = 4
+  capacity_unit = "GB"
+  nas_server_id = "67874e6d-f93f-f688-f9d6-ee23cab1d298"
   flr_attributes = {
     mode              = "Enterprise"
     minimum_retention = "1D"

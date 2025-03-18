@@ -108,7 +108,6 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
-						"MB",
 						"GB",
 						"TB",
 					}...),
@@ -385,7 +384,13 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
+	if plan.CapacityUnit.ValueString() == "GB" && plan.Size.ValueFloat64() > 1023 {
+		resp.Diagnostics.AddError(
+			"Error creating file system",
+			"Use capacity unit TB instead of GB if the size is greater than 1023 GB",
+		)
+		return
+	}
 	valInBytes, errmsg := convertToBytesForFileSystem(plan)
 	if errmsg != "" {
 		resp.Diagnostics.AddError(
@@ -509,6 +514,14 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if plan.CapacityUnit.ValueString() == "GB" && plan.Size.ValueFloat64() > 1023 {
+		resp.Diagnostics.AddError(
+			"Error creating file system",
+			"Use capacity unit TB instead of GB if the size is greater than 1023 GB",
+		)
 		return
 	}
 
@@ -655,8 +668,6 @@ func (r fileSystemResource) ImportState(ctx context.Context, req resource.Import
 func convertToBytesForFileSystem(plan models.FileSystem) (int64, string) {
 	var valInBytes float64
 	switch plan.CapacityUnit.ValueString() {
-	case "MB":
-		valInBytes = plan.Size.ValueFloat64() * MiB
 	case "TB":
 		valInBytes = plan.Size.ValueFloat64() * TiB
 	case "GB":
