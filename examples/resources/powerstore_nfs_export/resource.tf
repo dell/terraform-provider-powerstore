@@ -18,20 +18,29 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
-data "powerstore_filesystem" "test4" {
+# To create an NFS export of a filesystem, we shall:
+# 1. get the id of the filesystem to be shared over NFS
+data "powerstore_filesystem" "sales_catalog" {
+  name = "sales_catalog_fs"
+  lifecycle {
+    postcondition {
+      condition = length(self.filesystems) == 0
+      error_message = "Expected a single filesystem for sales catalog, but got ${length(self.filesystems)}"
+    }
+  }
 }
 
-
-resource "powerstore_nfs_export" "test1" {
+# 2. create an NFS export from that filesystem
+resource "powerstore_nfs_export" "sales_catalog_for_2024_march" {
   // Required
-  file_system_id = data.powerstore_filesystem.test3.filesystems[0].id
-  name           = "terraform-nfs"
-  path           = "/terraform-fs"
+  file_system_id = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  name           = "sales_catalog_for_2024_march"
+  path           = "/sales_catalog_fs/2024/March"
 
   // Optional
   anonymous_gid  = -24
   anonymous_uid  = -24
-  description    = "nfs export"
+  description    = "NFS export of Sales Catalog for 2024 March"
   is_no_suid     = false
   min_security   = "Sys"        # Options: "Sys", "Kerberos", "Kerberos_With_Integrity", "Kerberos_With_Encryption"
   default_access = "Read_Write" # Options: "No_Access", "Read_Only", "Read_Write", "Root", "Read_Only_Root"

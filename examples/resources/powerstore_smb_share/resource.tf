@@ -18,18 +18,27 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
-data "powerstore_filesystem" "filesystems" {
+# To create an SMB Share of a filesystem, we shall:
+# 1. get the id of the filesystem to be shared over SMB
+data "powerstore_filesystem" "sales_catalog" {
+  name = "sales_catalog_fs"
+  lifecycle {
+    postcondition {
+      condition = length(self.filesystems) == 0
+      error_message = "Expected a single filesystem for sales catalog, but got ${length(self.filesystems)}"
+    }
+  }
 }
 
-
-resource "powerstore_smb_share" "smbShare" {
+# 2. create an SMB Share from that filesystem
+resource "powerstore_smb_share" "sales_catalog_for_2024_march" {
   // Required
-  file_system_id = data.powerstore_filesystem.filesystems.filesystems[0].id
-  name           = "terraform-smb"
-  path           = "/terraform-fs"
+  file_system_id = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  name           = "sales_catalog_for_2024_march"
+  path           = "/sales_catalog_fs/2024/March"
 
   // Optional
-  description                        = "smb share"
+  description                        = "SMB Share for sales catalog for 2024 March"
   aces                               = [{ "access_level" : "Full", "access_type" : "Allow", "trustee_name" : "Everyone", "trustee_type" : "WellKnown" }]
   is_abe_enabled                     = true
   is_continuous_availability_enabled = true

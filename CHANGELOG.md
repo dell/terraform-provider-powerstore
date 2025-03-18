@@ -1,3 +1,38 @@
+# v1.2.0
+
+## Release Summary
+The release supports PowerStore 4.1, addresses security vulnerabilities, and introduces the following resources and data sources.
+
+## Features
+
+### Data Sources
+
+* `powerstore_filesystem` for reading file systems in PowerStore.
+* `powerstore_filesystem_snapshot` for reading snapshots of file systems in PowerStore.
+* `powerstore_nas_server` for reading NAS servers in PowerStore.
+* `powerstore_nfs_export` for reading NFS exports of file systems in PowerStore.
+* `powerstore_smb_share` for reading SMB Shares of file systems in PowerStore.
+* `powerstore_remote_system` for reading snapshot remote systems in PowerStore.
+* `powerstore_replication_rule` for reading Replication Rules in PowerStore.
+
+### Resources
+
+* `powerstore_filesystem` for managing file systems in PowerStore.
+* `powerstore_filesystem_snapshot` for managing snapshots of file systems in PowerStore.
+* `powerstore_nfs_export` for managing NFS exports of file systems in PowerStore.
+* `powerstore_smb_share` for managing SMB Shares of file systems in PowerStore.
+* `powerstore_replication_rule` for managing Replication Rules in PowerStore.
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+
+* `host` resource does not support unknown values inside its `initiators` field, leading to wrong validation error messages whenever variables and such are used. ([#130](https://github.com/dell/terraform-provider-powerstore/issues/130))
+
 # v1.1.3
 ## Release Summary
 The release supports PowerStore 4.0, upgrades to gopowerstore version 1.15.1, and addresses security vulnerablilites.

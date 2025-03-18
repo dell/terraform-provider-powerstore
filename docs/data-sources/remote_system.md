@@ -65,6 +65,7 @@ data powerstore_remote_system remote_system_by_name {
 }
 
 # fetching Remote Systems using filter expression
+# Please refer to the guides section for filter expression syntax
 # here, we are fetching a Remote System with a particular management IP
 data powerstore_remote_system remote_system_by_filters {
   filter_expression = "management_address=eq.10.225.225.10"

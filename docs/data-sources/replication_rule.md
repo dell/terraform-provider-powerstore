@@ -54,19 +54,22 @@ limitations under the License.
 # If id or name is provided then it reads a particular replication rule with that id or name
 # Only one of the attribute can be provided among id and  name 
 
+# Get all replication rules
+data "powerstore_replication_rule" "all" {
+}
+
 # Get replication rule details using name
-data "powerstore_replication_rule" "test" {
-  depends_on = [powerstore_replication_rule.test]
+data "powerstore_replication_rule" "rule_by_name" {
   name       = "terraform_replication_rule"
 }
 
 # Get replication rule details using ID
-data "powerstore_replication_rule" "test" {
+data "powerstore_replication_rule" "rule_by_id" {
   id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e26a9"
 }
 
 output "replicationRule" {
-  value = data.powerstore_replication_rule.test.replication_rules
+  value = data.powerstore_replication_rule.all.replication_rules
 }
 ```
 

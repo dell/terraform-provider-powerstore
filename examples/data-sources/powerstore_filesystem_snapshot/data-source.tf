@@ -22,48 +22,68 @@ limitations under the License.
 # If filesystem_id is provided then it will read all the filesystem snapshots within filesystem
 # Only one of the attribute can be provided among id or name 
 
-#Fetching filesystem snapshot using name
-data "powerstore_filesystem_snapshot" "test1" {
-  name = "co015nap5hot"
+# Fetching filesystem snapshot(s) using name
+data "powerstore_filesystem_snapshot" "sales_catalog_snapshots_q4" {
+  name = "sales_catalog_snapshot_q4"
 }
 
 #Fetching filesystem snapshot using id
-data "powerstore_filesystem_snapshot" "test2" {
+data "powerstore_filesystem_snapshot" "fs_snap_by_id" {
   id = "6568282e-c982-62ce-5ar3-52518f324723"
 }
 
 
-#Fetching filesystem snapshot using filesystem id
-data "powerstore_filesystem" "test_fs" {
+# Fetching all snapshots of a particular filesystem
+# Step 1: Fetching the filesystem whose snapshots are to be fetched.
+data "powerstore_filesystem" "us_east_sales_catalog_fs" {
+  name = "us_east_sales_catalog_fs"
+  lifecycle {
+    postcondition {
+      condition = length(self.filesystems) == 1
+      error_message = "Expected one filesystem with name us_east_sales_catalog_fs, but got ${length(self.filesystems)}"
+    }
+  }
 }
 
-data "powerstore_filesystem_snapshot" "test2" {
-  filesystem_id = data.powerstore_filesystem.test_fs.filesystems[0].id
+# Step 2: Fetching the filesystem snapshots using the file system id from step 1
+data "powerstore_filesystem_snapshot" "us_east_sales_catalog_snapshots" {
+  filesystem_id = data.powerstore_filesystem.us_east_sales_catalog_fs.filesystems[0].id
 }
 
-#Fetching filesystem snapshot using nas server id
-data "powerstore_filesystem_snapshot" "test3" {
-  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+# Fetching all filesystem snapshots under a particular nas server
+# Step 1: Fetching the NAS server whose children snapshots are to be fetched.
+data "powerstore_nas_server" "nas_server_us_east" {
+  name = "nas_server_us_east"
+  lifecycle {
+    postcondition {
+      condition = length(self.nas_servers) == 1
+      error_message = "Expected a single NAS server for US East region, but got none"
+    }
+  }
+}
+# Step 2: Fetching the filesystem snapshots using the nas server id from step 1
+data "powerstore_filesystem_snapshot" "us_east_nas_server_fs_snapshots" {
+  nas_server_id = data.powerstore_nas_server.nas_server_us_east.nas_servers[0].id
 }
 
-#Fetching filesystem snapshot using name and nas server id
-data "powerstore_filesystem_snapshot" "test4" {
-  name          = "co015nap5hot"
-  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+# Fetching the filesystem snapshot with a particular name under a given nas server
+data "powerstore_filesystem_snapshot" "sales_catalog_snapshot_q4_under_nas_server" {
+  name          = "sales_catalog_snapshot_q4"
+  nas_server_id = data.powerstore_nas_server.nas_server_us_east.nas_servers[0].id
 }
 
-#Fetching filesystem snapshot using name and file system id
-data "powerstore_filesystem_snapshot" "test4" {
-  name          = "co015nap5hot"
-  filesystem_id = "65637292e-c982-62ce-5ar3-52518f44229"
+# Fetching snapshot with given name for a particular file system
+data "powerstore_filesystem_snapshot" "sales_catalog_snapshot_q4_under_filesystem" {
+  name          = "sales_catalog_snapshot_q4"
+  filesystem_id = data.powerstore_filesystem.us_east_sales_catalog_fs.filesystems[0].id
 }
 
 
 # Fetching all filesystems
-data "powerstore_filesystem_snapshot" "test4" {
+data "powerstore_filesystem_snapshot" "all" {
 }
 
 
 output "result" {
-  value = data.powerstore_filesystem_snapshot.test3.filesystems
+  value = data.powerstore_filesystem_snapshot.all.filesystems
 }
