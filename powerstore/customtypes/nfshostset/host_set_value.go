@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"reflect"
 	"strings"
 
 	"terraform-provider-powerstore/powerstore/helper"
@@ -225,7 +224,15 @@ func (t HostSetValue) deduplicateStrings(in []string) map[string]bool {
 }
 
 func (v HostSetValue) equal(ins, outs map[string]bool) bool {
-	return reflect.DeepEqual(ins, outs)
+	if len(ins) != len(outs) {
+		return false
+	}
+	for k, _ := range ins {
+		if _, ok := outs[k]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
 func (v HostSetValue) Type(_ context.Context) attr.Type {

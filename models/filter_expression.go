@@ -19,6 +19,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -29,6 +30,9 @@ import (
 )
 
 // Filter Expression Value
+
+var _ basetypes.StringValuable = FilterExpressionValue{}
+var _ xattr.ValidateableAttribute = FilterExpressionValue{}
 
 type FilterExpressionValue struct {
 	basetypes.StringValue
@@ -64,7 +68,7 @@ func (v FilterExpressionValue) ValidateAttribute(ctx context.Context, req xattr.
 		)
 		return
 	}
-	_, err := url.ParseQuery(rawString)
+	values, err := url.ParseQuery(rawString)
 
 	if err != nil {
 		resp.Diagnostics.AddAttributeError(
@@ -75,6 +79,27 @@ func (v FilterExpressionValue) ValidateAttribute(ctx context.Context, req xattr.
 
 		return
 	}
+
+	// if any keys have empty values, throw an error
+	for key, val := range values {
+		if err := v.isValidQueryValue(val); err != nil {
+			resp.Diagnostics.AddAttributeError(
+				req.Path,
+				"Invalid PowerStore filter value for query parameter: "+key,
+				err.Error(),
+			)
+			return
+		}
+	}
+}
+
+func (v FilterExpressionValue) isValidQueryValue(in []string) error {
+	for _, val := range in {
+		if len(val) == 0 {
+			return fmt.Errorf("empty query value provided, please provide queries in the key=value format where value is not empty string")
+		}
+	}
+	return nil
 }
 
 func (v FilterExpressionValue) ValueQueries() url.Values {
