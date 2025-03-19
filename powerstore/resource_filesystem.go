@@ -269,6 +269,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 						"VMware_64K",
 					}...),
 				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"file_system_type": schema.StringAttribute{
 				Computed:            true,
@@ -569,6 +572,13 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
+	if state.ConfigType.ValueString() == "VMware" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString()) {
+		resp.Diagnostics.AddError(
+			"Error updating file system",
+			"flr attributes can't be updated when config type is VMware",
+		)
+		return
+	}
 
 	valInBytes, errmsg := convertToBytesForFileSystem(plan)
 	if errmsg != "" {
@@ -578,27 +588,46 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
-
-	fsModify := &gopowerstore.FSModify{
-		Description:                plan.Description.ValueString(),
-		Size:                       int(valInBytes),
-		AccessPolicy:               plan.AccessPolicy.ValueString(),
-		LockingPolicy:              plan.LockingPolicy.ValueString(),
-		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-		IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
-		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
-		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-		IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
-		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
-		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
-		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
-		FlrCreate: gopowerstore.FlrAttributes{
-			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
-			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
-			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
-		},
+	var fsModify *gopowerstore.FSModify
+	if state.ConfigType.ValueString() == "General" {
+		fsModify = &gopowerstore.FSModify{
+			Description:                plan.Description.ValueString(),
+			Size:                       int(valInBytes),
+			AccessPolicy:               plan.AccessPolicy.ValueString(),
+			LockingPolicy:              plan.LockingPolicy.ValueString(),
+			FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
+			IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
+			ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
+			FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
+			IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
+			IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
+			IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
+			IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
+			IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
+			SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+			FlrCreate: gopowerstore.FlrAttributes{
+				MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
+				DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
+				MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
+			},
+		}
+	} else {
+		fsModify = &gopowerstore.FSModify{
+			Description:                plan.Description.ValueString(),
+			Size:                       int(valInBytes),
+			AccessPolicy:               plan.AccessPolicy.ValueString(),
+			LockingPolicy:              plan.LockingPolicy.ValueString(),
+			FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
+			IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
+			ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
+			FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
+			IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
+			IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
+			IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
+			IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
+			IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
+			SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+		}
 	}
 
 	_, err := r.client.PStoreClient.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
