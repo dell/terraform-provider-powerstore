@@ -47,12 +47,12 @@ resource "powerstore_nfs_export" "sales_catalog_for_2024_march" {
 
   # host access related fields (optional)
   no_access_hosts = [
-    "192.168.1.0/24", # ipv4/prefixlength form CIDR
+    "192.168.1.0/24", # subnet - ipv4/prefixlength form
     "192.168.1.0/26",
-    "192.168.1.54/255.255.255.0", # ipv4/subnet mask form CIDR  
-    "2001:db8:85a3::8a2e:370:7334/64", # ipv6/prefix length form CIDR
+    "192.168.1.54/255.255.255.0", # subnet - ipv4/subnet mask form  
+    "2001:db8:85a3::8a2e:370:7334/64", # subnet - ipv6/prefixLength form
     "2001:db8:85a3::8a2e:370:7334", # ipv6 address
-    "2001:db8:85a3::/64", # ipv6/prefix length normalized form CIDR
+    "2001:db8:85a3::/64", # subnet - ipv6/prefixLength normalized form
   ]
 
   read_only_hosts = [
@@ -83,4 +83,21 @@ resource "powerstore_nfs_export" "sales_catalog_for_2024_march" {
   # read_write_hosts = []
   # read_write_root_hosts = []
 
+}
+
+# To expose a snapshot of a filesystem via NFS, we shall:
+# 1. create a snapshot of type "Protocol" of the given filesystem
+resource "powerstore_filesystem_snapshot" "sales_catalog_snap" {
+  name                 = "sales_catalog_snap"
+  description          = "Snapshot of Sales Catalog Filesystem"
+  filesystem_id        = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  access_type          = "Protocol"
+}
+
+# 2. Expose the snapshot over NFS (here, we are sharing the /2024/March directory from the snapshot)
+resource "powerstore_nfs_export" "sales_catalog_for_2024_march_snap" {
+  file_system_id = powerstore_filesystem_snapshot.sales_catalog_snap.id
+  name           = "sales_catalog_for_2024_march_snap"
+  path           = "/${powerstore_filesystem_snapshot.sales_catalog_snap.name}/2024/March"
+  description    = "NFS export of Sales Catalog for 2024 March from snapshot"
 }
