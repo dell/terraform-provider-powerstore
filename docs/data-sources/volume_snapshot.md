@@ -17,7 +17,7 @@
 title: "powerstore_volume_snapshot data source"
 linkTitle: "powerstore_volume_snapshot"
 page_title: "powerstore_volume_snapshot Data Source - powerstore"
-subcategory: ""
+subcategory: "Data Protection Management"
 description: |-
   This datasource is used to query the existing volume snapshot from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2022 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2022-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -41,29 +41,64 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.1.3 | 3.2/3.5/3.6/4.0 | Ubuntu 22.04 <br> RHEL 9.x | 1.5.x <br> 1.6.x <br> | 1.22.x
+| v1.2.0 | 3.5/3.6/4.0/4.1 | Ubuntu 22.04 <br> RHEL 9.x | 1.9.x <br> 1.10.x <br> | 1.24.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
-  * [Volume](docs/resources/volume.md)
-  * [Volume Group](docs/resources/volumegroup.md)
-  * [Volume Snapshot](docs/resources/volume_snapshot.md)
-  * [Volume Group Snapshot](docs/resources/volumegroup_snapshot.md)
-  * [Snapshot Rule](docs/resources/snapshotrule.md)
-  * [Protection Policy](docs/resources/protectionpolicy.md)
-  * [Storage Container](docs/resources/storagecontainer.md)
-  * [Host](docs/resources/host.md)
-  * [Host Group](docs/resources/hostgroup.md)
+
+### Block Storage Management
+
+* [Volume](docs/resources/volume.md)
+* [Volume Group](docs/resources/volumegroup.md)
+* [Storage Container](docs/resources/storagecontainer.md)
+
+### File Storage Management
+
+* [File System](docs/resources/filesystem.md)
+* [NFS Export](docs/resources/nfs_export.md)
+* [SMB Share](docs/resources/smb_share.md)
+
+### Data Protection Management
+
+* [Volume Snapshot](docs/resources/volume_snapshot.md)
+* [Volume Group Snapshot](docs/resources/volumegroup_snapshot.md)
+* [File System Snapshot](docs/resources/filesystem_snapshot.md)
+* [Protection Policy](docs/resources/protectionpolicy.md)
+* [Replication Rule](docs/resources/replication_rule.md)
+* [Snapshot Rule](docs/resources/snapshotrule.md)
+
+### Host Access Management
+
+* [Host](docs/resources/host.md)
+* [Host Group](docs/resources/hostgroup.md)
 
 ## List of DataSources in Terraform Provider for Dell PowerStore
-  * [Volume](docs/data-sources/volume.md)
-  * [Volume Group](docs/data-sources/volumegroup.md)
-  * [Volume Snapshot](docs/data-sources/volume_snapshot.md)
-  * [Volume Group Snapshot](docs/data-sources/volumegroup_snapshot.md)
-  * [Host](docs/data-sources/host.md)
-  * [Host Group](docs/data-sources/hostgroup.md)
-  * [Snapshot Rule](docs/data-sources/snapshotrule.md)
-  * [Protection Policy](docs/data-sources/protectionpolicy.md)
 
+### Block Storage Management
+
+* [Volume](docs/data-sources/volume.md)
+* [Volume Group](docs/data-sources/volumegroup.md)
+
+### File Storage Management
+
+* [File System](docs/data-sources/filesystem.md)
+* [NFS Export](docs/data-sources/nfs_export.md)
+* [SMB Share](docs/data-sources/smb_share.md)
+* [NAS Server](docs/data-sources/nas_server.md)
+
+### Data Protection Management
+
+* [Volume Snapshot](docs/data-sources/volume_snapshot.md)
+* [Volume Group Snapshot](docs/data-sources/volumegroup_snapshot.md)
+* [File System Snapshot](docs/data-sources/filesystem_snapshot.md)
+* [Replication Rule](docs/data-sources/replication_rule.md)
+* [Snapshot Rule](docs/data-sources/snapshotrule.md)
+* [Protection Policy](docs/data-sources/protectionpolicy.md)
+* [Remote System](docs/data-sources/remote_system.md)
+
+### Host Access Management
+
+* [Host](docs/data-sources/host.md)
+* [Host Group](docs/data-sources/hostgroup.md)
 
 ## Installation of Terraform Provider for Dell PowerStore
 
@@ -76,7 +111,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.1.3"
+      version = "1.2.0"
       source = "registry.terraform.io/dell/powerstore"
     }
   }
@@ -134,13 +169,14 @@ Released code versions are located on tags with names of the form "vx.y.z" where
 For more detailed information, please refer to [Dell Terraform Providers Documentation](https://dell.github.io/terraform-docs/).
 
 ## New to Terraform?
+
 **Here are some helpful links to get you started if you are new to terraform before using our provider:**
 
-- Intro to Terraform: https://developer.hashicorp.com/terraform/intro 
-- Providers: https://developer.hashicorp.com/terraform/language/providers 
-- Resources: https://developer.hashicorp.com/terraform/language/resources
-- Datasources: https://developer.hashicorp.com/terraform/language/data-sources
-- Import: https://developer.hashicorp.com/terraform/language/import
-- Variables: https://developer.hashicorp.com/terraform/language/values/variables
-- Modules: https://developer.hashicorp.com/terraform/language/modules
-- State: https://developer.hashicorp.com/terraform/language/state
+* [Intro to Terraform](https://developer.hashicorp.com/terraform/intro)
+* [Providers](https://developer.hashicorp.com/terraform/language/providers)
+* [Resources](https://developer.hashicorp.com/terraform/language/resources)
+* [Datasources](https://developer.hashicorp.com/terraform/language/data-sources)
+* [Import](https://developer.hashicorp.com/terraform/language/import)
+* [Variables](https://developer.hashicorp.com/terraform/language/values/variables)
+* [Modules](https://developer.hashicorp.com/terraform/language/modules)
+* [State](https://developer.hashicorp.com/terraform/language/state)
