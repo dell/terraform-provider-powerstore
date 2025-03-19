@@ -52,49 +52,49 @@ var datasourceFacts = map[string]Facts{
 		ExampleVar:  "data.powerstore_remote_system.remote_system_by_filters.attribute_name",
 		SubCategory: "Data Protection Management",
 	},
-	// Storage Management
 	"volume_snapshot": {
 		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
 		ExampleVar:  "data.powerstore_volume_snapshot.test1.attribute_name",
-		SubCategory: "Storage Management",
-	},
-	"volume": {
-		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
-		ExampleVar:  "data.powerstore_volume.test1.attribute_name",
-		SubCategory: "Storage Management",
+		SubCategory: "Data Protection Management",
 	},
 	"volumegroup_snapshot": {
 		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
 		ExampleVar:  "data.powerstore_volumegroup_snapshot.test1.attribute_name",
-		SubCategory: "Storage Management",
-	},
-	"volumegroup": {
-		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
-		ExampleVar:  "data.powerstore_volumegroup.test1.attribute_name",
-		SubCategory: "Storage Management",
-	},
-	"filesystem": {
-		ExampleVar:  "data.powerstore_filesystem.test1",
-		SubCategory: "Storage Management",
+		SubCategory: "Data Protection Management",
 	},
 	"filesystem_snapshot": {
 		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
 		ExampleVar:  "data.powerstore_filesystem_snapshot.test1.attribute_name",
-		SubCategory: "Storage Management",
+		SubCategory: "Data Protection Management",
 	},
-	// Network Management
+	// Block Storage Management
+	"volume": {
+		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
+		ExampleVar:  "data.powerstore_volume.test1.attribute_name",
+		SubCategory: "Block Storage Management",
+	},
+	"volumegroup": {
+		Note:        "> **Note:** Only one of `name` or `id` can be provided at a time.",
+		ExampleVar:  "data.powerstore_volumegroup.test1.attribute_name",
+		SubCategory: "Block Storage Management",
+	},
+	// File Storage Management
+	"filesystem": {
+		ExampleVar:  "data.powerstore_filesystem.test1",
+		SubCategory: "File Storage Management",
+	},
 	"nas_server": {
 		ExampleVar:  "data.powerstore_nas_server.test1.attribute_name",
-		SubCategory: "Network Management",
+		SubCategory: "File Storage Management",
 	},
 	"nfs_export": {
 		Note:        "> **Note:** `id` and `filter_expression` cannot be used with any other attribute. `name` and `file_system_id` can be used together.",
 		ExampleVar:  "data.powerstore_nfs_export.nfs_export_by_name_regex.attribute_name",
-		SubCategory: "Network Management",
+		SubCategory: "File Storage Management",
 	},
 	"smb_share": {
 		Note:        "> **Note:** Only one of `name`, `id`, `file_system_id` or `filter_expression` can be provided at a time.",
 		ExampleVar:  "data.powerstore_smb_share.smb_share_by_filters.attribute_name",
-		SubCategory: "Network Management",
+		SubCategory: "File Storage Management",
 	},
 }

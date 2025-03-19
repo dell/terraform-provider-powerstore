@@ -17,7 +17,7 @@
 title: "powerstore_volumegroup data source"
 linkTitle: "powerstore_volumegroup"
 page_title: "powerstore_volumegroup Data Source - powerstore"
-subcategory: "Storage Management"
+subcategory: "Block Storage Management"
 description: |-
   This datasource is used to query the existing volumegroup from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

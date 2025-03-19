@@ -17,7 +17,7 @@
 title: "powerstore_nfs_export resource"
 linkTitle: "powerstore_nfs_export"
 page_title: "powerstore_nfs_export Resource - powerstore"
-subcategory: "Network Management"
+subcategory: "File Storage Management"
 description: |-
   This resource is used to manage the nfs export entity of PowerStore Array. We can Create, Update and Delete the nfs export using this resource. We can also import an existing nfs export from PowerStore array.
 ---

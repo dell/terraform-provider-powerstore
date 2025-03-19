@@ -45,18 +45,23 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 ## List of Resources in Terraform Provider for Dell PowerStore
 
-### Storage Management
+### Block Storage Management
 
 * [Volume](docs/resources/volume.md)
-* [Volume Snapshot](docs/resources/volume_snapshot.md)
 * [Volume Group](docs/resources/volumegroup.md)
-* [Volume Group Snapshot](docs/resources/volumegroup_snapshot.md)
-* [File System](docs/resources/filesystem.md)
-* [File System Snapshot](docs/resources/filesystem_snapshot.md)
 * [Storage Container](docs/resources/storagecontainer.md)
+
+### File Storage Management
+
+* [File System](docs/resources/filesystem.md)
+* [NFS Export](docs/resources/nfs_export.md)
+* [SMB Share](docs/resources/smb_share.md)
 
 ### Data Protection Management
 
+* [Volume Snapshot](docs/resources/volume_snapshot.md)
+* [Volume Group Snapshot](docs/resources/volumegroup_snapshot.md)
+* [File System Snapshot](docs/resources/filesystem_snapshot.md)
 * [Protection Policy](docs/resources/protectionpolicy.md)
 * [Replication Rule](docs/resources/replication_rule.md)
 * [Snapshot Rule](docs/resources/snapshotrule.md)
@@ -66,24 +71,25 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 * [Host](docs/resources/host.md)
 * [Host Group](docs/resources/hostgroup.md)
 
-### Network Management
-
-* [NFS Export](docs/resources/nfs_export.md)
-* [SMB Share](docs/resources/smb_share.md)
-
 ## List of DataSources in Terraform Provider for Dell PowerStore
 
-### Storage Management
+### Block Storage Management
 
 * [Volume](docs/data-sources/volume.md)
 * [Volume Group](docs/data-sources/volumegroup.md)
-* [Volume Snapshot](docs/data-sources/volume_snapshot.md)
-* [Volume Group Snapshot](docs/data-sources/volumegroup_snapshot.md)
+
+### File Storage Management
+
 * [File System](docs/data-sources/filesystem.md)
-* [File System Snapshot](docs/data-sources/filesystem_snapshot.md)
+* [NFS Export](docs/data-sources/nfs_export.md)
+* [SMB Share](docs/data-sources/smb_share.md)
+* [NAS Server](docs/data-sources/nas_server.md)
 
 ### Data Protection Management
 
+* [Volume Snapshot](docs/data-sources/volume_snapshot.md)
+* [Volume Group Snapshot](docs/data-sources/volumegroup_snapshot.md)
+* [File System Snapshot](docs/data-sources/filesystem_snapshot.md)
 * [Replication Rule](docs/data-sources/replication_rule.md)
 * [Snapshot Rule](docs/data-sources/snapshotrule.md)
 * [Protection Policy](docs/data-sources/protectionpolicy.md)
@@ -93,12 +99,6 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 * [Host](docs/data-sources/host.md)
 * [Host Group](docs/data-sources/hostgroup.md)
-
-### Network Management
-
-* [NFS Export](docs/data-sources/nfs_export.md)
-* [SMB Share](docs/data-sources/smb_share.md)
-* [NAS Server](docs/data-sources/nas_server.md)
 
 ## Installation of Terraform Provider for Dell PowerStore
 

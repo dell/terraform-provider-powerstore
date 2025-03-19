@@ -17,7 +17,7 @@
 title: "powerstore_volumegroup_snapshot resource"
 linkTitle: "powerstore_volumegroup_snapshot"
 page_title: "powerstore_volumegroup_snapshot Resource - powerstore"
-subcategory: "Storage Management"
+subcategory: "Data Protection Management"
 description: |-
   This resource is used to manage the volumegroup snapshot entity of PowerStore Array. We can Create, Update and Delete the volumegroup snapshot using this resource. We can also import an existing host from volumegroup snapshot array.
 ---
