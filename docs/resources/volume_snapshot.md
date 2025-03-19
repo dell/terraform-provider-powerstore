@@ -17,7 +17,7 @@
 title: "powerstore_volume_snapshot resource"
 linkTitle: "powerstore_volume_snapshot"
 page_title: "powerstore_volume_snapshot Resource - powerstore"
-subcategory: ""
+subcategory: "Data Protection Management"
 description: |-
   This resource is used to manage the volume snapshot entity of PowerStore Array. We can Create, Update and Delete the volume snapshot using this resource. We can also import an existing volume snapshot from PowerStore array.
 ---

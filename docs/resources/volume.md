@@ -17,7 +17,7 @@
 title: "powerstore_volume resource"
 linkTitle: "powerstore_volume"
 page_title: "powerstore_volume Resource - powerstore"
-subcategory: ""
+subcategory: "Block Storage Management"
 description: |-
   This resource is used to manage the volume entity of PowerStore Array. We can Create, Update and Delete the volume using this resource. We can also import an existing volume from PowerStore array.
 ---

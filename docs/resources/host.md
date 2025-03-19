@@ -17,7 +17,7 @@
 title: "powerstore_host resource"
 linkTitle: "powerstore_host"
 page_title: "powerstore_host Resource - powerstore"
-subcategory: ""
+subcategory: "Host Access Management"
 description: |-
   This resource is used to manage the host entity of PowerStore Array. We can Create, Update and Delete the host using this resource. We can also import an existing host from PowerStore array.
 ---

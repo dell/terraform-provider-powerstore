@@ -17,7 +17,7 @@
 title: "powerstore_filesystem data source"
 linkTitle: "powerstore_filesystem"
 page_title: "powerstore_filesystem Data Source - powerstore"
-subcategory: ""
+subcategory: "File Storage Management"
 description: |-
   This datasource is used to query the existing File System from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
@@ -52,28 +52,44 @@ limitations under the License.
 # If id or name is provided then it reads a particular filesystem with that id or name
 # Only one of the attribute can be provided among id and name
 
-#Fetching filesystem using name
-data "powerstore_filesystem" "test1" {
-  name = "ephemeral-csi-0e62d1cdec3b543a0740e9a307df221187955b47af4b99b7be31ebd9cb6192ce"
+# Fetching all filesystems with a specific name
+data "powerstore_filesystem" "us_east_sales_catalog_fs" {
+  name = "us_east_sales_catalog_fs"
+  lifecycle {
+    postcondition {
+      condition = length(self.filesystems) > 0
+      error_message = "Expected atleast one filesystem, but got none"
+    }
+  }
 }
 
-#Fetching filesystem using id
-data "powerstore_filesystem" "test2" {
+# Fetching a filesystem using id
+data "powerstore_filesystem" "filesystem_by_id" {
   id = "6568282e-c982-62ce-5ac3-52518d324736"
 }
 
-#Fetching filesystem using nas server id
-data "powerstore_filesystem" "test3" {
-  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+# Fetching all filesystems under a NAS server
+data "powerstore_nas_server" "nas_server_us_east" {
+  name = "nas_server_us_east"
+  lifecycle {
+    postcondition {
+      condition = length(self.nas_servers) == 1
+      error_message = "Expected a single NAS server for US East region, but got none"
+    }
+  }
+}
+
+data "powerstore_filesystem" "file_systems_us_east" {
+  nas_server_id = data.powerstore_nas_server.nas_server_us_east.nas_servers[0].id
 }
 
 # Fetching all filesystems
-data "powerstore_filesystem" "test4" {
+data "powerstore_filesystem" "all_file_systems" {
 }
 
 
 output "result" {
-  value = data.powerstore_filesystem.test3.filesystems
+  value = data.powerstore_filesystem.all_file_systems.filesystems
 }
 ```
 

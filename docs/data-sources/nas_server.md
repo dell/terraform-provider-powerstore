@@ -17,7 +17,7 @@
 title: "powerstore_nas_server data source"
 linkTitle: "powerstore_nas_server"
 page_title: "powerstore_nas_server Data Source - powerstore"
-subcategory: ""
+subcategory: "File Storage Management"
 description: |-
   This datasource is used to query the existing NAS Server from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
@@ -52,27 +52,22 @@ limitations under the License.
 # If id or name is provided then it reads a particular NAS Server with that id or name
 # Only one of the attribute can be provided among id and name 
 
-data "powerstore_nas_server" "test" {
+# Fetching all NAS Servers
+data "powerstore_nas_server" "all" {
 }
 
-output "powerstore_nas_server" {
-  value = data.powerstore_nas_server.test.nas_servers
-}
-
-data "powerstore_nas_server" "testid" {
+# Fetching NAS Server by id
+data "powerstore_nas_server" "nas_server_by_id" {
   id = "282479293"
 }
 
-output "powerstore_nas_server" {
-  value = data.powerstore_nas_server.testid.nas_servers
-}
-
-data "powerstore_nas_server" "testname" {
+# Fetching NAS Server by name
+data "powerstore_nas_server" "nas_server_by_name" {
   name = "nas_server_1"
 }
 
 output "powerstore_nas_server" {
-  value = data.powerstore_nas_server.testname.nas_servers
+  value = data.powerstore_nas_server.all.nas_servers
 }
 ```
 

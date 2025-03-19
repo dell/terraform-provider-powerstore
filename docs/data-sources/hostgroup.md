@@ -17,7 +17,7 @@
 title: "powerstore_hostgroup data source"
 linkTitle: "powerstore_hostgroup"
 page_title: "powerstore_hostgroup Data Source - powerstore"
-subcategory: ""
+subcategory: "Host Access Management"
 description: |-
   This datasource is used to query the existing host group from PowerStore array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---

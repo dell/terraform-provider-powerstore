@@ -34,7 +34,7 @@ It accepts queries specifying criteria that may involve all fields of a "PowerSt
 For example, a GET request to https://<powerstore_endpoint>/api/rest/volume?and=(size.gt.1073741824,performance_policy_id.eq.default_high,or(id.eq.f64ef46f-2837-4d7d-947c-61a40fdcb074,state.eq.Ready))&select=* will fetch all volumes that meet the following criteria:
 size > 1073741824 AND performance_policy_id = default_high AND (id = f64ef46f-2837-4d7d-947c-61a40fdcb074 OR state = Ready)
 
-The complete PowerStore filter expression reference may be found in [PowerStore REST API - Filtering Response Data](https://www.dell.com/support/manuals/en-us/powerstore-1200t/pwrstr-apidevg/filtering-response-data)
+The complete PowerStore filter expression reference may be found in [PowerStore REST API - Filtering Response Data](https://www.dell.com/support/manuals/en-us/powerstore-1200t/pwrstr-apidevg/filtering-response-data?guid=guid-131de794-b8af-4214-bed8-64ad89c6d1cd&lang=en-us)
 
 A more beginner-friendly guide to such expressions can be found in [Fine Tuning Your Queries](https://infohub.delltechnologies.com/en-us/p/powerstore-rest-api-using-filtering-to-fine-tune-your-queries/)
 

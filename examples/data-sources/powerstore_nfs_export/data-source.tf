@@ -53,6 +53,7 @@ data powerstore_nfs_export nfs_export_by_filesystem_and_name {
 }
 
 # fetching NFS exports using filter expression
+# Please refer to the guides section for filter expression syntax
 # here, we are fetching all NFS exports of subdirectories of /us-east-revenue/sports_cars
 # with min_security as Sys and default_access as Root
 data powerstore_nfs_export nfs_export_by_name_regex {

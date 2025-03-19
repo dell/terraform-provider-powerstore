@@ -17,7 +17,7 @@
 title: "powerstore_replication_rule resource"
 linkTitle: "powerstore_replication_rule"
 page_title: "powerstore_replication_rule Resource - powerstore"
-subcategory: ""
+subcategory: "Data Protection Management"
 description: |-
   This resource is used to manage the replication rule entity of PowerStore Array. We can Create, Update and Delete the replication rule using this resource. We can also import an existing replication rule from PowerStore array.
 ---
@@ -52,10 +52,24 @@ limitations under the License.
 # name, rpo and remote_system_id are required attributes to create and update
 # To check which attributes of the replication rule can be updated, please refer Product Guide in the documentation
 
-resource "powerstore_replication_rule" "test" {
-  name             = "terraform_replication_rule"
+# To create a replication rule, we shall:
+# 1. fetching the Remote System for which the replication rule is to be created
+# Here, we are fetching by name of the Remote System
+data powerstore_remote_system backup_1hr {
+  name = "RT-D4538"
+  lifecycle {
+    postcondition {
+      condition = length(self.remote_systems) == 1
+      error_message = "Expected one Remote System with name RT-D4538, but got ${length(self.remote_systems)}."
+    }
+  }
+}
+
+# 2. create the replication rule
+resource "powerstore_replication_rule" "backup_1hr" {
+  name             = "RT_D4538_1hr"
   rpo              = "One_Hour"
-  remote_system_id = "db11abb3-789e-47f9-96b5-84b5374cbcd2"
+  remote_system_id = data.powerstore_remote_system.backup_1hr.remote_systems[0].id
   alert_threshold  = 1000
   is_read_only     = false
 }

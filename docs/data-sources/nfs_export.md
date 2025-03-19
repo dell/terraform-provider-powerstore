@@ -17,7 +17,7 @@
 title: "powerstore_nfs_export data source"
 linkTitle: "powerstore_nfs_export"
 page_title: "powerstore_nfs_export Data Source - powerstore"
-subcategory: ""
+subcategory: "File Storage Management"
 description: |-
   This datasource is used to query the existing NFS Exports from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
@@ -86,6 +86,7 @@ data powerstore_nfs_export nfs_export_by_filesystem_and_name {
 }
 
 # fetching NFS exports using filter expression
+# Please refer to the guides section for filter expression syntax
 # here, we are fetching all NFS exports of subdirectories of /us-east-revenue/sports_cars
 # with min_security as Sys and default_access as Root
 data powerstore_nfs_export nfs_export_by_name_regex {

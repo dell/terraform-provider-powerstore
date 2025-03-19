@@ -53,8 +53,9 @@ func getCopyrightYear(filePath string) (string, error) {
 }
 
 type Facts struct {
-	Note       string
-	ExampleVar string
+	Note        string
+	ExampleVar  string
+	SubCategory string
 }
 
 // main function to traveser docs folder and update copyright year.
@@ -85,7 +86,7 @@ func main() {
 		fileName := strings.TrimSuffix(pathHierarchy[len(pathHierarchy)-1], ".md")
 		dirName := pathHierarchy[len(pathHierarchy)-2]
 
-		var fnote, exampleEnding string
+		var fnote, exampleEnding, subCategory string
 		// if dir is datasource
 		if dirName == "data-sources" {
 
@@ -104,6 +105,8 @@ func main() {
 						note.ExampleVar +
 						"` where attribute_name is the attribute which user wants to fetch."
 				}
+				// add subcategory
+				subCategory = note.SubCategory
 			}
 		}
 
@@ -121,9 +124,13 @@ func main() {
 						note.ExampleVar +
 						" would have been created on the PowerStore array. For more information, Please check the terraform state file."
 				}
+				// add subcategory
+				subCategory = note.SubCategory
 			}
 		}
 
+		// replace <subcategory>
+		replacedFile = strings.ReplaceAll(replacedFile, "<subcategory>", subCategory)
 		// replace <note>
 		replacedFile = strings.ReplaceAll(replacedFile, "<note>", fnote)
 		// replace <example-ending>
