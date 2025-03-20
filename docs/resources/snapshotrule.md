@@ -17,7 +17,7 @@
 title: "powerstore_snapshotrule resource"
 linkTitle: "powerstore_snapshotrule"
 page_title: "powerstore_snapshotrule Resource - powerstore"
-subcategory: ""
+subcategory: "Data Protection Management"
 description: |-
   This resource is used to manage the snapshot rule entity of PowerStore Array. We can Create, Update and Delete the snapshot rule using this resource. We can also import an existing snapshot rule from PowerStore array.
 ---

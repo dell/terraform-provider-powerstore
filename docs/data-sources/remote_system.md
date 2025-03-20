@@ -17,7 +17,7 @@
 title: "powerstore_remote_system data source"
 linkTitle: "powerstore_remote_system"
 page_title: "powerstore_remote_system Data Source - powerstore"
-subcategory: ""
+subcategory: "Data Protection Management"
 description: |-
   This datasource is used to query the existing Remote Systems from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
@@ -51,26 +51,27 @@ limitations under the License.
 # commands to run this tf file : terraform init && terraform apply --auto-approve
 
 # fetching all Remote Systems on the array
-data powerstore_remote_system all_remote_systems {
+data "powerstore_remote_system" "all_remote_systems" {
 }
 
 # fetching Remote System using id
-data powerstore_remote_system remote_system_by_id {
+data "powerstore_remote_system" "remote_system_by_id" {
   id = "6732e829-29c9-7fed-686a-ee23cab1d298"
 }
 
 # fetching Remote System using name
-data powerstore_remote_system remote_system_by_name {
+data "powerstore_remote_system" "remote_system_by_name" {
   name = "RT-D4538"
 }
 
 # fetching Remote Systems using filter expression
+# Please refer to the guides section for filter expression syntax
 # here, we are fetching a Remote System with a particular management IP
-data powerstore_remote_system remote_system_by_filters {
+data "powerstore_remote_system" "remote_system_by_filters" {
   filter_expression = "management_address=eq.10.225.225.10"
 }
 
-output all_remote_systems {
+output "all_remote_systems" {
   value = data.powerstore_remote_system.all_remote_systems.remote_systems
 }
 ```

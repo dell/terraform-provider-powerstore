@@ -17,7 +17,7 @@
 title: "powerstore_nfs_export data source"
 linkTitle: "powerstore_nfs_export"
 page_title: "powerstore_nfs_export Data Source - powerstore"
-subcategory: ""
+subcategory: "File Storage Management"
 description: |-
   This datasource is used to query the existing NFS Exports from a PowerStore Array. The information fetched from this datasource can be used for getting the details for further processing in resource block.
 ---
@@ -51,44 +51,45 @@ limitations under the License.
 # commands to run this tf file : terraform init && terraform apply --auto-approve
 
 # fetching all NFS exports on the array
-data powerstore_nfs_export all_nfs_exports {
+data "powerstore_nfs_export" "all_nfs_exports" {
 }
 
 # fetching NFS export using id
-data powerstore_nfs_export nfs_export_by_id {
+data "powerstore_nfs_export" "nfs_export_by_id" {
   id = "67974f74-6688-b677-9d08-5692f12c6aa4"
 }
 
 # fetching NFS exports using name
-data powerstore_nfs_export nfs_export_by_name {
+data "powerstore_nfs_export" "nfs_export_by_name" {
   name = "nfs-export-1"
 }
 
 # fetching all NFS exports from a filesystem
-data powerstore_filesystem us_east_sales_catalog {
+data "powerstore_filesystem" "us_east_sales_catalog" {
   name = "us-east-sales-catalog"
   lifecycle {
-      postcondition {
-        condition     = length(self.filesystems) == 1
-        error_message = "error: US East sales catalog filesystem list length should be 1, received: ${length(self.filesystems)}"
-      }
+    postcondition {
+      condition     = length(self.filesystems) == 1
+      error_message = "error: US East sales catalog filesystem list length should be 1, received: ${length(self.filesystems)}"
     }
+  }
 }
 
-data powerstore_nfs_export nfs_export_by_filesystem {
+data "powerstore_nfs_export" "nfs_export_by_filesystem" {
   file_system_id = data.powerstore_filesystem.us_east_sales_catalog.filesystems[0].id
 }
 
 # name and filesystem_id filters can be used together
-data powerstore_nfs_export nfs_export_by_filesystem_and_name {
+data "powerstore_nfs_export" "nfs_export_by_filesystem_and_name" {
   file_system_id = data.powerstore_filesystem.us_east_sales_catalog.filesystems[0].id
-  name          = "nfs-export-1"
+  name           = "nfs-export-1"
 }
 
 # fetching NFS exports using filter expression
+# Please refer to the guides section for filter expression syntax
 # here, we are fetching all NFS exports of subdirectories of /us-east-revenue/sports_cars
 # with min_security as Sys and default_access as Root
-data powerstore_nfs_export nfs_export_by_name_regex {
+data "powerstore_nfs_export" "nfs_export_by_name_regex" {
   filter_expression = "path=ilike./us-east-revenue/sports_cars/*&min_security=eq.Sys&default_access=eq.Root"
 }
 

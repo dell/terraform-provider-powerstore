@@ -17,7 +17,7 @@
 title: "powerstore_hostgroup resource"
 linkTitle: "powerstore_hostgroup"
 page_title: "powerstore_hostgroup Resource - powerstore"
-subcategory: ""
+subcategory: "Host Access Management"
 description: |-
   This resource is used to manage the host group entity of PowerStore Array. We can Create, Update and Delete the host group using this resource. We can also import an existing host group from PowerStore array.
 ---

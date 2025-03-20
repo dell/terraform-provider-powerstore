@@ -18,18 +18,27 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
-data "powerstore_filesystem" "filesystems" {
+# To create an SMB Share of a filesystem, we shall:
+# 1. get the id of the filesystem to be shared over SMB
+data "powerstore_filesystem" "sales_catalog" {
+  name = "sales_catalog_fs"
+  lifecycle {
+    postcondition {
+      condition     = length(self.filesystems) == 0
+      error_message = "Expected a single filesystem for sales catalog, but got ${length(self.filesystems)}"
+    }
+  }
 }
 
-
-resource "powerstore_smb_share" "smbShare" {
+# 2. create an SMB Share from that filesystem
+resource "powerstore_smb_share" "sales_catalog_for_2024_march" {
   // Required
-  file_system_id = data.powerstore_filesystem.filesystems.filesystems[0].id
-  name           = "terraform-smb"
-  path           = "/terraform-fs"
+  file_system_id = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  name           = "sales_catalog_for_2024_march"
+  path           = "/sales_catalog_fs/2024/March"
 
   // Optional
-  description                        = "smb share"
+  description                        = "SMB Share for sales catalog for 2024 March"
   aces                               = [{ "access_level" : "Full", "access_type" : "Allow", "trustee_name" : "Everyone", "trustee_type" : "WellKnown" }]
   is_abe_enabled                     = true
   is_continuous_availability_enabled = true
@@ -37,4 +46,21 @@ resource "powerstore_smb_share" "smbShare" {
   is_branch_cache_enabled            = true
   offline_availability               = "Manual"
   umask                              = "077"
+}
+
+# To expose a snapshot of a filesystem via NFS, we shall:
+# 1. create a snapshot of type "Protocol" of the given filesystem
+resource "powerstore_filesystem_snapshot" "sales_catalog_snap" {
+  name          = "sales_catalog_snap"
+  description   = "Snapshot of Sales Catalog Filesystem"
+  filesystem_id = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  access_type   = "Protocol"
+}
+
+# 2. Expose the snapshot over SMB (here, we are sharing the /2024/March directory from the snapshot)
+resource "powerstore_smb_share" "sales_catalog_for_2024_march_snap" {
+  file_system_id = powerstore_filesystem_snapshot.sales_catalog_snap.id
+  name           = "sales_catalog_for_2024_march_snap"
+  path           = "/${powestore_filesystem_snapshot.sales_catalog_snap.name}/2024/March"
+  description    = "SMB share of Sales Catalog for 2024 March from snapshot"
 }

@@ -25,10 +25,30 @@ limitations under the License.
 # During modify operation, to set infinite retention, expiration_timestamp can be set to blank("").
 # To check which attributes of the file system snapshot resource can be updated, please refer Product Guide in the documentation
 
-resource "powerstore_filesystem_snapshot" "test1" {
-  name                 = "tf_fs_snap"
-  description          = "Test File System Snapshot Resource"
-  filesystem_id        = "67608dc7-b69c-b762-0522-42848bc63a0b"
-  expiration_timestamp = "2035-05-06T09:01:47Z"
+# To create a file system snapshot, we shall:
+# 1. get the id of the filesystem to be snapshotted
+data "powerstore_filesystem" "us_east_sales_catalog_fs" {
+  name = "us_east_sales_catalog_fs"
+  lifecycle {
+    postcondition {
+      condition     = length(self.filesystems) == 0
+      error_message = "Expected a single filesystem for US East sales catalog, but got ${length(self.filesystems)}"
+    }
+  }
+}
+
+# 2. create an expiration timestamp in the RFC3339 format
+resource "time_offset" "us_east_sales_catalog_snapshot_expiration_timestamp" {
+  // this will set expiration timestamp to 2 years 1 month from the time of creation of the snapshot
+  offset_years  = 2
+  offset_months = 1
+}
+
+# 3. take the snapshot 
+resource "powerstore_filesystem_snapshot" "us_east_sales_catalog_snapshot" {
+  name                 = "us_east_sales_catalog_snapshot"
+  description          = "Snapshot of US East Sales Catalog"
+  filesystem_id        = data.powerstore_filesystem.us_east_sales_catalog_fs.filesystems[0].id
+  expiration_timestamp = time_offset.us_east_sales_catalog_snapshot_expiration_timestamp.rfc3339
   access_type          = "Snapshot"
 }

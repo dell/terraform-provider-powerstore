@@ -133,6 +133,14 @@ func (t HostSetValue) normalizeStrings(in []string) (map[string]bool, error) {
 				continue
 			}
 			ips = append(ips, ip)
+		} else if strings.HasSuffix(val, "/255.255.255.255") {
+			// if val ends in /255.255.255.255, it is an IPv4 address
+			ip := net.ParseIP(strings.TrimSuffix(val, "/255.255.255.255"))
+			if ip == nil || ip.To4() == nil {
+				perr = errors.Join(perr, fmt.Errorf("invalid IPv4 address entry %s", val))
+				continue
+			}
+			ips = append(ips, ip)
 		} else if strings.Contains(val, "/") {
 			// if val contains /, it is a cidr
 			// first check if both parts are valid IPv4
@@ -219,7 +227,7 @@ func (v HostSetValue) equal(ins, outs map[string]bool) bool {
 	if len(ins) != len(outs) {
 		return false
 	}
-	for k, _ := range ins {
+	for k := range ins {
 		if _, ok := outs[k]; !ok {
 			return false
 		}

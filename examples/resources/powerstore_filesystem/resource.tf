@@ -18,12 +18,23 @@ limitations under the License.
 # Commands to run this tf file : terraform init && terraform plan && terraform apply
 # Create, Update, Delete and Import is supported for this resource
 
+# get NAS server id by name of the NAS server
+data "powerstore_nas_server" "nas_server_us_east" {
+  name = "nas_server_us_east"
+  lifecycle {
+    postcondition {
+      condition     = length(self.nas_servers) == 1
+      error_message = "Expected a single NAS server, but got none"
+    }
+  }
+}
 
-resource "powerstore_filesystem" "test" {
-  name          = "test_fs"
-  description   = "testing file system"
+# create filesystem on the NAS server
+resource "powerstore_filesystem" "us_east_sales_catalog_fs" {
+  name          = "us_east_sales_catalog_fs"
+  description   = "File System for US East Sales Catalog"
   size          = 3
-  nas_server_id = "654b2182-f674-f39a-66fc-52518d324736"
+  nas_server_id = data.powerstore_nas_server.nas_server_us_east.nas_servers[0].id
   flr_attributes = {
     mode              = "Enterprise"
     minimum_retention = "1D"
