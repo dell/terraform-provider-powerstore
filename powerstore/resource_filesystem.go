@@ -41,6 +41,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"terraform-provider-powerstore/models/jsonmodel"
 )
 
 type fileSystemResource struct {
@@ -607,8 +608,8 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
-	var fsModify *gopowerstore.FSModify
-	fsModify = &gopowerstore.FSModify{
+	var fsModify *jsonmodel.FSModify
+	fsModify = &jsonmodel.FSModify{
 		Description:                plan.Description.ValueString(),
 		Size:                       int(valInBytes),
 		AccessPolicy:               plan.AccessPolicy.ValueString(),
@@ -626,7 +627,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	if state.ConfigType.ValueString() == "General" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString() || FlrCreate.AutoLock.ValueBool() != FlrCreateState.AutoLock.ValueBool() || FlrCreate.AutoDelete.ValueBool() != FlrCreateState.AutoDelete.ValueBool() || FlrCreate.PolicyInterval.ValueInt32() != FlrCreateState.PolicyInterval.ValueInt32()) {
-		fsModify.FlrCreate = gopowerstore.FlrAttributes{
+		fsModify.FlrCreate = jsonmodel.FlrAttributes{
 			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
 			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
 			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
@@ -636,7 +637,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		}
 	}
 
-	_, err := r.client.PStoreClient.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
+	err := r.client.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
@@ -764,8 +765,8 @@ func updateFsState(fsState *models.FileSystem, fsResponse gopowerstore.FileSyste
 		"minimum_retention": types.StringValue(fsResponse.FlrCreate.MinimumRetention),
 		"default_retention": types.StringValue(fsResponse.FlrCreate.DefaultRetention),
 		"maximum_retention": types.StringValue(fsResponse.FlrCreate.MaximumRetention),
-		"auto_lock":         types.BoolValue(*fsResponse.FlrCreate.AutoLock),
-		"auto_delete":       types.BoolValue(*fsResponse.FlrCreate.AutoDelete),
+		"auto_lock":         types.BoolValue(fsResponse.FlrCreate.AutoLock),
+		"auto_delete":       types.BoolValue(fsResponse.FlrCreate.AutoDelete),
 		"policy_interval":   types.Int32Value(fsResponse.FlrCreate.PolicyInterval),
 	})
 
