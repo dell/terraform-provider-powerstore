@@ -55,11 +55,11 @@ limitations under the License.
 # To create a replication rule, we shall:
 # 1. fetching the Remote System for which the replication rule is to be created
 # Here, we are fetching by name of the Remote System
-data powerstore_remote_system backup_1hr {
+data "powerstore_remote_system" "backup_1hr" {
   name = "RT-D4538"
   lifecycle {
     postcondition {
-      condition = length(self.remote_systems) == 1
+      condition     = length(self.remote_systems) == 1
       error_message = "Expected one Remote System with name RT-D4538, but got ${length(self.remote_systems)}."
     }
   }

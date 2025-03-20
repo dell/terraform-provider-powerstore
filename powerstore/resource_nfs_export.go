@@ -111,6 +111,9 @@ func NFSExportResourceSchema() map[string]schema.Attribute {
 			Description:         "A user-defined description of the NFS Export.",
 			Optional:            true,
 			Computed:            true,
+			Validators: []validator.String{
+				stringvalidator.LengthAtMost(511),
+			},
 		},
 		"min_security": schema.StringAttribute{
 			PlanModifiers: []planmodifier.String{
