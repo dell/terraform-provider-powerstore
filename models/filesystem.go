@@ -52,4 +52,7 @@ type FlrAttributes struct {
 	MinimumRetention types.String `tfsdk:"minimum_retention"`
 	DefaultRetention types.String `tfsdk:"default_retention"`
 	MaximumRetention types.String `tfsdk:"maximum_retention"`
+	AutoLock         types.Bool   `tfsdk:"auto_lock"`
+	AutoDelete       types.Bool   `tfsdk:"auto_delete"`
+	PolicyInterval   types.Int32  `tfsdk:"policy_interval"`
 }

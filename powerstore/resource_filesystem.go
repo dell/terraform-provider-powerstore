@@ -299,9 +299,6 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 								"Compliance",
 							}...),
 						},
-						PlanModifiers: []planmodifier.String{
-							DefaultAttribute("Enterprise"),
-						},
 					},
 					"minimum_retention": schema.StringAttribute{
 						Description:         "The FLR type of the file system.",
@@ -313,9 +310,6 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 								regexp.MustCompile(`(^\d+[DMY])|(^infinite$)`),
 								"must only contain only alphanumeric characters",
 							),
-						},
-						PlanModifiers: []planmodifier.String{
-							DefaultAttribute("1D"),
 						},
 					},
 					"default_retention": schema.StringAttribute{
@@ -341,9 +335,24 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 								"must only contain only alphanumeric characters",
 							),
 						},
-						PlanModifiers: []planmodifier.String{
-							DefaultAttribute("infinite"),
-						},
+					},
+					"auto_lock": schema.BoolAttribute{
+						Description:         "Indicates whether to automatically lock files in an FLR-enabled file system.",
+						MarkdownDescription: "Indicates whether to automatically lock files in an FLR-enabled file system.",
+						Optional:            true,
+						Computed:            true,
+					},
+					"auto_delete": schema.BoolAttribute{
+						Description:         "Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.",
+						MarkdownDescription: "Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.",
+						Optional:            true,
+						Computed:            true,
+					},
+					"policy_interval": schema.Int32Attribute{
+						Description:         "Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.",
+						MarkdownDescription: "Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.",
+						Optional:            true,
+						Computed:            true,
 					},
 				},
 			},
@@ -403,11 +412,6 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	var FlrCreate models.FlrAttributes
-	if !plan.FlrAttributes.IsUnknown() {
-		plan.FlrAttributes.As(ctx, &FlrCreate, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
-	}
-
 	fileSystemCreate := &gopowerstore.FsCreate{
 		Name:                       plan.Name.ValueString(),
 		Description:                plan.Description.ValueString(),
@@ -427,12 +431,24 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
 		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
-		FlrCreate: gopowerstore.FlrAttributes{
+	}
+
+	var FlrCreate models.FlrAttributes
+	if !plan.FlrAttributes.IsUnknown() {
+		plan.FlrAttributes.As(ctx, &FlrCreate, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+		if !(FlrCreate.AutoLock.IsUnknown()) || !(FlrCreate.AutoDelete.IsUnknown()) || !(FlrCreate.PolicyInterval.IsUnknown()) {
+			resp.Diagnostics.AddError(
+				"Error Creating file system",
+				"auto_lock or auto_delete or policy_interval mustn't be provided during creation",
+			)
+			return
+		}
+		fileSystemCreate.FlrCreate = gopowerstore.FlrAttributes{
 			Mode:             FlrCreate.Mode.ValueString(),
 			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
 			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
 			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
-		},
+		}
 	}
 
 	// Create New FileSystem
@@ -572,7 +588,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
-	if state.ConfigType.ValueString() == "VMware" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString()) {
+	if state.ConfigType.ValueString() == "VMware" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString() || FlrCreate.AutoLock.ValueBool() != FlrCreateState.AutoLock.ValueBool() || FlrCreate.AutoDelete.ValueBool() != FlrCreateState.AutoDelete.ValueBool() || FlrCreate.PolicyInterval.ValueInt32() != FlrCreateState.PolicyInterval.ValueInt32()) {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
 			"flr attributes can't be updated when config type is VMware",
@@ -589,44 +605,31 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 	var fsModify *gopowerstore.FSModify
-	if state.ConfigType.ValueString() == "General" {
-		fsModify = &gopowerstore.FSModify{
-			Description:                plan.Description.ValueString(),
-			Size:                       int(valInBytes),
-			AccessPolicy:               plan.AccessPolicy.ValueString(),
-			LockingPolicy:              plan.LockingPolicy.ValueString(),
-			FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-			IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-			ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
-			FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
-			IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-			IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-			IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
-			IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
-			IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
-			SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
-			FlrCreate: gopowerstore.FlrAttributes{
-				MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
-				DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
-				MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
-			},
-		}
-	} else {
-		fsModify = &gopowerstore.FSModify{
-			Description:                plan.Description.ValueString(),
-			Size:                       int(valInBytes),
-			AccessPolicy:               plan.AccessPolicy.ValueString(),
-			LockingPolicy:              plan.LockingPolicy.ValueString(),
-			FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-			IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-			ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
-			FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
-			IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-			IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-			IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
-			IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
-			IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
-			SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+	fsModify = &gopowerstore.FSModify{
+		Description:                plan.Description.ValueString(),
+		Size:                       int(valInBytes),
+		AccessPolicy:               plan.AccessPolicy.ValueString(),
+		LockingPolicy:              plan.LockingPolicy.ValueString(),
+		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
+		IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
+		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
+		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
+		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
+		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
+		IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
+		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
+		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
+		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+	}
+
+	if state.ConfigType.ValueString() == "General" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString() || FlrCreate.AutoLock.ValueBool() != FlrCreateState.AutoLock.ValueBool() || FlrCreate.AutoDelete.ValueBool() != FlrCreateState.AutoDelete.ValueBool() || FlrCreate.PolicyInterval.ValueInt32() != FlrCreateState.PolicyInterval.ValueInt32()) {
+		fsModify.FlrCreate = gopowerstore.FlrAttributes{
+			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
+			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
+			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
+			AutoLock:         helper.GetKnownBoolPointer(FlrCreate.AutoLock),
+			AutoDelete:       helper.GetKnownBoolPointer(FlrCreate.AutoDelete),
+			PolicyInterval:   FlrCreate.PolicyInterval.ValueInt32(),
 		}
 	}
 
@@ -750,11 +753,17 @@ func updateFsState(fsState *models.FileSystem, fsResponse gopowerstore.FileSyste
 		"minimum_retention": types.StringType,
 		"default_retention": types.StringType,
 		"maximum_retention": types.StringType,
+		"auto_lock":         types.BoolType,
+		"auto_delete":       types.BoolType,
+		"policy_interval":   types.Int32Type,
 	}, map[string]attr.Value{
 		"mode":              types.StringValue(fsResponse.FlrCreate.Mode),
 		"minimum_retention": types.StringValue(fsResponse.FlrCreate.MinimumRetention),
 		"default_retention": types.StringValue(fsResponse.FlrCreate.DefaultRetention),
 		"maximum_retention": types.StringValue(fsResponse.FlrCreate.MaximumRetention),
+		"auto_lock":         types.BoolValue(*fsResponse.FlrCreate.AutoLock),
+		"auto_delete":       types.BoolValue(*fsResponse.FlrCreate.AutoDelete),
+		"policy_interval":   types.Int32Value(fsResponse.FlrCreate.PolicyInterval),
 	})
 
 }
