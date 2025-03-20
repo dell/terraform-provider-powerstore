@@ -129,10 +129,13 @@ After the execution of above resource block, filesystem would have been created 
 
 Optional:
 
+- `auto_delete` (Boolean) Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.
+- `auto_lock` (Boolean) Indicates whether to automatically lock files in an FLR-enabled file system.
 - `default_retention` (String) The FLR type of the file system.
 - `maximum_retention` (String) The FLR type of the file system.
 - `minimum_retention` (String) The FLR type of the file system.
 - `mode` (String) The FLR type of the file system.
+- `policy_interval` (Number) Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.
 
 ## Import
 
