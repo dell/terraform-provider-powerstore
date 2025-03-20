@@ -299,6 +299,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 								"Compliance",
 							}...),
 						},
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
 					},
 					"minimum_retention": schema.StringAttribute{
 						Description:         "The FLR type of the file system.",
