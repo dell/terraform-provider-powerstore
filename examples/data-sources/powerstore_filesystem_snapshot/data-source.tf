@@ -39,7 +39,7 @@ data "powerstore_filesystem" "us_east_sales_catalog_fs" {
   name = "us_east_sales_catalog_fs"
   lifecycle {
     postcondition {
-      condition = length(self.filesystems) == 1
+      condition     = length(self.filesystems) == 1
       error_message = "Expected one filesystem with name us_east_sales_catalog_fs, but got ${length(self.filesystems)}"
     }
   }
@@ -56,7 +56,7 @@ data "powerstore_nas_server" "nas_server_us_east" {
   name = "nas_server_us_east"
   lifecycle {
     postcondition {
-      condition = length(self.nas_servers) == 1
+      condition     = length(self.nas_servers) == 1
       error_message = "Expected a single NAS server for US East region, but got none"
     }
   }

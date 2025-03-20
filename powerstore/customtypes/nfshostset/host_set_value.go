@@ -227,7 +227,7 @@ func (v HostSetValue) equal(ins, outs map[string]bool) bool {
 	if len(ins) != len(outs) {
 		return false
 	}
-	for k, _ := range ins {
+	for k := range ins {
 		if _, ok := outs[k]; !ok {
 			return false
 		}

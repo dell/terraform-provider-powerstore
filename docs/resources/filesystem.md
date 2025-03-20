@@ -54,7 +54,7 @@ data "powerstore_nas_server" "nas_server_us_east" {
   name = "nas_server_us_east"
   lifecycle {
     postcondition {
-      condition = length(self.nas_servers) == 1
+      condition     = length(self.nas_servers) == 1
       error_message = "Expected a single NAS server, but got none"
     }
   }

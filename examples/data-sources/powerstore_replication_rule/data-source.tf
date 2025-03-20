@@ -27,7 +27,7 @@ data "powerstore_replication_rule" "all" {
 
 # Get replication rule details using name
 data "powerstore_replication_rule" "rule_by_name" {
-  name       = "terraform_replication_rule"
+  name = "terraform_replication_rule"
 }
 
 # Get replication rule details using ID

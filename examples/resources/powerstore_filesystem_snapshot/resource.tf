@@ -31,7 +31,7 @@ data "powerstore_filesystem" "us_east_sales_catalog_fs" {
   name = "us_east_sales_catalog_fs"
   lifecycle {
     postcondition {
-      condition = length(self.filesystems) == 0
+      condition     = length(self.filesystems) == 0
       error_message = "Expected a single filesystem for US East sales catalog, but got ${length(self.filesystems)}"
     }
   }

@@ -24,7 +24,7 @@ data "powerstore_filesystem" "sales_catalog" {
   name = "sales_catalog_fs"
   lifecycle {
     postcondition {
-      condition = length(self.filesystems) == 0
+      condition     = length(self.filesystems) == 0
       error_message = "Expected a single filesystem for sales catalog, but got ${length(self.filesystems)}"
     }
   }
@@ -49,10 +49,10 @@ resource "powerstore_nfs_export" "sales_catalog_for_2024_march" {
   no_access_hosts = [
     "192.168.1.0/24", # subnet - ipv4/prefixlength form
     "192.168.1.0/26",
-    "192.168.1.54/255.255.255.0", # subnet - ipv4/subnet mask form  
+    "192.168.1.54/255.255.255.0",      # subnet - ipv4/subnet mask form  
     "2001:db8:85a3::8a2e:370:7334/64", # subnet - ipv6/prefixLength form
-    "2001:db8:85a3::8a2e:370:7334", # ipv6 address
-    "2001:db8:85a3::/64", # subnet - ipv6/prefixLength normalized form
+    "2001:db8:85a3::8a2e:370:7334",    # ipv6 address
+    "2001:db8:85a3::/64",              # subnet - ipv6/prefixLength normalized form
   ]
 
   read_only_hosts = [
@@ -88,10 +88,10 @@ resource "powerstore_nfs_export" "sales_catalog_for_2024_march" {
 # To expose a snapshot of a filesystem via NFS, we shall:
 # 1. create a snapshot of type "Protocol" of the given filesystem
 resource "powerstore_filesystem_snapshot" "sales_catalog_snap" {
-  name                 = "sales_catalog_snap"
-  description          = "Snapshot of Sales Catalog Filesystem"
-  filesystem_id        = data.powerstore_filesystem.sales_catalog.filesystems[0].id
-  access_type          = "Protocol"
+  name          = "sales_catalog_snap"
+  description   = "Snapshot of Sales Catalog Filesystem"
+  filesystem_id = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  access_type   = "Protocol"
 }
 
 # 2. Expose the snapshot over NFS (here, we are sharing the /2024/March directory from the snapshot)
