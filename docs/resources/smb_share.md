@@ -55,7 +55,7 @@ data "powerstore_filesystem" "sales_catalog" {
   name = "sales_catalog_fs"
   lifecycle {
     postcondition {
-      condition = length(self.filesystems) == 0
+      condition     = length(self.filesystems) == 0
       error_message = "Expected a single filesystem for sales catalog, but got ${length(self.filesystems)}"
     }
   }
@@ -82,10 +82,10 @@ resource "powerstore_smb_share" "sales_catalog_for_2024_march" {
 # To expose a snapshot of a filesystem via NFS, we shall:
 # 1. create a snapshot of type "Protocol" of the given filesystem
 resource "powerstore_filesystem_snapshot" "sales_catalog_snap" {
-  name                 = "sales_catalog_snap"
-  description          = "Snapshot of Sales Catalog Filesystem"
-  filesystem_id        = data.powerstore_filesystem.sales_catalog.filesystems[0].id
-  access_type          = "Protocol"
+  name          = "sales_catalog_snap"
+  description   = "Snapshot of Sales Catalog Filesystem"
+  filesystem_id = data.powerstore_filesystem.sales_catalog.filesystems[0].id
+  access_type   = "Protocol"
 }
 
 # 2. Expose the snapshot over SMB (here, we are sharing the /2024/March directory from the snapshot)
