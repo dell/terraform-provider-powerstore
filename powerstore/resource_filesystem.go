@@ -28,16 +28,20 @@ import (
 	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"terraform-provider-powerstore/models/jsonmodel"
 )
 
 type fileSystemResource struct {
@@ -74,17 +78,26 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Description:         "Name of the file system.",
 				MarkdownDescription: "Name of the file system.",
 				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"description": schema.StringAttribute{
 				Description:         "File system description.",
 				MarkdownDescription: "File system description.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"size": schema.Float64Attribute{
 				Description:         "Size that the file system presents to the host or end user.",
 				MarkdownDescription: "Size that the file system presents to the host or end user.",
 				Required:            true,
+				Validators: []validator.Float64{
+					float64validator.AtLeast(1),
+				},
 			},
 			"capacity_unit": schema.StringAttribute{
 				Description:         "The Capacity Unit corresponding to the size.",
@@ -96,7 +109,6 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
-						"MB",
 						"GB",
 						"TB",
 					}...),
@@ -106,6 +118,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Description:         "Unique identifier of the NAS Server on which the file system is mounted.",
 				MarkdownDescription: "Unique identifier of the NAS Server on which the file system is mounted.",
 				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"config_type": schema.StringAttribute{
 				Optional:            true,
@@ -221,6 +236,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Description:         "Unique identifier of the protection policy applied to the file system.",
 				MarkdownDescription: "Unique identifier of the protection policy applied to the file system.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"file_events_publishing_mode": schema.StringAttribute{
 				Optional:            true,
@@ -249,8 +267,11 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 						"VMware_8K",
 						"VMware_16K",
 						"VMware_32K",
-						"Vmware_64K",
+						"VMware_64K",
 					}...),
+				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"file_system_type": schema.StringAttribute{
@@ -263,6 +284,9 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				Description:         "Type of filesystem: normal or snapshot.",
 				MarkdownDescription: "Type of filesystem: normal or snapshot.",
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
+				},
 				Attributes: map[string]schema.Attribute{
 					"mode": schema.StringAttribute{
 						Description:         "The FLR type of the file system.",
@@ -277,7 +301,7 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 							}...),
 						},
 						PlanModifiers: []planmodifier.String{
-							DefaultAttribute("Enterprise"),
+							stringplanmodifier.UseStateForUnknown(),
 						},
 					},
 					"minimum_retention": schema.StringAttribute{
@@ -290,9 +314,6 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 								regexp.MustCompile(`(^\d+[DMY])|(^infinite$)`),
 								"must only contain only alphanumeric characters",
 							),
-						},
-						PlanModifiers: []planmodifier.String{
-							DefaultAttribute("1D"),
 						},
 					},
 					"default_retention": schema.StringAttribute{
@@ -318,9 +339,24 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 								"must only contain only alphanumeric characters",
 							),
 						},
-						PlanModifiers: []planmodifier.String{
-							DefaultAttribute("infinite"),
-						},
+					},
+					"auto_lock": schema.BoolAttribute{
+						Description:         "Indicates whether to automatically lock files in an FLR-enabled file system.",
+						MarkdownDescription: "Indicates whether to automatically lock files in an FLR-enabled file system.",
+						Optional:            true,
+						Computed:            true,
+					},
+					"auto_delete": schema.BoolAttribute{
+						Description:         "Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.",
+						MarkdownDescription: "Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.",
+						Optional:            true,
+						Computed:            true,
+					},
+					"policy_interval": schema.Int32Attribute{
+						Description:         "Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.",
+						MarkdownDescription: "Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.",
+						Optional:            true,
+						Computed:            true,
 					},
 				},
 			},
@@ -364,7 +400,13 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
+	if plan.CapacityUnit.ValueString() == "GB" && plan.Size.ValueFloat64() > 1023 {
+		resp.Diagnostics.AddError(
+			"Error creating file system",
+			"Use capacity unit TB instead of GB if the size is greater than 1023 GB",
+		)
+		return
+	}
 	valInBytes, errmsg := convertToBytesForFileSystem(plan)
 	if errmsg != "" {
 		resp.Diagnostics.AddError(
@@ -372,11 +414,6 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 			"Error in converting the given size into bytes"+errmsg,
 		)
 		return
-	}
-
-	var FlrCreate models.FlrAttributes
-	if !plan.FlrAttributes.IsUnknown() {
-		plan.FlrAttributes.As(ctx, &FlrCreate, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
 	}
 
 	fileSystemCreate := &gopowerstore.FsCreate{
@@ -398,12 +435,24 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
 		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
-		FlrCreate: gopowerstore.FlrAttributes{
+	}
+
+	var FlrCreate models.FlrAttributes
+	if !plan.FlrAttributes.IsUnknown() {
+		plan.FlrAttributes.As(ctx, &FlrCreate, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+		if !(FlrCreate.AutoLock.IsUnknown()) || !(FlrCreate.AutoDelete.IsUnknown()) || !(FlrCreate.PolicyInterval.IsUnknown()) {
+			resp.Diagnostics.AddError(
+				"Error Creating file system",
+				"auto_lock or auto_delete or policy_interval mustn't be provided during creation",
+			)
+			return
+		}
+		fileSystemCreate.FlrCreate = gopowerstore.FlrAttributes{
 			Mode:             FlrCreate.Mode.ValueString(),
 			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
 			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
 			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
-		},
+		}
 	}
 
 	// Create New FileSystem
@@ -491,6 +540,14 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
+	if plan.CapacityUnit.ValueString() == "GB" && plan.Size.ValueFloat64() > 1023 {
+		resp.Diagnostics.AddError(
+			"Error creating file system",
+			"Use capacity unit TB instead of GB if the size is greater than 1023 GB",
+		)
+		return
+	}
+
 	if plan.Name.ValueString() != state.Name.ValueString() {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
@@ -535,6 +592,13 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
+	if state.ConfigType.ValueString() == "VMware" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString() || FlrCreate.AutoLock.ValueBool() != FlrCreateState.AutoLock.ValueBool() || FlrCreate.AutoDelete.ValueBool() != FlrCreateState.AutoDelete.ValueBool() || FlrCreate.PolicyInterval.ValueInt32() != FlrCreateState.PolicyInterval.ValueInt32()) {
+		resp.Diagnostics.AddError(
+			"Error updating file system",
+			"flr attributes can't be updated when config type is VMware",
+		)
+		return
+	}
 
 	valInBytes, errmsg := convertToBytesForFileSystem(plan)
 	if errmsg != "" {
@@ -544,8 +608,8 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
-
-	fsModify := &gopowerstore.FSModify{
+	var fsModify *jsonmodel.FSModify
+	fsModify = &jsonmodel.FSModify{
 		Description:                plan.Description.ValueString(),
 		Size:                       int(valInBytes),
 		AccessPolicy:               plan.AccessPolicy.ValueString(),
@@ -560,14 +624,20 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
 		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
 		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
-		FlrCreate: gopowerstore.FlrAttributes{
+	}
+
+	if state.ConfigType.ValueString() == "General" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString() || FlrCreate.AutoLock.ValueBool() != FlrCreateState.AutoLock.ValueBool() || FlrCreate.AutoDelete.ValueBool() != FlrCreateState.AutoDelete.ValueBool() || FlrCreate.PolicyInterval.ValueInt32() != FlrCreateState.PolicyInterval.ValueInt32()) {
+		fsModify.FlrCreate = jsonmodel.FlrAttributes{
 			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
 			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
 			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
-		},
+			AutoLock:         helper.GetKnownBoolPointer(FlrCreate.AutoLock),
+			AutoDelete:       helper.GetKnownBoolPointer(FlrCreate.AutoDelete),
+			PolicyInterval:   FlrCreate.PolicyInterval.ValueInt32(),
+		}
 	}
 
-	_, err := r.client.PStoreClient.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
+	err := r.client.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
@@ -634,8 +704,6 @@ func (r fileSystemResource) ImportState(ctx context.Context, req resource.Import
 func convertToBytesForFileSystem(plan models.FileSystem) (int64, string) {
 	var valInBytes float64
 	switch plan.CapacityUnit.ValueString() {
-	case "MB":
-		valInBytes = plan.Size.ValueFloat64() * MiB
 	case "TB":
 		valInBytes = plan.Size.ValueFloat64() * TiB
 	case "GB":
@@ -689,11 +757,17 @@ func updateFsState(fsState *models.FileSystem, fsResponse gopowerstore.FileSyste
 		"minimum_retention": types.StringType,
 		"default_retention": types.StringType,
 		"maximum_retention": types.StringType,
+		"auto_lock":         types.BoolType,
+		"auto_delete":       types.BoolType,
+		"policy_interval":   types.Int32Type,
 	}, map[string]attr.Value{
 		"mode":              types.StringValue(fsResponse.FlrCreate.Mode),
 		"minimum_retention": types.StringValue(fsResponse.FlrCreate.MinimumRetention),
 		"default_retention": types.StringValue(fsResponse.FlrCreate.DefaultRetention),
 		"maximum_retention": types.StringValue(fsResponse.FlrCreate.MaximumRetention),
+		"auto_lock":         types.BoolValue(fsResponse.FlrCreate.AutoLock),
+		"auto_delete":       types.BoolValue(fsResponse.FlrCreate.AutoDelete),
+		"policy_interval":   types.Int32Value(fsResponse.FlrCreate.PolicyInterval),
 	})
 
 }
