@@ -18,7 +18,9 @@ limitations under the License.
 package client
 
 import (
+	"github.com/dell/gopowerstore"
 	pstore "github.com/dell/gopowerstore"
+	"github.com/dell/gopowerstore/api"
 )
 
 // Client type is to hold powerstore client
@@ -28,6 +30,10 @@ type Client struct {
 
 var (
 	newClientWithArgs = pstore.NewClientWithArgs
+)
+
+const (
+	paginationDefaultPageSize = 1000
 )
 
 // NewClient returns the gopowerstore client
@@ -49,4 +55,35 @@ func NewClient(endpoint string, username string, password string, insecure bool,
 		PStoreClient: pstoreClient.(*pstore.ClientIMPL),
 	}
 	return &client, nil
+}
+
+// method allow to read paginated data from backend
+func (c *Client) readPaginatedData(f func(int) (api.RespMeta, error)) error {
+	var err error
+	var meta api.RespMeta
+	meta, err = f(0)
+	if err != nil {
+		return err
+	}
+	if meta.Pagination.IsPaginate {
+		for {
+			nextOffset := meta.Pagination.Last + 1
+			if nextOffset >= meta.Pagination.Total {
+				break
+			}
+			meta, err = f(nextOffset)
+			err = gopowerstore.WrapErr(err)
+			if err != nil {
+				apiError, ok := err.(*gopowerstore.APIError)
+				if !ok {
+					return err
+				}
+				if apiError.BadRange() {
+					// could happen if some instances was deleted during pagination
+					break
+				}
+			}
+		}
+	}
+	return nil
 }

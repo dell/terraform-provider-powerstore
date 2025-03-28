@@ -62,6 +62,7 @@ func (d *replicationRuleDataSource) Schema(_ context.Context, _ datasource.Schem
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -71,7 +72,14 @@ func (d *replicationRuleDataSource) Schema(_ context.Context, _ datasource.Schem
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
+			},
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter SMB shares by. Conflicts with `id`, `name` and `file_system_id`.",
+				MarkdownDescription: "PowerStore filter expression to filter SMB shares by. Conflicts with `id`, `name` and `file_system_id`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 			"replication_rules": schema.ListNestedAttribute{
 				Description:         "List of replication rules.",
@@ -217,7 +225,11 @@ func (d *replicationRuleDataSource) Read(ctx context.Context, req datasource.Rea
 		replicationRule, err = d.client.PStoreClient.GetReplicationRule(context.Background(), state.ID.ValueString())
 		replicationRules = append(replicationRules, replicationRule)
 	} else {
-		replicationRules, err = d.client.PStoreClient.GetReplicationRules(context.Background())
+		filters := make(map[string]string)
+		if !state.Filters.IsNull() {
+			filters = convertQueriesToMap(state.Filters.ValueQueries())
+		}
+		replicationRules, err = d.client.GetReplicationRules(context.Background(), filters)
 	}
 
 	//check if there is any error while getting the replication rules details
