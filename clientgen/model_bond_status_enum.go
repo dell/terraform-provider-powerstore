@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // BondStatusEnum Current bond operational status: * Healthy - Bond is fully operational. * Degraded - Bond is degraded due to Link Aggregation Control Protocol (LACP) being in degraded state. * Failed - Bond is down.  Was added in version 3.0.0.0.
 type BondStatusEnum string
 
 // List of BondStatusEnum
 const (
-	BONDSTATUSENUM_HEALTHY BondStatusEnum = "Healthy"
+	BONDSTATUSENUM_HEALTHY  BondStatusEnum = "Healthy"
 	BONDSTATUSENUM_DEGRADED BondStatusEnum = "Degraded"
-	BONDSTATUSENUM_FAILED BondStatusEnum = "Failed"
+	BONDSTATUSENUM_FAILED   BondStatusEnum = "Failed"
 )
 
 // All allowed values of BondStatusEnum enum
@@ -32,82 +27,6 @@ var AllowedBondStatusEnumEnumValues = []BondStatusEnum{
 	"Failed",
 }
 
-func (v *BondStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := BondStatusEnum(value)
-	for _, existing := range AllowedBondStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid BondStatusEnum", value)
+func (v *BondStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewBondStatusEnumFromValue returns a pointer to a valid BondStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBondStatusEnumFromValue(v string) (*BondStatusEnum, error) {
-	ev := BondStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BondStatusEnum: valid values are %v", v, AllowedBondStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v BondStatusEnum) IsValid() bool {
-	for _, existing := range AllowedBondStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to BondStatusEnum value
-func (v BondStatusEnum) Ptr() *BondStatusEnum {
-	return &v
-}
-
-type NullableBondStatusEnum struct {
-	value *BondStatusEnum
-	isSet bool
-}
-
-func (v NullableBondStatusEnum) Get() *BondStatusEnum {
-	return v.value
-}
-
-func (v *NullableBondStatusEnum) Set(val *BondStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableBondStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableBondStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableBondStatusEnum(val *BondStatusEnum) *NullableBondStatusEnum {
-	return &NullableBondStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableBondStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableBondStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

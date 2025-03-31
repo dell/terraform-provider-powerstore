@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NvmeCdcConnectionStateEnum Current state of the Centralized Discovery Controller (CDC) connection to the Direct Discovery Controller (DDC). * Uninitialized - Sending mDNS queries to discover CDC. * Kickstarting - CDC was discovered (mDNS response was received or CDC was manually configured) and Kickstart Requests was sent towards CDC to initiate connectivity. * Pending - Kickstart messaging succeeded, pending to connectivity establishment from CDC. * Established - CDC established connectivity with DDC.  Was added in version 3.0.0.0.
 type NvmeCdcConnectionStateEnum string
 
 // List of NvmeCdcConnectionStateEnum
 const (
 	NVMECDCCONNECTIONSTATEENUM_UNINITIALIZED NvmeCdcConnectionStateEnum = "Uninitialized"
-	NVMECDCCONNECTIONSTATEENUM_KICKSTARTING NvmeCdcConnectionStateEnum = "Kickstarting"
-	NVMECDCCONNECTIONSTATEENUM_PENDING NvmeCdcConnectionStateEnum = "Pending"
-	NVMECDCCONNECTIONSTATEENUM_ESTABLISHED NvmeCdcConnectionStateEnum = "Established"
+	NVMECDCCONNECTIONSTATEENUM_KICKSTARTING  NvmeCdcConnectionStateEnum = "Kickstarting"
+	NVMECDCCONNECTIONSTATEENUM_PENDING       NvmeCdcConnectionStateEnum = "Pending"
+	NVMECDCCONNECTIONSTATEENUM_ESTABLISHED   NvmeCdcConnectionStateEnum = "Established"
 )
 
 // All allowed values of NvmeCdcConnectionStateEnum enum
@@ -34,82 +29,6 @@ var AllowedNvmeCdcConnectionStateEnumEnumValues = []NvmeCdcConnectionStateEnum{
 	"Established",
 }
 
-func (v *NvmeCdcConnectionStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NvmeCdcConnectionStateEnum(value)
-	for _, existing := range AllowedNvmeCdcConnectionStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NvmeCdcConnectionStateEnum", value)
+func (v *NvmeCdcConnectionStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewNvmeCdcConnectionStateEnumFromValue returns a pointer to a valid NvmeCdcConnectionStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNvmeCdcConnectionStateEnumFromValue(v string) (*NvmeCdcConnectionStateEnum, error) {
-	ev := NvmeCdcConnectionStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NvmeCdcConnectionStateEnum: valid values are %v", v, AllowedNvmeCdcConnectionStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NvmeCdcConnectionStateEnum) IsValid() bool {
-	for _, existing := range AllowedNvmeCdcConnectionStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NvmeCdcConnectionStateEnum value
-func (v NvmeCdcConnectionStateEnum) Ptr() *NvmeCdcConnectionStateEnum {
-	return &v
-}
-
-type NullableNvmeCdcConnectionStateEnum struct {
-	value *NvmeCdcConnectionStateEnum
-	isSet bool
-}
-
-func (v NullableNvmeCdcConnectionStateEnum) Get() *NvmeCdcConnectionStateEnum {
-	return v.value
-}
-
-func (v *NullableNvmeCdcConnectionStateEnum) Set(val *NvmeCdcConnectionStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNvmeCdcConnectionStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNvmeCdcConnectionStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNvmeCdcConnectionStateEnum(val *NvmeCdcConnectionStateEnum) *NullableNvmeCdcConnectionStateEnum {
-	return &NullableNvmeCdcConnectionStateEnum{value: val, isSet: true}
-}
-
-func (v NullableNvmeCdcConnectionStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNvmeCdcConnectionStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

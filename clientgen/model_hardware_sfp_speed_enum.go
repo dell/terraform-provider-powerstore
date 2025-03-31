@@ -10,31 +10,26 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HardwareSFPSpeedEnum Supported speed. Available on the SFP hardware type. Current supported speeds are:  * Auto - Automatically selected link speed  * 4_Gbps - 4 Gigabits per second  * 8_Gbps - 8 Gigabits per second  * 16_Gbps - 16 Gigabits per second  * 32_Gbps - 32 Gigabits per second  * 10_Mbps - 10 Megabits per second  * 100_Mbps - 100 Megabits per second  * 1_Gbps - 1 Gigabit per second  * 10_Gbps - 10 Gigabits per second  * 25_Gbps - 25 Gigabits per second  * 40_Gbps - 40 Gigabits per second  * 100_Gbps - 100 Gigabits per second  * 3_Gbps - 3 Gigabits per second  * 6_Gbps - 6 Gigabits per second  * 12_Gbps - 12 Gigabits per second  Values was added in 3.0.0.0: 100_Gbps. Values was added in 3.6.0.0: 3_Gbps, 6_Gbps, 12_Gbps.
 type HardwareSFPSpeedEnum string
 
 // List of HardwareSFPSpeedEnum
 const (
-	HARDWARESFPSPEEDENUM_AUTO HardwareSFPSpeedEnum = "Auto"
-	HARDWARESFPSPEEDENUM__4_GBPS HardwareSFPSpeedEnum = "4_Gbps"
-	HARDWARESFPSPEEDENUM__8_GBPS HardwareSFPSpeedEnum = "8_Gbps"
-	HARDWARESFPSPEEDENUM__16_GBPS HardwareSFPSpeedEnum = "16_Gbps"
-	HARDWARESFPSPEEDENUM__32_GBPS HardwareSFPSpeedEnum = "32_Gbps"
-	HARDWARESFPSPEEDENUM__10_MBPS HardwareSFPSpeedEnum = "10_Mbps"
+	HARDWARESFPSPEEDENUM_AUTO      HardwareSFPSpeedEnum = "Auto"
+	HARDWARESFPSPEEDENUM__4_GBPS   HardwareSFPSpeedEnum = "4_Gbps"
+	HARDWARESFPSPEEDENUM__8_GBPS   HardwareSFPSpeedEnum = "8_Gbps"
+	HARDWARESFPSPEEDENUM__16_GBPS  HardwareSFPSpeedEnum = "16_Gbps"
+	HARDWARESFPSPEEDENUM__32_GBPS  HardwareSFPSpeedEnum = "32_Gbps"
+	HARDWARESFPSPEEDENUM__10_MBPS  HardwareSFPSpeedEnum = "10_Mbps"
 	HARDWARESFPSPEEDENUM__100_MBPS HardwareSFPSpeedEnum = "100_Mbps"
-	HARDWARESFPSPEEDENUM__1_GBPS HardwareSFPSpeedEnum = "1_Gbps"
-	HARDWARESFPSPEEDENUM__10_GBPS HardwareSFPSpeedEnum = "10_Gbps"
-	HARDWARESFPSPEEDENUM__25_GBPS HardwareSFPSpeedEnum = "25_Gbps"
-	HARDWARESFPSPEEDENUM__40_GBPS HardwareSFPSpeedEnum = "40_Gbps"
+	HARDWARESFPSPEEDENUM__1_GBPS   HardwareSFPSpeedEnum = "1_Gbps"
+	HARDWARESFPSPEEDENUM__10_GBPS  HardwareSFPSpeedEnum = "10_Gbps"
+	HARDWARESFPSPEEDENUM__25_GBPS  HardwareSFPSpeedEnum = "25_Gbps"
+	HARDWARESFPSPEEDENUM__40_GBPS  HardwareSFPSpeedEnum = "40_Gbps"
 	HARDWARESFPSPEEDENUM__100_GBPS HardwareSFPSpeedEnum = "100_Gbps"
-	HARDWARESFPSPEEDENUM__3_GBPS HardwareSFPSpeedEnum = "3_Gbps"
-	HARDWARESFPSPEEDENUM__6_GBPS HardwareSFPSpeedEnum = "6_Gbps"
-	HARDWARESFPSPEEDENUM__12_GBPS HardwareSFPSpeedEnum = "12_Gbps"
+	HARDWARESFPSPEEDENUM__3_GBPS   HardwareSFPSpeedEnum = "3_Gbps"
+	HARDWARESFPSPEEDENUM__6_GBPS   HardwareSFPSpeedEnum = "6_Gbps"
+	HARDWARESFPSPEEDENUM__12_GBPS  HardwareSFPSpeedEnum = "12_Gbps"
 )
 
 // All allowed values of HardwareSFPSpeedEnum enum
@@ -56,82 +51,6 @@ var AllowedHardwareSFPSpeedEnumEnumValues = []HardwareSFPSpeedEnum{
 	"12_Gbps",
 }
 
-func (v *HardwareSFPSpeedEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareSFPSpeedEnum(value)
-	for _, existing := range AllowedHardwareSFPSpeedEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareSFPSpeedEnum", value)
+func (v *HardwareSFPSpeedEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareSFPSpeedEnumFromValue returns a pointer to a valid HardwareSFPSpeedEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareSFPSpeedEnumFromValue(v string) (*HardwareSFPSpeedEnum, error) {
-	ev := HardwareSFPSpeedEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareSFPSpeedEnum: valid values are %v", v, AllowedHardwareSFPSpeedEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareSFPSpeedEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareSFPSpeedEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareSFPSpeedEnum value
-func (v HardwareSFPSpeedEnum) Ptr() *HardwareSFPSpeedEnum {
-	return &v
-}
-
-type NullableHardwareSFPSpeedEnum struct {
-	value *HardwareSFPSpeedEnum
-	isSet bool
-}
-
-func (v NullableHardwareSFPSpeedEnum) Get() *HardwareSFPSpeedEnum {
-	return v.value
-}
-
-func (v *NullableHardwareSFPSpeedEnum) Set(val *HardwareSFPSpeedEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareSFPSpeedEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareSFPSpeedEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareSFPSpeedEnum(val *HardwareSFPSpeedEnum) *NullableHardwareSFPSpeedEnum {
-	return &NullableHardwareSFPSpeedEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareSFPSpeedEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareSFPSpeedEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

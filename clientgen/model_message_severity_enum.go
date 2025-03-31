@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// MessageSeverityEnum Message severity. Values are: * Info * Warning * Error 
+// MessageSeverityEnum Message severity. Values are: * Info * Warning * Error
 type MessageSeverityEnum string
 
 // List of MessageSeverityEnum
 const (
-	MESSAGESEVERITYENUM_INFO MessageSeverityEnum = "Info"
+	MESSAGESEVERITYENUM_INFO    MessageSeverityEnum = "Info"
 	MESSAGESEVERITYENUM_WARNING MessageSeverityEnum = "Warning"
-	MESSAGESEVERITYENUM_ERROR MessageSeverityEnum = "Error"
+	MESSAGESEVERITYENUM_ERROR   MessageSeverityEnum = "Error"
 )
 
 // All allowed values of MessageSeverityEnum enum
@@ -32,82 +27,6 @@ var AllowedMessageSeverityEnumEnumValues = []MessageSeverityEnum{
 	"Error",
 }
 
-func (v *MessageSeverityEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := MessageSeverityEnum(value)
-	for _, existing := range AllowedMessageSeverityEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid MessageSeverityEnum", value)
+func (v *MessageSeverityEnum) Value() string {
+	return string(*v)
 }
-
-// NewMessageSeverityEnumFromValue returns a pointer to a valid MessageSeverityEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewMessageSeverityEnumFromValue(v string) (*MessageSeverityEnum, error) {
-	ev := MessageSeverityEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for MessageSeverityEnum: valid values are %v", v, AllowedMessageSeverityEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v MessageSeverityEnum) IsValid() bool {
-	for _, existing := range AllowedMessageSeverityEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to MessageSeverityEnum value
-func (v MessageSeverityEnum) Ptr() *MessageSeverityEnum {
-	return &v
-}
-
-type NullableMessageSeverityEnum struct {
-	value *MessageSeverityEnum
-	isSet bool
-}
-
-func (v NullableMessageSeverityEnum) Get() *MessageSeverityEnum {
-	return v.value
-}
-
-func (v *NullableMessageSeverityEnum) Set(val *MessageSeverityEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableMessageSeverityEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableMessageSeverityEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableMessageSeverityEnum(val *MessageSeverityEnum) *NullableMessageSeverityEnum {
-	return &NullableMessageSeverityEnum{value: val, isSet: true}
-}
-
-func (v NullableMessageSeverityEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableMessageSeverityEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

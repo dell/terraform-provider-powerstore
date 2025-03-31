@@ -10,22 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NetworkTypeEnum Network type. * Management - External cluster and appliance management. * Intra_Cluster_Management - Management within the cluster. * Intra_Cluster_Data - Data within the cluster. * Storage - External data transfer. * VMotion - Data movement controlled by VMotion. * File_Mobility - Network for NAS file replication and import control connection.  Values was added in 3.0.0.0: File_Mobility.
 type NetworkTypeEnum string
 
 // List of NetworkTypeEnum
 const (
-	NETWORKTYPEENUM_MANAGEMENT NetworkTypeEnum = "Management"
+	NETWORKTYPEENUM_MANAGEMENT               NetworkTypeEnum = "Management"
 	NETWORKTYPEENUM_INTRA_CLUSTER_MANAGEMENT NetworkTypeEnum = "Intra_Cluster_Management"
-	NETWORKTYPEENUM_INTRA_CLUSTER_DATA NetworkTypeEnum = "Intra_Cluster_Data"
-	NETWORKTYPEENUM_STORAGE NetworkTypeEnum = "Storage"
-	NETWORKTYPEENUM_V_MOTION NetworkTypeEnum = "VMotion"
-	NETWORKTYPEENUM_FILE_MOBILITY NetworkTypeEnum = "File_Mobility"
+	NETWORKTYPEENUM_INTRA_CLUSTER_DATA       NetworkTypeEnum = "Intra_Cluster_Data"
+	NETWORKTYPEENUM_STORAGE                  NetworkTypeEnum = "Storage"
+	NETWORKTYPEENUM_V_MOTION                 NetworkTypeEnum = "VMotion"
+	NETWORKTYPEENUM_FILE_MOBILITY            NetworkTypeEnum = "File_Mobility"
 )
 
 // All allowed values of NetworkTypeEnum enum
@@ -38,82 +33,6 @@ var AllowedNetworkTypeEnumEnumValues = []NetworkTypeEnum{
 	"File_Mobility",
 }
 
-func (v *NetworkTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NetworkTypeEnum(value)
-	for _, existing := range AllowedNetworkTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NetworkTypeEnum", value)
+func (v *NetworkTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewNetworkTypeEnumFromValue returns a pointer to a valid NetworkTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNetworkTypeEnumFromValue(v string) (*NetworkTypeEnum, error) {
-	ev := NetworkTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NetworkTypeEnum: valid values are %v", v, AllowedNetworkTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NetworkTypeEnum) IsValid() bool {
-	for _, existing := range AllowedNetworkTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NetworkTypeEnum value
-func (v NetworkTypeEnum) Ptr() *NetworkTypeEnum {
-	return &v
-}
-
-type NullableNetworkTypeEnum struct {
-	value *NetworkTypeEnum
-	isSet bool
-}
-
-func (v NullableNetworkTypeEnum) Get() *NetworkTypeEnum {
-	return v.value
-}
-
-func (v *NullableNetworkTypeEnum) Set(val *NetworkTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNetworkTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNetworkTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNetworkTypeEnum(val *NetworkTypeEnum) *NullableNetworkTypeEnum {
-	return &NullableNetworkTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableNetworkTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNetworkTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

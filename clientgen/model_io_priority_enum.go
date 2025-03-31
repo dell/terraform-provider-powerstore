@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// IoPriorityEnum The I/O priority for quality of service rules. Values are: * Low * Medium * High 
+// IoPriorityEnum The I/O priority for quality of service rules. Values are: * Low * Medium * High
 type IoPriorityEnum string
 
 // List of IoPriorityEnum
 const (
-	IOPRIORITYENUM_LOW IoPriorityEnum = "Low"
+	IOPRIORITYENUM_LOW    IoPriorityEnum = "Low"
 	IOPRIORITYENUM_MEDIUM IoPriorityEnum = "Medium"
-	IOPRIORITYENUM_HIGH IoPriorityEnum = "High"
+	IOPRIORITYENUM_HIGH   IoPriorityEnum = "High"
 )
 
 // All allowed values of IoPriorityEnum enum
@@ -32,82 +27,6 @@ var AllowedIoPriorityEnumEnumValues = []IoPriorityEnum{
 	"High",
 }
 
-func (v *IoPriorityEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := IoPriorityEnum(value)
-	for _, existing := range AllowedIoPriorityEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid IoPriorityEnum", value)
+func (v *IoPriorityEnum) Value() string {
+	return string(*v)
 }
-
-// NewIoPriorityEnumFromValue returns a pointer to a valid IoPriorityEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewIoPriorityEnumFromValue(v string) (*IoPriorityEnum, error) {
-	ev := IoPriorityEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for IoPriorityEnum: valid values are %v", v, AllowedIoPriorityEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v IoPriorityEnum) IsValid() bool {
-	for _, existing := range AllowedIoPriorityEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to IoPriorityEnum value
-func (v IoPriorityEnum) Ptr() *IoPriorityEnum {
-	return &v
-}
-
-type NullableIoPriorityEnum struct {
-	value *IoPriorityEnum
-	isSet bool
-}
-
-func (v NullableIoPriorityEnum) Get() *IoPriorityEnum {
-	return v.value
-}
-
-func (v *NullableIoPriorityEnum) Set(val *IoPriorityEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableIoPriorityEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableIoPriorityEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableIoPriorityEnum(val *IoPriorityEnum) *NullableIoPriorityEnum {
-	return &NullableIoPriorityEnum{value: val, isSet: true}
-}
-
-func (v NullableIoPriorityEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableIoPriorityEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,26 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // CGImportableCriteriaEnum Consistency group import criteria. Values are:  * Ready - The consistency group is ready for nondisruptive import.  * Ready_For_Agentless_Import - The consistency group is ready for agentless import.  * In_Progress - Import is in progress.  * Members_Not_Ready - The member or members of teh consistency group are not ready for import.  * No_Members - There are no members in the consistency group.  * Max_Members - The maximum number of members for a consistency group has been exceeded.  * Not_In_Sync - The array must be refreshed.  * Imported - Import is complete.  * Incompatible_Firmware - The software version on the source array is not compatible.  * Undetermined - The import status cannot be determined due to an internal error. Contact technical support.  Values was added in 1.0.2: Ready_For_Agentless_Import.
 type CGImportableCriteriaEnum string
 
 // List of CGImportableCriteriaEnum
 const (
-	CGIMPORTABLECRITERIAENUM_READY CGImportableCriteriaEnum = "Ready"
+	CGIMPORTABLECRITERIAENUM_READY                      CGImportableCriteriaEnum = "Ready"
 	CGIMPORTABLECRITERIAENUM_READY_FOR_AGENTLESS_IMPORT CGImportableCriteriaEnum = "Ready_For_Agentless_Import"
-	CGIMPORTABLECRITERIAENUM_IN_PROGRESS CGImportableCriteriaEnum = "In_Progress"
-	CGIMPORTABLECRITERIAENUM_MEMBERS_NOT_READY CGImportableCriteriaEnum = "Members_Not_Ready"
-	CGIMPORTABLECRITERIAENUM_NO_MEMBERS CGImportableCriteriaEnum = "No_Members"
-	CGIMPORTABLECRITERIAENUM_MAX_MEMBERS CGImportableCriteriaEnum = "Max_Members"
-	CGIMPORTABLECRITERIAENUM_NOT_IN_SYNC CGImportableCriteriaEnum = "Not_In_Sync"
-	CGIMPORTABLECRITERIAENUM_IMPORTED CGImportableCriteriaEnum = "Imported"
-	CGIMPORTABLECRITERIAENUM_INCOMPATIBLE_FIRMWARE CGImportableCriteriaEnum = "Incompatible_Firmware"
-	CGIMPORTABLECRITERIAENUM_UNDETERMINED CGImportableCriteriaEnum = "Undetermined"
+	CGIMPORTABLECRITERIAENUM_IN_PROGRESS                CGImportableCriteriaEnum = "In_Progress"
+	CGIMPORTABLECRITERIAENUM_MEMBERS_NOT_READY          CGImportableCriteriaEnum = "Members_Not_Ready"
+	CGIMPORTABLECRITERIAENUM_NO_MEMBERS                 CGImportableCriteriaEnum = "No_Members"
+	CGIMPORTABLECRITERIAENUM_MAX_MEMBERS                CGImportableCriteriaEnum = "Max_Members"
+	CGIMPORTABLECRITERIAENUM_NOT_IN_SYNC                CGImportableCriteriaEnum = "Not_In_Sync"
+	CGIMPORTABLECRITERIAENUM_IMPORTED                   CGImportableCriteriaEnum = "Imported"
+	CGIMPORTABLECRITERIAENUM_INCOMPATIBLE_FIRMWARE      CGImportableCriteriaEnum = "Incompatible_Firmware"
+	CGIMPORTABLECRITERIAENUM_UNDETERMINED               CGImportableCriteriaEnum = "Undetermined"
 )
 
 // All allowed values of CGImportableCriteriaEnum enum
@@ -46,82 +41,6 @@ var AllowedCGImportableCriteriaEnumEnumValues = []CGImportableCriteriaEnum{
 	"Undetermined",
 }
 
-func (v *CGImportableCriteriaEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := CGImportableCriteriaEnum(value)
-	for _, existing := range AllowedCGImportableCriteriaEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid CGImportableCriteriaEnum", value)
+func (v *CGImportableCriteriaEnum) Value() string {
+	return string(*v)
 }
-
-// NewCGImportableCriteriaEnumFromValue returns a pointer to a valid CGImportableCriteriaEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewCGImportableCriteriaEnumFromValue(v string) (*CGImportableCriteriaEnum, error) {
-	ev := CGImportableCriteriaEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for CGImportableCriteriaEnum: valid values are %v", v, AllowedCGImportableCriteriaEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v CGImportableCriteriaEnum) IsValid() bool {
-	for _, existing := range AllowedCGImportableCriteriaEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to CGImportableCriteriaEnum value
-func (v CGImportableCriteriaEnum) Ptr() *CGImportableCriteriaEnum {
-	return &v
-}
-
-type NullableCGImportableCriteriaEnum struct {
-	value *CGImportableCriteriaEnum
-	isSet bool
-}
-
-func (v NullableCGImportableCriteriaEnum) Get() *CGImportableCriteriaEnum {
-	return v.value
-}
-
-func (v *NullableCGImportableCriteriaEnum) Set(val *CGImportableCriteriaEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableCGImportableCriteriaEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableCGImportableCriteriaEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableCGImportableCriteriaEnum(val *CGImportableCriteriaEnum) *NullableCGImportableCriteriaEnum {
-	return &NullableCGImportableCriteriaEnum{value: val, isSet: true}
-}
-
-func (v NullableCGImportableCriteriaEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableCGImportableCriteriaEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

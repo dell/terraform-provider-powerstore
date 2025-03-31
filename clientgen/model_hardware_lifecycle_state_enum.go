@@ -10,26 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HardwareLifecycleStateEnum Lifecycle state of the Hardware. Current values are:  * Uninitialized - System is starting up.  * Healthy - Hardware is healthy.  * Initializing - System is starting up.  * Failed - Hardware has failed.  * Disconnected - Hardware was removed from the system.  * Prepare_Failed - Transient state used during startup.  * Trigger_Update - Transient state used during startup.  * Empty - No hardware present in this location.  * Replaced - Hardware has been replaced.  * Prepare_Reset - Transient state used during reset.  Values was added in 3.5.0.0: Replaced, Prepare_Reset.
 type HardwareLifecycleStateEnum string
 
 // List of HardwareLifecycleStateEnum
 const (
-	HARDWARELIFECYCLESTATEENUM_UNINITIALIZED HardwareLifecycleStateEnum = "Uninitialized"
-	HARDWARELIFECYCLESTATEENUM_HEALTHY HardwareLifecycleStateEnum = "Healthy"
-	HARDWARELIFECYCLESTATEENUM_INITIALIZING HardwareLifecycleStateEnum = "Initializing"
-	HARDWARELIFECYCLESTATEENUM_FAILED HardwareLifecycleStateEnum = "Failed"
-	HARDWARELIFECYCLESTATEENUM_DISCONNECTED HardwareLifecycleStateEnum = "Disconnected"
+	HARDWARELIFECYCLESTATEENUM_UNINITIALIZED  HardwareLifecycleStateEnum = "Uninitialized"
+	HARDWARELIFECYCLESTATEENUM_HEALTHY        HardwareLifecycleStateEnum = "Healthy"
+	HARDWARELIFECYCLESTATEENUM_INITIALIZING   HardwareLifecycleStateEnum = "Initializing"
+	HARDWARELIFECYCLESTATEENUM_FAILED         HardwareLifecycleStateEnum = "Failed"
+	HARDWARELIFECYCLESTATEENUM_DISCONNECTED   HardwareLifecycleStateEnum = "Disconnected"
 	HARDWARELIFECYCLESTATEENUM_PREPARE_FAILED HardwareLifecycleStateEnum = "Prepare_Failed"
 	HARDWARELIFECYCLESTATEENUM_TRIGGER_UPDATE HardwareLifecycleStateEnum = "Trigger_Update"
-	HARDWARELIFECYCLESTATEENUM_EMPTY HardwareLifecycleStateEnum = "Empty"
-	HARDWARELIFECYCLESTATEENUM_REPLACED HardwareLifecycleStateEnum = "Replaced"
-	HARDWARELIFECYCLESTATEENUM_PREPARE_RESET HardwareLifecycleStateEnum = "Prepare_Reset"
+	HARDWARELIFECYCLESTATEENUM_EMPTY          HardwareLifecycleStateEnum = "Empty"
+	HARDWARELIFECYCLESTATEENUM_REPLACED       HardwareLifecycleStateEnum = "Replaced"
+	HARDWARELIFECYCLESTATEENUM_PREPARE_RESET  HardwareLifecycleStateEnum = "Prepare_Reset"
 )
 
 // All allowed values of HardwareLifecycleStateEnum enum
@@ -46,82 +41,6 @@ var AllowedHardwareLifecycleStateEnumEnumValues = []HardwareLifecycleStateEnum{
 	"Prepare_Reset",
 }
 
-func (v *HardwareLifecycleStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareLifecycleStateEnum(value)
-	for _, existing := range AllowedHardwareLifecycleStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareLifecycleStateEnum", value)
+func (v *HardwareLifecycleStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareLifecycleStateEnumFromValue returns a pointer to a valid HardwareLifecycleStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareLifecycleStateEnumFromValue(v string) (*HardwareLifecycleStateEnum, error) {
-	ev := HardwareLifecycleStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareLifecycleStateEnum: valid values are %v", v, AllowedHardwareLifecycleStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareLifecycleStateEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareLifecycleStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareLifecycleStateEnum value
-func (v HardwareLifecycleStateEnum) Ptr() *HardwareLifecycleStateEnum {
-	return &v
-}
-
-type NullableHardwareLifecycleStateEnum struct {
-	value *HardwareLifecycleStateEnum
-	isSet bool
-}
-
-func (v NullableHardwareLifecycleStateEnum) Get() *HardwareLifecycleStateEnum {
-	return v.value
-}
-
-func (v *NullableHardwareLifecycleStateEnum) Set(val *HardwareLifecycleStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareLifecycleStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareLifecycleStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareLifecycleStateEnum(val *HardwareLifecycleStateEnum) *NullableHardwareLifecycleStateEnum {
-	return &NullableHardwareLifecycleStateEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareLifecycleStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareLifecycleStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

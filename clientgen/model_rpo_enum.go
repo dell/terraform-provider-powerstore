@@ -10,24 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// RPOEnum Recovery point objective (RPO), which is the acceptable amount of data, measured in units of time, that may be lost in case of a failure. When RPO is Zero, it implies synchronous replication. Values are:   * Five_Minutes   * Fifteen_Minutes   * Thirty_Minutes   * One_Hour   * Six_Hours   * Twelve_Hours   * One_Day   * Zero 
+// RPOEnum Recovery point objective (RPO), which is the acceptable amount of data, measured in units of time, that may be lost in case of a failure. When RPO is Zero, it implies synchronous replication. Values are:   * Five_Minutes   * Fifteen_Minutes   * Thirty_Minutes   * One_Hour   * Six_Hours   * Twelve_Hours   * One_Day   * Zero
 type RPOEnum string
 
 // List of RPOEnum
 const (
-	RPOENUM_FIVE_MINUTES RPOEnum = "Five_Minutes"
+	RPOENUM_FIVE_MINUTES    RPOEnum = "Five_Minutes"
 	RPOENUM_FIFTEEN_MINUTES RPOEnum = "Fifteen_Minutes"
-	RPOENUM_THIRTY_MINUTES RPOEnum = "Thirty_Minutes"
-	RPOENUM_ONE_HOUR RPOEnum = "One_Hour"
-	RPOENUM_SIX_HOURS RPOEnum = "Six_Hours"
-	RPOENUM_TWELVE_HOURS RPOEnum = "Twelve_Hours"
-	RPOENUM_ONE_DAY RPOEnum = "One_Day"
-	RPOENUM_ZERO RPOEnum = "Zero"
+	RPOENUM_THIRTY_MINUTES  RPOEnum = "Thirty_Minutes"
+	RPOENUM_ONE_HOUR        RPOEnum = "One_Hour"
+	RPOENUM_SIX_HOURS       RPOEnum = "Six_Hours"
+	RPOENUM_TWELVE_HOURS    RPOEnum = "Twelve_Hours"
+	RPOENUM_ONE_DAY         RPOEnum = "One_Day"
+	RPOENUM_ZERO            RPOEnum = "Zero"
 )
 
 // All allowed values of RPOEnum enum
@@ -42,82 +37,6 @@ var AllowedRPOEnumEnumValues = []RPOEnum{
 	"Zero",
 }
 
-func (v *RPOEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RPOEnum(value)
-	for _, existing := range AllowedRPOEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RPOEnum", value)
+func (v *RPOEnum) Value() string {
+	return string(*v)
 }
-
-// NewRPOEnumFromValue returns a pointer to a valid RPOEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRPOEnumFromValue(v string) (*RPOEnum, error) {
-	ev := RPOEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RPOEnum: valid values are %v", v, AllowedRPOEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RPOEnum) IsValid() bool {
-	for _, existing := range AllowedRPOEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RPOEnum value
-func (v RPOEnum) Ptr() *RPOEnum {
-	return &v
-}
-
-type NullableRPOEnum struct {
-	value *RPOEnum
-	isSet bool
-}
-
-func (v NullableRPOEnum) Get() *RPOEnum {
-	return v.value
-}
-
-func (v *NullableRPOEnum) Set(val *RPOEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRPOEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRPOEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRPOEnum(val *RPOEnum) *NullableRPOEnum {
-	return &NullableRPOEnum{value: val, isSet: true}
-}
-
-func (v NullableRPOEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRPOEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

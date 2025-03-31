@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSnapshotResourceTypeEnum Type of the remote snapshot resource:  * volume - Remote snapshot is volume type.  * volume_group - Remote snapshot is volume_group type.  Was added in version 3.5.0.0.
 type RemoteSnapshotResourceTypeEnum string
 
 // List of RemoteSnapshotResourceTypeEnum
 const (
-	REMOTESNAPSHOTRESOURCETYPEENUM_VOLUME RemoteSnapshotResourceTypeEnum = "volume"
+	REMOTESNAPSHOTRESOURCETYPEENUM_VOLUME       RemoteSnapshotResourceTypeEnum = "volume"
 	REMOTESNAPSHOTRESOURCETYPEENUM_VOLUME_GROUP RemoteSnapshotResourceTypeEnum = "volume_group"
 )
 
@@ -30,82 +25,6 @@ var AllowedRemoteSnapshotResourceTypeEnumEnumValues = []RemoteSnapshotResourceTy
 	"volume_group",
 }
 
-func (v *RemoteSnapshotResourceTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RemoteSnapshotResourceTypeEnum(value)
-	for _, existing := range AllowedRemoteSnapshotResourceTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RemoteSnapshotResourceTypeEnum", value)
+func (v *RemoteSnapshotResourceTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewRemoteSnapshotResourceTypeEnumFromValue returns a pointer to a valid RemoteSnapshotResourceTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRemoteSnapshotResourceTypeEnumFromValue(v string) (*RemoteSnapshotResourceTypeEnum, error) {
-	ev := RemoteSnapshotResourceTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RemoteSnapshotResourceTypeEnum: valid values are %v", v, AllowedRemoteSnapshotResourceTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RemoteSnapshotResourceTypeEnum) IsValid() bool {
-	for _, existing := range AllowedRemoteSnapshotResourceTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RemoteSnapshotResourceTypeEnum value
-func (v RemoteSnapshotResourceTypeEnum) Ptr() *RemoteSnapshotResourceTypeEnum {
-	return &v
-}
-
-type NullableRemoteSnapshotResourceTypeEnum struct {
-	value *RemoteSnapshotResourceTypeEnum
-	isSet bool
-}
-
-func (v NullableRemoteSnapshotResourceTypeEnum) Get() *RemoteSnapshotResourceTypeEnum {
-	return v.value
-}
-
-func (v *NullableRemoteSnapshotResourceTypeEnum) Set(val *RemoteSnapshotResourceTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRemoteSnapshotResourceTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRemoteSnapshotResourceTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRemoteSnapshotResourceTypeEnum(val *RemoteSnapshotResourceTypeEnum) *NullableRemoteSnapshotResourceTypeEnum {
-	return &NullableRemoteSnapshotResourceTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableRemoteSnapshotResourceTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRemoteSnapshotResourceTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

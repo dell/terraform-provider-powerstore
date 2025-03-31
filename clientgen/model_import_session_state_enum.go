@@ -10,37 +10,32 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ImportSessionStateEnum Import session states * Scheduled - Indicates that a user scheduled the import to run at a later time. The import remains in this state and waits until the schedule expires. * Paused - Indicates that the data copy between the source and destination volumes is paused. * Queued - Indicates that all imports are queued and run in a First In First Out (FIFO) order. This occurs when there are more active import sessions than supported. * In_Progress - Indicates that a queued import session is now in progress. * Mirror_Enabled - Indicates that an import session has completed setting up the entities required to import data from the source resource. * Ready_To_Start_Copy - Indicates that an import session is ready to start the data copy operation from the source resource. * Copy_In_Progress - Indicates that the data copy between the source and destination storage systems has started. The data copy runs as a background job and updates the import session percentage complete and estimated time left for the copy. Host IOs are pointed to PowerStore in this state. The import process keeps the source and destination volumes or consistency groups volume in sync by doing IO forwarding. * Ready_For_Cutover - Indicates that you can commit the import. The import process moves to this state after it successfully copies data from the source volume or consistency group. * Cutover_In_Progress - Indicates that the cutover of volumes that are part of a consistency group is in progress. * Import_Completed - Indicates that all operations completed successfully for a given import after a commit. In this state, the source volume is no longer mapped to the host and all stale paths are cleaned up. * Cancelled - Indicates that a user forcefully cancelled the import. * Failed - Indicates that there was an error during import. The appropriate error message  is returned in the error_response object. * Cancel_Failed - Indicates that an attempt to cancel the import of a volume failed in a consistency group import. * Cancel_In_Progress - Indicates that a cancel is in progress. * Cleanup_In_Progress - Indicates that the import of one or more volumes in a consistency group failed. When this occurs, you must roll back the import of the other volumes of the consistency group by executing a Cancel operation on each volume. * Cleanup_Failed - Indicates that there was an error while cleaning up the consistency group. * Invalid - Indicates that an import session is in an unexpected state. * Cleanup_Required - Indicates that there was an error while cleaning up the import or consistency group that requires user intervention to bring back host applications. * Import_Completed_With_Errors - Indicates that there was a mirror failure for one or more members while committing a consistency group due to which members were partially committed.The failed members were cancelled. * Import_Cutover_Incomplete - Indicates that one or more members  couldn't be committed successfully resulting in partial commit of the consistency group. Commit should be tried again on the consistency group. * Cancel_Required - Indicates that agentless import has failed during copy operation and once in this state user is expected to cancel the import.  Values was added in 1.0.2: Cancel_Required.
 type ImportSessionStateEnum string
 
 // List of ImportSessionStateEnum
 const (
-	IMPORTSESSIONSTATEENUM_SCHEDULED ImportSessionStateEnum = "Scheduled"
-	IMPORTSESSIONSTATEENUM_PAUSED ImportSessionStateEnum = "Paused"
-	IMPORTSESSIONSTATEENUM_QUEUED ImportSessionStateEnum = "Queued"
-	IMPORTSESSIONSTATEENUM_IN_PROGRESS ImportSessionStateEnum = "In_Progress"
-	IMPORTSESSIONSTATEENUM_MIRROR_ENABLED ImportSessionStateEnum = "Mirror_Enabled"
-	IMPORTSESSIONSTATEENUM_READY_TO_START_COPY ImportSessionStateEnum = "Ready_To_Start_Copy"
-	IMPORTSESSIONSTATEENUM_COPY_IN_PROGRESS ImportSessionStateEnum = "Copy_In_Progress"
-	IMPORTSESSIONSTATEENUM_READY_FOR_CUTOVER ImportSessionStateEnum = "Ready_For_Cutover"
-	IMPORTSESSIONSTATEENUM_CUTOVER_IN_PROGRESS ImportSessionStateEnum = "Cutover_In_Progress"
-	IMPORTSESSIONSTATEENUM_IMPORT_COMPLETED ImportSessionStateEnum = "Import_Completed"
-	IMPORTSESSIONSTATEENUM_CANCELLED ImportSessionStateEnum = "Cancelled"
-	IMPORTSESSIONSTATEENUM_FAILED ImportSessionStateEnum = "Failed"
-	IMPORTSESSIONSTATEENUM_CANCEL_FAILED ImportSessionStateEnum = "Cancel_Failed"
-	IMPORTSESSIONSTATEENUM_CANCEL_IN_PROGRESS ImportSessionStateEnum = "Cancel_In_Progress"
-	IMPORTSESSIONSTATEENUM_CLEANUP_IN_PROGRESS ImportSessionStateEnum = "Cleanup_In_Progress"
-	IMPORTSESSIONSTATEENUM_CLEANUP_FAILED ImportSessionStateEnum = "Cleanup_Failed"
-	IMPORTSESSIONSTATEENUM_INVALID ImportSessionStateEnum = "Invalid"
-	IMPORTSESSIONSTATEENUM_CLEANUP_REQUIRED ImportSessionStateEnum = "Cleanup_Required"
+	IMPORTSESSIONSTATEENUM_SCHEDULED                    ImportSessionStateEnum = "Scheduled"
+	IMPORTSESSIONSTATEENUM_PAUSED                       ImportSessionStateEnum = "Paused"
+	IMPORTSESSIONSTATEENUM_QUEUED                       ImportSessionStateEnum = "Queued"
+	IMPORTSESSIONSTATEENUM_IN_PROGRESS                  ImportSessionStateEnum = "In_Progress"
+	IMPORTSESSIONSTATEENUM_MIRROR_ENABLED               ImportSessionStateEnum = "Mirror_Enabled"
+	IMPORTSESSIONSTATEENUM_READY_TO_START_COPY          ImportSessionStateEnum = "Ready_To_Start_Copy"
+	IMPORTSESSIONSTATEENUM_COPY_IN_PROGRESS             ImportSessionStateEnum = "Copy_In_Progress"
+	IMPORTSESSIONSTATEENUM_READY_FOR_CUTOVER            ImportSessionStateEnum = "Ready_For_Cutover"
+	IMPORTSESSIONSTATEENUM_CUTOVER_IN_PROGRESS          ImportSessionStateEnum = "Cutover_In_Progress"
+	IMPORTSESSIONSTATEENUM_IMPORT_COMPLETED             ImportSessionStateEnum = "Import_Completed"
+	IMPORTSESSIONSTATEENUM_CANCELLED                    ImportSessionStateEnum = "Cancelled"
+	IMPORTSESSIONSTATEENUM_FAILED                       ImportSessionStateEnum = "Failed"
+	IMPORTSESSIONSTATEENUM_CANCEL_FAILED                ImportSessionStateEnum = "Cancel_Failed"
+	IMPORTSESSIONSTATEENUM_CANCEL_IN_PROGRESS           ImportSessionStateEnum = "Cancel_In_Progress"
+	IMPORTSESSIONSTATEENUM_CLEANUP_IN_PROGRESS          ImportSessionStateEnum = "Cleanup_In_Progress"
+	IMPORTSESSIONSTATEENUM_CLEANUP_FAILED               ImportSessionStateEnum = "Cleanup_Failed"
+	IMPORTSESSIONSTATEENUM_INVALID                      ImportSessionStateEnum = "Invalid"
+	IMPORTSESSIONSTATEENUM_CLEANUP_REQUIRED             ImportSessionStateEnum = "Cleanup_Required"
 	IMPORTSESSIONSTATEENUM_IMPORT_COMPLETED_WITH_ERRORS ImportSessionStateEnum = "Import_Completed_With_Errors"
-	IMPORTSESSIONSTATEENUM_IMPORT_CUTOVER_INCOMPLETE ImportSessionStateEnum = "Import_Cutover_Incomplete"
-	IMPORTSESSIONSTATEENUM_CANCEL_REQUIRED ImportSessionStateEnum = "Cancel_Required"
+	IMPORTSESSIONSTATEENUM_IMPORT_CUTOVER_INCOMPLETE    ImportSessionStateEnum = "Import_Cutover_Incomplete"
+	IMPORTSESSIONSTATEENUM_CANCEL_REQUIRED              ImportSessionStateEnum = "Cancel_Required"
 )
 
 // All allowed values of ImportSessionStateEnum enum
@@ -68,82 +63,6 @@ var AllowedImportSessionStateEnumEnumValues = []ImportSessionStateEnum{
 	"Cancel_Required",
 }
 
-func (v *ImportSessionStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := ImportSessionStateEnum(value)
-	for _, existing := range AllowedImportSessionStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid ImportSessionStateEnum", value)
+func (v *ImportSessionStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewImportSessionStateEnumFromValue returns a pointer to a valid ImportSessionStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportSessionStateEnumFromValue(v string) (*ImportSessionStateEnum, error) {
-	ev := ImportSessionStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportSessionStateEnum: valid values are %v", v, AllowedImportSessionStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v ImportSessionStateEnum) IsValid() bool {
-	for _, existing := range AllowedImportSessionStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to ImportSessionStateEnum value
-func (v ImportSessionStateEnum) Ptr() *ImportSessionStateEnum {
-	return &v
-}
-
-type NullableImportSessionStateEnum struct {
-	value *ImportSessionStateEnum
-	isSet bool
-}
-
-func (v NullableImportSessionStateEnum) Get() *ImportSessionStateEnum {
-	return v.value
-}
-
-func (v *NullableImportSessionStateEnum) Set(val *ImportSessionStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableImportSessionStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableImportSessionStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableImportSessionStateEnum(val *ImportSessionStateEnum) *NullableImportSessionStateEnum {
-	return &NullableImportSessionStateEnum{value: val, isSet: true}
-}
-
-func (v NullableImportSessionStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableImportSessionStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

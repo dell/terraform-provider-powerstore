@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// NodeAffinityEnum This attribute shows which node will be advertised as the optimized IO path to the volume. It is initially set to System_Select_At_Attach and can be modified to other values. When a volume is first attached to a host, if node_affinity is System_Select_At_Attach then the system will make the assignment to either System_Selected_Node_A or System_Selected_Node_B. The node_affinity may be modified to one of System_Select_At_Attach or Preferred_Node_A or Preferred_Node_B. Both System_Selected_Node_A and System_Selected_Node_B are reserved for system use only and cannot be set as the volume's node_affinity.   Possible affinity for a volume.  * System_Select_At_Attach - Volume currently has no node affinity, affinity will be assigned when the volume is first attached.  * System_Selected_Node_A - System selected Node A as the optimized IO path to volume.  * System_Selected_Node_B - System selected Node B as the optimized IO path to volume.  * Preferred_Node_A - Node A will always advertise as the optimized IO path to volume.  * Preferred_Node_B - Node B will always advertise as the optimized IO path to volume. 
+// NodeAffinityEnum This attribute shows which node will be advertised as the optimized IO path to the volume. It is initially set to System_Select_At_Attach and can be modified to other values. When a volume is first attached to a host, if node_affinity is System_Select_At_Attach then the system will make the assignment to either System_Selected_Node_A or System_Selected_Node_B. The node_affinity may be modified to one of System_Select_At_Attach or Preferred_Node_A or Preferred_Node_B. Both System_Selected_Node_A and System_Selected_Node_B are reserved for system use only and cannot be set as the volume's node_affinity.   Possible affinity for a volume.  * System_Select_At_Attach - Volume currently has no node affinity, affinity will be assigned when the volume is first attached.  * System_Selected_Node_A - System selected Node A as the optimized IO path to volume.  * System_Selected_Node_B - System selected Node B as the optimized IO path to volume.  * Preferred_Node_A - Node A will always advertise as the optimized IO path to volume.  * Preferred_Node_B - Node B will always advertise as the optimized IO path to volume.
 type NodeAffinityEnum string
 
 // List of NodeAffinityEnum
 const (
 	NODEAFFINITYENUM_SYSTEM_SELECT_AT_ATTACH NodeAffinityEnum = "System_Select_At_Attach"
-	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_A NodeAffinityEnum = "System_Selected_Node_A"
-	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_B NodeAffinityEnum = "System_Selected_Node_B"
-	NODEAFFINITYENUM_PREFERRED_NODE_A NodeAffinityEnum = "Preferred_Node_A"
-	NODEAFFINITYENUM_PREFERRED_NODE_B NodeAffinityEnum = "Preferred_Node_B"
+	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_A  NodeAffinityEnum = "System_Selected_Node_A"
+	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_B  NodeAffinityEnum = "System_Selected_Node_B"
+	NODEAFFINITYENUM_PREFERRED_NODE_A        NodeAffinityEnum = "Preferred_Node_A"
+	NODEAFFINITYENUM_PREFERRED_NODE_B        NodeAffinityEnum = "Preferred_Node_B"
 )
 
 // All allowed values of NodeAffinityEnum enum
@@ -36,82 +31,6 @@ var AllowedNodeAffinityEnumEnumValues = []NodeAffinityEnum{
 	"Preferred_Node_B",
 }
 
-func (v *NodeAffinityEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NodeAffinityEnum(value)
-	for _, existing := range AllowedNodeAffinityEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NodeAffinityEnum", value)
+func (v *NodeAffinityEnum) Value() string {
+	return string(*v)
 }
-
-// NewNodeAffinityEnumFromValue returns a pointer to a valid NodeAffinityEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNodeAffinityEnumFromValue(v string) (*NodeAffinityEnum, error) {
-	ev := NodeAffinityEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NodeAffinityEnum: valid values are %v", v, AllowedNodeAffinityEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NodeAffinityEnum) IsValid() bool {
-	for _, existing := range AllowedNodeAffinityEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NodeAffinityEnum value
-func (v NodeAffinityEnum) Ptr() *NodeAffinityEnum {
-	return &v
-}
-
-type NullableNodeAffinityEnum struct {
-	value *NodeAffinityEnum
-	isSet bool
-}
-
-func (v NullableNodeAffinityEnum) Get() *NodeAffinityEnum {
-	return v.value
-}
-
-func (v *NullableNodeAffinityEnum) Set(val *NodeAffinityEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNodeAffinityEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNodeAffinityEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNodeAffinityEnum(val *NodeAffinityEnum) *NullableNodeAffinityEnum {
-	return &NullableNodeAffinityEnum{value: val, isSet: true}
-}
-
-func (v NullableNodeAffinityEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNodeAffinityEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

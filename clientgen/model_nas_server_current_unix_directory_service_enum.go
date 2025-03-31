@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// NASServerCurrentUnixDirectoryServiceEnum Define the Unix directory service used for looking up identity information for Unix such as UIDs, GIDs, net groups, and so on. Values are: * None * NIS * LDAP * Local_Files * Local_Then_NIS * Local_Then_LDAP 
+// NASServerCurrentUnixDirectoryServiceEnum Define the Unix directory service used for looking up identity information for Unix such as UIDs, GIDs, net groups, and so on. Values are: * None * NIS * LDAP * Local_Files * Local_Then_NIS * Local_Then_LDAP
 type NASServerCurrentUnixDirectoryServiceEnum string
 
 // List of NASServerCurrentUnixDirectoryServiceEnum
 const (
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NONE NASServerCurrentUnixDirectoryServiceEnum = "None"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NIS NASServerCurrentUnixDirectoryServiceEnum = "NIS"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LDAP NASServerCurrentUnixDirectoryServiceEnum = "LDAP"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_FILES NASServerCurrentUnixDirectoryServiceEnum = "Local_Files"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_THEN_NIS NASServerCurrentUnixDirectoryServiceEnum = "Local_Then_NIS"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NONE            NASServerCurrentUnixDirectoryServiceEnum = "None"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NIS             NASServerCurrentUnixDirectoryServiceEnum = "NIS"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LDAP            NASServerCurrentUnixDirectoryServiceEnum = "LDAP"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_FILES     NASServerCurrentUnixDirectoryServiceEnum = "Local_Files"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_THEN_NIS  NASServerCurrentUnixDirectoryServiceEnum = "Local_Then_NIS"
 	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_THEN_LDAP NASServerCurrentUnixDirectoryServiceEnum = "Local_Then_LDAP"
 )
 
@@ -38,82 +33,6 @@ var AllowedNASServerCurrentUnixDirectoryServiceEnumEnumValues = []NASServerCurre
 	"Local_Then_LDAP",
 }
 
-func (v *NASServerCurrentUnixDirectoryServiceEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NASServerCurrentUnixDirectoryServiceEnum(value)
-	for _, existing := range AllowedNASServerCurrentUnixDirectoryServiceEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NASServerCurrentUnixDirectoryServiceEnum", value)
+func (v *NASServerCurrentUnixDirectoryServiceEnum) Value() string {
+	return string(*v)
 }
-
-// NewNASServerCurrentUnixDirectoryServiceEnumFromValue returns a pointer to a valid NASServerCurrentUnixDirectoryServiceEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNASServerCurrentUnixDirectoryServiceEnumFromValue(v string) (*NASServerCurrentUnixDirectoryServiceEnum, error) {
-	ev := NASServerCurrentUnixDirectoryServiceEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NASServerCurrentUnixDirectoryServiceEnum: valid values are %v", v, AllowedNASServerCurrentUnixDirectoryServiceEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NASServerCurrentUnixDirectoryServiceEnum) IsValid() bool {
-	for _, existing := range AllowedNASServerCurrentUnixDirectoryServiceEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NASServerCurrentUnixDirectoryServiceEnum value
-func (v NASServerCurrentUnixDirectoryServiceEnum) Ptr() *NASServerCurrentUnixDirectoryServiceEnum {
-	return &v
-}
-
-type NullableNASServerCurrentUnixDirectoryServiceEnum struct {
-	value *NASServerCurrentUnixDirectoryServiceEnum
-	isSet bool
-}
-
-func (v NullableNASServerCurrentUnixDirectoryServiceEnum) Get() *NASServerCurrentUnixDirectoryServiceEnum {
-	return v.value
-}
-
-func (v *NullableNASServerCurrentUnixDirectoryServiceEnum) Set(val *NASServerCurrentUnixDirectoryServiceEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNASServerCurrentUnixDirectoryServiceEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNASServerCurrentUnixDirectoryServiceEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNASServerCurrentUnixDirectoryServiceEnum(val *NASServerCurrentUnixDirectoryServiceEnum) *NullableNASServerCurrentUnixDirectoryServiceEnum {
-	return &NullableNASServerCurrentUnixDirectoryServiceEnum{value: val, isSet: true}
-}
-
-func (v NullableNASServerCurrentUnixDirectoryServiceEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNASServerCurrentUnixDirectoryServiceEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

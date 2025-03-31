@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // SoftwareInstalledBuildTypeEnum Type of the build. Valid values are: * Hotfix - A build containing 1 or more specific fixes. Generally limited in availability to a few customers. * Beta - Pre-production build, used for evaluation purposes. * Release - A build for General Availability (GA).   Was added in version 2.0.0.0.
 type SoftwareInstalledBuildTypeEnum string
 
 // List of SoftwareInstalledBuildTypeEnum
 const (
-	SOFTWAREINSTALLEDBUILDTYPEENUM_BETA SoftwareInstalledBuildTypeEnum = "Beta"
-	SOFTWAREINSTALLEDBUILDTYPEENUM_HOTFIX SoftwareInstalledBuildTypeEnum = "Hotfix"
+	SOFTWAREINSTALLEDBUILDTYPEENUM_BETA    SoftwareInstalledBuildTypeEnum = "Beta"
+	SOFTWAREINSTALLEDBUILDTYPEENUM_HOTFIX  SoftwareInstalledBuildTypeEnum = "Hotfix"
 	SOFTWAREINSTALLEDBUILDTYPEENUM_RELEASE SoftwareInstalledBuildTypeEnum = "Release"
 )
 
@@ -32,82 +27,6 @@ var AllowedSoftwareInstalledBuildTypeEnumEnumValues = []SoftwareInstalledBuildTy
 	"Release",
 }
 
-func (v *SoftwareInstalledBuildTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := SoftwareInstalledBuildTypeEnum(value)
-	for _, existing := range AllowedSoftwareInstalledBuildTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid SoftwareInstalledBuildTypeEnum", value)
+func (v *SoftwareInstalledBuildTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewSoftwareInstalledBuildTypeEnumFromValue returns a pointer to a valid SoftwareInstalledBuildTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewSoftwareInstalledBuildTypeEnumFromValue(v string) (*SoftwareInstalledBuildTypeEnum, error) {
-	ev := SoftwareInstalledBuildTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for SoftwareInstalledBuildTypeEnum: valid values are %v", v, AllowedSoftwareInstalledBuildTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v SoftwareInstalledBuildTypeEnum) IsValid() bool {
-	for _, existing := range AllowedSoftwareInstalledBuildTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to SoftwareInstalledBuildTypeEnum value
-func (v SoftwareInstalledBuildTypeEnum) Ptr() *SoftwareInstalledBuildTypeEnum {
-	return &v
-}
-
-type NullableSoftwareInstalledBuildTypeEnum struct {
-	value *SoftwareInstalledBuildTypeEnum
-	isSet bool
-}
-
-func (v NullableSoftwareInstalledBuildTypeEnum) Get() *SoftwareInstalledBuildTypeEnum {
-	return v.value
-}
-
-func (v *NullableSoftwareInstalledBuildTypeEnum) Set(val *SoftwareInstalledBuildTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableSoftwareInstalledBuildTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableSoftwareInstalledBuildTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableSoftwareInstalledBuildTypeEnum(val *SoftwareInstalledBuildTypeEnum) *NullableSoftwareInstalledBuildTypeEnum {
-	return &NullableSoftwareInstalledBuildTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableSoftwareInstalledBuildTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableSoftwareInstalledBuildTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileSystemFolderRenamePolicyEnum File system folder rename policies for the file system with multiprotocol access enabled. These policies control whether the directory can be renamed from NFS or SMB clients when at least one file is opened in the directory, or in one of its child directories.  * All_Allowed - All protocols are allowed to rename directories without any restrictions.  * SMB_Forbidden - A directory rename from the SMB protocol will be denied if at least one file is opened in the directory or in one of its child directories.  * All_Forbidden - Any directory rename request will be denied regardless of the protocol used, if at least one file is opened in the directory or in one of its child directories. 
+// FileSystemFolderRenamePolicyEnum File system folder rename policies for the file system with multiprotocol access enabled. These policies control whether the directory can be renamed from NFS or SMB clients when at least one file is opened in the directory, or in one of its child directories.  * All_Allowed - All protocols are allowed to rename directories without any restrictions.  * SMB_Forbidden - A directory rename from the SMB protocol will be denied if at least one file is opened in the directory or in one of its child directories.  * All_Forbidden - Any directory rename request will be denied regardless of the protocol used, if at least one file is opened in the directory or in one of its child directories.
 type FileSystemFolderRenamePolicyEnum string
 
 // List of FileSystemFolderRenamePolicyEnum
 const (
-	FILESYSTEMFOLDERRENAMEPOLICYENUM_ALL_ALLOWED FileSystemFolderRenamePolicyEnum = "All_Allowed"
+	FILESYSTEMFOLDERRENAMEPOLICYENUM_ALL_ALLOWED   FileSystemFolderRenamePolicyEnum = "All_Allowed"
 	FILESYSTEMFOLDERRENAMEPOLICYENUM_SMB_FORBIDDEN FileSystemFolderRenamePolicyEnum = "SMB_Forbidden"
 	FILESYSTEMFOLDERRENAMEPOLICYENUM_ALL_FORBIDDEN FileSystemFolderRenamePolicyEnum = "All_Forbidden"
 )
@@ -32,82 +27,6 @@ var AllowedFileSystemFolderRenamePolicyEnumEnumValues = []FileSystemFolderRename
 	"All_Forbidden",
 }
 
-func (v *FileSystemFolderRenamePolicyEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileSystemFolderRenamePolicyEnum(value)
-	for _, existing := range AllowedFileSystemFolderRenamePolicyEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileSystemFolderRenamePolicyEnum", value)
+func (v *FileSystemFolderRenamePolicyEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileSystemFolderRenamePolicyEnumFromValue returns a pointer to a valid FileSystemFolderRenamePolicyEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileSystemFolderRenamePolicyEnumFromValue(v string) (*FileSystemFolderRenamePolicyEnum, error) {
-	ev := FileSystemFolderRenamePolicyEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileSystemFolderRenamePolicyEnum: valid values are %v", v, AllowedFileSystemFolderRenamePolicyEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileSystemFolderRenamePolicyEnum) IsValid() bool {
-	for _, existing := range AllowedFileSystemFolderRenamePolicyEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileSystemFolderRenamePolicyEnum value
-func (v FileSystemFolderRenamePolicyEnum) Ptr() *FileSystemFolderRenamePolicyEnum {
-	return &v
-}
-
-type NullableFileSystemFolderRenamePolicyEnum struct {
-	value *FileSystemFolderRenamePolicyEnum
-	isSet bool
-}
-
-func (v NullableFileSystemFolderRenamePolicyEnum) Get() *FileSystemFolderRenamePolicyEnum {
-	return v.value
-}
-
-func (v *NullableFileSystemFolderRenamePolicyEnum) Set(val *FileSystemFolderRenamePolicyEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileSystemFolderRenamePolicyEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileSystemFolderRenamePolicyEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileSystemFolderRenamePolicyEnum(val *FileSystemFolderRenamePolicyEnum) *NullableFileSystemFolderRenamePolicyEnum {
-	return &NullableFileSystemFolderRenamePolicyEnum{value: val, isSet: true}
-}
-
-func (v NullableFileSystemFolderRenamePolicyEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileSystemFolderRenamePolicyEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

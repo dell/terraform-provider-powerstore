@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileInterfaceRouteOperationalStatusEnum File interface route operational status: * Ok - The route is working fine. * Invalid_IP_Version - Source interfaces have a different IP protocol version than the route. * Invalid_Source_Interface - No source interfaces set up on the system. * Invalid_Gateway - Source interfaces in a different subnet than the gateway. * Not_Operational - The route is not operational. 
+// FileInterfaceRouteOperationalStatusEnum File interface route operational status: * Ok - The route is working fine. * Invalid_IP_Version - Source interfaces have a different IP protocol version than the route. * Invalid_Source_Interface - No source interfaces set up on the system. * Invalid_Gateway - Source interfaces in a different subnet than the gateway. * Not_Operational - The route is not operational.
 type FileInterfaceRouteOperationalStatusEnum string
 
 // List of FileInterfaceRouteOperationalStatusEnum
 const (
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_OK FileInterfaceRouteOperationalStatusEnum = "Ok"
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_IP_VERSION FileInterfaceRouteOperationalStatusEnum = "Invalid_IP_Version"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_OK                       FileInterfaceRouteOperationalStatusEnum = "Ok"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_IP_VERSION       FileInterfaceRouteOperationalStatusEnum = "Invalid_IP_Version"
 	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_SOURCE_INTERFACE FileInterfaceRouteOperationalStatusEnum = "Invalid_Source_Interface"
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_GATEWAY FileInterfaceRouteOperationalStatusEnum = "Invalid_Gateway"
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_NOT_OPERATIONAL FileInterfaceRouteOperationalStatusEnum = "Not_Operational"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_GATEWAY          FileInterfaceRouteOperationalStatusEnum = "Invalid_Gateway"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_NOT_OPERATIONAL          FileInterfaceRouteOperationalStatusEnum = "Not_Operational"
 )
 
 // All allowed values of FileInterfaceRouteOperationalStatusEnum enum
@@ -36,82 +31,6 @@ var AllowedFileInterfaceRouteOperationalStatusEnumEnumValues = []FileInterfaceRo
 	"Not_Operational",
 }
 
-func (v *FileInterfaceRouteOperationalStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileInterfaceRouteOperationalStatusEnum(value)
-	for _, existing := range AllowedFileInterfaceRouteOperationalStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileInterfaceRouteOperationalStatusEnum", value)
+func (v *FileInterfaceRouteOperationalStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileInterfaceRouteOperationalStatusEnumFromValue returns a pointer to a valid FileInterfaceRouteOperationalStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileInterfaceRouteOperationalStatusEnumFromValue(v string) (*FileInterfaceRouteOperationalStatusEnum, error) {
-	ev := FileInterfaceRouteOperationalStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileInterfaceRouteOperationalStatusEnum: valid values are %v", v, AllowedFileInterfaceRouteOperationalStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileInterfaceRouteOperationalStatusEnum) IsValid() bool {
-	for _, existing := range AllowedFileInterfaceRouteOperationalStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileInterfaceRouteOperationalStatusEnum value
-func (v FileInterfaceRouteOperationalStatusEnum) Ptr() *FileInterfaceRouteOperationalStatusEnum {
-	return &v
-}
-
-type NullableFileInterfaceRouteOperationalStatusEnum struct {
-	value *FileInterfaceRouteOperationalStatusEnum
-	isSet bool
-}
-
-func (v NullableFileInterfaceRouteOperationalStatusEnum) Get() *FileInterfaceRouteOperationalStatusEnum {
-	return v.value
-}
-
-func (v *NullableFileInterfaceRouteOperationalStatusEnum) Set(val *FileInterfaceRouteOperationalStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileInterfaceRouteOperationalStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileInterfaceRouteOperationalStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileInterfaceRouteOperationalStatusEnum(val *FileInterfaceRouteOperationalStatusEnum) *NullableFileInterfaceRouteOperationalStatusEnum {
-	return &NullableFileInterfaceRouteOperationalStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableFileInterfaceRouteOperationalStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileInterfaceRouteOperationalStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

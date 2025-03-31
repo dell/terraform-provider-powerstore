@@ -263,14 +263,14 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 		return
 	}
 
-	state.VolumeGroups, err = updateVolGroupState(volumeGroups, d.client)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Failed to update volume group snapshot state",
-			err.Error(),
-		)
-		return
-	}
+	// state.VolumeGroups, err = updateVolGroupState(volumeGroups)
+	// if err != nil {
+	// 	resp.Diagnostics.AddError(
+	// 		"Failed to update volume group snapshot state",
+	// 		err.Error(),
+	// 	)
+	// 	return
+	// }
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)

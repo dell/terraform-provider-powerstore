@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NVMeDiscoveryModeEnum The NVMe-oF specification defines a Discovery mechanism that a host can use to determine the NVMe subsystems that expose namespaces available to the hose. A CDC is a Centralized Discovery Controller. A discovery controller reports discovery information from registered Direct Discovery controllers (DDC) and Hosts. CDC is one of the StFS services, located on the Fabric to which the NVMe Clients (NVMe Subsystems/DDCs and Hosts) are registered. A DDC is a Direct Discovery Controller, located on the Subsystem Port - Storage Interface. A Host may use CDC (if detected) or DDC (if CDC is not detected) to determine the IO NVMe subsystem ports. This only applicable to networks that have NVMe_TCP among their purposes. * Auto_Discovery_CDC - Automatically discover the IP Address of the Centralized Discovery Controller (CDC) using mDNS/DNS-SD. If a CDC is found, the NVMe/TCP Interface will be registered with it. * Manual_CDC - the CDC IP address is manually set. If a CDC IP address is set, the NVMe/TCP Interface will be registered with it. * Advertise_DDC - Direct Discovery Controller IP address is advertised using mDNS/DNS-SD and can be discovered by external hosts. * Auto_Discovery_Disabled - mDNS/DNS-SD is disabled, no attempt will be made to discover CDC, no attempt will be made to register with CDC if one exists, nor will DDC IP address be advertised.  Was added in version 3.0.0.0.
 type NVMeDiscoveryModeEnum string
 
 // List of NVMeDiscoveryModeEnum
 const (
-	NVMEDISCOVERYMODEENUM_AUTO_DISCOVERY_CDC NVMeDiscoveryModeEnum = "Auto_Discovery_CDC"
-	NVMEDISCOVERYMODEENUM_MANUAL_CDC NVMeDiscoveryModeEnum = "Manual_CDC"
-	NVMEDISCOVERYMODEENUM_ADVERTISE_DDC NVMeDiscoveryModeEnum = "Advertise_DDC"
+	NVMEDISCOVERYMODEENUM_AUTO_DISCOVERY_CDC      NVMeDiscoveryModeEnum = "Auto_Discovery_CDC"
+	NVMEDISCOVERYMODEENUM_MANUAL_CDC              NVMeDiscoveryModeEnum = "Manual_CDC"
+	NVMEDISCOVERYMODEENUM_ADVERTISE_DDC           NVMeDiscoveryModeEnum = "Advertise_DDC"
 	NVMEDISCOVERYMODEENUM_AUTO_DISCOVERY_DISABLED NVMeDiscoveryModeEnum = "Auto_Discovery_Disabled"
 )
 
@@ -34,82 +29,6 @@ var AllowedNVMeDiscoveryModeEnumEnumValues = []NVMeDiscoveryModeEnum{
 	"Auto_Discovery_Disabled",
 }
 
-func (v *NVMeDiscoveryModeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NVMeDiscoveryModeEnum(value)
-	for _, existing := range AllowedNVMeDiscoveryModeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NVMeDiscoveryModeEnum", value)
+func (v *NVMeDiscoveryModeEnum) Value() string {
+	return string(*v)
 }
-
-// NewNVMeDiscoveryModeEnumFromValue returns a pointer to a valid NVMeDiscoveryModeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNVMeDiscoveryModeEnumFromValue(v string) (*NVMeDiscoveryModeEnum, error) {
-	ev := NVMeDiscoveryModeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NVMeDiscoveryModeEnum: valid values are %v", v, AllowedNVMeDiscoveryModeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NVMeDiscoveryModeEnum) IsValid() bool {
-	for _, existing := range AllowedNVMeDiscoveryModeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NVMeDiscoveryModeEnum value
-func (v NVMeDiscoveryModeEnum) Ptr() *NVMeDiscoveryModeEnum {
-	return &v
-}
-
-type NullableNVMeDiscoveryModeEnum struct {
-	value *NVMeDiscoveryModeEnum
-	isSet bool
-}
-
-func (v NullableNVMeDiscoveryModeEnum) Get() *NVMeDiscoveryModeEnum {
-	return v.value
-}
-
-func (v *NullableNVMeDiscoveryModeEnum) Set(val *NVMeDiscoveryModeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNVMeDiscoveryModeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNVMeDiscoveryModeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNVMeDiscoveryModeEnum(val *NVMeDiscoveryModeEnum) *NullableNVMeDiscoveryModeEnum {
-	return &NullableNVMeDiscoveryModeEnum{value: val, isSet: true}
-}
-
-func (v NullableNVMeDiscoveryModeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNVMeDiscoveryModeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

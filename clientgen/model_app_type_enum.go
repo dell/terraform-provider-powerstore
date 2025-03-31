@@ -10,45 +10,40 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // AppTypeEnum This attribute indicates the intended use of this volume.  It may be null.  If the Relational_Databases_Other, Big_Data_Analytics_Other, Business_Applications_Other, Healthcare_Other, Virtualization_Other or Other enum values are used the app_type_other attribute may be used to specify the application being used.  * Relational_Databases_Other - Relational Databases Other * Relational_Databases_Oracle - Oracle * Relational_Databases_SQL_Server - SQL Server * Relational_Databases_PostgreSQL - PostgreSQL * Relational_Databases_MySQL - MySQL * Relational_Databases_IBM_DB2 - IBM DB2 * Big_Data_Analytics_Other - Big Data & Analytics Other * Big_Data_Analytics_MongoDB - MongoDB * Big_Data_Analytics_Cassandra - Cassandra * Big_Data_Analytics_SAP_HANA - SAP HANA * Big_Data_Analytics_Spark - Spark * Big_Data_Analytics_Splunk - Splunk * Big_Data_Analytics_ElasticSearch - ElasticSearch * Business_Applications_Exchange - Exchange * Business_Applications_Sharepoint - Sharepoint * Business_Applications_Other - Business Applications Other * Business_Applications_ERP_SAP - ERP / SAP * Business_Applications_CRM - CRM * Healthcare_Other - Healthcare Other * Healthcare_Epic - Epic * Healthcare_MEDITECH - MEDITECH * Healthcare_Allscripts - Allscripts * Healthcare_Cerner - Cerner * Virtualization_Other - Virtualization Other * Virtualization_Virtual_Servers_VSI - Virtual Servers (VSI) * Virtualization_Containers_Kubernetes - Containers/Kubernetes * Virtualization_Virtual_Desktops_VDI - Virtual Desktops (VDI) * Boot_Volume_Other - Boot Volume * Other - Other  Was added in version 2.1.0.0. Values was added in 4.1.0.0: Boot_Volume_Other.
 type AppTypeEnum string
 
 // List of AppTypeEnum
 const (
-	APPTYPEENUM_RELATIONAL_DATABASES_OTHER AppTypeEnum = "Relational_Databases_Other"
-	APPTYPEENUM_RELATIONAL_DATABASES_ORACLE AppTypeEnum = "Relational_Databases_Oracle"
-	APPTYPEENUM_RELATIONAL_DATABASES_SQL_SERVER AppTypeEnum = "Relational_Databases_SQL_Server"
-	APPTYPEENUM_RELATIONAL_DATABASES_POSTGRE_SQL AppTypeEnum = "Relational_Databases_PostgreSQL"
-	APPTYPEENUM_RELATIONAL_DATABASES_MY_SQL AppTypeEnum = "Relational_Databases_MySQL"
-	APPTYPEENUM_RELATIONAL_DATABASES_IBM_DB2 AppTypeEnum = "Relational_Databases_IBM_DB2"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_OTHER AppTypeEnum = "Big_Data_Analytics_Other"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_MONGO_DB AppTypeEnum = "Big_Data_Analytics_MongoDB"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_CASSANDRA AppTypeEnum = "Big_Data_Analytics_Cassandra"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_SAP_HANA AppTypeEnum = "Big_Data_Analytics_SAP_HANA"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_SPARK AppTypeEnum = "Big_Data_Analytics_Spark"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_SPLUNK AppTypeEnum = "Big_Data_Analytics_Splunk"
-	APPTYPEENUM_BIG_DATA_ANALYTICS_ELASTIC_SEARCH AppTypeEnum = "Big_Data_Analytics_ElasticSearch"
-	APPTYPEENUM_BUSINESS_APPLICATIONS_OTHER AppTypeEnum = "Business_Applications_Other"
-	APPTYPEENUM_BUSINESS_APPLICATIONS_ERP_SAP AppTypeEnum = "Business_Applications_ERP_SAP"
-	APPTYPEENUM_BUSINESS_APPLICATIONS_CRM AppTypeEnum = "Business_Applications_CRM"
-	APPTYPEENUM_BUSINESS_APPLICATIONS_EXCHANGE AppTypeEnum = "Business_Applications_Exchange"
-	APPTYPEENUM_BUSINESS_APPLICATIONS_SHAREPOINT AppTypeEnum = "Business_Applications_Sharepoint"
-	APPTYPEENUM_HEALTHCARE_OTHER AppTypeEnum = "Healthcare_Other"
-	APPTYPEENUM_HEALTHCARE_EPIC AppTypeEnum = "Healthcare_Epic"
-	APPTYPEENUM_HEALTHCARE_MEDITECH AppTypeEnum = "Healthcare_MEDITECH"
-	APPTYPEENUM_HEALTHCARE_ALLSCRIPTS AppTypeEnum = "Healthcare_Allscripts"
-	APPTYPEENUM_HEALTHCARE_CERNER AppTypeEnum = "Healthcare_Cerner"
-	APPTYPEENUM_VIRTUALIZATION_OTHER AppTypeEnum = "Virtualization_Other"
-	APPTYPEENUM_VIRTUALIZATION_VIRTUAL_SERVERS_VSI AppTypeEnum = "Virtualization_Virtual_Servers_VSI"
+	APPTYPEENUM_RELATIONAL_DATABASES_OTHER           AppTypeEnum = "Relational_Databases_Other"
+	APPTYPEENUM_RELATIONAL_DATABASES_ORACLE          AppTypeEnum = "Relational_Databases_Oracle"
+	APPTYPEENUM_RELATIONAL_DATABASES_SQL_SERVER      AppTypeEnum = "Relational_Databases_SQL_Server"
+	APPTYPEENUM_RELATIONAL_DATABASES_POSTGRE_SQL     AppTypeEnum = "Relational_Databases_PostgreSQL"
+	APPTYPEENUM_RELATIONAL_DATABASES_MY_SQL          AppTypeEnum = "Relational_Databases_MySQL"
+	APPTYPEENUM_RELATIONAL_DATABASES_IBM_DB2         AppTypeEnum = "Relational_Databases_IBM_DB2"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_OTHER             AppTypeEnum = "Big_Data_Analytics_Other"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_MONGO_DB          AppTypeEnum = "Big_Data_Analytics_MongoDB"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_CASSANDRA         AppTypeEnum = "Big_Data_Analytics_Cassandra"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_SAP_HANA          AppTypeEnum = "Big_Data_Analytics_SAP_HANA"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_SPARK             AppTypeEnum = "Big_Data_Analytics_Spark"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_SPLUNK            AppTypeEnum = "Big_Data_Analytics_Splunk"
+	APPTYPEENUM_BIG_DATA_ANALYTICS_ELASTIC_SEARCH    AppTypeEnum = "Big_Data_Analytics_ElasticSearch"
+	APPTYPEENUM_BUSINESS_APPLICATIONS_OTHER          AppTypeEnum = "Business_Applications_Other"
+	APPTYPEENUM_BUSINESS_APPLICATIONS_ERP_SAP        AppTypeEnum = "Business_Applications_ERP_SAP"
+	APPTYPEENUM_BUSINESS_APPLICATIONS_CRM            AppTypeEnum = "Business_Applications_CRM"
+	APPTYPEENUM_BUSINESS_APPLICATIONS_EXCHANGE       AppTypeEnum = "Business_Applications_Exchange"
+	APPTYPEENUM_BUSINESS_APPLICATIONS_SHAREPOINT     AppTypeEnum = "Business_Applications_Sharepoint"
+	APPTYPEENUM_HEALTHCARE_OTHER                     AppTypeEnum = "Healthcare_Other"
+	APPTYPEENUM_HEALTHCARE_EPIC                      AppTypeEnum = "Healthcare_Epic"
+	APPTYPEENUM_HEALTHCARE_MEDITECH                  AppTypeEnum = "Healthcare_MEDITECH"
+	APPTYPEENUM_HEALTHCARE_ALLSCRIPTS                AppTypeEnum = "Healthcare_Allscripts"
+	APPTYPEENUM_HEALTHCARE_CERNER                    AppTypeEnum = "Healthcare_Cerner"
+	APPTYPEENUM_VIRTUALIZATION_OTHER                 AppTypeEnum = "Virtualization_Other"
+	APPTYPEENUM_VIRTUALIZATION_VIRTUAL_SERVERS_VSI   AppTypeEnum = "Virtualization_Virtual_Servers_VSI"
 	APPTYPEENUM_VIRTUALIZATION_CONTAINERS_KUBERNETES AppTypeEnum = "Virtualization_Containers_Kubernetes"
-	APPTYPEENUM_VIRTUALIZATION_VIRTUAL_DESKTOPS_VDI AppTypeEnum = "Virtualization_Virtual_Desktops_VDI"
-	APPTYPEENUM_BOOT_VOLUME_OTHER AppTypeEnum = "Boot_Volume_Other"
-	APPTYPEENUM_OTHER AppTypeEnum = "Other"
+	APPTYPEENUM_VIRTUALIZATION_VIRTUAL_DESKTOPS_VDI  AppTypeEnum = "Virtualization_Virtual_Desktops_VDI"
+	APPTYPEENUM_BOOT_VOLUME_OTHER                    AppTypeEnum = "Boot_Volume_Other"
+	APPTYPEENUM_OTHER                                AppTypeEnum = "Other"
 )
 
 // All allowed values of AppTypeEnum enum
@@ -84,82 +79,6 @@ var AllowedAppTypeEnumEnumValues = []AppTypeEnum{
 	"Other",
 }
 
-func (v *AppTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := AppTypeEnum(value)
-	for _, existing := range AllowedAppTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid AppTypeEnum", value)
+func (v *AppTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewAppTypeEnumFromValue returns a pointer to a valid AppTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewAppTypeEnumFromValue(v string) (*AppTypeEnum, error) {
-	ev := AppTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for AppTypeEnum: valid values are %v", v, AllowedAppTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v AppTypeEnum) IsValid() bool {
-	for _, existing := range AllowedAppTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to AppTypeEnum value
-func (v AppTypeEnum) Ptr() *AppTypeEnum {
-	return &v
-}
-
-type NullableAppTypeEnum struct {
-	value *AppTypeEnum
-	isSet bool
-}
-
-func (v NullableAppTypeEnum) Get() *AppTypeEnum {
-	return v.value
-}
-
-func (v *NullableAppTypeEnum) Set(val *AppTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableAppTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableAppTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableAppTypeEnum(val *AppTypeEnum) *NullableAppTypeEnum {
-	return &NullableAppTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableAppTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableAppTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

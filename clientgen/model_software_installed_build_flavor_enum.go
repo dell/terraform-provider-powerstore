@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // SoftwareInstalledBuildFlavorEnum A specific config, determined at build time.  Valid values are:  * Retail - An optimized compiler option.  Was added in version 2.0.0.0.
 type SoftwareInstalledBuildFlavorEnum string
 
@@ -28,82 +23,6 @@ var AllowedSoftwareInstalledBuildFlavorEnumEnumValues = []SoftwareInstalledBuild
 	"Retail",
 }
 
-func (v *SoftwareInstalledBuildFlavorEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := SoftwareInstalledBuildFlavorEnum(value)
-	for _, existing := range AllowedSoftwareInstalledBuildFlavorEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid SoftwareInstalledBuildFlavorEnum", value)
+func (v *SoftwareInstalledBuildFlavorEnum) Value() string {
+	return string(*v)
 }
-
-// NewSoftwareInstalledBuildFlavorEnumFromValue returns a pointer to a valid SoftwareInstalledBuildFlavorEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewSoftwareInstalledBuildFlavorEnumFromValue(v string) (*SoftwareInstalledBuildFlavorEnum, error) {
-	ev := SoftwareInstalledBuildFlavorEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for SoftwareInstalledBuildFlavorEnum: valid values are %v", v, AllowedSoftwareInstalledBuildFlavorEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v SoftwareInstalledBuildFlavorEnum) IsValid() bool {
-	for _, existing := range AllowedSoftwareInstalledBuildFlavorEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to SoftwareInstalledBuildFlavorEnum value
-func (v SoftwareInstalledBuildFlavorEnum) Ptr() *SoftwareInstalledBuildFlavorEnum {
-	return &v
-}
-
-type NullableSoftwareInstalledBuildFlavorEnum struct {
-	value *SoftwareInstalledBuildFlavorEnum
-	isSet bool
-}
-
-func (v NullableSoftwareInstalledBuildFlavorEnum) Get() *SoftwareInstalledBuildFlavorEnum {
-	return v.value
-}
-
-func (v *NullableSoftwareInstalledBuildFlavorEnum) Set(val *SoftwareInstalledBuildFlavorEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableSoftwareInstalledBuildFlavorEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableSoftwareInstalledBuildFlavorEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableSoftwareInstalledBuildFlavorEnum(val *SoftwareInstalledBuildFlavorEnum) *NullableSoftwareInstalledBuildFlavorEnum {
-	return &NullableSoftwareInstalledBuildFlavorEnum{value: val, isSet: true}
-}
-
-func (v NullableSoftwareInstalledBuildFlavorEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableSoftwareInstalledBuildFlavorEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

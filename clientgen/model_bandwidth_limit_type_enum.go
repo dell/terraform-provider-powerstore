@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // BandwidthLimitTypeEnum This type setting determines how the max_iops and max_bw attributes are used. * Absolute - Limits are absolute values specified, either I/O operations per second or bandwidth * Density - Limits specified are per GB, e.g. I/O operations per second per GB  Was added in version 4.0.0.0.
 type BandwidthLimitTypeEnum string
 
 // List of BandwidthLimitTypeEnum
 const (
 	BANDWIDTHLIMITTYPEENUM_ABSOLUTE BandwidthLimitTypeEnum = "Absolute"
-	BANDWIDTHLIMITTYPEENUM_DENSITY BandwidthLimitTypeEnum = "Density"
+	BANDWIDTHLIMITTYPEENUM_DENSITY  BandwidthLimitTypeEnum = "Density"
 )
 
 // All allowed values of BandwidthLimitTypeEnum enum
@@ -30,82 +25,6 @@ var AllowedBandwidthLimitTypeEnumEnumValues = []BandwidthLimitTypeEnum{
 	"Density",
 }
 
-func (v *BandwidthLimitTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := BandwidthLimitTypeEnum(value)
-	for _, existing := range AllowedBandwidthLimitTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid BandwidthLimitTypeEnum", value)
+func (v *BandwidthLimitTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewBandwidthLimitTypeEnumFromValue returns a pointer to a valid BandwidthLimitTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBandwidthLimitTypeEnumFromValue(v string) (*BandwidthLimitTypeEnum, error) {
-	ev := BandwidthLimitTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BandwidthLimitTypeEnum: valid values are %v", v, AllowedBandwidthLimitTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v BandwidthLimitTypeEnum) IsValid() bool {
-	for _, existing := range AllowedBandwidthLimitTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to BandwidthLimitTypeEnum value
-func (v BandwidthLimitTypeEnum) Ptr() *BandwidthLimitTypeEnum {
-	return &v
-}
-
-type NullableBandwidthLimitTypeEnum struct {
-	value *BandwidthLimitTypeEnum
-	isSet bool
-}
-
-func (v NullableBandwidthLimitTypeEnum) Get() *BandwidthLimitTypeEnum {
-	return v.value
-}
-
-func (v *NullableBandwidthLimitTypeEnum) Set(val *BandwidthLimitTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableBandwidthLimitTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableBandwidthLimitTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableBandwidthLimitTypeEnum(val *BandwidthLimitTypeEnum) *NullableBandwidthLimitTypeEnum {
-	return &NullableBandwidthLimitTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableBandwidthLimitTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableBandwidthLimitTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

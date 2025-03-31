@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSystemLatencyEnum Network latency choices for a remote system. Replication traffic can be tuned for higher efficiency depending on the expected network latency. This will only be used when the remote system type is PowerStore.  * Low - Less than 5 milliseconds. * Low_Medium - Latency is greater than 5 milliseconds and less than or equal to 20 milliseconds. * Medium - Latency is greater than 20 milliseconds and less than or equal to 60 milliseconds. * Medium_High - Latency is greater than 60 milliseconds and less than or equal to 120 milliseconds. * High - More than 120 milliseconds.  All the above values are valid for TCP type data connections. Only Low and High are valid for iSCSI type data connections. In sync replication for Powerstore, if the remote system network latency is changed from Low to Other latency values, Sync replication is not supported for File and Block.  Values was added in 3.0.0.0: Low_Medium, Medium, Medium_High.
 type RemoteSystemLatencyEnum string
 
 // List of RemoteSystemLatencyEnum
 const (
-	REMOTESYSTEMLATENCYENUM_LOW RemoteSystemLatencyEnum = "Low"
-	REMOTESYSTEMLATENCYENUM_LOW_MEDIUM RemoteSystemLatencyEnum = "Low_Medium"
-	REMOTESYSTEMLATENCYENUM_MEDIUM RemoteSystemLatencyEnum = "Medium"
+	REMOTESYSTEMLATENCYENUM_LOW         RemoteSystemLatencyEnum = "Low"
+	REMOTESYSTEMLATENCYENUM_LOW_MEDIUM  RemoteSystemLatencyEnum = "Low_Medium"
+	REMOTESYSTEMLATENCYENUM_MEDIUM      RemoteSystemLatencyEnum = "Medium"
 	REMOTESYSTEMLATENCYENUM_MEDIUM_HIGH RemoteSystemLatencyEnum = "Medium_High"
-	REMOTESYSTEMLATENCYENUM_HIGH RemoteSystemLatencyEnum = "High"
+	REMOTESYSTEMLATENCYENUM_HIGH        RemoteSystemLatencyEnum = "High"
 )
 
 // All allowed values of RemoteSystemLatencyEnum enum
@@ -36,82 +31,6 @@ var AllowedRemoteSystemLatencyEnumEnumValues = []RemoteSystemLatencyEnum{
 	"High",
 }
 
-func (v *RemoteSystemLatencyEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RemoteSystemLatencyEnum(value)
-	for _, existing := range AllowedRemoteSystemLatencyEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RemoteSystemLatencyEnum", value)
+func (v *RemoteSystemLatencyEnum) Value() string {
+	return string(*v)
 }
-
-// NewRemoteSystemLatencyEnumFromValue returns a pointer to a valid RemoteSystemLatencyEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRemoteSystemLatencyEnumFromValue(v string) (*RemoteSystemLatencyEnum, error) {
-	ev := RemoteSystemLatencyEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RemoteSystemLatencyEnum: valid values are %v", v, AllowedRemoteSystemLatencyEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RemoteSystemLatencyEnum) IsValid() bool {
-	for _, existing := range AllowedRemoteSystemLatencyEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RemoteSystemLatencyEnum value
-func (v RemoteSystemLatencyEnum) Ptr() *RemoteSystemLatencyEnum {
-	return &v
-}
-
-type NullableRemoteSystemLatencyEnum struct {
-	value *RemoteSystemLatencyEnum
-	isSet bool
-}
-
-func (v NullableRemoteSystemLatencyEnum) Get() *RemoteSystemLatencyEnum {
-	return v.value
-}
-
-func (v *NullableRemoteSystemLatencyEnum) Set(val *RemoteSystemLatencyEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRemoteSystemLatencyEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRemoteSystemLatencyEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRemoteSystemLatencyEnum(val *RemoteSystemLatencyEnum) *NullableRemoteSystemLatencyEnum {
-	return &NullableRemoteSystemLatencyEnum{value: val, isSet: true}
-}
-
-func (v NullableRemoteSystemLatencyEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRemoteSystemLatencyEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

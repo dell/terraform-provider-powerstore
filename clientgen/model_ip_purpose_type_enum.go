@@ -10,40 +10,35 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // IpPurposeTypeEnum Network IP address purpose. * Mgmt_Cluster_Floating - Floating IP address for external cluster management. * Mgmt_Appliance_Floating - Floating IP address for external appliance management. * Mgmt_Node_CoreOS - IP address for external system node management. * Mgmt_Node_Host - IP address for external ESXi host management. * ICM_Postgres_Floating - Floating IP address for internal Postgres access within the cluster. * ICM_Controlpath_Floating - Floating IP address for controlpath on a particular appliance. * ICM_Cluster_Floating - Floating IP address for management within the cluster. * ICM_Appliance_Floating - Floating IP address for appliance management within the cluster. * ICM_Node_CoreOS - IP address for system node management within the cluster. * Storage_Cluster_Floating - Floating IP address for external iSCSI discovery. * Storage_Iscsi_Initiator - IP address for ESXi iSCSI initiators. * Storage_Iscsi_Target - IP address for system iSCSI targets. * Storage_NVMe_TCP_Port - IP address for NVMe/TCP subsystem ports. * External_Replication_Iscsi - IP address for External Replication over iSCSI. * External_Replication - IP address for iSCSI and iBasic replication connectivity. * ICD_Node - IP address of a node for data within the cluster. * SDNAS_Cluster_Floating - Floating IP address for SDNAS management within the cluster. * SDNAS_Node - IP address for SDNAS node management within the cluster. * SDNAS_Node_Serviceability - IP address for SDNAS node serviceability access within the cluster. * File_Mobility_Node - IP address for node within file mobility network. * File_Mobility_Floating - Floating IP address for file mobility network. * VMotion - vMotion IP address. * Unused - Unused IP address. * Storage_Global - This value is no longer used.  Values was added in 2.0.0.0: External_Replication_Iscsi. Values was added in 2.1.0.0: Storage_NVMe_TCP_Port. Values was added in 3.0.0.0: ICM_Postgres_Floating, ICM_Controlpath_Floating, File_Mobility_Node, File_Mobility_Floating. Values was added in 4.0.0.0: External_Replication. Values was deprecated in 2.0.0.0: Storage_Global. Values was deprecated in 4.0.0.0: External_Replication_Iscsi.
 type IpPurposeTypeEnum string
 
 // List of IpPurposeTypeEnum
 const (
-	IPPURPOSETYPEENUM_MGMT_CLUSTER_FLOATING IpPurposeTypeEnum = "Mgmt_Cluster_Floating"
-	IPPURPOSETYPEENUM_MGMT_APPLIANCE_FLOATING IpPurposeTypeEnum = "Mgmt_Appliance_Floating"
-	IPPURPOSETYPEENUM_MGMT_NODE_CORE_OS IpPurposeTypeEnum = "Mgmt_Node_CoreOS"
-	IPPURPOSETYPEENUM_MGMT_NODE_HOST IpPurposeTypeEnum = "Mgmt_Node_Host"
-	IPPURPOSETYPEENUM_ICM_CLUSTER_FLOATING IpPurposeTypeEnum = "ICM_Cluster_Floating"
-	IPPURPOSETYPEENUM_ICM_POSTGRES_FLOATING IpPurposeTypeEnum = "ICM_Postgres_Floating"
-	IPPURPOSETYPEENUM_ICM_APPLIANCE_FLOATING IpPurposeTypeEnum = "ICM_Appliance_Floating"
-	IPPURPOSETYPEENUM_ICM_CONTROLPATH_FLOATING IpPurposeTypeEnum = "ICM_Controlpath_Floating"
-	IPPURPOSETYPEENUM_ICM_NODE_CORE_OS IpPurposeTypeEnum = "ICM_Node_CoreOS"
-	IPPURPOSETYPEENUM_STORAGE_CLUSTER_FLOATING IpPurposeTypeEnum = "Storage_Cluster_Floating"
-	IPPURPOSETYPEENUM_STORAGE_ISCSI_INITIATOR IpPurposeTypeEnum = "Storage_Iscsi_Initiator"
-	IPPURPOSETYPEENUM_STORAGE_ISCSI_TARGET IpPurposeTypeEnum = "Storage_Iscsi_Target"
-	IPPURPOSETYPEENUM_STORAGE_NVME_TCP_PORT IpPurposeTypeEnum = "Storage_NVMe_TCP_Port"
+	IPPURPOSETYPEENUM_MGMT_CLUSTER_FLOATING      IpPurposeTypeEnum = "Mgmt_Cluster_Floating"
+	IPPURPOSETYPEENUM_MGMT_APPLIANCE_FLOATING    IpPurposeTypeEnum = "Mgmt_Appliance_Floating"
+	IPPURPOSETYPEENUM_MGMT_NODE_CORE_OS          IpPurposeTypeEnum = "Mgmt_Node_CoreOS"
+	IPPURPOSETYPEENUM_MGMT_NODE_HOST             IpPurposeTypeEnum = "Mgmt_Node_Host"
+	IPPURPOSETYPEENUM_ICM_CLUSTER_FLOATING       IpPurposeTypeEnum = "ICM_Cluster_Floating"
+	IPPURPOSETYPEENUM_ICM_POSTGRES_FLOATING      IpPurposeTypeEnum = "ICM_Postgres_Floating"
+	IPPURPOSETYPEENUM_ICM_APPLIANCE_FLOATING     IpPurposeTypeEnum = "ICM_Appliance_Floating"
+	IPPURPOSETYPEENUM_ICM_CONTROLPATH_FLOATING   IpPurposeTypeEnum = "ICM_Controlpath_Floating"
+	IPPURPOSETYPEENUM_ICM_NODE_CORE_OS           IpPurposeTypeEnum = "ICM_Node_CoreOS"
+	IPPURPOSETYPEENUM_STORAGE_CLUSTER_FLOATING   IpPurposeTypeEnum = "Storage_Cluster_Floating"
+	IPPURPOSETYPEENUM_STORAGE_ISCSI_INITIATOR    IpPurposeTypeEnum = "Storage_Iscsi_Initiator"
+	IPPURPOSETYPEENUM_STORAGE_ISCSI_TARGET       IpPurposeTypeEnum = "Storage_Iscsi_Target"
+	IPPURPOSETYPEENUM_STORAGE_NVME_TCP_PORT      IpPurposeTypeEnum = "Storage_NVMe_TCP_Port"
 	IPPURPOSETYPEENUM_EXTERNAL_REPLICATION_ISCSI IpPurposeTypeEnum = "External_Replication_Iscsi"
-	IPPURPOSETYPEENUM_EXTERNAL_REPLICATION IpPurposeTypeEnum = "External_Replication"
-	IPPURPOSETYPEENUM_ICD_NODE IpPurposeTypeEnum = "ICD_Node"
-	IPPURPOSETYPEENUM_SDNAS_CLUSTER_FLOATING IpPurposeTypeEnum = "SDNAS_Cluster_Floating"
-	IPPURPOSETYPEENUM_SDNAS_NODE IpPurposeTypeEnum = "SDNAS_Node"
-	IPPURPOSETYPEENUM_SDNAS_NODE_SERVICEABILITY IpPurposeTypeEnum = "SDNAS_Node_Serviceability"
-	IPPURPOSETYPEENUM_FILE_MOBILITY_NODE IpPurposeTypeEnum = "File_Mobility_Node"
-	IPPURPOSETYPEENUM_FILE_MOBILITY_FLOATING IpPurposeTypeEnum = "File_Mobility_Floating"
-	IPPURPOSETYPEENUM_V_MOTION IpPurposeTypeEnum = "VMotion"
-	IPPURPOSETYPEENUM_UNUSED IpPurposeTypeEnum = "Unused"
-	IPPURPOSETYPEENUM_STORAGE_GLOBAL IpPurposeTypeEnum = "Storage_Global"
+	IPPURPOSETYPEENUM_EXTERNAL_REPLICATION       IpPurposeTypeEnum = "External_Replication"
+	IPPURPOSETYPEENUM_ICD_NODE                   IpPurposeTypeEnum = "ICD_Node"
+	IPPURPOSETYPEENUM_SDNAS_CLUSTER_FLOATING     IpPurposeTypeEnum = "SDNAS_Cluster_Floating"
+	IPPURPOSETYPEENUM_SDNAS_NODE                 IpPurposeTypeEnum = "SDNAS_Node"
+	IPPURPOSETYPEENUM_SDNAS_NODE_SERVICEABILITY  IpPurposeTypeEnum = "SDNAS_Node_Serviceability"
+	IPPURPOSETYPEENUM_FILE_MOBILITY_NODE         IpPurposeTypeEnum = "File_Mobility_Node"
+	IPPURPOSETYPEENUM_FILE_MOBILITY_FLOATING     IpPurposeTypeEnum = "File_Mobility_Floating"
+	IPPURPOSETYPEENUM_V_MOTION                   IpPurposeTypeEnum = "VMotion"
+	IPPURPOSETYPEENUM_UNUSED                     IpPurposeTypeEnum = "Unused"
+	IPPURPOSETYPEENUM_STORAGE_GLOBAL             IpPurposeTypeEnum = "Storage_Global"
 )
 
 // All allowed values of IpPurposeTypeEnum enum
@@ -74,82 +69,6 @@ var AllowedIpPurposeTypeEnumEnumValues = []IpPurposeTypeEnum{
 	"Storage_Global",
 }
 
-func (v *IpPurposeTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := IpPurposeTypeEnum(value)
-	for _, existing := range AllowedIpPurposeTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid IpPurposeTypeEnum", value)
+func (v *IpPurposeTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewIpPurposeTypeEnumFromValue returns a pointer to a valid IpPurposeTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewIpPurposeTypeEnumFromValue(v string) (*IpPurposeTypeEnum, error) {
-	ev := IpPurposeTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for IpPurposeTypeEnum: valid values are %v", v, AllowedIpPurposeTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v IpPurposeTypeEnum) IsValid() bool {
-	for _, existing := range AllowedIpPurposeTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to IpPurposeTypeEnum value
-func (v IpPurposeTypeEnum) Ptr() *IpPurposeTypeEnum {
-	return &v
-}
-
-type NullableIpPurposeTypeEnum struct {
-	value *IpPurposeTypeEnum
-	isSet bool
-}
-
-func (v NullableIpPurposeTypeEnum) Get() *IpPurposeTypeEnum {
-	return v.value
-}
-
-func (v *NullableIpPurposeTypeEnum) Set(val *IpPurposeTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableIpPurposeTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableIpPurposeTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableIpPurposeTypeEnum(val *IpPurposeTypeEnum) *NullableIpPurposeTypeEnum {
-	return &NullableIpPurposeTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableIpPurposeTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableIpPurposeTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

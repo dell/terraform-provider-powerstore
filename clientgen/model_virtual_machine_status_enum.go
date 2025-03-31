@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// VirtualMachineStatusEnum General health status of the VM in vCenter. Not applicable to VM snapshots. * Green - VM is operating normally. * Yellow - VM is operating normally, but there are potential issues. * Red - VM is experiencing issues and is not operating normally. * Gray - Status of the VM cannot be determined. 
+// VirtualMachineStatusEnum General health status of the VM in vCenter. Not applicable to VM snapshots. * Green - VM is operating normally. * Yellow - VM is operating normally, but there are potential issues. * Red - VM is experiencing issues and is not operating normally. * Gray - Status of the VM cannot be determined.
 type VirtualMachineStatusEnum string
 
 // List of VirtualMachineStatusEnum
 const (
-	VIRTUALMACHINESTATUSENUM_GREEN VirtualMachineStatusEnum = "Green"
+	VIRTUALMACHINESTATUSENUM_GREEN  VirtualMachineStatusEnum = "Green"
 	VIRTUALMACHINESTATUSENUM_YELLOW VirtualMachineStatusEnum = "Yellow"
-	VIRTUALMACHINESTATUSENUM_RED VirtualMachineStatusEnum = "Red"
-	VIRTUALMACHINESTATUSENUM_GRAY VirtualMachineStatusEnum = "Gray"
+	VIRTUALMACHINESTATUSENUM_RED    VirtualMachineStatusEnum = "Red"
+	VIRTUALMACHINESTATUSENUM_GRAY   VirtualMachineStatusEnum = "Gray"
 )
 
 // All allowed values of VirtualMachineStatusEnum enum
@@ -34,82 +29,6 @@ var AllowedVirtualMachineStatusEnumEnumValues = []VirtualMachineStatusEnum{
 	"Gray",
 }
 
-func (v *VirtualMachineStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VirtualMachineStatusEnum(value)
-	for _, existing := range AllowedVirtualMachineStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VirtualMachineStatusEnum", value)
+func (v *VirtualMachineStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewVirtualMachineStatusEnumFromValue returns a pointer to a valid VirtualMachineStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVirtualMachineStatusEnumFromValue(v string) (*VirtualMachineStatusEnum, error) {
-	ev := VirtualMachineStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VirtualMachineStatusEnum: valid values are %v", v, AllowedVirtualMachineStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VirtualMachineStatusEnum) IsValid() bool {
-	for _, existing := range AllowedVirtualMachineStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VirtualMachineStatusEnum value
-func (v VirtualMachineStatusEnum) Ptr() *VirtualMachineStatusEnum {
-	return &v
-}
-
-type NullableVirtualMachineStatusEnum struct {
-	value *VirtualMachineStatusEnum
-	isSet bool
-}
-
-func (v NullableVirtualMachineStatusEnum) Get() *VirtualMachineStatusEnum {
-	return v.value
-}
-
-func (v *NullableVirtualMachineStatusEnum) Set(val *VirtualMachineStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVirtualMachineStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVirtualMachineStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVirtualMachineStatusEnum(val *VirtualMachineStatusEnum) *NullableVirtualMachineStatusEnum {
-	return &NullableVirtualMachineStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableVirtualMachineStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVirtualMachineStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

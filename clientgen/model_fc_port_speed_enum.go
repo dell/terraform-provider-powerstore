@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FcPortSpeedEnum Possible Fibre Channel port speeds. For the current_speed attribute, these values show the current transmission speed on the port. For the requested_speed attribute, these values show the transmission speed set by the user. A requested speed of Auto means that the current speed value will be automatically detected. If this file is updated, also update FrontEndPortSpeedEnum.yaml * Auto - the speed value is automatically detected * 4_Gbps - 4 Gigabits per second * 8_Gbps - 8 Gigabits per second * 16_Gbps - 16 Gigabits per second * 32_Gbps - 32 Gigabits per second 
+// FcPortSpeedEnum Possible Fibre Channel port speeds. For the current_speed attribute, these values show the current transmission speed on the port. For the requested_speed attribute, these values show the transmission speed set by the user. A requested speed of Auto means that the current speed value will be automatically detected. If this file is updated, also update FrontEndPortSpeedEnum.yaml * Auto - the speed value is automatically detected * 4_Gbps - 4 Gigabits per second * 8_Gbps - 8 Gigabits per second * 16_Gbps - 16 Gigabits per second * 32_Gbps - 32 Gigabits per second
 type FcPortSpeedEnum string
 
 // List of FcPortSpeedEnum
 const (
-	FCPORTSPEEDENUM_AUTO FcPortSpeedEnum = "Auto"
-	FCPORTSPEEDENUM__4_GBPS FcPortSpeedEnum = "4_Gbps"
-	FCPORTSPEEDENUM__8_GBPS FcPortSpeedEnum = "8_Gbps"
+	FCPORTSPEEDENUM_AUTO     FcPortSpeedEnum = "Auto"
+	FCPORTSPEEDENUM__4_GBPS  FcPortSpeedEnum = "4_Gbps"
+	FCPORTSPEEDENUM__8_GBPS  FcPortSpeedEnum = "8_Gbps"
 	FCPORTSPEEDENUM__16_GBPS FcPortSpeedEnum = "16_Gbps"
 	FCPORTSPEEDENUM__32_GBPS FcPortSpeedEnum = "32_Gbps"
 )
@@ -36,82 +31,6 @@ var AllowedFcPortSpeedEnumEnumValues = []FcPortSpeedEnum{
 	"32_Gbps",
 }
 
-func (v *FcPortSpeedEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FcPortSpeedEnum(value)
-	for _, existing := range AllowedFcPortSpeedEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FcPortSpeedEnum", value)
+func (v *FcPortSpeedEnum) Value() string {
+	return string(*v)
 }
-
-// NewFcPortSpeedEnumFromValue returns a pointer to a valid FcPortSpeedEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFcPortSpeedEnumFromValue(v string) (*FcPortSpeedEnum, error) {
-	ev := FcPortSpeedEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FcPortSpeedEnum: valid values are %v", v, AllowedFcPortSpeedEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FcPortSpeedEnum) IsValid() bool {
-	for _, existing := range AllowedFcPortSpeedEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FcPortSpeedEnum value
-func (v FcPortSpeedEnum) Ptr() *FcPortSpeedEnum {
-	return &v
-}
-
-type NullableFcPortSpeedEnum struct {
-	value *FcPortSpeedEnum
-	isSet bool
-}
-
-func (v NullableFcPortSpeedEnum) Get() *FcPortSpeedEnum {
-	return v.value
-}
-
-func (v *NullableFcPortSpeedEnum) Set(val *FcPortSpeedEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFcPortSpeedEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFcPortSpeedEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFcPortSpeedEnum(val *FcPortSpeedEnum) *NullableFcPortSpeedEnum {
-	return &NullableFcPortSpeedEnum{value: val, isSet: true}
-}
-
-func (v NullableFcPortSpeedEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFcPortSpeedEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

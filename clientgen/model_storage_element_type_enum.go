@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // StorageElementTypeEnum Storage element type being replicated: * volume                  - Replicating storage element type for a volume. * virtual_volume          - Replicating storage element type for a virtual volume. * file_system             - Replicating storage element type for a file system.  Values was added in 3.5.0.0: file_system.
 type StorageElementTypeEnum string
 
 // List of StorageElementTypeEnum
 const (
-	STORAGEELEMENTTYPEENUM_VOLUME StorageElementTypeEnum = "volume"
+	STORAGEELEMENTTYPEENUM_VOLUME         StorageElementTypeEnum = "volume"
 	STORAGEELEMENTTYPEENUM_VIRTUAL_VOLUME StorageElementTypeEnum = "virtual_volume"
-	STORAGEELEMENTTYPEENUM_FILE_SYSTEM StorageElementTypeEnum = "file_system"
+	STORAGEELEMENTTYPEENUM_FILE_SYSTEM    StorageElementTypeEnum = "file_system"
 )
 
 // All allowed values of StorageElementTypeEnum enum
@@ -32,82 +27,6 @@ var AllowedStorageElementTypeEnumEnumValues = []StorageElementTypeEnum{
 	"file_system",
 }
 
-func (v *StorageElementTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := StorageElementTypeEnum(value)
-	for _, existing := range AllowedStorageElementTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid StorageElementTypeEnum", value)
+func (v *StorageElementTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewStorageElementTypeEnumFromValue returns a pointer to a valid StorageElementTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewStorageElementTypeEnumFromValue(v string) (*StorageElementTypeEnum, error) {
-	ev := StorageElementTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for StorageElementTypeEnum: valid values are %v", v, AllowedStorageElementTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v StorageElementTypeEnum) IsValid() bool {
-	for _, existing := range AllowedStorageElementTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to StorageElementTypeEnum value
-func (v StorageElementTypeEnum) Ptr() *StorageElementTypeEnum {
-	return &v
-}
-
-type NullableStorageElementTypeEnum struct {
-	value *StorageElementTypeEnum
-	isSet bool
-}
-
-func (v NullableStorageElementTypeEnum) Get() *StorageElementTypeEnum {
-	return v.value
-}
-
-func (v *NullableStorageElementTypeEnum) Set(val *StorageElementTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableStorageElementTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableStorageElementTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableStorageElementTypeEnum(val *StorageElementTypeEnum) *NullableStorageElementTypeEnum {
-	return &NullableStorageElementTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableStorageElementTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableStorageElementTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

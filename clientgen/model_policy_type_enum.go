@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// PolicyTypeEnum Supported policy types.  * Protection - A protection policy for associating with volumes or volume groups, consisting of snapshot and replication rules.  * Performance - A performance policy for associating with volumes, consisting of performance rules.  * QoS - A performance policy for associating with volumes or volume groups, consisting of quality of service rules.  * File_Performance - A performance policy for associating with nas servers or file systems, consisting of file_io_limit_rules. 
+// PolicyTypeEnum Supported policy types.  * Protection - A protection policy for associating with volumes or volume groups, consisting of snapshot and replication rules.  * Performance - A performance policy for associating with volumes, consisting of performance rules.  * QoS - A performance policy for associating with volumes or volume groups, consisting of quality of service rules.  * File_Performance - A performance policy for associating with nas servers or file systems, consisting of file_io_limit_rules.
 type PolicyTypeEnum string
 
 // List of PolicyTypeEnum
 const (
-	POLICYTYPEENUM_PROTECTION PolicyTypeEnum = "Protection"
-	POLICYTYPEENUM_PERFORMANCE PolicyTypeEnum = "Performance"
-	POLICYTYPEENUM_QO_S PolicyTypeEnum = "QoS"
+	POLICYTYPEENUM_PROTECTION       PolicyTypeEnum = "Protection"
+	POLICYTYPEENUM_PERFORMANCE      PolicyTypeEnum = "Performance"
+	POLICYTYPEENUM_QO_S             PolicyTypeEnum = "QoS"
 	POLICYTYPEENUM_FILE_PERFORMANCE PolicyTypeEnum = "File_Performance"
 )
 
@@ -34,82 +29,6 @@ var AllowedPolicyTypeEnumEnumValues = []PolicyTypeEnum{
 	"File_Performance",
 }
 
-func (v *PolicyTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := PolicyTypeEnum(value)
-	for _, existing := range AllowedPolicyTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid PolicyTypeEnum", value)
+func (v *PolicyTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewPolicyTypeEnumFromValue returns a pointer to a valid PolicyTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPolicyTypeEnumFromValue(v string) (*PolicyTypeEnum, error) {
-	ev := PolicyTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PolicyTypeEnum: valid values are %v", v, AllowedPolicyTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v PolicyTypeEnum) IsValid() bool {
-	for _, existing := range AllowedPolicyTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to PolicyTypeEnum value
-func (v PolicyTypeEnum) Ptr() *PolicyTypeEnum {
-	return &v
-}
-
-type NullablePolicyTypeEnum struct {
-	value *PolicyTypeEnum
-	isSet bool
-}
-
-func (v NullablePolicyTypeEnum) Get() *PolicyTypeEnum {
-	return v.value
-}
-
-func (v *NullablePolicyTypeEnum) Set(val *PolicyTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullablePolicyTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullablePolicyTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullablePolicyTypeEnum(val *PolicyTypeEnum) *NullablePolicyTypeEnum {
-	return &NullablePolicyTypeEnum{value: val, isSet: true}
-}
-
-func (v NullablePolicyTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullablePolicyTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

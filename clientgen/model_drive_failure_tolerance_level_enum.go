@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DriveFailureToleranceLevelEnum Possible drive failure tolerance levels. * Single - A single drive failure can be tolerated without data loss. * Double - Two drive failures can be tolerated without data loss. * None - No drive failure can be tolerated without data loss (VSA-only).  Was added in version 2.0.0.0. Values was added in 3.0.0.0: None.
 type DriveFailureToleranceLevelEnum string
 
@@ -22,7 +17,7 @@ type DriveFailureToleranceLevelEnum string
 const (
 	DRIVEFAILURETOLERANCELEVELENUM_SINGLE DriveFailureToleranceLevelEnum = "Single"
 	DRIVEFAILURETOLERANCELEVELENUM_DOUBLE DriveFailureToleranceLevelEnum = "Double"
-	DRIVEFAILURETOLERANCELEVELENUM_NONE DriveFailureToleranceLevelEnum = "None"
+	DRIVEFAILURETOLERANCELEVELENUM_NONE   DriveFailureToleranceLevelEnum = "None"
 )
 
 // All allowed values of DriveFailureToleranceLevelEnum enum
@@ -32,82 +27,6 @@ var AllowedDriveFailureToleranceLevelEnumEnumValues = []DriveFailureToleranceLev
 	"None",
 }
 
-func (v *DriveFailureToleranceLevelEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := DriveFailureToleranceLevelEnum(value)
-	for _, existing := range AllowedDriveFailureToleranceLevelEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid DriveFailureToleranceLevelEnum", value)
+func (v *DriveFailureToleranceLevelEnum) Value() string {
+	return string(*v)
 }
-
-// NewDriveFailureToleranceLevelEnumFromValue returns a pointer to a valid DriveFailureToleranceLevelEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDriveFailureToleranceLevelEnumFromValue(v string) (*DriveFailureToleranceLevelEnum, error) {
-	ev := DriveFailureToleranceLevelEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for DriveFailureToleranceLevelEnum: valid values are %v", v, AllowedDriveFailureToleranceLevelEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v DriveFailureToleranceLevelEnum) IsValid() bool {
-	for _, existing := range AllowedDriveFailureToleranceLevelEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to DriveFailureToleranceLevelEnum value
-func (v DriveFailureToleranceLevelEnum) Ptr() *DriveFailureToleranceLevelEnum {
-	return &v
-}
-
-type NullableDriveFailureToleranceLevelEnum struct {
-	value *DriveFailureToleranceLevelEnum
-	isSet bool
-}
-
-func (v NullableDriveFailureToleranceLevelEnum) Get() *DriveFailureToleranceLevelEnum {
-	return v.value
-}
-
-func (v *NullableDriveFailureToleranceLevelEnum) Set(val *DriveFailureToleranceLevelEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableDriveFailureToleranceLevelEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableDriveFailureToleranceLevelEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableDriveFailureToleranceLevelEnum(val *DriveFailureToleranceLevelEnum) *NullableDriveFailureToleranceLevelEnum {
-	return &NullableDriveFailureToleranceLevelEnum{value: val, isSet: true}
-}
-
-func (v NullableDriveFailureToleranceLevelEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableDriveFailureToleranceLevelEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DataConnectionTypeEnum Possible data connection type: * iSCSI     - iSCSI data connection type. Used only for non-PowerStore systems. * TCP       - TCP data connection type. Used only for Powerstore systems. * FC        - Fiber channel data connection type. Used only for non-PowerStore systems. * DD_Boost  - DD Boost data connection type. Used only for PowerProtect DD Systems.  Applicable only to non-PowerStore remote system for Create.  Was added in version 3.0.0.0. Values was added in 3.5.0.0: DD_Boost.
 type DataConnectionTypeEnum string
 
 // List of DataConnectionTypeEnum
 const (
-	DATACONNECTIONTYPEENUM_I_SCSI DataConnectionTypeEnum = "iSCSI"
-	DATACONNECTIONTYPEENUM_TCP DataConnectionTypeEnum = "TCP"
-	DATACONNECTIONTYPEENUM_FC DataConnectionTypeEnum = "FC"
+	DATACONNECTIONTYPEENUM_I_SCSI   DataConnectionTypeEnum = "iSCSI"
+	DATACONNECTIONTYPEENUM_TCP      DataConnectionTypeEnum = "TCP"
+	DATACONNECTIONTYPEENUM_FC       DataConnectionTypeEnum = "FC"
 	DATACONNECTIONTYPEENUM_DD_BOOST DataConnectionTypeEnum = "DD_Boost"
 )
 
@@ -34,82 +29,6 @@ var AllowedDataConnectionTypeEnumEnumValues = []DataConnectionTypeEnum{
 	"DD_Boost",
 }
 
-func (v *DataConnectionTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := DataConnectionTypeEnum(value)
-	for _, existing := range AllowedDataConnectionTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid DataConnectionTypeEnum", value)
+func (v *DataConnectionTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewDataConnectionTypeEnumFromValue returns a pointer to a valid DataConnectionTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDataConnectionTypeEnumFromValue(v string) (*DataConnectionTypeEnum, error) {
-	ev := DataConnectionTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for DataConnectionTypeEnum: valid values are %v", v, AllowedDataConnectionTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v DataConnectionTypeEnum) IsValid() bool {
-	for _, existing := range AllowedDataConnectionTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to DataConnectionTypeEnum value
-func (v DataConnectionTypeEnum) Ptr() *DataConnectionTypeEnum {
-	return &v
-}
-
-type NullableDataConnectionTypeEnum struct {
-	value *DataConnectionTypeEnum
-	isSet bool
-}
-
-func (v NullableDataConnectionTypeEnum) Get() *DataConnectionTypeEnum {
-	return v.value
-}
-
-func (v *NullableDataConnectionTypeEnum) Set(val *DataConnectionTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableDataConnectionTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableDataConnectionTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableDataConnectionTypeEnum(val *DataConnectionTypeEnum) *NullableDataConnectionTypeEnum {
-	return &NullableDataConnectionTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableDataConnectionTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableDataConnectionTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

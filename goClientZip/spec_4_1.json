@@ -29084,7 +29084,7 @@
                     "format": "int16",
                     "minimum": 1,
                     "maximum": 32767,
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-ref": "ntp_server"
                 },
                 "authentication_key": {
@@ -48201,7 +48201,7 @@
                     "description": "New max_iops value. New values for both max_iops and max_bw may be specified, if they are, the system\nwill limit I/O based upon whatever limit is exceeded first.\n",
                     "type": "integer",
                     "format": "int32",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-units": "IO/sec",
                     "minimum": 1,
                     "maximum": 2147483646
@@ -48210,7 +48210,7 @@
                     "description": "New max_bw value. New values for both max_iops and max_bw may be specified, if they are, the system\nwill limit I/O based upon whatever limit is exceeded first.\n",
                     "type": "integer",
                     "format": "int32",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-units": "KB/sec",
                     "minimum": 2000,
                     "maximum": 2147483646
@@ -54997,7 +54997,7 @@
                     "type": "string",
                     "format": "ip-address",
                     "description": "Proxy server IP address (IPv4).",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "example": "5.6.7.8"
                 },
                 "proxy_port": {
@@ -55006,20 +55006,20 @@
                     "minimum": 0,
                     "maximum": 65635,
                     "description": "Proxy server port number.",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "example": 9443
                 },
                 "proxy_username": {
                     "type": "string",
                     "description": "User name for proxy server access.",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "example": "myUser"
                 },
                 "proxy_password": {
                     "type": "string",
                     "format": "password",
                     "description": "Password for proxy server access.",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "example": "myPass"
                 },
                 "is_software_autodownload_enabled": {
@@ -55482,7 +55482,7 @@
                 "protection_policy_id": {
                     "description": "Can only be used to unassign policies managed by user. Use null values to unassign policy from VM.\nPolicies managed by vSphere can't be unassigned with this method.\n name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
                     "type": "string",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-ref": "policy"
                 }
             }
@@ -60408,12 +60408,12 @@
                     "description": "New expiration time of the snapshot. Expired snapshots are deleted by\nthe snapshot aging service that runs periodically in the background.\nIf not specified, the snapshot never expires.\n\nUse a maximum timestamp value or null to set an expiration to never expire.\n",
                     "type": "string",
                     "format": "date-time",
-                    "x-nullable": true
+                    "x-pstore-nullable": true
                 },
                 "protection_policy_id": {
                     "description": "Unique identifier of the protection policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
                     "type": "string",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-ref": "policy"
                 },
                 "performance_policy_id": {
@@ -60426,7 +60426,7 @@
                     "type": "string",
                     "x-added": "4.0.0.0",
                     "x-ref": "policy",
-                    "x-nullable": true
+                    "x-pstore-nullable": true
                 },
                 "is_replication_destination": {
                     "description": "New value for is_replication_destination property. The modification is\nonly supported for primary and clone volume, only when the current\nvalue is true and there is no longer a replication session using this\nvolume as a destination, and only to false.\n",
@@ -61081,7 +61081,7 @@
                 "protection_policy_id": {
                     "description": "Unique identifier of the protection policy to assign to a primary or\nclone volume group.\n\nIf an empty string or null is specified, protection policy will be removed\nfrom the volume group.\n name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
                     "type": "string",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-ref": "policy"
                 },
                 "qos_performance_policy_id": {
@@ -61089,12 +61089,11 @@
                     "type": "string",
                     "x-added": "4.0.0.0",
                     "x-ref": "policy",
-                    "x-nullable": true
-                },
+                    "x-pstore-nullable": true                },
                 "expiration_timestamp": {
                     "description": "Time after which the snapshot set can be auto-purged. This\nparameter is only valid for a snapshot set. Time must be specified in\nZulu time zone. Expiration time cannot be prior to current time.\n\nUse a maximum timestamp value to set an expiration to never expire.\n\nIf an empty string or null is specified, expiration_timestamp will be cleared for\nthe snapshot set.\n\nValid format is yyyy-MM-dd'T'HH:mm:ssZ or yyyy-MM-dd'T'HH:mm:ss.SSSZ.\n\nWas added in version 2.0.0.0.",
                     "type": "string",
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "format": "date-time",
                     "x-added": "2.0.0.0"
                 },
@@ -61222,7 +61221,7 @@
                     "type": "string",
                     "x-added": "4.0.0.0",
                     "x-ref": "policy",
-                    "x-nullable": true
+                    "x-pstore-nullable": true
                 },
                 "is_replication_destination": {
                     "type": "boolean",
@@ -62038,7 +62037,7 @@
                     "x-ref": "#null"
                 },
                 "file_events_publisher_id": {
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "x-added": "3.0.0.0",
                     "type": "string",
                     "x-ref": "file_events_publisher",
@@ -62054,7 +62053,7 @@
                     "x-ref": "policy",
                     "description": "Id of the protection policy applied to the nas server. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'\nWas added in version 3.0.0.0.",
                     "x-added": "3.0.0.0",
-                    "x-nullable": true
+                    "x-pstore-nullable": true
                 },
                 "performance_policy_id": {
                     "type": "string",
@@ -69338,7 +69337,7 @@
                     "type": "array",
                     "minItems": 0,
                     "maxItems": 3,
-                    "x-nullable": true,
+                    "x-pstore-nullable": true,
                     "items": {
                         "type": "string",
                         "x-ref": "file_events_pool",
@@ -69770,7 +69769,7 @@
                     },
                     "minItems": 0,
                     "maxItems": 7,
-                    "x-nullable": true
+                    "x-pstore-nullable": true
                 },
                 "is_enabled": {
                     "description": "If false, then no events will be sent to the syslog service.",

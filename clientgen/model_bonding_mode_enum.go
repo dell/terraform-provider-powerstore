@@ -10,12 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// BondingModeEnum Bonding mode:   * LACP - Uses an IEEE 802.3ad dynamic link aggregation policy. Aggregation groups share     the same speed and duplex settings. This mode transmits and receives network traffic on     all interfaces in the active aggregator. 
+// BondingModeEnum Bonding mode:   * LACP - Uses an IEEE 802.3ad dynamic link aggregation policy. Aggregation groups share     the same speed and duplex settings. This mode transmits and receives network traffic on     all interfaces in the active aggregator.
 type BondingModeEnum string
 
 // List of BondingModeEnum
@@ -28,82 +23,6 @@ var AllowedBondingModeEnumEnumValues = []BondingModeEnum{
 	"LACP",
 }
 
-func (v *BondingModeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := BondingModeEnum(value)
-	for _, existing := range AllowedBondingModeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid BondingModeEnum", value)
+func (v *BondingModeEnum) Value() string {
+	return string(*v)
 }
-
-// NewBondingModeEnumFromValue returns a pointer to a valid BondingModeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBondingModeEnumFromValue(v string) (*BondingModeEnum, error) {
-	ev := BondingModeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BondingModeEnum: valid values are %v", v, AllowedBondingModeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v BondingModeEnum) IsValid() bool {
-	for _, existing := range AllowedBondingModeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to BondingModeEnum value
-func (v BondingModeEnum) Ptr() *BondingModeEnum {
-	return &v
-}
-
-type NullableBondingModeEnum struct {
-	value *BondingModeEnum
-	isSet bool
-}
-
-func (v NullableBondingModeEnum) Get() *BondingModeEnum {
-	return v.value
-}
-
-func (v *NullableBondingModeEnum) Set(val *BondingModeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableBondingModeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableBondingModeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableBondingModeEnum(val *BondingModeEnum) *NullableBondingModeEnum {
-	return &NullableBondingModeEnum{value: val, isSet: true}
-}
-
-func (v NullableBondingModeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableBondingModeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

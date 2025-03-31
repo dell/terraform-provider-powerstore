@@ -10,31 +10,26 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HardwareTypeEnum The type of hardware component. Current types are:  * Appliance - The System including the Base Enclosure and optional Expansion Enclosures.  * Base_Enclosure - The enclosure containing 2 Nodes and 25 NVME drive slots.  * Node - The component that contains the processors and DIMMs.  * Expansion_Enclosure - The enclosures that contain additional SAS storage.  * Power_Supply - The AC Power Supply that powers each Node.  * IO_Module - The component that provides front-end I/O connectivity to each Node.  * Link_Control_Card - The IO card that provides SAS Connectivity to the Expansion Enclosure.  * SFP - The Small Form-factor Pluggable (SFP) that is used for networking.  * Battery - The internal battery backup used by each Node.  * DIMM - The memory sticks that are installed in each Node.  * M2_Drive - The internal M.2 SATA drive used for Node boot and recovery.  * CDB - Clock Distribution Board.  * Access_Module - ACCESS MODULE.  * Fan - The fan module that provides cooling to the Node or expansion enclosure.  * Drive - The NVME drives installed in the Base Enclosure or the SAS drives installed in an Expansion Enclosure.  Values was added in 3.0.0.0: CDB, Access_Module.
 type HardwareTypeEnum string
 
 // List of HardwareTypeEnum
 const (
-	HARDWARETYPEENUM_APPLIANCE HardwareTypeEnum = "Appliance"
-	HARDWARETYPEENUM_NODE HardwareTypeEnum = "Node"
-	HARDWARETYPEENUM_BASE_ENCLOSURE HardwareTypeEnum = "Base_Enclosure"
+	HARDWARETYPEENUM_APPLIANCE           HardwareTypeEnum = "Appliance"
+	HARDWARETYPEENUM_NODE                HardwareTypeEnum = "Node"
+	HARDWARETYPEENUM_BASE_ENCLOSURE      HardwareTypeEnum = "Base_Enclosure"
 	HARDWARETYPEENUM_EXPANSION_ENCLOSURE HardwareTypeEnum = "Expansion_Enclosure"
-	HARDWARETYPEENUM_POWER_SUPPLY HardwareTypeEnum = "Power_Supply"
-	HARDWARETYPEENUM_IO_MODULE HardwareTypeEnum = "IO_Module"
-	HARDWARETYPEENUM_LINK_CONTROL_CARD HardwareTypeEnum = "Link_Control_Card"
-	HARDWARETYPEENUM_SFP HardwareTypeEnum = "SFP"
-	HARDWARETYPEENUM_BATTERY HardwareTypeEnum = "Battery"
-	HARDWARETYPEENUM_DIMM HardwareTypeEnum = "DIMM"
-	HARDWARETYPEENUM_M2_DRIVE HardwareTypeEnum = "M2_Drive"
-	HARDWARETYPEENUM_CDB HardwareTypeEnum = "CDB"
-	HARDWARETYPEENUM_ACCESS_MODULE HardwareTypeEnum = "Access_Module"
-	HARDWARETYPEENUM_FAN HardwareTypeEnum = "Fan"
-	HARDWARETYPEENUM_DRIVE HardwareTypeEnum = "Drive"
+	HARDWARETYPEENUM_POWER_SUPPLY        HardwareTypeEnum = "Power_Supply"
+	HARDWARETYPEENUM_IO_MODULE           HardwareTypeEnum = "IO_Module"
+	HARDWARETYPEENUM_LINK_CONTROL_CARD   HardwareTypeEnum = "Link_Control_Card"
+	HARDWARETYPEENUM_SFP                 HardwareTypeEnum = "SFP"
+	HARDWARETYPEENUM_BATTERY             HardwareTypeEnum = "Battery"
+	HARDWARETYPEENUM_DIMM                HardwareTypeEnum = "DIMM"
+	HARDWARETYPEENUM_M2_DRIVE            HardwareTypeEnum = "M2_Drive"
+	HARDWARETYPEENUM_CDB                 HardwareTypeEnum = "CDB"
+	HARDWARETYPEENUM_ACCESS_MODULE       HardwareTypeEnum = "Access_Module"
+	HARDWARETYPEENUM_FAN                 HardwareTypeEnum = "Fan"
+	HARDWARETYPEENUM_DRIVE               HardwareTypeEnum = "Drive"
 )
 
 // All allowed values of HardwareTypeEnum enum
@@ -56,82 +51,6 @@ var AllowedHardwareTypeEnumEnumValues = []HardwareTypeEnum{
 	"Drive",
 }
 
-func (v *HardwareTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareTypeEnum(value)
-	for _, existing := range AllowedHardwareTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareTypeEnum", value)
+func (v *HardwareTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareTypeEnumFromValue returns a pointer to a valid HardwareTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareTypeEnumFromValue(v string) (*HardwareTypeEnum, error) {
-	ev := HardwareTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareTypeEnum: valid values are %v", v, AllowedHardwareTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareTypeEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareTypeEnum value
-func (v HardwareTypeEnum) Ptr() *HardwareTypeEnum {
-	return &v
-}
-
-type NullableHardwareTypeEnum struct {
-	value *HardwareTypeEnum
-	isSet bool
-}
-
-func (v NullableHardwareTypeEnum) Get() *HardwareTypeEnum {
-	return v.value
-}
-
-func (v *NullableHardwareTypeEnum) Set(val *HardwareTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareTypeEnum(val *HardwareTypeEnum) *NullableHardwareTypeEnum {
-	return &NullableHardwareTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

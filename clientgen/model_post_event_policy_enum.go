@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // PostEventPolicyEnum Fault tolerance level assigned for events in case of offline or unreachable file events publisher servers. Values describe the NAS Server's behavior when events cannot be processed by file events publisher servers (lost events): * Ignore - Continue server operation and tolerate lost events. If there is   no CEPA server available return no error to the caller. * Accumulate - Use a persistence file as a circular event buffer and tolerate   lost events. Continue server's operation even if the buffer is full. * Guarantee - Use a persistence file as a circular event buffer and continue   server's operation until the buffer is full. If the buffer is full deny access   to files systems where Events Publishing is Enabled. Do not tolerate lost events. * Deny - If there is no CEPA server available, deny access to files systems   where Events Publishing is Enabled. Do not tolerate lost events.  Was added in version 3.0.0.0.
 type PostEventPolicyEnum string
 
 // List of PostEventPolicyEnum
 const (
-	POSTEVENTPOLICYENUM_IGNORE PostEventPolicyEnum = "Ignore"
+	POSTEVENTPOLICYENUM_IGNORE     PostEventPolicyEnum = "Ignore"
 	POSTEVENTPOLICYENUM_ACCUMULATE PostEventPolicyEnum = "Accumulate"
-	POSTEVENTPOLICYENUM_GUARANTEE PostEventPolicyEnum = "Guarantee"
-	POSTEVENTPOLICYENUM_DENY PostEventPolicyEnum = "Deny"
+	POSTEVENTPOLICYENUM_GUARANTEE  PostEventPolicyEnum = "Guarantee"
+	POSTEVENTPOLICYENUM_DENY       PostEventPolicyEnum = "Deny"
 )
 
 // All allowed values of PostEventPolicyEnum enum
@@ -34,82 +29,6 @@ var AllowedPostEventPolicyEnumEnumValues = []PostEventPolicyEnum{
 	"Deny",
 }
 
-func (v *PostEventPolicyEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := PostEventPolicyEnum(value)
-	for _, existing := range AllowedPostEventPolicyEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid PostEventPolicyEnum", value)
+func (v *PostEventPolicyEnum) Value() string {
+	return string(*v)
 }
-
-// NewPostEventPolicyEnumFromValue returns a pointer to a valid PostEventPolicyEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPostEventPolicyEnumFromValue(v string) (*PostEventPolicyEnum, error) {
-	ev := PostEventPolicyEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PostEventPolicyEnum: valid values are %v", v, AllowedPostEventPolicyEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v PostEventPolicyEnum) IsValid() bool {
-	for _, existing := range AllowedPostEventPolicyEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to PostEventPolicyEnum value
-func (v PostEventPolicyEnum) Ptr() *PostEventPolicyEnum {
-	return &v
-}
-
-type NullablePostEventPolicyEnum struct {
-	value *PostEventPolicyEnum
-	isSet bool
-}
-
-func (v NullablePostEventPolicyEnum) Get() *PostEventPolicyEnum {
-	return v.value
-}
-
-func (v *NullablePostEventPolicyEnum) Set(val *PostEventPolicyEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullablePostEventPolicyEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullablePostEventPolicyEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullablePostEventPolicyEnum(val *PostEventPolicyEnum) *NullablePostEventPolicyEnum {
-	return &NullablePostEventPolicyEnum{value: val, isSet: true}
-}
-
-func (v NullablePostEventPolicyEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullablePostEventPolicyEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

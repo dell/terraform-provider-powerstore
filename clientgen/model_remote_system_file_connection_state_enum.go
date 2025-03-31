@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSystemFileConnectionStateEnum file connection states for remote system * OK                       - Normal conditions. * Update_Needed            - Verify and update needed to handle network configuration changes on the systems. * Not_OK                   - File connection to the remote peer is lost. * Status_Unknown           - File Connection status is unknown at the moment.  Was added in version 3.0.0.0.
 type RemoteSystemFileConnectionStateEnum string
 
 // List of RemoteSystemFileConnectionStateEnum
 const (
-	REMOTESYSTEMFILECONNECTIONSTATEENUM_OK RemoteSystemFileConnectionStateEnum = "OK"
-	REMOTESYSTEMFILECONNECTIONSTATEENUM_UPDATE_NEEDED RemoteSystemFileConnectionStateEnum = "Update_Needed"
-	REMOTESYSTEMFILECONNECTIONSTATEENUM_NOT_OK RemoteSystemFileConnectionStateEnum = "Not_OK"
+	REMOTESYSTEMFILECONNECTIONSTATEENUM_OK             RemoteSystemFileConnectionStateEnum = "OK"
+	REMOTESYSTEMFILECONNECTIONSTATEENUM_UPDATE_NEEDED  RemoteSystemFileConnectionStateEnum = "Update_Needed"
+	REMOTESYSTEMFILECONNECTIONSTATEENUM_NOT_OK         RemoteSystemFileConnectionStateEnum = "Not_OK"
 	REMOTESYSTEMFILECONNECTIONSTATEENUM_STATUS_UNKNOWN RemoteSystemFileConnectionStateEnum = "Status_Unknown"
 )
 
@@ -34,82 +29,6 @@ var AllowedRemoteSystemFileConnectionStateEnumEnumValues = []RemoteSystemFileCon
 	"Status_Unknown",
 }
 
-func (v *RemoteSystemFileConnectionStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RemoteSystemFileConnectionStateEnum(value)
-	for _, existing := range AllowedRemoteSystemFileConnectionStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RemoteSystemFileConnectionStateEnum", value)
+func (v *RemoteSystemFileConnectionStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewRemoteSystemFileConnectionStateEnumFromValue returns a pointer to a valid RemoteSystemFileConnectionStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRemoteSystemFileConnectionStateEnumFromValue(v string) (*RemoteSystemFileConnectionStateEnum, error) {
-	ev := RemoteSystemFileConnectionStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RemoteSystemFileConnectionStateEnum: valid values are %v", v, AllowedRemoteSystemFileConnectionStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RemoteSystemFileConnectionStateEnum) IsValid() bool {
-	for _, existing := range AllowedRemoteSystemFileConnectionStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RemoteSystemFileConnectionStateEnum value
-func (v RemoteSystemFileConnectionStateEnum) Ptr() *RemoteSystemFileConnectionStateEnum {
-	return &v
-}
-
-type NullableRemoteSystemFileConnectionStateEnum struct {
-	value *RemoteSystemFileConnectionStateEnum
-	isSet bool
-}
-
-func (v NullableRemoteSystemFileConnectionStateEnum) Get() *RemoteSystemFileConnectionStateEnum {
-	return v.value
-}
-
-func (v *NullableRemoteSystemFileConnectionStateEnum) Set(val *RemoteSystemFileConnectionStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRemoteSystemFileConnectionStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRemoteSystemFileConnectionStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRemoteSystemFileConnectionStateEnum(val *RemoteSystemFileConnectionStateEnum) *NullableRemoteSystemFileConnectionStateEnum {
-	return &NullableRemoteSystemFileConnectionStateEnum{value: val, isSet: true}
-}
-
-func (v NullableRemoteSystemFileConnectionStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRemoteSystemFileConnectionStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

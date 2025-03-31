@@ -10,26 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSystemTypeEnum Remote system connection type between the local system and the following remote systems: * PowerStore               - PowerStore system * Unity                    - Unity import system * VNX                      - VNX import system * PS_Equallogic            - PS EqualLogic import system * Storage_Center           - Storage Center import system * XtremIO                  - XtremIO import system * NetApp                   - NetApp import system * PowerMax_VMAX            - PowerMax or VMAX import system * PowerProtect_DD          - PowerProtect DD * Universal                - Universal  Values was added in 3.0.0.0: NetApp, PowerMax_VMAX. Values was added in 3.5.0.0: PowerProtect_DD. Values was added in 4.0.0.0: Universal.
 type RemoteSystemTypeEnum string
 
 // List of RemoteSystemTypeEnum
 const (
-	REMOTESYSTEMTYPEENUM_POWER_STORE RemoteSystemTypeEnum = "PowerStore"
-	REMOTESYSTEMTYPEENUM_UNITY RemoteSystemTypeEnum = "Unity"
-	REMOTESYSTEMTYPEENUM_VNX RemoteSystemTypeEnum = "VNX"
-	REMOTESYSTEMTYPEENUM_PS_EQUALLOGIC RemoteSystemTypeEnum = "PS_Equallogic"
-	REMOTESYSTEMTYPEENUM_STORAGE_CENTER RemoteSystemTypeEnum = "Storage_Center"
-	REMOTESYSTEMTYPEENUM_XTREM_IO RemoteSystemTypeEnum = "XtremIO"
-	REMOTESYSTEMTYPEENUM_NET_APP RemoteSystemTypeEnum = "NetApp"
+	REMOTESYSTEMTYPEENUM_POWER_STORE      RemoteSystemTypeEnum = "PowerStore"
+	REMOTESYSTEMTYPEENUM_UNITY            RemoteSystemTypeEnum = "Unity"
+	REMOTESYSTEMTYPEENUM_VNX              RemoteSystemTypeEnum = "VNX"
+	REMOTESYSTEMTYPEENUM_PS_EQUALLOGIC    RemoteSystemTypeEnum = "PS_Equallogic"
+	REMOTESYSTEMTYPEENUM_STORAGE_CENTER   RemoteSystemTypeEnum = "Storage_Center"
+	REMOTESYSTEMTYPEENUM_XTREM_IO         RemoteSystemTypeEnum = "XtremIO"
+	REMOTESYSTEMTYPEENUM_NET_APP          RemoteSystemTypeEnum = "NetApp"
 	REMOTESYSTEMTYPEENUM_POWER_PROTECT_DD RemoteSystemTypeEnum = "PowerProtect_DD"
-	REMOTESYSTEMTYPEENUM_POWER_MAX_VMAX RemoteSystemTypeEnum = "PowerMax_VMAX"
-	REMOTESYSTEMTYPEENUM_UNIVERSAL RemoteSystemTypeEnum = "Universal"
+	REMOTESYSTEMTYPEENUM_POWER_MAX_VMAX   RemoteSystemTypeEnum = "PowerMax_VMAX"
+	REMOTESYSTEMTYPEENUM_UNIVERSAL        RemoteSystemTypeEnum = "Universal"
 )
 
 // All allowed values of RemoteSystemTypeEnum enum
@@ -46,82 +41,6 @@ var AllowedRemoteSystemTypeEnumEnumValues = []RemoteSystemTypeEnum{
 	"Universal",
 }
 
-func (v *RemoteSystemTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RemoteSystemTypeEnum(value)
-	for _, existing := range AllowedRemoteSystemTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RemoteSystemTypeEnum", value)
+func (v *RemoteSystemTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewRemoteSystemTypeEnumFromValue returns a pointer to a valid RemoteSystemTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRemoteSystemTypeEnumFromValue(v string) (*RemoteSystemTypeEnum, error) {
-	ev := RemoteSystemTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RemoteSystemTypeEnum: valid values are %v", v, AllowedRemoteSystemTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RemoteSystemTypeEnum) IsValid() bool {
-	for _, existing := range AllowedRemoteSystemTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RemoteSystemTypeEnum value
-func (v RemoteSystemTypeEnum) Ptr() *RemoteSystemTypeEnum {
-	return &v
-}
-
-type NullableRemoteSystemTypeEnum struct {
-	value *RemoteSystemTypeEnum
-	isSet bool
-}
-
-func (v NullableRemoteSystemTypeEnum) Get() *RemoteSystemTypeEnum {
-	return v.value
-}
-
-func (v *NullableRemoteSystemTypeEnum) Set(val *RemoteSystemTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRemoteSystemTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRemoteSystemTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRemoteSystemTypeEnum(val *RemoteSystemTypeEnum) *NullableRemoteSystemTypeEnum {
-	return &NullableRemoteSystemTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableRemoteSystemTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRemoteSystemTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

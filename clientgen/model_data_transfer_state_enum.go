@@ -10,25 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DataTransferStateEnum Data transfer state of the replication session: * Asynchronous               - Data is being transferred asynchronously between source and destination. This is incremental sync cycle. * Asynchronous_Initial_Sync  - Data is being transferred asynchronously between source and destination. This is initial sync cycle. * System_Asynchronous_Initial_Sync - Metro type replication session is transferring data asynchronously. This is initial sync cycle. * System_Asynchronous              - Metro type replication session is transferring data asynchronously. This is incremental sync cycle before mirror is enabled. * Switch_To_Sync_Diff_Copy   - Metro type replication session is transferring data asynchronously. This is the last copy after mirror is enabled to switch to synchronous data transfer. * Synchronous                - Data is being transferred synchronously between source and destination. * Active_Active              - Session is active-active mode. Both local and remote storage resource are available for Production IO. IOs are synchronously replicated in both directions. * Faulted                    - Session is in faulted state. * Paused                     - Data transfer is paused.  Was added in version 3.0.0.0.
 type DataTransferStateEnum string
 
 // List of DataTransferStateEnum
 const (
-	DATATRANSFERSTATEENUM_ASYNCHRONOUS DataTransferStateEnum = "Asynchronous"
-	DATATRANSFERSTATEENUM_ASYNCHRONOUS_INITIAL_SYNC DataTransferStateEnum = "Asynchronous_Initial_Sync"
+	DATATRANSFERSTATEENUM_ASYNCHRONOUS                     DataTransferStateEnum = "Asynchronous"
+	DATATRANSFERSTATEENUM_ASYNCHRONOUS_INITIAL_SYNC        DataTransferStateEnum = "Asynchronous_Initial_Sync"
 	DATATRANSFERSTATEENUM_SYSTEM_ASYNCHRONOUS_INITIAL_SYNC DataTransferStateEnum = "System_Asynchronous_Initial_Sync"
-	DATATRANSFERSTATEENUM_SYSTEM_ASYNCHRONOUS DataTransferStateEnum = "System_Asynchronous"
-	DATATRANSFERSTATEENUM_SWITCH_TO_SYNC_DIFF_COPY DataTransferStateEnum = "Switch_To_Sync_Diff_Copy"
-	DATATRANSFERSTATEENUM_SYNCHRONOUS DataTransferStateEnum = "Synchronous"
-	DATATRANSFERSTATEENUM_ACTIVE_ACTIVE DataTransferStateEnum = "Active_Active"
-	DATATRANSFERSTATEENUM_FAULTED DataTransferStateEnum = "Faulted"
-	DATATRANSFERSTATEENUM_PAUSED DataTransferStateEnum = "Paused"
+	DATATRANSFERSTATEENUM_SYSTEM_ASYNCHRONOUS              DataTransferStateEnum = "System_Asynchronous"
+	DATATRANSFERSTATEENUM_SWITCH_TO_SYNC_DIFF_COPY         DataTransferStateEnum = "Switch_To_Sync_Diff_Copy"
+	DATATRANSFERSTATEENUM_SYNCHRONOUS                      DataTransferStateEnum = "Synchronous"
+	DATATRANSFERSTATEENUM_ACTIVE_ACTIVE                    DataTransferStateEnum = "Active_Active"
+	DATATRANSFERSTATEENUM_FAULTED                          DataTransferStateEnum = "Faulted"
+	DATATRANSFERSTATEENUM_PAUSED                           DataTransferStateEnum = "Paused"
 )
 
 // All allowed values of DataTransferStateEnum enum
@@ -44,82 +39,6 @@ var AllowedDataTransferStateEnumEnumValues = []DataTransferStateEnum{
 	"Paused",
 }
 
-func (v *DataTransferStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := DataTransferStateEnum(value)
-	for _, existing := range AllowedDataTransferStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid DataTransferStateEnum", value)
+func (v *DataTransferStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewDataTransferStateEnumFromValue returns a pointer to a valid DataTransferStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDataTransferStateEnumFromValue(v string) (*DataTransferStateEnum, error) {
-	ev := DataTransferStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for DataTransferStateEnum: valid values are %v", v, AllowedDataTransferStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v DataTransferStateEnum) IsValid() bool {
-	for _, existing := range AllowedDataTransferStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to DataTransferStateEnum value
-func (v DataTransferStateEnum) Ptr() *DataTransferStateEnum {
-	return &v
-}
-
-type NullableDataTransferStateEnum struct {
-	value *DataTransferStateEnum
-	isSet bool
-}
-
-func (v NullableDataTransferStateEnum) Get() *DataTransferStateEnum {
-	return v.value
-}
-
-func (v *NullableDataTransferStateEnum) Set(val *DataTransferStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableDataTransferStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableDataTransferStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableDataTransferStateEnum(val *DataTransferStateEnum) *NullableDataTransferStateEnum {
-	return &NullableDataTransferStateEnum{value: val, isSet: true}
-}
-
-func (v NullableDataTransferStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableDataTransferStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

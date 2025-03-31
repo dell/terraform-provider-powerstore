@@ -19,15 +19,17 @@ import (
 	"strings"
 )
 
+// Rounak
 
 // VolumeGroupApiService VolumeGroupApi service
 type VolumeGroupApiService service
 
 type ApiDeleteVolumeGroupByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
-	body *VolumeGroupDelete
+	Queries    url.Values
+	id         string
+	body       *VolumeGroupDelete
 }
 
 func (r ApiDeleteVolumeGroupByIdRequest) Body(body VolumeGroupDelete) ApiDeleteVolumeGroupByIdRequest {
@@ -53,25 +55,24 @@ sets will also be deleted.
 * When a snapshot set is deleted, all of its constituent snapshots will
 also be deleted.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiDeleteVolumeGroupByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiDeleteVolumeGroupByIdRequest
 */
 func (a *VolumeGroupApiService) DeleteVolumeGroupById(ctx context.Context, id string) ApiDeleteVolumeGroupByIdRequest {
 	return ApiDeleteVolumeGroupByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGroupByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.DeleteVolumeGroupById")
@@ -83,7 +84,7 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
+	localVarQueryParams := r.Queries
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
@@ -134,8 +135,8 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -145,8 +146,8 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -156,8 +157,8 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -166,8 +167,9 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 }
 
 type ApiGetAllVolumeGroupsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
+	Queries    url.Values
 }
 
 func (r ApiGetAllVolumeGroupsRequest) Execute() ([]VolumeGroupInstance, *http.Response, error) {
@@ -179,25 +181,25 @@ GetAllVolumeGroups Collection Query
 
 Query volume groups, including snapshot sets and clones of volume groups.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetAllVolumeGroupsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAllVolumeGroupsRequest
 */
 func (a *VolumeGroupApiService) GetAllVolumeGroups(ctx context.Context) ApiGetAllVolumeGroupsRequest {
 	return ApiGetAllVolumeGroupsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []VolumeGroupInstance
+//
+//	@return []VolumeGroupInstance
 func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroupsRequest) ([]VolumeGroupInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []VolumeGroupInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []VolumeGroupInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.GetAllVolumeGroups")
@@ -208,7 +210,7 @@ func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroup
 	localVarPath := localBasePath + "/volume_group"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
+	localVarQueryParams := r.Queries
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
@@ -266,9 +268,10 @@ func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroup
 }
 
 type ApiGetVolumeGroupByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
+	Queries    url.Values
+	id         string
 }
 
 func (r ApiGetVolumeGroupByIdRequest) Execute() (*VolumeGroupInstance, *http.Response, error) {
@@ -280,26 +283,27 @@ GetVolumeGroupById Instance Query
 
 Query a specific volume group, snapshot set, or clone.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiGetVolumeGroupByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiGetVolumeGroupByIdRequest
 */
 func (a *VolumeGroupApiService) GetVolumeGroupById(ctx context.Context, id string) ApiGetVolumeGroupByIdRequest {
 	return ApiGetVolumeGroupByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
-//  @return VolumeGroupInstance
+//
+//	@return VolumeGroupInstance
 func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByIdRequest) (*VolumeGroupInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *VolumeGroupInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *VolumeGroupInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.GetVolumeGroupById")
@@ -311,7 +315,7 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
+	localVarQueryParams := r.Queries
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
@@ -360,8 +364,8 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -379,10 +383,11 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 }
 
 type ApiPatchVolumeGroupByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
-	body *VolumeGroupModify
+	Queries    url.Values
+	id         string
+	body       *VolumeGroupModify
 }
 
 func (r ApiPatchVolumeGroupByIdRequest) Body(body VolumeGroupModify) ApiPatchVolumeGroupByIdRequest {
@@ -399,24 +404,24 @@ PatchVolumeGroupById Modify
 
 Modify a volume group, snapshot set, or clone.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiPatchVolumeGroupByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiPatchVolumeGroupByIdRequest
 */
 func (a *VolumeGroupApiService) PatchVolumeGroupById(ctx context.Context, id string) ApiPatchVolumeGroupByIdRequest {
 	return ApiPatchVolumeGroupByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGroupByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPatch
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.PatchVolumeGroupById")
@@ -428,7 +433,7 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
+	localVarQueryParams := r.Queries
 	localVarFormParams := url.Values{}
 	if r.body == nil {
 		return nil, reportError("body is required and must be specified")
@@ -482,8 +487,8 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -493,8 +498,8 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -504,8 +509,8 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -514,9 +519,10 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 }
 
 type ApiPostAllVolumeGroupsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	body *VolumeGroupCreate
+	Queries    url.Values
+	body       *VolumeGroupCreate
 }
 
 func (r ApiPostAllVolumeGroupsRequest) Body(body VolumeGroupCreate) ApiPostAllVolumeGroupsRequest {
@@ -534,25 +540,25 @@ PostAllVolumeGroups Create
 Create a new volume group. The resulting volume group will
 have a type of Primary.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiPostAllVolumeGroupsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiPostAllVolumeGroupsRequest
 */
 func (a *VolumeGroupApiService) PostAllVolumeGroups(ctx context.Context) ApiPostAllVolumeGroupsRequest {
 	return ApiPostAllVolumeGroupsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateResponse
+//
+//	@return CreateResponse
 func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGroupsRequest) (*CreateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.PostAllVolumeGroups")
@@ -563,7 +569,7 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 	localVarPath := localBasePath + "/volume_group"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
+	localVarQueryParams := r.Queries
 	localVarFormParams := url.Values{}
 	if r.body == nil {
 		return localVarReturnValue, nil, reportError("body is required and must be specified")
@@ -617,8 +623,8 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -628,8 +634,8 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

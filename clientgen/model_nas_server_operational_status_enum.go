@@ -10,23 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// NASServerOperationalStatusEnum NAS server operational status: * Stopped - NAS server is stopped. * Starting - NAS server is starting. * Started - NAS server is started. * Stopping - NAS server is stopping. * Failover - NAS server has failed over. * Degraded - NAS server is degraded (running without backup). * Unknown - NAS server state is unknown. 
+// NASServerOperationalStatusEnum NAS server operational status: * Stopped - NAS server is stopped. * Starting - NAS server is starting. * Started - NAS server is started. * Stopping - NAS server is stopping. * Failover - NAS server has failed over. * Degraded - NAS server is degraded (running without backup). * Unknown - NAS server state is unknown.
 type NASServerOperationalStatusEnum string
 
 // List of NASServerOperationalStatusEnum
 const (
-	NASSERVEROPERATIONALSTATUSENUM_STOPPED NASServerOperationalStatusEnum = "Stopped"
+	NASSERVEROPERATIONALSTATUSENUM_STOPPED  NASServerOperationalStatusEnum = "Stopped"
 	NASSERVEROPERATIONALSTATUSENUM_STARTING NASServerOperationalStatusEnum = "Starting"
-	NASSERVEROPERATIONALSTATUSENUM_STARTED NASServerOperationalStatusEnum = "Started"
+	NASSERVEROPERATIONALSTATUSENUM_STARTED  NASServerOperationalStatusEnum = "Started"
 	NASSERVEROPERATIONALSTATUSENUM_STOPPING NASServerOperationalStatusEnum = "Stopping"
 	NASSERVEROPERATIONALSTATUSENUM_FAILOVER NASServerOperationalStatusEnum = "Failover"
 	NASSERVEROPERATIONALSTATUSENUM_DEGRADED NASServerOperationalStatusEnum = "Degraded"
-	NASSERVEROPERATIONALSTATUSENUM_UNKNOWN NASServerOperationalStatusEnum = "Unknown"
+	NASSERVEROPERATIONALSTATUSENUM_UNKNOWN  NASServerOperationalStatusEnum = "Unknown"
 )
 
 // All allowed values of NASServerOperationalStatusEnum enum
@@ -40,82 +35,6 @@ var AllowedNASServerOperationalStatusEnumEnumValues = []NASServerOperationalStat
 	"Unknown",
 }
 
-func (v *NASServerOperationalStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NASServerOperationalStatusEnum(value)
-	for _, existing := range AllowedNASServerOperationalStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NASServerOperationalStatusEnum", value)
+func (v *NASServerOperationalStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewNASServerOperationalStatusEnumFromValue returns a pointer to a valid NASServerOperationalStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNASServerOperationalStatusEnumFromValue(v string) (*NASServerOperationalStatusEnum, error) {
-	ev := NASServerOperationalStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NASServerOperationalStatusEnum: valid values are %v", v, AllowedNASServerOperationalStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NASServerOperationalStatusEnum) IsValid() bool {
-	for _, existing := range AllowedNASServerOperationalStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NASServerOperationalStatusEnum value
-func (v NASServerOperationalStatusEnum) Ptr() *NASServerOperationalStatusEnum {
-	return &v
-}
-
-type NullableNASServerOperationalStatusEnum struct {
-	value *NASServerOperationalStatusEnum
-	isSet bool
-}
-
-func (v NullableNASServerOperationalStatusEnum) Get() *NASServerOperationalStatusEnum {
-	return v.value
-}
-
-func (v *NullableNASServerOperationalStatusEnum) Set(val *NASServerOperationalStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNASServerOperationalStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNASServerOperationalStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNASServerOperationalStatusEnum(val *NASServerOperationalStatusEnum) *NullableNASServerOperationalStatusEnum {
-	return &NullableNASServerOperationalStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableNASServerOperationalStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNASServerOperationalStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

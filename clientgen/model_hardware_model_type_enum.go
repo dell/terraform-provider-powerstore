@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HardwareModelTypeEnum Desired model to which the appliance should be upgraded.  * 1200T  * 3200T  * 5200T  * 9200T  Was added in version 3.6.0.0.
 type HardwareModelTypeEnum string
 
@@ -34,82 +29,6 @@ var AllowedHardwareModelTypeEnumEnumValues = []HardwareModelTypeEnum{
 	"9200T",
 }
 
-func (v *HardwareModelTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareModelTypeEnum(value)
-	for _, existing := range AllowedHardwareModelTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareModelTypeEnum", value)
+func (v *HardwareModelTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareModelTypeEnumFromValue returns a pointer to a valid HardwareModelTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareModelTypeEnumFromValue(v string) (*HardwareModelTypeEnum, error) {
-	ev := HardwareModelTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareModelTypeEnum: valid values are %v", v, AllowedHardwareModelTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareModelTypeEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareModelTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareModelTypeEnum value
-func (v HardwareModelTypeEnum) Ptr() *HardwareModelTypeEnum {
-	return &v
-}
-
-type NullableHardwareModelTypeEnum struct {
-	value *HardwareModelTypeEnum
-	isSet bool
-}
-
-func (v NullableHardwareModelTypeEnum) Get() *HardwareModelTypeEnum {
-	return v.value
-}
-
-func (v *NullableHardwareModelTypeEnum) Set(val *HardwareModelTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareModelTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareModelTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareModelTypeEnum(val *HardwareModelTypeEnum) *NullableHardwareModelTypeEnum {
-	return &NullableHardwareModelTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareModelTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareModelTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

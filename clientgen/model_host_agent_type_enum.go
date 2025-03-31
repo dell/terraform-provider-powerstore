@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HostAgentTypeEnum Type of import host system. Valid values are:  * EQL - EQL MPIO.  * Native_MPIO - Native MPIO.  * Power_Path - POWER PATH MPIO.  * Unknown - Type of host agent is unknown to PowerStore. 
+// HostAgentTypeEnum Type of import host system. Valid values are:  * EQL - EQL MPIO.  * Native_MPIO - Native MPIO.  * Power_Path - POWER PATH MPIO.  * Unknown - Type of host agent is unknown to PowerStore.
 type HostAgentTypeEnum string
 
 // List of HostAgentTypeEnum
 const (
-	HOSTAGENTTYPEENUM_EQL HostAgentTypeEnum = "EQL"
+	HOSTAGENTTYPEENUM_EQL         HostAgentTypeEnum = "EQL"
 	HOSTAGENTTYPEENUM_NATIVE_MPIO HostAgentTypeEnum = "Native_MPIO"
-	HOSTAGENTTYPEENUM_POWER_PATH HostAgentTypeEnum = "Power_Path"
-	HOSTAGENTTYPEENUM_UNKNOWN HostAgentTypeEnum = "Unknown"
+	HOSTAGENTTYPEENUM_POWER_PATH  HostAgentTypeEnum = "Power_Path"
+	HOSTAGENTTYPEENUM_UNKNOWN     HostAgentTypeEnum = "Unknown"
 )
 
 // All allowed values of HostAgentTypeEnum enum
@@ -34,82 +29,6 @@ var AllowedHostAgentTypeEnumEnumValues = []HostAgentTypeEnum{
 	"Unknown",
 }
 
-func (v *HostAgentTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HostAgentTypeEnum(value)
-	for _, existing := range AllowedHostAgentTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HostAgentTypeEnum", value)
+func (v *HostAgentTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewHostAgentTypeEnumFromValue returns a pointer to a valid HostAgentTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHostAgentTypeEnumFromValue(v string) (*HostAgentTypeEnum, error) {
-	ev := HostAgentTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HostAgentTypeEnum: valid values are %v", v, AllowedHostAgentTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HostAgentTypeEnum) IsValid() bool {
-	for _, existing := range AllowedHostAgentTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HostAgentTypeEnum value
-func (v HostAgentTypeEnum) Ptr() *HostAgentTypeEnum {
-	return &v
-}
-
-type NullableHostAgentTypeEnum struct {
-	value *HostAgentTypeEnum
-	isSet bool
-}
-
-func (v NullableHostAgentTypeEnum) Get() *HostAgentTypeEnum {
-	return v.value
-}
-
-func (v *NullableHostAgentTypeEnum) Set(val *HostAgentTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHostAgentTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHostAgentTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHostAgentTypeEnum(val *HostAgentTypeEnum) *NullableHostAgentTypeEnum {
-	return &NullableHostAgentTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableHostAgentTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHostAgentTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

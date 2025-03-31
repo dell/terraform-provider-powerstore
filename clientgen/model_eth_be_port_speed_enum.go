@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // EthBEPortSpeedEnum Ethernet Backend port transmission speed. * 25_Gbps - 25 Gigabits per second. * 100_Gbps - 100 Gigabits per second.  Was added in version 3.0.0.0.
 type EthBEPortSpeedEnum string
 
 // List of EthBEPortSpeedEnum
 const (
-	ETHBEPORTSPEEDENUM__25_GBPS EthBEPortSpeedEnum = "25_Gbps"
+	ETHBEPORTSPEEDENUM__25_GBPS  EthBEPortSpeedEnum = "25_Gbps"
 	ETHBEPORTSPEEDENUM__100_GBPS EthBEPortSpeedEnum = "100_Gbps"
 )
 
@@ -30,82 +25,6 @@ var AllowedEthBEPortSpeedEnumEnumValues = []EthBEPortSpeedEnum{
 	"100_Gbps",
 }
 
-func (v *EthBEPortSpeedEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := EthBEPortSpeedEnum(value)
-	for _, existing := range AllowedEthBEPortSpeedEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid EthBEPortSpeedEnum", value)
+func (v *EthBEPortSpeedEnum) Value() string {
+	return string(*v)
 }
-
-// NewEthBEPortSpeedEnumFromValue returns a pointer to a valid EthBEPortSpeedEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewEthBEPortSpeedEnumFromValue(v string) (*EthBEPortSpeedEnum, error) {
-	ev := EthBEPortSpeedEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for EthBEPortSpeedEnum: valid values are %v", v, AllowedEthBEPortSpeedEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v EthBEPortSpeedEnum) IsValid() bool {
-	for _, existing := range AllowedEthBEPortSpeedEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to EthBEPortSpeedEnum value
-func (v EthBEPortSpeedEnum) Ptr() *EthBEPortSpeedEnum {
-	return &v
-}
-
-type NullableEthBEPortSpeedEnum struct {
-	value *EthBEPortSpeedEnum
-	isSet bool
-}
-
-func (v NullableEthBEPortSpeedEnum) Get() *EthBEPortSpeedEnum {
-	return v.value
-}
-
-func (v *NullableEthBEPortSpeedEnum) Set(val *EthBEPortSpeedEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableEthBEPortSpeedEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableEthBEPortSpeedEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableEthBEPortSpeedEnum(val *EthBEPortSpeedEnum) *NullableEthBEPortSpeedEnum {
-	return &NullableEthBEPortSpeedEnum{value: val, isSet: true}
-}
-
-func (v NullableEthBEPortSpeedEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableEthBEPortSpeedEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

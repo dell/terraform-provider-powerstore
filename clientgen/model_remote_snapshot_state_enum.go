@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSnapshotStateEnum State of the remote_snapshot:  * Protected - Transfer of remote_snapshot to remote has completed.  * Deleting - The remote_snapshot is being deleted.  Was added in version 3.5.0.0.
 type RemoteSnapshotStateEnum string
 
 // List of RemoteSnapshotStateEnum
 const (
 	REMOTESNAPSHOTSTATEENUM_PROTECTED RemoteSnapshotStateEnum = "Protected"
-	REMOTESNAPSHOTSTATEENUM_DELETING RemoteSnapshotStateEnum = "Deleting"
+	REMOTESNAPSHOTSTATEENUM_DELETING  RemoteSnapshotStateEnum = "Deleting"
 )
 
 // All allowed values of RemoteSnapshotStateEnum enum
@@ -30,82 +25,6 @@ var AllowedRemoteSnapshotStateEnumEnumValues = []RemoteSnapshotStateEnum{
 	"Deleting",
 }
 
-func (v *RemoteSnapshotStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RemoteSnapshotStateEnum(value)
-	for _, existing := range AllowedRemoteSnapshotStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RemoteSnapshotStateEnum", value)
+func (v *RemoteSnapshotStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewRemoteSnapshotStateEnumFromValue returns a pointer to a valid RemoteSnapshotStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRemoteSnapshotStateEnumFromValue(v string) (*RemoteSnapshotStateEnum, error) {
-	ev := RemoteSnapshotStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RemoteSnapshotStateEnum: valid values are %v", v, AllowedRemoteSnapshotStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RemoteSnapshotStateEnum) IsValid() bool {
-	for _, existing := range AllowedRemoteSnapshotStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RemoteSnapshotStateEnum value
-func (v RemoteSnapshotStateEnum) Ptr() *RemoteSnapshotStateEnum {
-	return &v
-}
-
-type NullableRemoteSnapshotStateEnum struct {
-	value *RemoteSnapshotStateEnum
-	isSet bool
-}
-
-func (v NullableRemoteSnapshotStateEnum) Get() *RemoteSnapshotStateEnum {
-	return v.value
-}
-
-func (v *NullableRemoteSnapshotStateEnum) Set(val *RemoteSnapshotStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRemoteSnapshotStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRemoteSnapshotStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRemoteSnapshotStateEnum(val *RemoteSnapshotStateEnum) *NullableRemoteSnapshotStateEnum {
-	return &NullableRemoteSnapshotStateEnum{value: val, isSet: true}
-}
-
-func (v NullableRemoteSnapshotStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRemoteSnapshotStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NvmeTransportTypeEnum Transport type of the NVMe Initiator. * TCP - NVMe/TCP * FC - NVMe/Fibre Channel  Was added in version 2.1.0.0.
 type NvmeTransportTypeEnum string
 
 // List of NvmeTransportTypeEnum
 const (
 	NVMETRANSPORTTYPEENUM_TCP NvmeTransportTypeEnum = "TCP"
-	NVMETRANSPORTTYPEENUM_FC NvmeTransportTypeEnum = "FC"
+	NVMETRANSPORTTYPEENUM_FC  NvmeTransportTypeEnum = "FC"
 )
 
 // All allowed values of NvmeTransportTypeEnum enum
@@ -30,82 +25,6 @@ var AllowedNvmeTransportTypeEnumEnumValues = []NvmeTransportTypeEnum{
 	"FC",
 }
 
-func (v *NvmeTransportTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NvmeTransportTypeEnum(value)
-	for _, existing := range AllowedNvmeTransportTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NvmeTransportTypeEnum", value)
+func (v *NvmeTransportTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewNvmeTransportTypeEnumFromValue returns a pointer to a valid NvmeTransportTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNvmeTransportTypeEnumFromValue(v string) (*NvmeTransportTypeEnum, error) {
-	ev := NvmeTransportTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NvmeTransportTypeEnum: valid values are %v", v, AllowedNvmeTransportTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NvmeTransportTypeEnum) IsValid() bool {
-	for _, existing := range AllowedNvmeTransportTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NvmeTransportTypeEnum value
-func (v NvmeTransportTypeEnum) Ptr() *NvmeTransportTypeEnum {
-	return &v
-}
-
-type NullableNvmeTransportTypeEnum struct {
-	value *NvmeTransportTypeEnum
-	isSet bool
-}
-
-func (v NullableNvmeTransportTypeEnum) Get() *NvmeTransportTypeEnum {
-	return v.value
-}
-
-func (v *NullableNvmeTransportTypeEnum) Set(val *NvmeTransportTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNvmeTransportTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNvmeTransportTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNvmeTransportTypeEnum(val *NvmeTransportTypeEnum) *NullableNvmeTransportTypeEnum {
-	return &NullableNvmeTransportTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableNvmeTransportTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNvmeTransportTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

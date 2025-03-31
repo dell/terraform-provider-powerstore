@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HostTypeEnum Type of host. Defaults to external, so normal clients can only create external hosts. * External - A host that is not part of the PowerStore hardware. * Internal - ESXi host running on the PowerStore+ hardware. Not applicable for SAN only deployments. Internal hosts are read-only and managed automatically by the system.  Was added in version 2.0.0.0.
 type HostTypeEnum string
 
@@ -30,82 +25,6 @@ var AllowedHostTypeEnumEnumValues = []HostTypeEnum{
 	"Internal",
 }
 
-func (v *HostTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HostTypeEnum(value)
-	for _, existing := range AllowedHostTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HostTypeEnum", value)
+func (v *HostTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewHostTypeEnumFromValue returns a pointer to a valid HostTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHostTypeEnumFromValue(v string) (*HostTypeEnum, error) {
-	ev := HostTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HostTypeEnum: valid values are %v", v, AllowedHostTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HostTypeEnum) IsValid() bool {
-	for _, existing := range AllowedHostTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HostTypeEnum value
-func (v HostTypeEnum) Ptr() *HostTypeEnum {
-	return &v
-}
-
-type NullableHostTypeEnum struct {
-	value *HostTypeEnum
-	isSet bool
-}
-
-func (v NullableHostTypeEnum) Get() *HostTypeEnum {
-	return v.value
-}
-
-func (v *NullableHostTypeEnum) Set(val *HostTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHostTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHostTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHostTypeEnum(val *HostTypeEnum) *NullableHostTypeEnum {
-	return &NullableHostTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableHostTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHostTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileSystemLockingPolicyEnum File system locking policies. These policy choices control whether the NFSv4 range locks are honored. Because NFSv3 is advisory by design, this policy specifies that the NFSv4 locking feature behaves like NFSv3 (advisory mode), for backward compatiblity with applications expecting an advisory locking scheme.    * Advisory - No lock checking for NFS and honor SMB lock range only for SMB.  * Mandatory - Honor SMB and NFS lock range. 
+// FileSystemLockingPolicyEnum File system locking policies. These policy choices control whether the NFSv4 range locks are honored. Because NFSv3 is advisory by design, this policy specifies that the NFSv4 locking feature behaves like NFSv3 (advisory mode), for backward compatiblity with applications expecting an advisory locking scheme.    * Advisory - No lock checking for NFS and honor SMB lock range only for SMB.  * Mandatory - Honor SMB and NFS lock range.
 type FileSystemLockingPolicyEnum string
 
 // List of FileSystemLockingPolicyEnum
 const (
-	FILESYSTEMLOCKINGPOLICYENUM_ADVISORY FileSystemLockingPolicyEnum = "Advisory"
+	FILESYSTEMLOCKINGPOLICYENUM_ADVISORY  FileSystemLockingPolicyEnum = "Advisory"
 	FILESYSTEMLOCKINGPOLICYENUM_MANDATORY FileSystemLockingPolicyEnum = "Mandatory"
 )
 
@@ -30,82 +25,6 @@ var AllowedFileSystemLockingPolicyEnumEnumValues = []FileSystemLockingPolicyEnum
 	"Mandatory",
 }
 
-func (v *FileSystemLockingPolicyEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileSystemLockingPolicyEnum(value)
-	for _, existing := range AllowedFileSystemLockingPolicyEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileSystemLockingPolicyEnum", value)
+func (v *FileSystemLockingPolicyEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileSystemLockingPolicyEnumFromValue returns a pointer to a valid FileSystemLockingPolicyEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileSystemLockingPolicyEnumFromValue(v string) (*FileSystemLockingPolicyEnum, error) {
-	ev := FileSystemLockingPolicyEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileSystemLockingPolicyEnum: valid values are %v", v, AllowedFileSystemLockingPolicyEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileSystemLockingPolicyEnum) IsValid() bool {
-	for _, existing := range AllowedFileSystemLockingPolicyEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileSystemLockingPolicyEnum value
-func (v FileSystemLockingPolicyEnum) Ptr() *FileSystemLockingPolicyEnum {
-	return &v
-}
-
-type NullableFileSystemLockingPolicyEnum struct {
-	value *FileSystemLockingPolicyEnum
-	isSet bool
-}
-
-func (v NullableFileSystemLockingPolicyEnum) Get() *FileSystemLockingPolicyEnum {
-	return v.value
-}
-
-func (v *NullableFileSystemLockingPolicyEnum) Set(val *FileSystemLockingPolicyEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileSystemLockingPolicyEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileSystemLockingPolicyEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileSystemLockingPolicyEnum(val *FileSystemLockingPolicyEnum) *NullableFileSystemLockingPolicyEnum {
-	return &NullableFileSystemLockingPolicyEnum{value: val, isSet: true}
-}
-
-func (v NullableFileSystemLockingPolicyEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileSystemLockingPolicyEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

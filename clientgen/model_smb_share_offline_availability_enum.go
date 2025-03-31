@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// SMBShareOfflineAvailabilityEnum Defines valid states of Offline Availability,    * Manual - Only specified files will be available offline.    * Documents - All files that users open will be available offline.    * Programs - Program will preferably run from the offline cache even when connected to the network. All files that users open will be available offline.    * None - Prevents clients from storing documents and programs in offline cache (default). 
+// SMBShareOfflineAvailabilityEnum Defines valid states of Offline Availability,    * Manual - Only specified files will be available offline.    * Documents - All files that users open will be available offline.    * Programs - Program will preferably run from the offline cache even when connected to the network. All files that users open will be available offline.    * None - Prevents clients from storing documents and programs in offline cache (default).
 type SMBShareOfflineAvailabilityEnum string
 
 // List of SMBShareOfflineAvailabilityEnum
 const (
-	SMBSHAREOFFLINEAVAILABILITYENUM_MANUAL SMBShareOfflineAvailabilityEnum = "Manual"
+	SMBSHAREOFFLINEAVAILABILITYENUM_MANUAL    SMBShareOfflineAvailabilityEnum = "Manual"
 	SMBSHAREOFFLINEAVAILABILITYENUM_DOCUMENTS SMBShareOfflineAvailabilityEnum = "Documents"
-	SMBSHAREOFFLINEAVAILABILITYENUM_PROGRAMS SMBShareOfflineAvailabilityEnum = "Programs"
-	SMBSHAREOFFLINEAVAILABILITYENUM_NONE SMBShareOfflineAvailabilityEnum = "None"
+	SMBSHAREOFFLINEAVAILABILITYENUM_PROGRAMS  SMBShareOfflineAvailabilityEnum = "Programs"
+	SMBSHAREOFFLINEAVAILABILITYENUM_NONE      SMBShareOfflineAvailabilityEnum = "None"
 )
 
 // All allowed values of SMBShareOfflineAvailabilityEnum enum
@@ -34,82 +29,6 @@ var AllowedSMBShareOfflineAvailabilityEnumEnumValues = []SMBShareOfflineAvailabi
 	"None",
 }
 
-func (v *SMBShareOfflineAvailabilityEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := SMBShareOfflineAvailabilityEnum(value)
-	for _, existing := range AllowedSMBShareOfflineAvailabilityEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid SMBShareOfflineAvailabilityEnum", value)
+func (v *SMBShareOfflineAvailabilityEnum) Value() string {
+	return string(*v)
 }
-
-// NewSMBShareOfflineAvailabilityEnumFromValue returns a pointer to a valid SMBShareOfflineAvailabilityEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewSMBShareOfflineAvailabilityEnumFromValue(v string) (*SMBShareOfflineAvailabilityEnum, error) {
-	ev := SMBShareOfflineAvailabilityEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for SMBShareOfflineAvailabilityEnum: valid values are %v", v, AllowedSMBShareOfflineAvailabilityEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v SMBShareOfflineAvailabilityEnum) IsValid() bool {
-	for _, existing := range AllowedSMBShareOfflineAvailabilityEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to SMBShareOfflineAvailabilityEnum value
-func (v SMBShareOfflineAvailabilityEnum) Ptr() *SMBShareOfflineAvailabilityEnum {
-	return &v
-}
-
-type NullableSMBShareOfflineAvailabilityEnum struct {
-	value *SMBShareOfflineAvailabilityEnum
-	isSet bool
-}
-
-func (v NullableSMBShareOfflineAvailabilityEnum) Get() *SMBShareOfflineAvailabilityEnum {
-	return v.value
-}
-
-func (v *NullableSMBShareOfflineAvailabilityEnum) Set(val *SMBShareOfflineAvailabilityEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableSMBShareOfflineAvailabilityEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableSMBShareOfflineAvailabilityEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableSMBShareOfflineAvailabilityEnum(val *SMBShareOfflineAvailabilityEnum) *NullableSMBShareOfflineAvailabilityEnum {
-	return &NullableSMBShareOfflineAvailabilityEnum{value: val, isSet: true}
-}
-
-func (v NullableSMBShareOfflineAvailabilityEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableSMBShareOfflineAvailabilityEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

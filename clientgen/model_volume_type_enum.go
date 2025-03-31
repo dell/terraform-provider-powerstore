@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // VolumeTypeEnum Type of volume.  * Primary - A base object.  * Clone - A read-write object that shares storage with the object from which it is sourced.  * Snapshot - A read-only object created from a volume or clone.  * Proxy - A proxy object that is used for remote snapshot access.  Values was added in 3.5.0.0: Proxy.
 type VolumeTypeEnum string
 
 // List of VolumeTypeEnum
 const (
-	VOLUMETYPEENUM_PRIMARY VolumeTypeEnum = "Primary"
-	VOLUMETYPEENUM_CLONE VolumeTypeEnum = "Clone"
+	VOLUMETYPEENUM_PRIMARY  VolumeTypeEnum = "Primary"
+	VOLUMETYPEENUM_CLONE    VolumeTypeEnum = "Clone"
 	VOLUMETYPEENUM_SNAPSHOT VolumeTypeEnum = "Snapshot"
-	VOLUMETYPEENUM_PROXY VolumeTypeEnum = "Proxy"
+	VOLUMETYPEENUM_PROXY    VolumeTypeEnum = "Proxy"
 )
 
 // All allowed values of VolumeTypeEnum enum
@@ -34,82 +29,6 @@ var AllowedVolumeTypeEnumEnumValues = []VolumeTypeEnum{
 	"Proxy",
 }
 
-func (v *VolumeTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VolumeTypeEnum(value)
-	for _, existing := range AllowedVolumeTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VolumeTypeEnum", value)
+func (v *VolumeTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewVolumeTypeEnumFromValue returns a pointer to a valid VolumeTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVolumeTypeEnumFromValue(v string) (*VolumeTypeEnum, error) {
-	ev := VolumeTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VolumeTypeEnum: valid values are %v", v, AllowedVolumeTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VolumeTypeEnum) IsValid() bool {
-	for _, existing := range AllowedVolumeTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VolumeTypeEnum value
-func (v VolumeTypeEnum) Ptr() *VolumeTypeEnum {
-	return &v
-}
-
-type NullableVolumeTypeEnum struct {
-	value *VolumeTypeEnum
-	isSet bool
-}
-
-func (v NullableVolumeTypeEnum) Get() *VolumeTypeEnum {
-	return v.value
-}
-
-func (v *NullableVolumeTypeEnum) Set(val *VolumeTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVolumeTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVolumeTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVolumeTypeEnum(val *VolumeTypeEnum) *NullableVolumeTypeEnum {
-	return &NullableVolumeTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableVolumeTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVolumeTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

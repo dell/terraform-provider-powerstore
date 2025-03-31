@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// NFSExportDefaultAccessEnum Default access level for all hosts that can access the Export. * No_Access- Deny access to the Export for the hosts. * Read_Only- Allow read only access to the Export for the hosts. * Read_Write- Allow read write access to the Export for the hosts. * Root - Allow read write access to the Export for the hosts. Allow access to the Export for root user. * Read_Only_Root- Allow read only root access to the Export for the hosts. 
+// NFSExportDefaultAccessEnum Default access level for all hosts that can access the Export. * No_Access- Deny access to the Export for the hosts. * Read_Only- Allow read only access to the Export for the hosts. * Read_Write- Allow read write access to the Export for the hosts. * Root - Allow read write access to the Export for the hosts. Allow access to the Export for root user. * Read_Only_Root- Allow read only root access to the Export for the hosts.
 type NFSExportDefaultAccessEnum string
 
 // List of NFSExportDefaultAccessEnum
 const (
-	NFSEXPORTDEFAULTACCESSENUM_NO_ACCESS NFSExportDefaultAccessEnum = "No_Access"
-	NFSEXPORTDEFAULTACCESSENUM_READ_ONLY NFSExportDefaultAccessEnum = "Read_Only"
-	NFSEXPORTDEFAULTACCESSENUM_READ_WRITE NFSExportDefaultAccessEnum = "Read_Write"
-	NFSEXPORTDEFAULTACCESSENUM_ROOT NFSExportDefaultAccessEnum = "Root"
+	NFSEXPORTDEFAULTACCESSENUM_NO_ACCESS      NFSExportDefaultAccessEnum = "No_Access"
+	NFSEXPORTDEFAULTACCESSENUM_READ_ONLY      NFSExportDefaultAccessEnum = "Read_Only"
+	NFSEXPORTDEFAULTACCESSENUM_READ_WRITE     NFSExportDefaultAccessEnum = "Read_Write"
+	NFSEXPORTDEFAULTACCESSENUM_ROOT           NFSExportDefaultAccessEnum = "Root"
 	NFSEXPORTDEFAULTACCESSENUM_READ_ONLY_ROOT NFSExportDefaultAccessEnum = "Read_Only_Root"
 )
 
@@ -36,82 +31,6 @@ var AllowedNFSExportDefaultAccessEnumEnumValues = []NFSExportDefaultAccessEnum{
 	"Read_Only_Root",
 }
 
-func (v *NFSExportDefaultAccessEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NFSExportDefaultAccessEnum(value)
-	for _, existing := range AllowedNFSExportDefaultAccessEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NFSExportDefaultAccessEnum", value)
+func (v *NFSExportDefaultAccessEnum) Value() string {
+	return string(*v)
 }
-
-// NewNFSExportDefaultAccessEnumFromValue returns a pointer to a valid NFSExportDefaultAccessEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNFSExportDefaultAccessEnumFromValue(v string) (*NFSExportDefaultAccessEnum, error) {
-	ev := NFSExportDefaultAccessEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NFSExportDefaultAccessEnum: valid values are %v", v, AllowedNFSExportDefaultAccessEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NFSExportDefaultAccessEnum) IsValid() bool {
-	for _, existing := range AllowedNFSExportDefaultAccessEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NFSExportDefaultAccessEnum value
-func (v NFSExportDefaultAccessEnum) Ptr() *NFSExportDefaultAccessEnum {
-	return &v
-}
-
-type NullableNFSExportDefaultAccessEnum struct {
-	value *NFSExportDefaultAccessEnum
-	isSet bool
-}
-
-func (v NullableNFSExportDefaultAccessEnum) Get() *NFSExportDefaultAccessEnum {
-	return v.value
-}
-
-func (v *NullableNFSExportDefaultAccessEnum) Set(val *NFSExportDefaultAccessEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNFSExportDefaultAccessEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNFSExportDefaultAccessEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNFSExportDefaultAccessEnum(val *NFSExportDefaultAccessEnum) *NullableNFSExportDefaultAccessEnum {
-	return &NullableNFSExportDefaultAccessEnum{value: val, isSet: true}
-}
-
-func (v NullableNFSExportDefaultAccessEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNFSExportDefaultAccessEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

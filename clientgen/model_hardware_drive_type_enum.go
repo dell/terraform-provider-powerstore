@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareDriveTypeEnum Type of drive. Available on the Drive hardware type. Current types are:  * Unknown  * SAS_SSD - SAS-connected SSD in an Expansion Enclosure.  * NVMe_SCM - NVME-Connected Storage Class Memory.  * NVMe_NVRAM - NVME-Connected Non-volatile RAM.  * NVMe_SSD - NVME-Connected TLC SSD.  * NVMe_Virtual  - NVME-Connected Virtual drive.  * NVMe_SSD_QLC - NVME-Connected QLC SSD. 
+// HardwareDriveTypeEnum Type of drive. Available on the Drive hardware type. Current types are:  * Unknown  * SAS_SSD - SAS-connected SSD in an Expansion Enclosure.  * NVMe_SCM - NVME-Connected Storage Class Memory.  * NVMe_NVRAM - NVME-Connected Non-volatile RAM.  * NVMe_SSD - NVME-Connected TLC SSD.  * NVMe_Virtual  - NVME-Connected Virtual drive.  * NVMe_SSD_QLC - NVME-Connected QLC SSD.
 type HardwareDriveTypeEnum string
 
 // List of HardwareDriveTypeEnum
 const (
-	HARDWAREDRIVETYPEENUM_UNKNOWN HardwareDriveTypeEnum = "Unknown"
-	HARDWAREDRIVETYPEENUM_SAS_SSD HardwareDriveTypeEnum = "SAS_SSD"
-	HARDWAREDRIVETYPEENUM_NVME_SCM HardwareDriveTypeEnum = "NVMe_SCM"
-	HARDWAREDRIVETYPEENUM_NVME_NVRAM HardwareDriveTypeEnum = "NVMe_NVRAM"
-	HARDWAREDRIVETYPEENUM_NVME_SSD HardwareDriveTypeEnum = "NVMe_SSD"
+	HARDWAREDRIVETYPEENUM_UNKNOWN      HardwareDriveTypeEnum = "Unknown"
+	HARDWAREDRIVETYPEENUM_SAS_SSD      HardwareDriveTypeEnum = "SAS_SSD"
+	HARDWAREDRIVETYPEENUM_NVME_SCM     HardwareDriveTypeEnum = "NVMe_SCM"
+	HARDWAREDRIVETYPEENUM_NVME_NVRAM   HardwareDriveTypeEnum = "NVMe_NVRAM"
+	HARDWAREDRIVETYPEENUM_NVME_SSD     HardwareDriveTypeEnum = "NVMe_SSD"
 	HARDWAREDRIVETYPEENUM_NVME_VIRTUAL HardwareDriveTypeEnum = "NVMe_Virtual"
 	HARDWAREDRIVETYPEENUM_NVME_SSD_QLC HardwareDriveTypeEnum = "NVMe_SSD_QLC"
 )
@@ -40,82 +35,6 @@ var AllowedHardwareDriveTypeEnumEnumValues = []HardwareDriveTypeEnum{
 	"NVMe_SSD_QLC",
 }
 
-func (v *HardwareDriveTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareDriveTypeEnum(value)
-	for _, existing := range AllowedHardwareDriveTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareDriveTypeEnum", value)
+func (v *HardwareDriveTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareDriveTypeEnumFromValue returns a pointer to a valid HardwareDriveTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareDriveTypeEnumFromValue(v string) (*HardwareDriveTypeEnum, error) {
-	ev := HardwareDriveTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareDriveTypeEnum: valid values are %v", v, AllowedHardwareDriveTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareDriveTypeEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareDriveTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareDriveTypeEnum value
-func (v HardwareDriveTypeEnum) Ptr() *HardwareDriveTypeEnum {
-	return &v
-}
-
-type NullableHardwareDriveTypeEnum struct {
-	value *HardwareDriveTypeEnum
-	isSet bool
-}
-
-func (v NullableHardwareDriveTypeEnum) Get() *HardwareDriveTypeEnum {
-	return v.value
-}
-
-func (v *NullableHardwareDriveTypeEnum) Set(val *HardwareDriveTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareDriveTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareDriveTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareDriveTypeEnum(val *HardwareDriveTypeEnum) *NullableHardwareDriveTypeEnum {
-	return &NullableHardwareDriveTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareDriveTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareDriveTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

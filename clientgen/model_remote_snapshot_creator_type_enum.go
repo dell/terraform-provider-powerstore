@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSnapshotCreatorTypeEnum Creator type of the remote snapshot:  * PowerProtect_DD - Remote snapshot created by PowerProtect DD.  * Power_Store - Remote snapshot created by PowerStore.  Was added in version 3.5.0.0.
 type RemoteSnapshotCreatorTypeEnum string
 
 // List of RemoteSnapshotCreatorTypeEnum
 const (
 	REMOTESNAPSHOTCREATORTYPEENUM_POWER_PROTECT_DD RemoteSnapshotCreatorTypeEnum = "PowerProtect_DD"
-	REMOTESNAPSHOTCREATORTYPEENUM_POWER_STORE RemoteSnapshotCreatorTypeEnum = "Power_Store"
+	REMOTESNAPSHOTCREATORTYPEENUM_POWER_STORE      RemoteSnapshotCreatorTypeEnum = "Power_Store"
 )
 
 // All allowed values of RemoteSnapshotCreatorTypeEnum enum
@@ -30,82 +25,6 @@ var AllowedRemoteSnapshotCreatorTypeEnumEnumValues = []RemoteSnapshotCreatorType
 	"Power_Store",
 }
 
-func (v *RemoteSnapshotCreatorTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := RemoteSnapshotCreatorTypeEnum(value)
-	for _, existing := range AllowedRemoteSnapshotCreatorTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid RemoteSnapshotCreatorTypeEnum", value)
+func (v *RemoteSnapshotCreatorTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewRemoteSnapshotCreatorTypeEnumFromValue returns a pointer to a valid RemoteSnapshotCreatorTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewRemoteSnapshotCreatorTypeEnumFromValue(v string) (*RemoteSnapshotCreatorTypeEnum, error) {
-	ev := RemoteSnapshotCreatorTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for RemoteSnapshotCreatorTypeEnum: valid values are %v", v, AllowedRemoteSnapshotCreatorTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v RemoteSnapshotCreatorTypeEnum) IsValid() bool {
-	for _, existing := range AllowedRemoteSnapshotCreatorTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to RemoteSnapshotCreatorTypeEnum value
-func (v RemoteSnapshotCreatorTypeEnum) Ptr() *RemoteSnapshotCreatorTypeEnum {
-	return &v
-}
-
-type NullableRemoteSnapshotCreatorTypeEnum struct {
-	value *RemoteSnapshotCreatorTypeEnum
-	isSet bool
-}
-
-func (v NullableRemoteSnapshotCreatorTypeEnum) Get() *RemoteSnapshotCreatorTypeEnum {
-	return v.value
-}
-
-func (v *NullableRemoteSnapshotCreatorTypeEnum) Set(val *RemoteSnapshotCreatorTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableRemoteSnapshotCreatorTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableRemoteSnapshotCreatorTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableRemoteSnapshotCreatorTypeEnum(val *RemoteSnapshotCreatorTypeEnum) *NullableRemoteSnapshotCreatorTypeEnum {
-	return &NullableRemoteSnapshotCreatorTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableRemoteSnapshotCreatorTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableRemoteSnapshotCreatorTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

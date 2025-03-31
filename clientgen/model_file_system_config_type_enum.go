@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileSystemConfigTypeEnum Indicates the file system type. * General - General purpose use case file system. * VMware - Vmware datastore purpose use case file system.  Was added in version 3.0.0.0.
 type FileSystemConfigTypeEnum string
 
@@ -30,82 +25,6 @@ var AllowedFileSystemConfigTypeEnumEnumValues = []FileSystemConfigTypeEnum{
 	"VMware",
 }
 
-func (v *FileSystemConfigTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileSystemConfigTypeEnum(value)
-	for _, existing := range AllowedFileSystemConfigTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileSystemConfigTypeEnum", value)
+func (v *FileSystemConfigTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileSystemConfigTypeEnumFromValue returns a pointer to a valid FileSystemConfigTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileSystemConfigTypeEnumFromValue(v string) (*FileSystemConfigTypeEnum, error) {
-	ev := FileSystemConfigTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileSystemConfigTypeEnum: valid values are %v", v, AllowedFileSystemConfigTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileSystemConfigTypeEnum) IsValid() bool {
-	for _, existing := range AllowedFileSystemConfigTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileSystemConfigTypeEnum value
-func (v FileSystemConfigTypeEnum) Ptr() *FileSystemConfigTypeEnum {
-	return &v
-}
-
-type NullableFileSystemConfigTypeEnum struct {
-	value *FileSystemConfigTypeEnum
-	isSet bool
-}
-
-func (v NullableFileSystemConfigTypeEnum) Get() *FileSystemConfigTypeEnum {
-	return v.value
-}
-
-func (v *NullableFileSystemConfigTypeEnum) Set(val *FileSystemConfigTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileSystemConfigTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileSystemConfigTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileSystemConfigTypeEnum(val *FileSystemConfigTypeEnum) *NullableFileSystemConfigTypeEnum {
-	return &NullableFileSystemConfigTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableFileSystemConfigTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileSystemConfigTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

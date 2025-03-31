@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ApplianceStorageClassEnum Describes the class of storage used by the appliance. Possible values include: * TLC_Based_Flash - The appliance uses triple-level cell (TLC) data storage, which means each NAND flash memory cell contains three bits of data. * QLC_Based_Flash - The appliance uses quad-level cell (QLC) data storage, which means each NAND flash memory cell contains four bits of data.   Was added in version 4.0.0.0.
 type ApplianceStorageClassEnum string
 
@@ -30,82 +25,6 @@ var AllowedApplianceStorageClassEnumEnumValues = []ApplianceStorageClassEnum{
 	"TLC_Based_Flash",
 }
 
-func (v *ApplianceStorageClassEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := ApplianceStorageClassEnum(value)
-	for _, existing := range AllowedApplianceStorageClassEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid ApplianceStorageClassEnum", value)
+func (v *ApplianceStorageClassEnum) Value() string {
+	return string(*v)
 }
-
-// NewApplianceStorageClassEnumFromValue returns a pointer to a valid ApplianceStorageClassEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewApplianceStorageClassEnumFromValue(v string) (*ApplianceStorageClassEnum, error) {
-	ev := ApplianceStorageClassEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ApplianceStorageClassEnum: valid values are %v", v, AllowedApplianceStorageClassEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v ApplianceStorageClassEnum) IsValid() bool {
-	for _, existing := range AllowedApplianceStorageClassEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to ApplianceStorageClassEnum value
-func (v ApplianceStorageClassEnum) Ptr() *ApplianceStorageClassEnum {
-	return &v
-}
-
-type NullableApplianceStorageClassEnum struct {
-	value *ApplianceStorageClassEnum
-	isSet bool
-}
-
-func (v NullableApplianceStorageClassEnum) Get() *ApplianceStorageClassEnum {
-	return v.value
-}
-
-func (v *NullableApplianceStorageClassEnum) Set(val *ApplianceStorageClassEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableApplianceStorageClassEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableApplianceStorageClassEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableApplianceStorageClassEnum(val *ApplianceStorageClassEnum) *NullableApplianceStorageClassEnum {
-	return &NullableApplianceStorageClassEnum{value: val, isSet: true}
-}
-
-func (v NullableApplianceStorageClassEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableApplianceStorageClassEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

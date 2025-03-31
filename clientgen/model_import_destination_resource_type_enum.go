@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// ImportDestinationResourceTypeEnum Storage resource type of the import destination. Values are: * volume - The destination resource of the import session is a volume. * volume_group - The destination resource of the import session is a volume group. 
+// ImportDestinationResourceTypeEnum Storage resource type of the import destination. Values are: * volume - The destination resource of the import session is a volume. * volume_group - The destination resource of the import session is a volume group.
 type ImportDestinationResourceTypeEnum string
 
 // List of ImportDestinationResourceTypeEnum
 const (
-	IMPORTDESTINATIONRESOURCETYPEENUM_VOLUME ImportDestinationResourceTypeEnum = "volume"
+	IMPORTDESTINATIONRESOURCETYPEENUM_VOLUME       ImportDestinationResourceTypeEnum = "volume"
 	IMPORTDESTINATIONRESOURCETYPEENUM_VOLUME_GROUP ImportDestinationResourceTypeEnum = "volume_group"
 )
 
@@ -30,82 +25,6 @@ var AllowedImportDestinationResourceTypeEnumEnumValues = []ImportDestinationReso
 	"volume_group",
 }
 
-func (v *ImportDestinationResourceTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := ImportDestinationResourceTypeEnum(value)
-	for _, existing := range AllowedImportDestinationResourceTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid ImportDestinationResourceTypeEnum", value)
+func (v *ImportDestinationResourceTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewImportDestinationResourceTypeEnumFromValue returns a pointer to a valid ImportDestinationResourceTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportDestinationResourceTypeEnumFromValue(v string) (*ImportDestinationResourceTypeEnum, error) {
-	ev := ImportDestinationResourceTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportDestinationResourceTypeEnum: valid values are %v", v, AllowedImportDestinationResourceTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v ImportDestinationResourceTypeEnum) IsValid() bool {
-	for _, existing := range AllowedImportDestinationResourceTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to ImportDestinationResourceTypeEnum value
-func (v ImportDestinationResourceTypeEnum) Ptr() *ImportDestinationResourceTypeEnum {
-	return &v
-}
-
-type NullableImportDestinationResourceTypeEnum struct {
-	value *ImportDestinationResourceTypeEnum
-	isSet bool
-}
-
-func (v NullableImportDestinationResourceTypeEnum) Get() *ImportDestinationResourceTypeEnum {
-	return v.value
-}
-
-func (v *NullableImportDestinationResourceTypeEnum) Set(val *ImportDestinationResourceTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableImportDestinationResourceTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableImportDestinationResourceTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableImportDestinationResourceTypeEnum(val *ImportDestinationResourceTypeEnum) *NullableImportDestinationResourceTypeEnum {
-	return &NullableImportDestinationResourceTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableImportDestinationResourceTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableImportDestinationResourceTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

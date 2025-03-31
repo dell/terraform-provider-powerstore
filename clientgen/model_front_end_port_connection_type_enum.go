@@ -10,35 +10,30 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FrontEndPortConnectionTypeEnum Type of connector supported by the port. Current values are:  * Unknown - Unknown Connector  * SC - Subscriber Connector  * FC_Style1_Copper - Fibre Channel Style 1 Copper Connector  * FC_Style2_Copper - Fibre Channel Style 1 Copper Connector  * BNC_TNC - Bayonet/Threaded Neill-Concelman Connector  * FC_Coaxial_Headers - Fibre Channel Coaxial Headers Connector  * FiberJack - Fiber Jack Connector  * LC - Lucent Connector  * MT_RJ - Mechanical Transfer - Registered Jack Connector  * MU - Multiple Optical Connector  * SG - SG Connector  * Optical_Pigtail - Optical Pigtail Connector  * HSSDC_II - High Speed Serial Data Connector  * Copper_Pigtail - Copper Pigtail Connector  * RJ45 - RJ45 Connector  * No_Separable - No Separable Connector  * MXC_2x16 - MXC 2x16 Connector  * MPO_1x12 - MPO 1x12 Connector  * MPO_2x16 - MPO 2x16 Connector  Values was added in 4.0.0.0: MPO_1x12, MPO_2x16.
 type FrontEndPortConnectionTypeEnum string
 
 // List of FrontEndPortConnectionTypeEnum
 const (
-	FRONTENDPORTCONNECTIONTYPEENUM_UNKNOWN FrontEndPortConnectionTypeEnum = "Unknown"
-	FRONTENDPORTCONNECTIONTYPEENUM_SC FrontEndPortConnectionTypeEnum = "SC"
-	FRONTENDPORTCONNECTIONTYPEENUM_FC_STYLE1_COPPER FrontEndPortConnectionTypeEnum = "FC_Style1_Copper"
-	FRONTENDPORTCONNECTIONTYPEENUM_FC_STYLE2_COPPER FrontEndPortConnectionTypeEnum = "FC_Style2_Copper"
-	FRONTENDPORTCONNECTIONTYPEENUM_BNC_TNC FrontEndPortConnectionTypeEnum = "BNC_TNC"
+	FRONTENDPORTCONNECTIONTYPEENUM_UNKNOWN            FrontEndPortConnectionTypeEnum = "Unknown"
+	FRONTENDPORTCONNECTIONTYPEENUM_SC                 FrontEndPortConnectionTypeEnum = "SC"
+	FRONTENDPORTCONNECTIONTYPEENUM_FC_STYLE1_COPPER   FrontEndPortConnectionTypeEnum = "FC_Style1_Copper"
+	FRONTENDPORTCONNECTIONTYPEENUM_FC_STYLE2_COPPER   FrontEndPortConnectionTypeEnum = "FC_Style2_Copper"
+	FRONTENDPORTCONNECTIONTYPEENUM_BNC_TNC            FrontEndPortConnectionTypeEnum = "BNC_TNC"
 	FRONTENDPORTCONNECTIONTYPEENUM_FC_COAXIAL_HEADERS FrontEndPortConnectionTypeEnum = "FC_Coaxial_Headers"
-	FRONTENDPORTCONNECTIONTYPEENUM_FIBER_JACK FrontEndPortConnectionTypeEnum = "FiberJack"
-	FRONTENDPORTCONNECTIONTYPEENUM_LC FrontEndPortConnectionTypeEnum = "LC"
-	FRONTENDPORTCONNECTIONTYPEENUM_MT_RJ FrontEndPortConnectionTypeEnum = "MT_RJ"
-	FRONTENDPORTCONNECTIONTYPEENUM_MU FrontEndPortConnectionTypeEnum = "MU"
-	FRONTENDPORTCONNECTIONTYPEENUM_SG FrontEndPortConnectionTypeEnum = "SG"
-	FRONTENDPORTCONNECTIONTYPEENUM_OPTICAL_PIGTAIL FrontEndPortConnectionTypeEnum = "Optical_Pigtail"
-	FRONTENDPORTCONNECTIONTYPEENUM_HSSDC_II FrontEndPortConnectionTypeEnum = "HSSDC_II"
-	FRONTENDPORTCONNECTIONTYPEENUM_COPPER_PIGTAIL FrontEndPortConnectionTypeEnum = "Copper_Pigtail"
-	FRONTENDPORTCONNECTIONTYPEENUM_RJ45 FrontEndPortConnectionTypeEnum = "RJ45"
-	FRONTENDPORTCONNECTIONTYPEENUM_NO_SEPARABLE FrontEndPortConnectionTypeEnum = "No_Separable"
-	FRONTENDPORTCONNECTIONTYPEENUM_MXC_2X16 FrontEndPortConnectionTypeEnum = "MXC_2x16"
-	FRONTENDPORTCONNECTIONTYPEENUM_MPO_1X12 FrontEndPortConnectionTypeEnum = "MPO_1x12"
-	FRONTENDPORTCONNECTIONTYPEENUM_MPO_2X16 FrontEndPortConnectionTypeEnum = "MPO_2x16"
+	FRONTENDPORTCONNECTIONTYPEENUM_FIBER_JACK         FrontEndPortConnectionTypeEnum = "FiberJack"
+	FRONTENDPORTCONNECTIONTYPEENUM_LC                 FrontEndPortConnectionTypeEnum = "LC"
+	FRONTENDPORTCONNECTIONTYPEENUM_MT_RJ              FrontEndPortConnectionTypeEnum = "MT_RJ"
+	FRONTENDPORTCONNECTIONTYPEENUM_MU                 FrontEndPortConnectionTypeEnum = "MU"
+	FRONTENDPORTCONNECTIONTYPEENUM_SG                 FrontEndPortConnectionTypeEnum = "SG"
+	FRONTENDPORTCONNECTIONTYPEENUM_OPTICAL_PIGTAIL    FrontEndPortConnectionTypeEnum = "Optical_Pigtail"
+	FRONTENDPORTCONNECTIONTYPEENUM_HSSDC_II           FrontEndPortConnectionTypeEnum = "HSSDC_II"
+	FRONTENDPORTCONNECTIONTYPEENUM_COPPER_PIGTAIL     FrontEndPortConnectionTypeEnum = "Copper_Pigtail"
+	FRONTENDPORTCONNECTIONTYPEENUM_RJ45               FrontEndPortConnectionTypeEnum = "RJ45"
+	FRONTENDPORTCONNECTIONTYPEENUM_NO_SEPARABLE       FrontEndPortConnectionTypeEnum = "No_Separable"
+	FRONTENDPORTCONNECTIONTYPEENUM_MXC_2X16           FrontEndPortConnectionTypeEnum = "MXC_2x16"
+	FRONTENDPORTCONNECTIONTYPEENUM_MPO_1X12           FrontEndPortConnectionTypeEnum = "MPO_1x12"
+	FRONTENDPORTCONNECTIONTYPEENUM_MPO_2X16           FrontEndPortConnectionTypeEnum = "MPO_2x16"
 )
 
 // All allowed values of FrontEndPortConnectionTypeEnum enum
@@ -64,82 +59,6 @@ var AllowedFrontEndPortConnectionTypeEnumEnumValues = []FrontEndPortConnectionTy
 	"MPO_2x16",
 }
 
-func (v *FrontEndPortConnectionTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FrontEndPortConnectionTypeEnum(value)
-	for _, existing := range AllowedFrontEndPortConnectionTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FrontEndPortConnectionTypeEnum", value)
+func (v *FrontEndPortConnectionTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFrontEndPortConnectionTypeEnumFromValue returns a pointer to a valid FrontEndPortConnectionTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFrontEndPortConnectionTypeEnumFromValue(v string) (*FrontEndPortConnectionTypeEnum, error) {
-	ev := FrontEndPortConnectionTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FrontEndPortConnectionTypeEnum: valid values are %v", v, AllowedFrontEndPortConnectionTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FrontEndPortConnectionTypeEnum) IsValid() bool {
-	for _, existing := range AllowedFrontEndPortConnectionTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FrontEndPortConnectionTypeEnum value
-func (v FrontEndPortConnectionTypeEnum) Ptr() *FrontEndPortConnectionTypeEnum {
-	return &v
-}
-
-type NullableFrontEndPortConnectionTypeEnum struct {
-	value *FrontEndPortConnectionTypeEnum
-	isSet bool
-}
-
-func (v NullableFrontEndPortConnectionTypeEnum) Get() *FrontEndPortConnectionTypeEnum {
-	return v.value
-}
-
-func (v *NullableFrontEndPortConnectionTypeEnum) Set(val *FrontEndPortConnectionTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFrontEndPortConnectionTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFrontEndPortConnectionTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFrontEndPortConnectionTypeEnum(val *FrontEndPortConnectionTypeEnum) *NullableFrontEndPortConnectionTypeEnum {
-	return &NullableFrontEndPortConnectionTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableFrontEndPortConnectionTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFrontEndPortConnectionTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

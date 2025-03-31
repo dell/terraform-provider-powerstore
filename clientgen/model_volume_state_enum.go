@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// VolumeStateEnum Volume life cycle states.  * Ready - Volume is operating normally.  * Initializing - Volume is starting but not yet ready for use.  * Offline - Volume is not available.  * Destroying - Volume is being deleted. No new operations are allowed. 
+// VolumeStateEnum Volume life cycle states.  * Ready - Volume is operating normally.  * Initializing - Volume is starting but not yet ready for use.  * Offline - Volume is not available.  * Destroying - Volume is being deleted. No new operations are allowed.
 type VolumeStateEnum string
 
 // List of VolumeStateEnum
 const (
-	VOLUMESTATEENUM_READY VolumeStateEnum = "Ready"
+	VOLUMESTATEENUM_READY        VolumeStateEnum = "Ready"
 	VOLUMESTATEENUM_INITIALIZING VolumeStateEnum = "Initializing"
-	VOLUMESTATEENUM_OFFLINE VolumeStateEnum = "Offline"
-	VOLUMESTATEENUM_DESTROYING VolumeStateEnum = "Destroying"
+	VOLUMESTATEENUM_OFFLINE      VolumeStateEnum = "Offline"
+	VOLUMESTATEENUM_DESTROYING   VolumeStateEnum = "Destroying"
 )
 
 // All allowed values of VolumeStateEnum enum
@@ -34,82 +29,6 @@ var AllowedVolumeStateEnumEnumValues = []VolumeStateEnum{
 	"Destroying",
 }
 
-func (v *VolumeStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VolumeStateEnum(value)
-	for _, existing := range AllowedVolumeStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VolumeStateEnum", value)
+func (v *VolumeStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewVolumeStateEnumFromValue returns a pointer to a valid VolumeStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVolumeStateEnumFromValue(v string) (*VolumeStateEnum, error) {
-	ev := VolumeStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VolumeStateEnum: valid values are %v", v, AllowedVolumeStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VolumeStateEnum) IsValid() bool {
-	for _, existing := range AllowedVolumeStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VolumeStateEnum value
-func (v VolumeStateEnum) Ptr() *VolumeStateEnum {
-	return &v
-}
-
-type NullableVolumeStateEnum struct {
-	value *VolumeStateEnum
-	isSet bool
-}
-
-func (v NullableVolumeStateEnum) Get() *VolumeStateEnum {
-	return v.value
-}
-
-func (v *NullableVolumeStateEnum) Set(val *VolumeStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVolumeStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVolumeStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVolumeStateEnum(val *VolumeStateEnum) *NullableVolumeStateEnum {
-	return &NullableVolumeStateEnum{value: val, isSet: true}
-}
-
-func (v NullableVolumeStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVolumeStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

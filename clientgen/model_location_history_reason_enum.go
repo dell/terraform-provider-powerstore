@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// LocationHistoryReasonEnum Reason for storage resource relocation.  * Initial - Initial placement.  * Manual - Manual migration operation initiated by user.  * Recommended - Storage system recommended migration. 
+// LocationHistoryReasonEnum Reason for storage resource relocation.  * Initial - Initial placement.  * Manual - Manual migration operation initiated by user.  * Recommended - Storage system recommended migration.
 type LocationHistoryReasonEnum string
 
 // List of LocationHistoryReasonEnum
 const (
-	LOCATIONHISTORYREASONENUM_INITIAL LocationHistoryReasonEnum = "Initial"
-	LOCATIONHISTORYREASONENUM_MANUAL LocationHistoryReasonEnum = "Manual"
+	LOCATIONHISTORYREASONENUM_INITIAL     LocationHistoryReasonEnum = "Initial"
+	LOCATIONHISTORYREASONENUM_MANUAL      LocationHistoryReasonEnum = "Manual"
 	LOCATIONHISTORYREASONENUM_RECOMMENDED LocationHistoryReasonEnum = "Recommended"
 )
 
@@ -32,82 +27,6 @@ var AllowedLocationHistoryReasonEnumEnumValues = []LocationHistoryReasonEnum{
 	"Recommended",
 }
 
-func (v *LocationHistoryReasonEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := LocationHistoryReasonEnum(value)
-	for _, existing := range AllowedLocationHistoryReasonEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid LocationHistoryReasonEnum", value)
+func (v *LocationHistoryReasonEnum) Value() string {
+	return string(*v)
 }
-
-// NewLocationHistoryReasonEnumFromValue returns a pointer to a valid LocationHistoryReasonEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewLocationHistoryReasonEnumFromValue(v string) (*LocationHistoryReasonEnum, error) {
-	ev := LocationHistoryReasonEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for LocationHistoryReasonEnum: valid values are %v", v, AllowedLocationHistoryReasonEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v LocationHistoryReasonEnum) IsValid() bool {
-	for _, existing := range AllowedLocationHistoryReasonEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to LocationHistoryReasonEnum value
-func (v LocationHistoryReasonEnum) Ptr() *LocationHistoryReasonEnum {
-	return &v
-}
-
-type NullableLocationHistoryReasonEnum struct {
-	value *LocationHistoryReasonEnum
-	isSet bool
-}
-
-func (v NullableLocationHistoryReasonEnum) Get() *LocationHistoryReasonEnum {
-	return v.value
-}
-
-func (v *NullableLocationHistoryReasonEnum) Set(val *LocationHistoryReasonEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableLocationHistoryReasonEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableLocationHistoryReasonEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableLocationHistoryReasonEnum(val *LocationHistoryReasonEnum) *NullableLocationHistoryReasonEnum {
-	return &NullableLocationHistoryReasonEnum{value: val, isSet: true}
-}
-
-func (v NullableLocationHistoryReasonEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableLocationHistoryReasonEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

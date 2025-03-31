@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ApplianceModeEnum The storage access modes that are supported by the appliance.   * Unified - Both block and file storage are supported.   * Block - Only block storage is supported. Changing the mode will reboot the appliance.  Was added in version 4.0.0.0.
 type ApplianceModeEnum string
 
 // List of ApplianceModeEnum
 const (
 	APPLIANCEMODEENUM_UNIFIED ApplianceModeEnum = "Unified"
-	APPLIANCEMODEENUM_BLOCK ApplianceModeEnum = "Block"
+	APPLIANCEMODEENUM_BLOCK   ApplianceModeEnum = "Block"
 )
 
 // All allowed values of ApplianceModeEnum enum
@@ -30,82 +25,6 @@ var AllowedApplianceModeEnumEnumValues = []ApplianceModeEnum{
 	"Block",
 }
 
-func (v *ApplianceModeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := ApplianceModeEnum(value)
-	for _, existing := range AllowedApplianceModeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid ApplianceModeEnum", value)
+func (v *ApplianceModeEnum) Value() string {
+	return string(*v)
 }
-
-// NewApplianceModeEnumFromValue returns a pointer to a valid ApplianceModeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewApplianceModeEnumFromValue(v string) (*ApplianceModeEnum, error) {
-	ev := ApplianceModeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ApplianceModeEnum: valid values are %v", v, AllowedApplianceModeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v ApplianceModeEnum) IsValid() bool {
-	for _, existing := range AllowedApplianceModeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to ApplianceModeEnum value
-func (v ApplianceModeEnum) Ptr() *ApplianceModeEnum {
-	return &v
-}
-
-type NullableApplianceModeEnum struct {
-	value *ApplianceModeEnum
-	isSet bool
-}
-
-func (v NullableApplianceModeEnum) Get() *ApplianceModeEnum {
-	return v.value
-}
-
-func (v *NullableApplianceModeEnum) Set(val *ApplianceModeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableApplianceModeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableApplianceModeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableApplianceModeEnum(val *ApplianceModeEnum) *NullableApplianceModeEnum {
-	return &NullableApplianceModeEnum{value: val, isSet: true}
-}
-
-func (v NullableApplianceModeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableApplianceModeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

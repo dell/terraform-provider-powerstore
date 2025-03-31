@@ -10,25 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // IpPortUsageEnum IP port usages. * Management - Can be used for the public management network. * ISCSI - Can be used for the public storage network via iSCSI. * ISCSI_Default - The default IP port used for HA storage access, the storage discovery address, and is the default port for replication on PowerStore X appliances. IP ports tagged with ISCSI_Default may not be removed. This usage is no longer applicable to Power Store T appliances, though it may remain on PowerStore T appliances that have been upgraded from a release where it was used. * NVMe_TCP - Can be used for the public storage network via NVMe/TCP. * External_Replication - Can be used for remote system replication or import traffic. * File_Mobility - Can be used for NAS server file replication. * File_Data - Can be used for NAS server file interface configuration. * ICM - Can be used for management within the cluster. * ICD - Can be used for data within the cluster.  Values was added in 2.1.0.0: NVMe_TCP. Values was added in 3.0.0.0: File_Mobility, File_Data. Values was added in 3.5.0.0: ICM, ICD.
 type IpPortUsageEnum string
 
 // List of IpPortUsageEnum
 const (
-	IPPORTUSAGEENUM_MANAGEMENT IpPortUsageEnum = "Management"
-	IPPORTUSAGEENUM_ISCSI IpPortUsageEnum = "ISCSI"
-	IPPORTUSAGEENUM_ISCSI_DEFAULT IpPortUsageEnum = "ISCSI_Default"
-	IPPORTUSAGEENUM_NVME_TCP IpPortUsageEnum = "NVMe_TCP"
+	IPPORTUSAGEENUM_MANAGEMENT           IpPortUsageEnum = "Management"
+	IPPORTUSAGEENUM_ISCSI                IpPortUsageEnum = "ISCSI"
+	IPPORTUSAGEENUM_ISCSI_DEFAULT        IpPortUsageEnum = "ISCSI_Default"
+	IPPORTUSAGEENUM_NVME_TCP             IpPortUsageEnum = "NVMe_TCP"
 	IPPORTUSAGEENUM_EXTERNAL_REPLICATION IpPortUsageEnum = "External_Replication"
-	IPPORTUSAGEENUM_FILE_MOBILITY IpPortUsageEnum = "File_Mobility"
-	IPPORTUSAGEENUM_FILE_DATA IpPortUsageEnum = "File_Data"
-	IPPORTUSAGEENUM_ICM IpPortUsageEnum = "ICM"
-	IPPORTUSAGEENUM_ICD IpPortUsageEnum = "ICD"
+	IPPORTUSAGEENUM_FILE_MOBILITY        IpPortUsageEnum = "File_Mobility"
+	IPPORTUSAGEENUM_FILE_DATA            IpPortUsageEnum = "File_Data"
+	IPPORTUSAGEENUM_ICM                  IpPortUsageEnum = "ICM"
+	IPPORTUSAGEENUM_ICD                  IpPortUsageEnum = "ICD"
 )
 
 // All allowed values of IpPortUsageEnum enum
@@ -44,82 +39,6 @@ var AllowedIpPortUsageEnumEnumValues = []IpPortUsageEnum{
 	"ICD",
 }
 
-func (v *IpPortUsageEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := IpPortUsageEnum(value)
-	for _, existing := range AllowedIpPortUsageEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid IpPortUsageEnum", value)
+func (v *IpPortUsageEnum) Value() string {
+	return string(*v)
 }
-
-// NewIpPortUsageEnumFromValue returns a pointer to a valid IpPortUsageEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewIpPortUsageEnumFromValue(v string) (*IpPortUsageEnum, error) {
-	ev := IpPortUsageEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for IpPortUsageEnum: valid values are %v", v, AllowedIpPortUsageEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v IpPortUsageEnum) IsValid() bool {
-	for _, existing := range AllowedIpPortUsageEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to IpPortUsageEnum value
-func (v IpPortUsageEnum) Ptr() *IpPortUsageEnum {
-	return &v
-}
-
-type NullableIpPortUsageEnum struct {
-	value *IpPortUsageEnum
-	isSet bool
-}
-
-func (v NullableIpPortUsageEnum) Get() *IpPortUsageEnum {
-	return v.value
-}
-
-func (v *NullableIpPortUsageEnum) Set(val *IpPortUsageEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableIpPortUsageEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableIpPortUsageEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableIpPortUsageEnum(val *IpPortUsageEnum) *NullableIpPortUsageEnum {
-	return &NullableIpPortUsageEnum{value: val, isSet: true}
-}
-
-func (v NullableIpPortUsageEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableIpPortUsageEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

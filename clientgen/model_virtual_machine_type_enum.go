@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// VirtualMachineTypeEnum Type of VM: * Primary - A base VM. * Template - A VM template. * Snapshot - A snapshot of a VM. 
+// VirtualMachineTypeEnum Type of VM: * Primary - A base VM. * Template - A VM template. * Snapshot - A snapshot of a VM.
 type VirtualMachineTypeEnum string
 
 // List of VirtualMachineTypeEnum
 const (
-	VIRTUALMACHINETYPEENUM_PRIMARY VirtualMachineTypeEnum = "Primary"
+	VIRTUALMACHINETYPEENUM_PRIMARY  VirtualMachineTypeEnum = "Primary"
 	VIRTUALMACHINETYPEENUM_TEMPLATE VirtualMachineTypeEnum = "Template"
 	VIRTUALMACHINETYPEENUM_SNAPSHOT VirtualMachineTypeEnum = "Snapshot"
 )
@@ -32,82 +27,6 @@ var AllowedVirtualMachineTypeEnumEnumValues = []VirtualMachineTypeEnum{
 	"Snapshot",
 }
 
-func (v *VirtualMachineTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VirtualMachineTypeEnum(value)
-	for _, existing := range AllowedVirtualMachineTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VirtualMachineTypeEnum", value)
+func (v *VirtualMachineTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewVirtualMachineTypeEnumFromValue returns a pointer to a valid VirtualMachineTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVirtualMachineTypeEnumFromValue(v string) (*VirtualMachineTypeEnum, error) {
-	ev := VirtualMachineTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VirtualMachineTypeEnum: valid values are %v", v, AllowedVirtualMachineTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VirtualMachineTypeEnum) IsValid() bool {
-	for _, existing := range AllowedVirtualMachineTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VirtualMachineTypeEnum value
-func (v VirtualMachineTypeEnum) Ptr() *VirtualMachineTypeEnum {
-	return &v
-}
-
-type NullableVirtualMachineTypeEnum struct {
-	value *VirtualMachineTypeEnum
-	isSet bool
-}
-
-func (v NullableVirtualMachineTypeEnum) Get() *VirtualMachineTypeEnum {
-	return v.value
-}
-
-func (v *NullableVirtualMachineTypeEnum) Set(val *VirtualMachineTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVirtualMachineTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVirtualMachineTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVirtualMachineTypeEnum(val *VirtualMachineTypeEnum) *NullableVirtualMachineTypeEnum {
-	return &NullableVirtualMachineTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableVirtualMachineTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVirtualMachineTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

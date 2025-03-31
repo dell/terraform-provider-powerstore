@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ReplicationResourceStateEnum State of the replication local resource: * System_Defined  - State as defined by system based on local role, type and state of replication session. Applies to all replication session types. * Promoted        - Metro local resource was promoted by user. * Demoted         - Metro local resource was demoted by user. * System_Demoted  - Metro local resource was demoted by system from self-healing workflow. * System_Promoted - Metro local resource was promoted by system from fracture workflow based on witness interaction.  Was added in version 3.0.0.0. Values was added in 3.6.0.0: System_Promoted.
 type ReplicationResourceStateEnum string
 
 // List of ReplicationResourceStateEnum
 const (
-	REPLICATIONRESOURCESTATEENUM_SYSTEM_DEFINED ReplicationResourceStateEnum = "System_Defined"
-	REPLICATIONRESOURCESTATEENUM_PROMOTED ReplicationResourceStateEnum = "Promoted"
-	REPLICATIONRESOURCESTATEENUM_DEMOTED ReplicationResourceStateEnum = "Demoted"
-	REPLICATIONRESOURCESTATEENUM_SYSTEM_DEMOTED ReplicationResourceStateEnum = "System_Demoted"
+	REPLICATIONRESOURCESTATEENUM_SYSTEM_DEFINED  ReplicationResourceStateEnum = "System_Defined"
+	REPLICATIONRESOURCESTATEENUM_PROMOTED        ReplicationResourceStateEnum = "Promoted"
+	REPLICATIONRESOURCESTATEENUM_DEMOTED         ReplicationResourceStateEnum = "Demoted"
+	REPLICATIONRESOURCESTATEENUM_SYSTEM_DEMOTED  ReplicationResourceStateEnum = "System_Demoted"
 	REPLICATIONRESOURCESTATEENUM_SYSTEM_PROMOTED ReplicationResourceStateEnum = "System_Promoted"
 )
 
@@ -36,82 +31,6 @@ var AllowedReplicationResourceStateEnumEnumValues = []ReplicationResourceStateEn
 	"System_Promoted",
 }
 
-func (v *ReplicationResourceStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := ReplicationResourceStateEnum(value)
-	for _, existing := range AllowedReplicationResourceStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid ReplicationResourceStateEnum", value)
+func (v *ReplicationResourceStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewReplicationResourceStateEnumFromValue returns a pointer to a valid ReplicationResourceStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewReplicationResourceStateEnumFromValue(v string) (*ReplicationResourceStateEnum, error) {
-	ev := ReplicationResourceStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ReplicationResourceStateEnum: valid values are %v", v, AllowedReplicationResourceStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v ReplicationResourceStateEnum) IsValid() bool {
-	for _, existing := range AllowedReplicationResourceStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to ReplicationResourceStateEnum value
-func (v ReplicationResourceStateEnum) Ptr() *ReplicationResourceStateEnum {
-	return &v
-}
-
-type NullableReplicationResourceStateEnum struct {
-	value *ReplicationResourceStateEnum
-	isSet bool
-}
-
-func (v NullableReplicationResourceStateEnum) Get() *ReplicationResourceStateEnum {
-	return v.value
-}
-
-func (v *NullableReplicationResourceStateEnum) Set(val *ReplicationResourceStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableReplicationResourceStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableReplicationResourceStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableReplicationResourceStateEnum(val *ReplicationResourceStateEnum) *NullableReplicationResourceStateEnum {
-	return &NullableReplicationResourceStateEnum{value: val, isSet: true}
-}
-
-func (v NullableReplicationResourceStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableReplicationResourceStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

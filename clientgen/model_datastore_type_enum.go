@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DatastoreTypeEnum Type of datastore file system. Values are: * vVol * VMFS * NFS  Was added in version 3.0.0.0.
 type DatastoreTypeEnum string
 
 // List of DatastoreTypeEnum
 const (
 	DATASTORETYPEENUM_V_VOL DatastoreTypeEnum = "vVol"
-	DATASTORETYPEENUM_VMFS DatastoreTypeEnum = "VMFS"
-	DATASTORETYPEENUM_NFS DatastoreTypeEnum = "NFS"
+	DATASTORETYPEENUM_VMFS  DatastoreTypeEnum = "VMFS"
+	DATASTORETYPEENUM_NFS   DatastoreTypeEnum = "NFS"
 )
 
 // All allowed values of DatastoreTypeEnum enum
@@ -32,82 +27,6 @@ var AllowedDatastoreTypeEnumEnumValues = []DatastoreTypeEnum{
 	"NFS",
 }
 
-func (v *DatastoreTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := DatastoreTypeEnum(value)
-	for _, existing := range AllowedDatastoreTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid DatastoreTypeEnum", value)
+func (v *DatastoreTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewDatastoreTypeEnumFromValue returns a pointer to a valid DatastoreTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDatastoreTypeEnumFromValue(v string) (*DatastoreTypeEnum, error) {
-	ev := DatastoreTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for DatastoreTypeEnum: valid values are %v", v, AllowedDatastoreTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v DatastoreTypeEnum) IsValid() bool {
-	for _, existing := range AllowedDatastoreTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to DatastoreTypeEnum value
-func (v DatastoreTypeEnum) Ptr() *DatastoreTypeEnum {
-	return &v
-}
-
-type NullableDatastoreTypeEnum struct {
-	value *DatastoreTypeEnum
-	isSet bool
-}
-
-func (v NullableDatastoreTypeEnum) Get() *DatastoreTypeEnum {
-	return v.value
-}
-
-func (v *NullableDatastoreTypeEnum) Set(val *DatastoreTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableDatastoreTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableDatastoreTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableDatastoreTypeEnum(val *DatastoreTypeEnum) *NullableDatastoreTypeEnum {
-	return &NullableDatastoreTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableDatastoreTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableDatastoreTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

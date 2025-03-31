@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileLDAPProtocolEnum Indicates whether the LDAP protocol uses SSL for secure network communication. SSL encrypts data over the network and provides message and server authentication. * LDAP - LDAP protocol without SSL. * LDAPS - (Default) LDAP protocol with SSL. When you enable LDAPS, make sure to specify the appropriate LDAPS port (usually port 636) and to upload an LDAPS trust certificate to the LDAP server. 
+// FileLDAPProtocolEnum Indicates whether the LDAP protocol uses SSL for secure network communication. SSL encrypts data over the network and provides message and server authentication. * LDAP - LDAP protocol without SSL. * LDAPS - (Default) LDAP protocol with SSL. When you enable LDAPS, make sure to specify the appropriate LDAPS port (usually port 636) and to upload an LDAPS trust certificate to the LDAP server.
 type FileLDAPProtocolEnum string
 
 // List of FileLDAPProtocolEnum
 const (
-	FILELDAPPROTOCOLENUM_LDAP FileLDAPProtocolEnum = "LDAP"
+	FILELDAPPROTOCOLENUM_LDAP  FileLDAPProtocolEnum = "LDAP"
 	FILELDAPPROTOCOLENUM_LDAPS FileLDAPProtocolEnum = "LDAPS"
 )
 
@@ -30,82 +25,6 @@ var AllowedFileLDAPProtocolEnumEnumValues = []FileLDAPProtocolEnum{
 	"LDAPS",
 }
 
-func (v *FileLDAPProtocolEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileLDAPProtocolEnum(value)
-	for _, existing := range AllowedFileLDAPProtocolEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileLDAPProtocolEnum", value)
+func (v *FileLDAPProtocolEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileLDAPProtocolEnumFromValue returns a pointer to a valid FileLDAPProtocolEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileLDAPProtocolEnumFromValue(v string) (*FileLDAPProtocolEnum, error) {
-	ev := FileLDAPProtocolEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileLDAPProtocolEnum: valid values are %v", v, AllowedFileLDAPProtocolEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileLDAPProtocolEnum) IsValid() bool {
-	for _, existing := range AllowedFileLDAPProtocolEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileLDAPProtocolEnum value
-func (v FileLDAPProtocolEnum) Ptr() *FileLDAPProtocolEnum {
-	return &v
-}
-
-type NullableFileLDAPProtocolEnum struct {
-	value *FileLDAPProtocolEnum
-	isSet bool
-}
-
-func (v NullableFileLDAPProtocolEnum) Get() *FileLDAPProtocolEnum {
-	return v.value
-}
-
-func (v *NullableFileLDAPProtocolEnum) Set(val *FileLDAPProtocolEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileLDAPProtocolEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileLDAPProtocolEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileLDAPProtocolEnum(val *FileLDAPProtocolEnum) *NullableFileLDAPProtocolEnum {
-	return &NullableFileLDAPProtocolEnum{value: val, isSet: true}
-}
-
-func (v NullableFileLDAPProtocolEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileLDAPProtocolEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

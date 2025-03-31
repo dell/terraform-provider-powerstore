@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // StorageContainerStorageProtocolEnum The type of Storage Container. * SCSI - A storage container is dedicated to SCSI usage. * NVMe - A storage container is dedicated to NVMe usage.  Was added in version 3.0.0.0.
 type StorageContainerStorageProtocolEnum string
 
@@ -30,82 +25,6 @@ var AllowedStorageContainerStorageProtocolEnumEnumValues = []StorageContainerSto
 	"NVMe",
 }
 
-func (v *StorageContainerStorageProtocolEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := StorageContainerStorageProtocolEnum(value)
-	for _, existing := range AllowedStorageContainerStorageProtocolEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid StorageContainerStorageProtocolEnum", value)
+func (v *StorageContainerStorageProtocolEnum) Value() string {
+	return string(*v)
 }
-
-// NewStorageContainerStorageProtocolEnumFromValue returns a pointer to a valid StorageContainerStorageProtocolEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewStorageContainerStorageProtocolEnumFromValue(v string) (*StorageContainerStorageProtocolEnum, error) {
-	ev := StorageContainerStorageProtocolEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for StorageContainerStorageProtocolEnum: valid values are %v", v, AllowedStorageContainerStorageProtocolEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v StorageContainerStorageProtocolEnum) IsValid() bool {
-	for _, existing := range AllowedStorageContainerStorageProtocolEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to StorageContainerStorageProtocolEnum value
-func (v StorageContainerStorageProtocolEnum) Ptr() *StorageContainerStorageProtocolEnum {
-	return &v
-}
-
-type NullableStorageContainerStorageProtocolEnum struct {
-	value *StorageContainerStorageProtocolEnum
-	isSet bool
-}
-
-func (v NullableStorageContainerStorageProtocolEnum) Get() *StorageContainerStorageProtocolEnum {
-	return v.value
-}
-
-func (v *NullableStorageContainerStorageProtocolEnum) Set(val *StorageContainerStorageProtocolEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableStorageContainerStorageProtocolEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableStorageContainerStorageProtocolEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableStorageContainerStorageProtocolEnum(val *StorageContainerStorageProtocolEnum) *NullableStorageContainerStorageProtocolEnum {
-	return &NullableStorageContainerStorageProtocolEnum{value: val, isSet: true}
-}
-
-func (v NullableStorageContainerStorageProtocolEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableStorageContainerStorageProtocolEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// VirtualVolumeUsageTypeEnum VMware's usage of the vVol. Values are: * Config * Data * Swap * Memory * Other 
+// VirtualVolumeUsageTypeEnum VMware's usage of the vVol. Values are: * Config * Data * Swap * Memory * Other
 type VirtualVolumeUsageTypeEnum string
 
 // List of VirtualVolumeUsageTypeEnum
 const (
 	VIRTUALVOLUMEUSAGETYPEENUM_CONFIG VirtualVolumeUsageTypeEnum = "Config"
-	VIRTUALVOLUMEUSAGETYPEENUM_DATA VirtualVolumeUsageTypeEnum = "Data"
-	VIRTUALVOLUMEUSAGETYPEENUM_SWAP VirtualVolumeUsageTypeEnum = "Swap"
+	VIRTUALVOLUMEUSAGETYPEENUM_DATA   VirtualVolumeUsageTypeEnum = "Data"
+	VIRTUALVOLUMEUSAGETYPEENUM_SWAP   VirtualVolumeUsageTypeEnum = "Swap"
 	VIRTUALVOLUMEUSAGETYPEENUM_MEMORY VirtualVolumeUsageTypeEnum = "Memory"
-	VIRTUALVOLUMEUSAGETYPEENUM_OTHER VirtualVolumeUsageTypeEnum = "Other"
+	VIRTUALVOLUMEUSAGETYPEENUM_OTHER  VirtualVolumeUsageTypeEnum = "Other"
 )
 
 // All allowed values of VirtualVolumeUsageTypeEnum enum
@@ -36,82 +31,6 @@ var AllowedVirtualVolumeUsageTypeEnumEnumValues = []VirtualVolumeUsageTypeEnum{
 	"Other",
 }
 
-func (v *VirtualVolumeUsageTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VirtualVolumeUsageTypeEnum(value)
-	for _, existing := range AllowedVirtualVolumeUsageTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VirtualVolumeUsageTypeEnum", value)
+func (v *VirtualVolumeUsageTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewVirtualVolumeUsageTypeEnumFromValue returns a pointer to a valid VirtualVolumeUsageTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVirtualVolumeUsageTypeEnumFromValue(v string) (*VirtualVolumeUsageTypeEnum, error) {
-	ev := VirtualVolumeUsageTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VirtualVolumeUsageTypeEnum: valid values are %v", v, AllowedVirtualVolumeUsageTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VirtualVolumeUsageTypeEnum) IsValid() bool {
-	for _, existing := range AllowedVirtualVolumeUsageTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VirtualVolumeUsageTypeEnum value
-func (v VirtualVolumeUsageTypeEnum) Ptr() *VirtualVolumeUsageTypeEnum {
-	return &v
-}
-
-type NullableVirtualVolumeUsageTypeEnum struct {
-	value *VirtualVolumeUsageTypeEnum
-	isSet bool
-}
-
-func (v NullableVirtualVolumeUsageTypeEnum) Get() *VirtualVolumeUsageTypeEnum {
-	return v.value
-}
-
-func (v *NullableVirtualVolumeUsageTypeEnum) Set(val *VirtualVolumeUsageTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVirtualVolumeUsageTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVirtualVolumeUsageTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVirtualVolumeUsageTypeEnum(val *VirtualVolumeUsageTypeEnum) *NullableVirtualVolumeUsageTypeEnum {
-	return &NullableVirtualVolumeUsageTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableVirtualVolumeUsageTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVirtualVolumeUsageTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,24 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareDriveEncryptionStatusEnum Indicates whether the drive is currently encrypted or not.  Available on the Drive hardware type. Current statuses are:  * Not_Supported - Drive does not support encryption.  * Supported_Unlocked - Drive supports encryption but is not configured.  * Supported_Locked - Drive supports encryption and is locked.  * Supported_Locked_Cluster_PIN - Drive supports encryption and is configured.  * Supported_Locked_Out - Drive supports encryption and is locked out.  * Supported_Locked_Foreign - Drive supports encryption and is locked with an unknown PIN.  * Supported_Processing - Drive supports encryption and is being processed.  * Disabled - Drive encryption is disabled. 
+// HardwareDriveEncryptionStatusEnum Indicates whether the drive is currently encrypted or not.  Available on the Drive hardware type. Current statuses are:  * Not_Supported - Drive does not support encryption.  * Supported_Unlocked - Drive supports encryption but is not configured.  * Supported_Locked - Drive supports encryption and is locked.  * Supported_Locked_Cluster_PIN - Drive supports encryption and is configured.  * Supported_Locked_Out - Drive supports encryption and is locked out.  * Supported_Locked_Foreign - Drive supports encryption and is locked with an unknown PIN.  * Supported_Processing - Drive supports encryption and is being processed.  * Disabled - Drive encryption is disabled.
 type HardwareDriveEncryptionStatusEnum string
 
 // List of HardwareDriveEncryptionStatusEnum
 const (
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_NOT_SUPPORTED HardwareDriveEncryptionStatusEnum = "Not_Supported"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_UNLOCKED HardwareDriveEncryptionStatusEnum = "Supported_Unlocked"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED HardwareDriveEncryptionStatusEnum = "Supported_Locked"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_NOT_SUPPORTED                HardwareDriveEncryptionStatusEnum = "Not_Supported"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_UNLOCKED           HardwareDriveEncryptionStatusEnum = "Supported_Unlocked"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED             HardwareDriveEncryptionStatusEnum = "Supported_Locked"
 	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_CLUSTER_PIN HardwareDriveEncryptionStatusEnum = "Supported_Locked_Cluster_PIN"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_OUT HardwareDriveEncryptionStatusEnum = "Supported_Locked_Out"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_FOREIGN HardwareDriveEncryptionStatusEnum = "Supported_Locked_Foreign"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_PROCESSING HardwareDriveEncryptionStatusEnum = "Supported_Processing"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_DISABLED HardwareDriveEncryptionStatusEnum = "Disabled"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_OUT         HardwareDriveEncryptionStatusEnum = "Supported_Locked_Out"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_FOREIGN     HardwareDriveEncryptionStatusEnum = "Supported_Locked_Foreign"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_PROCESSING         HardwareDriveEncryptionStatusEnum = "Supported_Processing"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_DISABLED                     HardwareDriveEncryptionStatusEnum = "Disabled"
 )
 
 // All allowed values of HardwareDriveEncryptionStatusEnum enum
@@ -42,82 +37,6 @@ var AllowedHardwareDriveEncryptionStatusEnumEnumValues = []HardwareDriveEncrypti
 	"Disabled",
 }
 
-func (v *HardwareDriveEncryptionStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareDriveEncryptionStatusEnum(value)
-	for _, existing := range AllowedHardwareDriveEncryptionStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareDriveEncryptionStatusEnum", value)
+func (v *HardwareDriveEncryptionStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareDriveEncryptionStatusEnumFromValue returns a pointer to a valid HardwareDriveEncryptionStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareDriveEncryptionStatusEnumFromValue(v string) (*HardwareDriveEncryptionStatusEnum, error) {
-	ev := HardwareDriveEncryptionStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareDriveEncryptionStatusEnum: valid values are %v", v, AllowedHardwareDriveEncryptionStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareDriveEncryptionStatusEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareDriveEncryptionStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareDriveEncryptionStatusEnum value
-func (v HardwareDriveEncryptionStatusEnum) Ptr() *HardwareDriveEncryptionStatusEnum {
-	return &v
-}
-
-type NullableHardwareDriveEncryptionStatusEnum struct {
-	value *HardwareDriveEncryptionStatusEnum
-	isSet bool
-}
-
-func (v NullableHardwareDriveEncryptionStatusEnum) Get() *HardwareDriveEncryptionStatusEnum {
-	return v.value
-}
-
-func (v *NullableHardwareDriveEncryptionStatusEnum) Set(val *HardwareDriveEncryptionStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareDriveEncryptionStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareDriveEncryptionStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareDriveEncryptionStatusEnum(val *HardwareDriveEncryptionStatusEnum) *NullableHardwareDriveEncryptionStatusEnum {
-	return &NullableHardwareDriveEncryptionStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareDriveEncryptionStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareDriveEncryptionStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

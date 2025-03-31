@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileSystemHostIoSizeEnum Typical size of writes from the server or other computer using the VMware file system to the storage system. This setting is used to match the storage block size to the I/O of the primary application using the storage, which can optimize performance. By default Host IO size will be 8K size for VMware filesystem. This attribute only applies to VMware config type filesystems. * VMware_8K - Host I/O size is 8K for vmware datastore purpose. * VMware_16K - Host I/O size is 16K for vmware datastore purpose. * VMware_32K - Host I/O size is 32K for vmware datastore purpose. * VMware_64K - Host I/O size is 64K for vmware datastore purpose.  Was added in version 3.0.0.0.
 type FileSystemHostIoSizeEnum string
 
 // List of FileSystemHostIoSizeEnum
 const (
-	FILESYSTEMHOSTIOSIZEENUM__8_K FileSystemHostIoSizeEnum = "VMware_8K"
+	FILESYSTEMHOSTIOSIZEENUM__8_K  FileSystemHostIoSizeEnum = "VMware_8K"
 	FILESYSTEMHOSTIOSIZEENUM__16_K FileSystemHostIoSizeEnum = "VMware_16K"
 	FILESYSTEMHOSTIOSIZEENUM__32_K FileSystemHostIoSizeEnum = "VMware_32K"
 	FILESYSTEMHOSTIOSIZEENUM__64_K FileSystemHostIoSizeEnum = "VMware_64K"
@@ -34,82 +29,6 @@ var AllowedFileSystemHostIoSizeEnumEnumValues = []FileSystemHostIoSizeEnum{
 	"VMware_64K",
 }
 
-func (v *FileSystemHostIoSizeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileSystemHostIoSizeEnum(value)
-	for _, existing := range AllowedFileSystemHostIoSizeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileSystemHostIoSizeEnum", value)
+func (v *FileSystemHostIoSizeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileSystemHostIoSizeEnumFromValue returns a pointer to a valid FileSystemHostIoSizeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileSystemHostIoSizeEnumFromValue(v string) (*FileSystemHostIoSizeEnum, error) {
-	ev := FileSystemHostIoSizeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileSystemHostIoSizeEnum: valid values are %v", v, AllowedFileSystemHostIoSizeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileSystemHostIoSizeEnum) IsValid() bool {
-	for _, existing := range AllowedFileSystemHostIoSizeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileSystemHostIoSizeEnum value
-func (v FileSystemHostIoSizeEnum) Ptr() *FileSystemHostIoSizeEnum {
-	return &v
-}
-
-type NullableFileSystemHostIoSizeEnum struct {
-	value *FileSystemHostIoSizeEnum
-	isSet bool
-}
-
-func (v NullableFileSystemHostIoSizeEnum) Get() *FileSystemHostIoSizeEnum {
-	return v.value
-}
-
-func (v *NullableFileSystemHostIoSizeEnum) Set(val *FileSystemHostIoSizeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileSystemHostIoSizeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileSystemHostIoSizeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileSystemHostIoSizeEnum(val *FileSystemHostIoSizeEnum) *NullableFileSystemHostIoSizeEnum {
-	return &NullableFileSystemHostIoSizeEnum{value: val, isSet: true}
-}
-
-func (v NullableFileSystemHostIoSizeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileSystemHostIoSizeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

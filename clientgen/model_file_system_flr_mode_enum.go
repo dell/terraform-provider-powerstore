@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileSystemFLRModeEnum The FLR type of the file system.  * None - Non-FLR file system  * Enterprise - FLR-E file system.  * Compliance - FLR-C file system.  Was added in version 3.0.0.0.
 type FileSystemFLRModeEnum string
 
 // List of FileSystemFLRModeEnum
 const (
-	FILESYSTEMFLRMODEENUM_NONE FileSystemFLRModeEnum = "None"
+	FILESYSTEMFLRMODEENUM_NONE       FileSystemFLRModeEnum = "None"
 	FILESYSTEMFLRMODEENUM_ENTERPRISE FileSystemFLRModeEnum = "Enterprise"
 	FILESYSTEMFLRMODEENUM_COMPLIANCE FileSystemFLRModeEnum = "Compliance"
 )
@@ -32,82 +27,6 @@ var AllowedFileSystemFLRModeEnumEnumValues = []FileSystemFLRModeEnum{
 	"Compliance",
 }
 
-func (v *FileSystemFLRModeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileSystemFLRModeEnum(value)
-	for _, existing := range AllowedFileSystemFLRModeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileSystemFLRModeEnum", value)
+func (v *FileSystemFLRModeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileSystemFLRModeEnumFromValue returns a pointer to a valid FileSystemFLRModeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileSystemFLRModeEnumFromValue(v string) (*FileSystemFLRModeEnum, error) {
-	ev := FileSystemFLRModeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileSystemFLRModeEnum: valid values are %v", v, AllowedFileSystemFLRModeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileSystemFLRModeEnum) IsValid() bool {
-	for _, existing := range AllowedFileSystemFLRModeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileSystemFLRModeEnum value
-func (v FileSystemFLRModeEnum) Ptr() *FileSystemFLRModeEnum {
-	return &v
-}
-
-type NullableFileSystemFLRModeEnum struct {
-	value *FileSystemFLRModeEnum
-	isSet bool
-}
-
-func (v NullableFileSystemFLRModeEnum) Get() *FileSystemFLRModeEnum {
-	return v.value
-}
-
-func (v *NullableFileSystemFLRModeEnum) Set(val *FileSystemFLRModeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileSystemFLRModeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileSystemFLRModeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileSystemFLRModeEnum(val *FileSystemFLRModeEnum) *NullableFileSystemFLRModeEnum {
-	return &NullableFileSystemFLRModeEnum{value: val, isSet: true}
-}
-
-func (v NullableFileSystemFLRModeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileSystemFLRModeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

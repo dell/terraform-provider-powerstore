@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // MigrationResourceTypeEnum Storage resource types eligible for migration. Values are: * volume * virtual_volume * volume_group * virtual_machine * replication_group  Values was added in 3.0.0.0: virtual_machine, replication_group.
 type MigrationResourceTypeEnum string
 
 // List of MigrationResourceTypeEnum
 const (
-	MIGRATIONRESOURCETYPEENUM_VOLUME MigrationResourceTypeEnum = "volume"
-	MIGRATIONRESOURCETYPEENUM_VIRTUAL_VOLUME MigrationResourceTypeEnum = "virtual_volume"
-	MIGRATIONRESOURCETYPEENUM_VOLUME_GROUP MigrationResourceTypeEnum = "volume_group"
-	MIGRATIONRESOURCETYPEENUM_VIRTUAL_MACHINE MigrationResourceTypeEnum = "virtual_machine"
+	MIGRATIONRESOURCETYPEENUM_VOLUME            MigrationResourceTypeEnum = "volume"
+	MIGRATIONRESOURCETYPEENUM_VIRTUAL_VOLUME    MigrationResourceTypeEnum = "virtual_volume"
+	MIGRATIONRESOURCETYPEENUM_VOLUME_GROUP      MigrationResourceTypeEnum = "volume_group"
+	MIGRATIONRESOURCETYPEENUM_VIRTUAL_MACHINE   MigrationResourceTypeEnum = "virtual_machine"
 	MIGRATIONRESOURCETYPEENUM_REPLICATION_GROUP MigrationResourceTypeEnum = "replication_group"
 )
 
@@ -36,82 +31,6 @@ var AllowedMigrationResourceTypeEnumEnumValues = []MigrationResourceTypeEnum{
 	"replication_group",
 }
 
-func (v *MigrationResourceTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := MigrationResourceTypeEnum(value)
-	for _, existing := range AllowedMigrationResourceTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid MigrationResourceTypeEnum", value)
+func (v *MigrationResourceTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewMigrationResourceTypeEnumFromValue returns a pointer to a valid MigrationResourceTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewMigrationResourceTypeEnumFromValue(v string) (*MigrationResourceTypeEnum, error) {
-	ev := MigrationResourceTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for MigrationResourceTypeEnum: valid values are %v", v, AllowedMigrationResourceTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v MigrationResourceTypeEnum) IsValid() bool {
-	for _, existing := range AllowedMigrationResourceTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to MigrationResourceTypeEnum value
-func (v MigrationResourceTypeEnum) Ptr() *MigrationResourceTypeEnum {
-	return &v
-}
-
-type NullableMigrationResourceTypeEnum struct {
-	value *MigrationResourceTypeEnum
-	isSet bool
-}
-
-func (v NullableMigrationResourceTypeEnum) Get() *MigrationResourceTypeEnum {
-	return v.value
-}
-
-func (v *NullableMigrationResourceTypeEnum) Set(val *MigrationResourceTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableMigrationResourceTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableMigrationResourceTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableMigrationResourceTypeEnum(val *MigrationResourceTypeEnum) *NullableMigrationResourceTypeEnum {
-	return &NullableMigrationResourceTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableMigrationResourceTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableMigrationResourceTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

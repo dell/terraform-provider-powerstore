@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareSFPSupportedProtocolEnum Supported protocol. Available on the SFP hardware type. Current protocols are:  * Unknown - This SFP has unknown protocol support.  * FC - This SFP supports Fibre Channel.  * Ethernet - This SFP supports Ethernet.  * FC_Ethernet - This SFP supports Fibre Channel or Ethernet.  * SAS - This SFP supports SAS for connections to Expansion Enclosures. 
+// HardwareSFPSupportedProtocolEnum Supported protocol. Available on the SFP hardware type. Current protocols are:  * Unknown - This SFP has unknown protocol support.  * FC - This SFP supports Fibre Channel.  * Ethernet - This SFP supports Ethernet.  * FC_Ethernet - This SFP supports Fibre Channel or Ethernet.  * SAS - This SFP supports SAS for connections to Expansion Enclosures.
 type HardwareSFPSupportedProtocolEnum string
 
 // List of HardwareSFPSupportedProtocolEnum
 const (
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_UNKNOWN HardwareSFPSupportedProtocolEnum = "Unknown"
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_FC HardwareSFPSupportedProtocolEnum = "FC"
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_ETHERNET HardwareSFPSupportedProtocolEnum = "Ethernet"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_UNKNOWN     HardwareSFPSupportedProtocolEnum = "Unknown"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_FC          HardwareSFPSupportedProtocolEnum = "FC"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_ETHERNET    HardwareSFPSupportedProtocolEnum = "Ethernet"
 	HARDWARESFPSUPPORTEDPROTOCOLENUM_FC_ETHERNET HardwareSFPSupportedProtocolEnum = "FC_Ethernet"
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_SAS HardwareSFPSupportedProtocolEnum = "SAS"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_SAS         HardwareSFPSupportedProtocolEnum = "SAS"
 )
 
 // All allowed values of HardwareSFPSupportedProtocolEnum enum
@@ -36,82 +31,6 @@ var AllowedHardwareSFPSupportedProtocolEnumEnumValues = []HardwareSFPSupportedPr
 	"SAS",
 }
 
-func (v *HardwareSFPSupportedProtocolEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareSFPSupportedProtocolEnum(value)
-	for _, existing := range AllowedHardwareSFPSupportedProtocolEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareSFPSupportedProtocolEnum", value)
+func (v *HardwareSFPSupportedProtocolEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareSFPSupportedProtocolEnumFromValue returns a pointer to a valid HardwareSFPSupportedProtocolEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareSFPSupportedProtocolEnumFromValue(v string) (*HardwareSFPSupportedProtocolEnum, error) {
-	ev := HardwareSFPSupportedProtocolEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareSFPSupportedProtocolEnum: valid values are %v", v, AllowedHardwareSFPSupportedProtocolEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareSFPSupportedProtocolEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareSFPSupportedProtocolEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareSFPSupportedProtocolEnum value
-func (v HardwareSFPSupportedProtocolEnum) Ptr() *HardwareSFPSupportedProtocolEnum {
-	return &v
-}
-
-type NullableHardwareSFPSupportedProtocolEnum struct {
-	value *HardwareSFPSupportedProtocolEnum
-	isSet bool
-}
-
-func (v NullableHardwareSFPSupportedProtocolEnum) Get() *HardwareSFPSupportedProtocolEnum {
-	return v.value
-}
-
-func (v *NullableHardwareSFPSupportedProtocolEnum) Set(val *HardwareSFPSupportedProtocolEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareSFPSupportedProtocolEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareSFPSupportedProtocolEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareSFPSupportedProtocolEnum(val *HardwareSFPSupportedProtocolEnum) *NullableHardwareSFPSupportedProtocolEnum {
-	return &NullableHardwareSFPSupportedProtocolEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareSFPSupportedProtocolEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareSFPSupportedProtocolEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

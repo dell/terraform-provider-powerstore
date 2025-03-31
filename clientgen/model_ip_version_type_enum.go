@@ -10,12 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// IpVersionTypeEnum IP protocol version. Values are: * IPv4 * IPv6 
+// IpVersionTypeEnum IP protocol version. Values are: * IPv4 * IPv6
 type IpVersionTypeEnum string
 
 // List of IpVersionTypeEnum
@@ -30,82 +25,6 @@ var AllowedIpVersionTypeEnumEnumValues = []IpVersionTypeEnum{
 	"IPv6",
 }
 
-func (v *IpVersionTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := IpVersionTypeEnum(value)
-	for _, existing := range AllowedIpVersionTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid IpVersionTypeEnum", value)
+func (v *IpVersionTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewIpVersionTypeEnumFromValue returns a pointer to a valid IpVersionTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewIpVersionTypeEnumFromValue(v string) (*IpVersionTypeEnum, error) {
-	ev := IpVersionTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for IpVersionTypeEnum: valid values are %v", v, AllowedIpVersionTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v IpVersionTypeEnum) IsValid() bool {
-	for _, existing := range AllowedIpVersionTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to IpVersionTypeEnum value
-func (v IpVersionTypeEnum) Ptr() *IpVersionTypeEnum {
-	return &v
-}
-
-type NullableIpVersionTypeEnum struct {
-	value *IpVersionTypeEnum
-	isSet bool
-}
-
-func (v NullableIpVersionTypeEnum) Get() *IpVersionTypeEnum {
-	return v.value
-}
-
-func (v *NullableIpVersionTypeEnum) Set(val *IpVersionTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableIpVersionTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableIpVersionTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableIpVersionTypeEnum(val *IpVersionTypeEnum) *NullableIpVersionTypeEnum {
-	return &NullableIpVersionTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableIpVersionTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableIpVersionTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

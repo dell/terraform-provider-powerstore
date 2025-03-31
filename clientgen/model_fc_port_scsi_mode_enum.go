@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FcPortScsiModeEnum SCSI mode of the port. Possible values are: * Dual - The port is in dual mode as both initiator and target. * Target- The port is only target.  Was added in version 3.0.0.0.
 type FcPortScsiModeEnum string
 
 // List of FcPortScsiModeEnum
 const (
-	FCPORTSCSIMODEENUM_DUAL FcPortScsiModeEnum = "Dual"
+	FCPORTSCSIMODEENUM_DUAL   FcPortScsiModeEnum = "Dual"
 	FCPORTSCSIMODEENUM_TARGET FcPortScsiModeEnum = "Target"
 )
 
@@ -30,82 +25,6 @@ var AllowedFcPortScsiModeEnumEnumValues = []FcPortScsiModeEnum{
 	"Target",
 }
 
-func (v *FcPortScsiModeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FcPortScsiModeEnum(value)
-	for _, existing := range AllowedFcPortScsiModeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FcPortScsiModeEnum", value)
+func (v *FcPortScsiModeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFcPortScsiModeEnumFromValue returns a pointer to a valid FcPortScsiModeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFcPortScsiModeEnumFromValue(v string) (*FcPortScsiModeEnum, error) {
-	ev := FcPortScsiModeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FcPortScsiModeEnum: valid values are %v", v, AllowedFcPortScsiModeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FcPortScsiModeEnum) IsValid() bool {
-	for _, existing := range AllowedFcPortScsiModeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FcPortScsiModeEnum value
-func (v FcPortScsiModeEnum) Ptr() *FcPortScsiModeEnum {
-	return &v
-}
-
-type NullableFcPortScsiModeEnum struct {
-	value *FcPortScsiModeEnum
-	isSet bool
-}
-
-func (v NullableFcPortScsiModeEnum) Get() *FcPortScsiModeEnum {
-	return v.value
-}
-
-func (v *NullableFcPortScsiModeEnum) Set(val *FcPortScsiModeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFcPortScsiModeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFcPortScsiModeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFcPortScsiModeEnum(val *FcPortScsiModeEnum) *NullableFcPortScsiModeEnum {
-	return &NullableFcPortScsiModeEnum{value: val, isSet: true}
-}
-
-func (v NullableFcPortScsiModeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFcPortScsiModeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

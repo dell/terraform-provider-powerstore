@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareStatusLEDStateEnum State of the status LED of the hardware. The LED is On when there is a hardware fault. Current values are:  * Off - Hardware Status LED is turned off.  * On - Hardware Status LED is turned on. 
+// HardwareStatusLEDStateEnum State of the status LED of the hardware. The LED is On when there is a hardware fault. Current values are:  * Off - Hardware Status LED is turned off.  * On - Hardware Status LED is turned on.
 type HardwareStatusLEDStateEnum string
 
 // List of HardwareStatusLEDStateEnum
 const (
 	HARDWARESTATUSLEDSTATEENUM_OFF HardwareStatusLEDStateEnum = "Off"
-	HARDWARESTATUSLEDSTATEENUM_ON HardwareStatusLEDStateEnum = "On"
+	HARDWARESTATUSLEDSTATEENUM_ON  HardwareStatusLEDStateEnum = "On"
 )
 
 // All allowed values of HardwareStatusLEDStateEnum enum
@@ -30,82 +25,6 @@ var AllowedHardwareStatusLEDStateEnumEnumValues = []HardwareStatusLEDStateEnum{
 	"On",
 }
 
-func (v *HardwareStatusLEDStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareStatusLEDStateEnum(value)
-	for _, existing := range AllowedHardwareStatusLEDStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareStatusLEDStateEnum", value)
+func (v *HardwareStatusLEDStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareStatusLEDStateEnumFromValue returns a pointer to a valid HardwareStatusLEDStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareStatusLEDStateEnumFromValue(v string) (*HardwareStatusLEDStateEnum, error) {
-	ev := HardwareStatusLEDStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareStatusLEDStateEnum: valid values are %v", v, AllowedHardwareStatusLEDStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareStatusLEDStateEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareStatusLEDStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareStatusLEDStateEnum value
-func (v HardwareStatusLEDStateEnum) Ptr() *HardwareStatusLEDStateEnum {
-	return &v
-}
-
-type NullableHardwareStatusLEDStateEnum struct {
-	value *HardwareStatusLEDStateEnum
-	isSet bool
-}
-
-func (v NullableHardwareStatusLEDStateEnum) Get() *HardwareStatusLEDStateEnum {
-	return v.value
-}
-
-func (v *NullableHardwareStatusLEDStateEnum) Set(val *HardwareStatusLEDStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareStatusLEDStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareStatusLEDStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareStatusLEDStateEnum(val *HardwareStatusLEDStateEnum) *NullableHardwareStatusLEDStateEnum {
-	return &NullableHardwareStatusLEDStateEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareStatusLEDStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareStatusLEDStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

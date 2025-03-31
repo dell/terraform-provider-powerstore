@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileEventsPublishingModeEnum State of the event notification services for all file systems of the NAS server. * None - File event notifications are disabled for this file system. * SMB_Only - SMB notifications are enabled for this file system. * NFS_Only - NFS notifications are enabled for this file system. * All - SMB and NFS notifications are enabled for this file system.  Was added in version 3.0.0.0.
 type FileEventsPublishingModeEnum string
 
 // List of FileEventsPublishingModeEnum
 const (
-	FILEEVENTSPUBLISHINGMODEENUM_NONE FileEventsPublishingModeEnum = "None"
+	FILEEVENTSPUBLISHINGMODEENUM_NONE     FileEventsPublishingModeEnum = "None"
 	FILEEVENTSPUBLISHINGMODEENUM_SMB_ONLY FileEventsPublishingModeEnum = "SMB_Only"
 	FILEEVENTSPUBLISHINGMODEENUM_NFS_ONLY FileEventsPublishingModeEnum = "NFS_Only"
-	FILEEVENTSPUBLISHINGMODEENUM_ALL FileEventsPublishingModeEnum = "All"
+	FILEEVENTSPUBLISHINGMODEENUM_ALL      FileEventsPublishingModeEnum = "All"
 )
 
 // All allowed values of FileEventsPublishingModeEnum enum
@@ -34,82 +29,6 @@ var AllowedFileEventsPublishingModeEnumEnumValues = []FileEventsPublishingModeEn
 	"All",
 }
 
-func (v *FileEventsPublishingModeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileEventsPublishingModeEnum(value)
-	for _, existing := range AllowedFileEventsPublishingModeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileEventsPublishingModeEnum", value)
+func (v *FileEventsPublishingModeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileEventsPublishingModeEnumFromValue returns a pointer to a valid FileEventsPublishingModeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileEventsPublishingModeEnumFromValue(v string) (*FileEventsPublishingModeEnum, error) {
-	ev := FileEventsPublishingModeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileEventsPublishingModeEnum: valid values are %v", v, AllowedFileEventsPublishingModeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileEventsPublishingModeEnum) IsValid() bool {
-	for _, existing := range AllowedFileEventsPublishingModeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileEventsPublishingModeEnum value
-func (v FileEventsPublishingModeEnum) Ptr() *FileEventsPublishingModeEnum {
-	return &v
-}
-
-type NullableFileEventsPublishingModeEnum struct {
-	value *FileEventsPublishingModeEnum
-	isSet bool
-}
-
-func (v NullableFileEventsPublishingModeEnum) Get() *FileEventsPublishingModeEnum {
-	return v.value
-}
-
-func (v *NullableFileEventsPublishingModeEnum) Set(val *FileEventsPublishingModeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileEventsPublishingModeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileEventsPublishingModeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileEventsPublishingModeEnum(val *FileEventsPublishingModeEnum) *NullableFileEventsPublishingModeEnum {
-	return &NullableFileEventsPublishingModeEnum{value: val, isSet: true}
-}
-
-func (v NullableFileEventsPublishingModeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileEventsPublishingModeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

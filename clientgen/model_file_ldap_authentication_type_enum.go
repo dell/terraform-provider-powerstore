@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileLDAPAuthenticationTypeEnum Authentication type for the LDAP server. * Anonymous - Anonymous authentication means no authentication occurs and the NAS Server uses an anonymous login to access the LDAP-based directory server. * Simple - Simple authentication means the NAS Server must provide a bind distinguished name and password to access the LDAP-based directory server. * Kerberos - Kerberos authentication means the NAS Server uses a KDC to confirm the identity when accessing the Active Directory. 
+// FileLDAPAuthenticationTypeEnum Authentication type for the LDAP server. * Anonymous - Anonymous authentication means no authentication occurs and the NAS Server uses an anonymous login to access the LDAP-based directory server. * Simple - Simple authentication means the NAS Server must provide a bind distinguished name and password to access the LDAP-based directory server. * Kerberos - Kerberos authentication means the NAS Server uses a KDC to confirm the identity when accessing the Active Directory.
 type FileLDAPAuthenticationTypeEnum string
 
 // List of FileLDAPAuthenticationTypeEnum
 const (
 	FILELDAPAUTHENTICATIONTYPEENUM_ANONYMOUS FileLDAPAuthenticationTypeEnum = "Anonymous"
-	FILELDAPAUTHENTICATIONTYPEENUM_SIMPLE FileLDAPAuthenticationTypeEnum = "Simple"
-	FILELDAPAUTHENTICATIONTYPEENUM_KERBEROS FileLDAPAuthenticationTypeEnum = "Kerberos"
+	FILELDAPAUTHENTICATIONTYPEENUM_SIMPLE    FileLDAPAuthenticationTypeEnum = "Simple"
+	FILELDAPAUTHENTICATIONTYPEENUM_KERBEROS  FileLDAPAuthenticationTypeEnum = "Kerberos"
 )
 
 // All allowed values of FileLDAPAuthenticationTypeEnum enum
@@ -32,82 +27,6 @@ var AllowedFileLDAPAuthenticationTypeEnumEnumValues = []FileLDAPAuthenticationTy
 	"Kerberos",
 }
 
-func (v *FileLDAPAuthenticationTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileLDAPAuthenticationTypeEnum(value)
-	for _, existing := range AllowedFileLDAPAuthenticationTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileLDAPAuthenticationTypeEnum", value)
+func (v *FileLDAPAuthenticationTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileLDAPAuthenticationTypeEnumFromValue returns a pointer to a valid FileLDAPAuthenticationTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileLDAPAuthenticationTypeEnumFromValue(v string) (*FileLDAPAuthenticationTypeEnum, error) {
-	ev := FileLDAPAuthenticationTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileLDAPAuthenticationTypeEnum: valid values are %v", v, AllowedFileLDAPAuthenticationTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileLDAPAuthenticationTypeEnum) IsValid() bool {
-	for _, existing := range AllowedFileLDAPAuthenticationTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileLDAPAuthenticationTypeEnum value
-func (v FileLDAPAuthenticationTypeEnum) Ptr() *FileLDAPAuthenticationTypeEnum {
-	return &v
-}
-
-type NullableFileLDAPAuthenticationTypeEnum struct {
-	value *FileLDAPAuthenticationTypeEnum
-	isSet bool
-}
-
-func (v NullableFileLDAPAuthenticationTypeEnum) Get() *FileLDAPAuthenticationTypeEnum {
-	return v.value
-}
-
-func (v *NullableFileLDAPAuthenticationTypeEnum) Set(val *FileLDAPAuthenticationTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileLDAPAuthenticationTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileLDAPAuthenticationTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileLDAPAuthenticationTypeEnum(val *FileLDAPAuthenticationTypeEnum) *NullableFileLDAPAuthenticationTypeEnum {
-	return &NullableFileLDAPAuthenticationTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableFileLDAPAuthenticationTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileLDAPAuthenticationTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

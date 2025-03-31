@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // PortStaleStateEnum Stale state of the port. Current states are:  * Not_Stale - Not stale.  * Disconnected - The IO_Module hardware handling this port has a Disconnected lifecycle state and therefore is not updated.  Was added in version 2.0.0.0.
 type PortStaleStateEnum string
 
 // List of PortStaleStateEnum
 const (
-	PORTSTALESTATEENUM_NOT_STALE PortStaleStateEnum = "Not_Stale"
+	PORTSTALESTATEENUM_NOT_STALE    PortStaleStateEnum = "Not_Stale"
 	PORTSTALESTATEENUM_DISCONNECTED PortStaleStateEnum = "Disconnected"
 )
 
@@ -30,82 +25,6 @@ var AllowedPortStaleStateEnumEnumValues = []PortStaleStateEnum{
 	"Disconnected",
 }
 
-func (v *PortStaleStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := PortStaleStateEnum(value)
-	for _, existing := range AllowedPortStaleStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid PortStaleStateEnum", value)
+func (v *PortStaleStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewPortStaleStateEnumFromValue returns a pointer to a valid PortStaleStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPortStaleStateEnumFromValue(v string) (*PortStaleStateEnum, error) {
-	ev := PortStaleStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PortStaleStateEnum: valid values are %v", v, AllowedPortStaleStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v PortStaleStateEnum) IsValid() bool {
-	for _, existing := range AllowedPortStaleStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to PortStaleStateEnum value
-func (v PortStaleStateEnum) Ptr() *PortStaleStateEnum {
-	return &v
-}
-
-type NullablePortStaleStateEnum struct {
-	value *PortStaleStateEnum
-	isSet bool
-}
-
-func (v NullablePortStaleStateEnum) Get() *PortStaleStateEnum {
-	return v.value
-}
-
-func (v *NullablePortStaleStateEnum) Set(val *PortStaleStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullablePortStaleStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullablePortStaleStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullablePortStaleStateEnum(val *PortStaleStateEnum) *NullablePortStaleStateEnum {
-	return &NullablePortStaleStateEnum{value: val, isSet: true}
-}
-
-func (v NullablePortStaleStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullablePortStaleStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

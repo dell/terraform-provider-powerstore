@@ -3,7 +3,7 @@ HOSTNAME=registry.terraform.io
 NAMESPACE=dell
 NAME=powerstore
 BINARY=terraform-provider-${NAME}
-VERSION=1.2.0
+VERSION=1.2.1
 OS_ARCH=linux_amd64
 OPENAPI_CMD?=java -Xmx16G -jar ../terraform-provider-powerscale/openapi-generator-cli-6.6.0.jar
 OPENAPI_GEN_DIR=clientgen
@@ -13,8 +13,9 @@ default: install
 build_client:
 	python3 goClientZip/spec.py
 	rm -rf ${OPENAPI_GEN_DIR}
-	${OPENAPI_CMD} generate -i goClientZip/spec_4_1_filtered.json -g go --type-mappings integer+unsigned64=uint64  -o ${OPENAPI_GEN_DIR} --global-property apis,models,supportingFiles=client.go:README.md:configuration.go:response.go:utils.go,modelTests=false,apiTests=false,modelDocs=false -p enumClassPrefix=true,packageName=clientgen,isGoSubmodule=true
+	${OPENAPI_CMD} generate -i goClientZip/spec_4_1_filtered.json -g go --type-mappings integer+unsigned64=uint64  -o ${OPENAPI_GEN_DIR} --global-property apis,models,supportingFiles=client.go:README.md:configuration.go:response.go:utils.go,modelTests=false,apiTests=false,modelDocs=false -p enumClassPrefix=true,packageName=clientgen,isGoSubmodule=true -c config.yaml
 	#${OPENAPI_CMD} generate -i goClientZip/spec_4_1_filtered.json -g go --type-mappings integer+unsigned64=uint64  -o goclient --global-property supportingFiles=false,apis,apiTests=false -p enumClassPrefix=true,packageName=clientgen,isGoSubmodule=true
+	cd ${OPENAPI_GEN_DIR} && goimports -w .
 
 unused:
 	# add openapi-generator-cli as java -jar ./openapi-generator-cli-6.6.0.jar

@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareDriveFIPSStatusEnum FIPS compliance level. Available on the Drive hardware type. Current compliance levels are:  * FIPS_Compliance_None -  Drive has no FIPS compliance.  * FIPS_Compliance_Level_1 - Drive has FIPS 140-2 compliance.  * FIPS_Compliance_Level_2 - Drive submitted for FIPS 140-3 compliance. Check Simple Support Matrix for details.  * FIPS_Compliance_Invalid - Drive has invalid FIPS compliance. 
+// HardwareDriveFIPSStatusEnum FIPS compliance level. Available on the Drive hardware type. Current compliance levels are:  * FIPS_Compliance_None -  Drive has no FIPS compliance.  * FIPS_Compliance_Level_1 - Drive has FIPS 140-2 compliance.  * FIPS_Compliance_Level_2 - Drive submitted for FIPS 140-3 compliance. Check Simple Support Matrix for details.  * FIPS_Compliance_Invalid - Drive has invalid FIPS compliance.
 type HardwareDriveFIPSStatusEnum string
 
 // List of HardwareDriveFIPSStatusEnum
 const (
-	HARDWAREDRIVEFIPSSTATUSENUM_NONE HardwareDriveFIPSStatusEnum = "FIPS_Compliance_None"
+	HARDWAREDRIVEFIPSSTATUSENUM_NONE    HardwareDriveFIPSStatusEnum = "FIPS_Compliance_None"
 	HARDWAREDRIVEFIPSSTATUSENUM_LEVEL_1 HardwareDriveFIPSStatusEnum = "FIPS_Compliance_Level_1"
 	HARDWAREDRIVEFIPSSTATUSENUM_LEVEL_2 HardwareDriveFIPSStatusEnum = "FIPS_Compliance_Level_2"
 	HARDWAREDRIVEFIPSSTATUSENUM_INVALID HardwareDriveFIPSStatusEnum = "FIPS_Compliance_Invalid"
@@ -34,82 +29,6 @@ var AllowedHardwareDriveFIPSStatusEnumEnumValues = []HardwareDriveFIPSStatusEnum
 	"FIPS_Compliance_Invalid",
 }
 
-func (v *HardwareDriveFIPSStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareDriveFIPSStatusEnum(value)
-	for _, existing := range AllowedHardwareDriveFIPSStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareDriveFIPSStatusEnum", value)
+func (v *HardwareDriveFIPSStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareDriveFIPSStatusEnumFromValue returns a pointer to a valid HardwareDriveFIPSStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareDriveFIPSStatusEnumFromValue(v string) (*HardwareDriveFIPSStatusEnum, error) {
-	ev := HardwareDriveFIPSStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareDriveFIPSStatusEnum: valid values are %v", v, AllowedHardwareDriveFIPSStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareDriveFIPSStatusEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareDriveFIPSStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareDriveFIPSStatusEnum value
-func (v HardwareDriveFIPSStatusEnum) Ptr() *HardwareDriveFIPSStatusEnum {
-	return &v
-}
-
-type NullableHardwareDriveFIPSStatusEnum struct {
-	value *HardwareDriveFIPSStatusEnum
-	isSet bool
-}
-
-func (v NullableHardwareDriveFIPSStatusEnum) Get() *HardwareDriveFIPSStatusEnum {
-	return v.value
-}
-
-func (v *NullableHardwareDriveFIPSStatusEnum) Set(val *HardwareDriveFIPSStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareDriveFIPSStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareDriveFIPSStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareDriveFIPSStatusEnum(val *HardwareDriveFIPSStatusEnum) *NullableHardwareDriveFIPSStatusEnum {
-	return &NullableHardwareDriveFIPSStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareDriveFIPSStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareDriveFIPSStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

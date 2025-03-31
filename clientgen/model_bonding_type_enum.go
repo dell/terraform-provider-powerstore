@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // BondingTypeEnum Bond type: * System_Bond - Immutable default system bond. * User_Bond - User created LACP based link aggregation group.  Was added in version 2.0.0.0.
 type BondingTypeEnum string
 
 // List of BondingTypeEnum
 const (
 	BONDINGTYPEENUM_SYSTEM_BOND BondingTypeEnum = "System_Bond"
-	BONDINGTYPEENUM_USER_BOND BondingTypeEnum = "User_Bond"
+	BONDINGTYPEENUM_USER_BOND   BondingTypeEnum = "User_Bond"
 )
 
 // All allowed values of BondingTypeEnum enum
@@ -30,82 +25,6 @@ var AllowedBondingTypeEnumEnumValues = []BondingTypeEnum{
 	"User_Bond",
 }
 
-func (v *BondingTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := BondingTypeEnum(value)
-	for _, existing := range AllowedBondingTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid BondingTypeEnum", value)
+func (v *BondingTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewBondingTypeEnumFromValue returns a pointer to a valid BondingTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBondingTypeEnumFromValue(v string) (*BondingTypeEnum, error) {
-	ev := BondingTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BondingTypeEnum: valid values are %v", v, AllowedBondingTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v BondingTypeEnum) IsValid() bool {
-	for _, existing := range AllowedBondingTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to BondingTypeEnum value
-func (v BondingTypeEnum) Ptr() *BondingTypeEnum {
-	return &v
-}
-
-type NullableBondingTypeEnum struct {
-	value *BondingTypeEnum
-	isSet bool
-}
-
-func (v NullableBondingTypeEnum) Get() *BondingTypeEnum {
-	return v.value
-}
-
-func (v *NullableBondingTypeEnum) Set(val *BondingTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableBondingTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableBondingTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableBondingTypeEnum(val *BondingTypeEnum) *NullableBondingTypeEnum {
-	return &NullableBondingTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableBondingTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableBondingTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

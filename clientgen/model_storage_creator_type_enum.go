@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // StorageCreatorTypeEnum Creator type of the storage resource. * User - A resource created by a user. * System - A resource created by the replication engine. * Scheduler - A resource created by the snapshot scheduler. * External - A resource created by an external entity.  Values was added in 3.5.0.0: External.
 type StorageCreatorTypeEnum string
 
 // List of StorageCreatorTypeEnum
 const (
-	STORAGECREATORTYPEENUM_USER StorageCreatorTypeEnum = "User"
-	STORAGECREATORTYPEENUM_SYSTEM StorageCreatorTypeEnum = "System"
+	STORAGECREATORTYPEENUM_USER      StorageCreatorTypeEnum = "User"
+	STORAGECREATORTYPEENUM_SYSTEM    StorageCreatorTypeEnum = "System"
 	STORAGECREATORTYPEENUM_SCHEDULER StorageCreatorTypeEnum = "Scheduler"
-	STORAGECREATORTYPEENUM_EXTERNAL StorageCreatorTypeEnum = "External"
+	STORAGECREATORTYPEENUM_EXTERNAL  StorageCreatorTypeEnum = "External"
 )
 
 // All allowed values of StorageCreatorTypeEnum enum
@@ -34,82 +29,6 @@ var AllowedStorageCreatorTypeEnumEnumValues = []StorageCreatorTypeEnum{
 	"External",
 }
 
-func (v *StorageCreatorTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := StorageCreatorTypeEnum(value)
-	for _, existing := range AllowedStorageCreatorTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid StorageCreatorTypeEnum", value)
+func (v *StorageCreatorTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewStorageCreatorTypeEnumFromValue returns a pointer to a valid StorageCreatorTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewStorageCreatorTypeEnumFromValue(v string) (*StorageCreatorTypeEnum, error) {
-	ev := StorageCreatorTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for StorageCreatorTypeEnum: valid values are %v", v, AllowedStorageCreatorTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v StorageCreatorTypeEnum) IsValid() bool {
-	for _, existing := range AllowedStorageCreatorTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to StorageCreatorTypeEnum value
-func (v StorageCreatorTypeEnum) Ptr() *StorageCreatorTypeEnum {
-	return &v
-}
-
-type NullableStorageCreatorTypeEnum struct {
-	value *StorageCreatorTypeEnum
-	isSet bool
-}
-
-func (v NullableStorageCreatorTypeEnum) Get() *StorageCreatorTypeEnum {
-	return v.value
-}
-
-func (v *NullableStorageCreatorTypeEnum) Set(val *StorageCreatorTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableStorageCreatorTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableStorageCreatorTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableStorageCreatorTypeEnum(val *StorageCreatorTypeEnum) *NullableStorageCreatorTypeEnum {
-	return &NullableStorageCreatorTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableStorageCreatorTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableStorageCreatorTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

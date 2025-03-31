@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HAOSTypeEnum Operating system of the import host system. Valid values are:  * Windows - Windows.  * Linux - Linux.  * ESXi - ESXi.  * Unknown - Operating system of the host system is unknown to PowerStore. 
+// HAOSTypeEnum Operating system of the import host system. Valid values are:  * Windows - Windows.  * Linux - Linux.  * ESXi - ESXi.  * Unknown - Operating system of the host system is unknown to PowerStore.
 type HAOSTypeEnum string
 
 // List of HAOSTypeEnum
 const (
 	HAOSTYPEENUM_WINDOWS HAOSTypeEnum = "Windows"
-	HAOSTYPEENUM_LINUX HAOSTypeEnum = "Linux"
-	HAOSTYPEENUM_ESXI HAOSTypeEnum = "ESXi"
+	HAOSTYPEENUM_LINUX   HAOSTypeEnum = "Linux"
+	HAOSTYPEENUM_ESXI    HAOSTypeEnum = "ESXi"
 	HAOSTYPEENUM_UNKNOWN HAOSTypeEnum = "Unknown"
 )
 
@@ -34,82 +29,6 @@ var AllowedHAOSTypeEnumEnumValues = []HAOSTypeEnum{
 	"Unknown",
 }
 
-func (v *HAOSTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HAOSTypeEnum(value)
-	for _, existing := range AllowedHAOSTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HAOSTypeEnum", value)
+func (v *HAOSTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewHAOSTypeEnumFromValue returns a pointer to a valid HAOSTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHAOSTypeEnumFromValue(v string) (*HAOSTypeEnum, error) {
-	ev := HAOSTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HAOSTypeEnum: valid values are %v", v, AllowedHAOSTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HAOSTypeEnum) IsValid() bool {
-	for _, existing := range AllowedHAOSTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HAOSTypeEnum value
-func (v HAOSTypeEnum) Ptr() *HAOSTypeEnum {
-	return &v
-}
-
-type NullableHAOSTypeEnum struct {
-	value *HAOSTypeEnum
-	isSet bool
-}
-
-func (v NullableHAOSTypeEnum) Get() *HAOSTypeEnum {
-	return v.value
-}
-
-func (v *NullableHAOSTypeEnum) Set(val *HAOSTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHAOSTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHAOSTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHAOSTypeEnum(val *HAOSTypeEnum) *NullableHAOSTypeEnum {
-	return &NullableHAOSTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableHAOSTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHAOSTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

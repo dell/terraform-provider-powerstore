@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NetworkPurposeEnum Network purpose.  * ISCSI - Network provides iSCSI connectivity to storage.  * NVMe_TCP - Network provides NVME over Fabric connectivity to storage using TCP.  * File_Mobility - Network provides NAS File Replication and Import control connection.  * External_Replication - Network provides both iSCSI and iBasic replication connectivity.  Was added in version 2.0.0.0. Values was added in 2.1.0.0: NVMe_TCP. Values was added in 3.0.0.0: File_Mobility. Values was added in 4.0.0.0: External_Replication.
 type NetworkPurposeEnum string
 
 // List of NetworkPurposeEnum
 const (
-	NETWORKPURPOSEENUM_ISCSI NetworkPurposeEnum = "ISCSI"
-	NETWORKPURPOSEENUM_NVME_TCP NetworkPurposeEnum = "NVMe_TCP"
-	NETWORKPURPOSEENUM_FILE_MOBILITY NetworkPurposeEnum = "File_Mobility"
+	NETWORKPURPOSEENUM_ISCSI                NetworkPurposeEnum = "ISCSI"
+	NETWORKPURPOSEENUM_NVME_TCP             NetworkPurposeEnum = "NVMe_TCP"
+	NETWORKPURPOSEENUM_FILE_MOBILITY        NetworkPurposeEnum = "File_Mobility"
 	NETWORKPURPOSEENUM_EXTERNAL_REPLICATION NetworkPurposeEnum = "External_Replication"
 )
 
@@ -34,82 +29,6 @@ var AllowedNetworkPurposeEnumEnumValues = []NetworkPurposeEnum{
 	"External_Replication",
 }
 
-func (v *NetworkPurposeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := NetworkPurposeEnum(value)
-	for _, existing := range AllowedNetworkPurposeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid NetworkPurposeEnum", value)
+func (v *NetworkPurposeEnum) Value() string {
+	return string(*v)
 }
-
-// NewNetworkPurposeEnumFromValue returns a pointer to a valid NetworkPurposeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewNetworkPurposeEnumFromValue(v string) (*NetworkPurposeEnum, error) {
-	ev := NetworkPurposeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for NetworkPurposeEnum: valid values are %v", v, AllowedNetworkPurposeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v NetworkPurposeEnum) IsValid() bool {
-	for _, existing := range AllowedNetworkPurposeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to NetworkPurposeEnum value
-func (v NetworkPurposeEnum) Ptr() *NetworkPurposeEnum {
-	return &v
-}
-
-type NullableNetworkPurposeEnum struct {
-	value *NetworkPurposeEnum
-	isSet bool
-}
-
-func (v NullableNetworkPurposeEnum) Get() *NetworkPurposeEnum {
-	return v.value
-}
-
-func (v *NullableNetworkPurposeEnum) Set(val *NetworkPurposeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableNetworkPurposeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableNetworkPurposeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableNetworkPurposeEnum(val *NetworkPurposeEnum) *NullableNetworkPurposeEnum {
-	return &NullableNetworkPurposeEnum{value: val, isSet: true}
-}
-
-func (v NullableNetworkPurposeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableNetworkPurposeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

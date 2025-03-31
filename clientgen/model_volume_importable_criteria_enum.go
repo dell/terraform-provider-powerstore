@@ -10,48 +10,43 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // VolumeImportableCriteriaEnum Volume import criteria. Values are:  * Ready - The volume is ready for nondisruptive import.  * Ready_For_Agentless_Import - The volume is ready for agentless import.  * In_Progress - Import is in progress.  * Host_Not_Added - The host or hosts accessing the volume have not been added to the appliance.  * Imported - Import is complete.  * Incompatible_Firmware - The software version on the source array is not compatible.  * Incompatible_Host_Agent - The agent version on the host is not compatible.  * Undetermined - The import status cannot be determined due to an internal error. Contact technical support.  * Host_Volume_Offline - The host volume is offline.  * Cluster_Node_Count_MisMatch - The host or hosts added to the appliance are not part of the host cluster to which the volume is mapped.  * Undetermined_Cluster_Type - The system cannot determine the host cluster type.  * Source_Volume_Offline - The source volume is offline.  * Replication_Destination - The volume is a replication destination.  * SC_Live_Volume - The volume is a Storage Center Live Volume.  * SC_Degraded - The volume is not available or is in a degraded state.  * SC_Not_Active - The Storage Center volume is not an active volume.  * Used_By_NAS - The volume is in use by NAS.  * SC_Portable_Volume - The Storage Center volume is a destination of a portable volume.  * VNX_Faulted - The VNX volume is in a faulted state.  * VNX_Not_Ready - The VNX volume is not in a ready state.  * VNX_Internal_Volume - The VNX volume is an internal volume.  * Unity_System_Health_Inappropriate - The health of the Unity system is not suitable for import.  * Unity_Volume_Health_Inappropriate - The health of the Unity volume is not suitable for import.  * XtremIO_Severity_Inappropriate - The severity level of the XtremIO system is not suitable for import.  * XtremIO_State_Inappropriate - The state of  the XtremIO system is not suitable for import.  * XtremIO_Volume_Severity_Inappropriate - The severity level XtremIO volume is not suitable for import.  * XtremIO_Volume_State_Inappropriate - The state of the XtremIO volume is not suitable for import.  * NetApp_System_State_Inappropriate - NetApp system state is not suitable for import.  * NetApp_Volume_State_Inappropriate - NetApp volume state is not suitable for import.  * Volume_Size_Not_Multiple_of_8192 - Volume size is not multiple of 8192.  * Unsupported_Protocol - Import is not supported for RemoteSystem with backend protocol as FC and FrontEnd as iSCSI.  * Vmax_Volume_State_Inappropriate - VMAX volume state is not suitable for import.  Values was added in 1.0.2: Ready_For_Agentless_Import, XtremIO_Severity_Inappropriate, XtremIO_State_Inappropriate, XtremIO_Volume_Severity_Inappropriate, XtremIO_Volume_State_Inappropriate. Values was added in 3.0.0.0: NetApp_System_State_Inappropriate, NetApp_Volume_State_Inappropriate, Volume_Size_Not_Multiple_of_8192, Unsupported_Protocol, Vmax_Volume_State_Inappropriate.
 type VolumeImportableCriteriaEnum string
 
 // List of VolumeImportableCriteriaEnum
 const (
-	VOLUMEIMPORTABLECRITERIAENUM_READY VolumeImportableCriteriaEnum = "Ready"
-	VOLUMEIMPORTABLECRITERIAENUM_READY_FOR_AGENTLESS_IMPORT VolumeImportableCriteriaEnum = "Ready_For_Agentless_Import"
-	VOLUMEIMPORTABLECRITERIAENUM_IN_PROGRESS VolumeImportableCriteriaEnum = "In_Progress"
-	VOLUMEIMPORTABLECRITERIAENUM_HOST_NOT_ADDED VolumeImportableCriteriaEnum = "Host_Not_Added"
-	VOLUMEIMPORTABLECRITERIAENUM_IMPORTED VolumeImportableCriteriaEnum = "Imported"
-	VOLUMEIMPORTABLECRITERIAENUM_INCOMPATIBLE_FIRMWARE VolumeImportableCriteriaEnum = "Incompatible_Firmware"
-	VOLUMEIMPORTABLECRITERIAENUM_INCOMPATIBLE_HOST_AGENT VolumeImportableCriteriaEnum = "Incompatible_Host_Agent"
-	VOLUMEIMPORTABLECRITERIAENUM_UNDETERMINED VolumeImportableCriteriaEnum = "Undetermined"
-	VOLUMEIMPORTABLECRITERIAENUM_HOST_VOLUME_OFFLINE VolumeImportableCriteriaEnum = "Host_Volume_Offline"
-	VOLUMEIMPORTABLECRITERIAENUM_CLUSTER_NODE_COUNT_MIS_MATCH VolumeImportableCriteriaEnum = "Cluster_Node_Count_MisMatch"
-	VOLUMEIMPORTABLECRITERIAENUM_UNDETERMINED_CLUSTER_TYPE VolumeImportableCriteriaEnum = "Undetermined_Cluster_Type"
-	VOLUMEIMPORTABLECRITERIAENUM_SOURCE_VOLUME_OFFLINE VolumeImportableCriteriaEnum = "Source_Volume_Offline"
-	VOLUMEIMPORTABLECRITERIAENUM_REPLICATION_DESTINATION VolumeImportableCriteriaEnum = "Replication_Destination"
-	VOLUMEIMPORTABLECRITERIAENUM_SC_LIVE_VOLUME VolumeImportableCriteriaEnum = "SC_Live_Volume"
-	VOLUMEIMPORTABLECRITERIAENUM_SC_DEGRADED VolumeImportableCriteriaEnum = "SC_Degraded"
-	VOLUMEIMPORTABLECRITERIAENUM_SC_NOT_ACTIVE VolumeImportableCriteriaEnum = "SC_Not_Active"
-	VOLUMEIMPORTABLECRITERIAENUM_USED_BY_NAS VolumeImportableCriteriaEnum = "Used_By_NAS"
-	VOLUMEIMPORTABLECRITERIAENUM_SC_PORTABLE_VOLUME VolumeImportableCriteriaEnum = "SC_Portable_Volume"
-	VOLUMEIMPORTABLECRITERIAENUM_VNX_FAULTED VolumeImportableCriteriaEnum = "VNX_Faulted"
-	VOLUMEIMPORTABLECRITERIAENUM_VNX_NOT_READY VolumeImportableCriteriaEnum = "VNX_Not_Ready"
-	VOLUMEIMPORTABLECRITERIAENUM_VNX_INTERNAL_VOLUME VolumeImportableCriteriaEnum = "VNX_Internal_Volume"
-	VOLUMEIMPORTABLECRITERIAENUM_UNITY_SYSTEM_HEALTH_INAPPROPRIATE VolumeImportableCriteriaEnum = "Unity_System_Health_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_UNITY_VOLUME_HEALTH_INAPPROPRIATE VolumeImportableCriteriaEnum = "Unity_Volume_Health_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_SEVERITY_INAPPROPRIATE VolumeImportableCriteriaEnum = "XtremIO_Severity_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_STATE_INAPPROPRIATE VolumeImportableCriteriaEnum = "XtremIO_State_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_READY                                  VolumeImportableCriteriaEnum = "Ready"
+	VOLUMEIMPORTABLECRITERIAENUM_READY_FOR_AGENTLESS_IMPORT             VolumeImportableCriteriaEnum = "Ready_For_Agentless_Import"
+	VOLUMEIMPORTABLECRITERIAENUM_IN_PROGRESS                            VolumeImportableCriteriaEnum = "In_Progress"
+	VOLUMEIMPORTABLECRITERIAENUM_HOST_NOT_ADDED                         VolumeImportableCriteriaEnum = "Host_Not_Added"
+	VOLUMEIMPORTABLECRITERIAENUM_IMPORTED                               VolumeImportableCriteriaEnum = "Imported"
+	VOLUMEIMPORTABLECRITERIAENUM_INCOMPATIBLE_FIRMWARE                  VolumeImportableCriteriaEnum = "Incompatible_Firmware"
+	VOLUMEIMPORTABLECRITERIAENUM_INCOMPATIBLE_HOST_AGENT                VolumeImportableCriteriaEnum = "Incompatible_Host_Agent"
+	VOLUMEIMPORTABLECRITERIAENUM_UNDETERMINED                           VolumeImportableCriteriaEnum = "Undetermined"
+	VOLUMEIMPORTABLECRITERIAENUM_HOST_VOLUME_OFFLINE                    VolumeImportableCriteriaEnum = "Host_Volume_Offline"
+	VOLUMEIMPORTABLECRITERIAENUM_CLUSTER_NODE_COUNT_MIS_MATCH           VolumeImportableCriteriaEnum = "Cluster_Node_Count_MisMatch"
+	VOLUMEIMPORTABLECRITERIAENUM_UNDETERMINED_CLUSTER_TYPE              VolumeImportableCriteriaEnum = "Undetermined_Cluster_Type"
+	VOLUMEIMPORTABLECRITERIAENUM_SOURCE_VOLUME_OFFLINE                  VolumeImportableCriteriaEnum = "Source_Volume_Offline"
+	VOLUMEIMPORTABLECRITERIAENUM_REPLICATION_DESTINATION                VolumeImportableCriteriaEnum = "Replication_Destination"
+	VOLUMEIMPORTABLECRITERIAENUM_SC_LIVE_VOLUME                         VolumeImportableCriteriaEnum = "SC_Live_Volume"
+	VOLUMEIMPORTABLECRITERIAENUM_SC_DEGRADED                            VolumeImportableCriteriaEnum = "SC_Degraded"
+	VOLUMEIMPORTABLECRITERIAENUM_SC_NOT_ACTIVE                          VolumeImportableCriteriaEnum = "SC_Not_Active"
+	VOLUMEIMPORTABLECRITERIAENUM_USED_BY_NAS                            VolumeImportableCriteriaEnum = "Used_By_NAS"
+	VOLUMEIMPORTABLECRITERIAENUM_SC_PORTABLE_VOLUME                     VolumeImportableCriteriaEnum = "SC_Portable_Volume"
+	VOLUMEIMPORTABLECRITERIAENUM_VNX_FAULTED                            VolumeImportableCriteriaEnum = "VNX_Faulted"
+	VOLUMEIMPORTABLECRITERIAENUM_VNX_NOT_READY                          VolumeImportableCriteriaEnum = "VNX_Not_Ready"
+	VOLUMEIMPORTABLECRITERIAENUM_VNX_INTERNAL_VOLUME                    VolumeImportableCriteriaEnum = "VNX_Internal_Volume"
+	VOLUMEIMPORTABLECRITERIAENUM_UNITY_SYSTEM_HEALTH_INAPPROPRIATE      VolumeImportableCriteriaEnum = "Unity_System_Health_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_UNITY_VOLUME_HEALTH_INAPPROPRIATE      VolumeImportableCriteriaEnum = "Unity_Volume_Health_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_SEVERITY_INAPPROPRIATE        VolumeImportableCriteriaEnum = "XtremIO_Severity_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_STATE_INAPPROPRIATE           VolumeImportableCriteriaEnum = "XtremIO_State_Inappropriate"
 	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_VOLUME_SEVERITY_INAPPROPRIATE VolumeImportableCriteriaEnum = "XtremIO_Volume_Severity_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_VOLUME_STATE_INAPPROPRIATE VolumeImportableCriteriaEnum = "XtremIO_Volume_State_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_NET_APP_SYSTEM_STATE_INAPPROPRIATE VolumeImportableCriteriaEnum = "NetApp_System_State_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_NET_APP_VOLUME_STATE_INAPPROPRIATE VolumeImportableCriteriaEnum = "NetApp_Volume_State_Inappropriate"
-	VOLUMEIMPORTABLECRITERIAENUM_VOLUME_SIZE_NOT_MULTIPLE_OF_8192 VolumeImportableCriteriaEnum = "Volume_Size_Not_Multiple_of_8192"
-	VOLUMEIMPORTABLECRITERIAENUM_UNSUPPORTED_PROTOCOL VolumeImportableCriteriaEnum = "Unsupported_Protocol"
-	VOLUMEIMPORTABLECRITERIAENUM_VMAX_VOLUME_STATE_INAPPROPRIATE VolumeImportableCriteriaEnum = "Vmax_Volume_State_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_XTREM_IO_VOLUME_STATE_INAPPROPRIATE    VolumeImportableCriteriaEnum = "XtremIO_Volume_State_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_NET_APP_SYSTEM_STATE_INAPPROPRIATE     VolumeImportableCriteriaEnum = "NetApp_System_State_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_NET_APP_VOLUME_STATE_INAPPROPRIATE     VolumeImportableCriteriaEnum = "NetApp_Volume_State_Inappropriate"
+	VOLUMEIMPORTABLECRITERIAENUM_VOLUME_SIZE_NOT_MULTIPLE_OF_8192       VolumeImportableCriteriaEnum = "Volume_Size_Not_Multiple_of_8192"
+	VOLUMEIMPORTABLECRITERIAENUM_UNSUPPORTED_PROTOCOL                   VolumeImportableCriteriaEnum = "Unsupported_Protocol"
+	VOLUMEIMPORTABLECRITERIAENUM_VMAX_VOLUME_STATE_INAPPROPRIATE        VolumeImportableCriteriaEnum = "Vmax_Volume_State_Inappropriate"
 )
 
 // All allowed values of VolumeImportableCriteriaEnum enum
@@ -90,82 +85,6 @@ var AllowedVolumeImportableCriteriaEnumEnumValues = []VolumeImportableCriteriaEn
 	"Vmax_Volume_State_Inappropriate",
 }
 
-func (v *VolumeImportableCriteriaEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VolumeImportableCriteriaEnum(value)
-	for _, existing := range AllowedVolumeImportableCriteriaEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VolumeImportableCriteriaEnum", value)
+func (v *VolumeImportableCriteriaEnum) Value() string {
+	return string(*v)
 }
-
-// NewVolumeImportableCriteriaEnumFromValue returns a pointer to a valid VolumeImportableCriteriaEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVolumeImportableCriteriaEnumFromValue(v string) (*VolumeImportableCriteriaEnum, error) {
-	ev := VolumeImportableCriteriaEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VolumeImportableCriteriaEnum: valid values are %v", v, AllowedVolumeImportableCriteriaEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VolumeImportableCriteriaEnum) IsValid() bool {
-	for _, existing := range AllowedVolumeImportableCriteriaEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VolumeImportableCriteriaEnum value
-func (v VolumeImportableCriteriaEnum) Ptr() *VolumeImportableCriteriaEnum {
-	return &v
-}
-
-type NullableVolumeImportableCriteriaEnum struct {
-	value *VolumeImportableCriteriaEnum
-	isSet bool
-}
-
-func (v NullableVolumeImportableCriteriaEnum) Get() *VolumeImportableCriteriaEnum {
-	return v.value
-}
-
-func (v *NullableVolumeImportableCriteriaEnum) Set(val *VolumeImportableCriteriaEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVolumeImportableCriteriaEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVolumeImportableCriteriaEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVolumeImportableCriteriaEnum(val *VolumeImportableCriteriaEnum) *NullableVolumeImportableCriteriaEnum {
-	return &NullableVolumeImportableCriteriaEnum{value: val, isSet: true}
-}
-
-func (v NullableVolumeImportableCriteriaEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVolumeImportableCriteriaEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

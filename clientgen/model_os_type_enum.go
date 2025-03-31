@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// OSTypeEnum Operating system of the host. Values are: * Windows * Linux * ESXi * AIX * HP-UX * Solaris 
+// OSTypeEnum Operating system of the host. Values are: * Windows * Linux * ESXi * AIX * HP-UX * Solaris
 type OSTypeEnum string
 
 // List of OSTypeEnum
 const (
 	OSTYPEENUM_WINDOWS OSTypeEnum = "Windows"
-	OSTYPEENUM_LINUX OSTypeEnum = "Linux"
-	OSTYPEENUM_ESXI OSTypeEnum = "ESXi"
-	OSTYPEENUM_AIX OSTypeEnum = "AIX"
-	OSTYPEENUM_HP_UX OSTypeEnum = "HP-UX"
+	OSTYPEENUM_LINUX   OSTypeEnum = "Linux"
+	OSTYPEENUM_ESXI    OSTypeEnum = "ESXi"
+	OSTYPEENUM_AIX     OSTypeEnum = "AIX"
+	OSTYPEENUM_HP_UX   OSTypeEnum = "HP-UX"
 	OSTYPEENUM_SOLARIS OSTypeEnum = "Solaris"
 )
 
@@ -38,82 +33,6 @@ var AllowedOSTypeEnumEnumValues = []OSTypeEnum{
 	"Solaris",
 }
 
-func (v *OSTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := OSTypeEnum(value)
-	for _, existing := range AllowedOSTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid OSTypeEnum", value)
+func (v *OSTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewOSTypeEnumFromValue returns a pointer to a valid OSTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewOSTypeEnumFromValue(v string) (*OSTypeEnum, error) {
-	ev := OSTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for OSTypeEnum: valid values are %v", v, AllowedOSTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v OSTypeEnum) IsValid() bool {
-	for _, existing := range AllowedOSTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to OSTypeEnum value
-func (v OSTypeEnum) Ptr() *OSTypeEnum {
-	return &v
-}
-
-type NullableOSTypeEnum struct {
-	value *OSTypeEnum
-	isSet bool
-}
-
-func (v NullableOSTypeEnum) Get() *OSTypeEnum {
-	return v.value
-}
-
-func (v *NullableOSTypeEnum) Set(val *OSTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableOSTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableOSTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableOSTypeEnum(val *OSTypeEnum) *NullableOSTypeEnum {
-	return &NullableOSTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableOSTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableOSTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

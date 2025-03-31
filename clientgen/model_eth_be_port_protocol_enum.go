@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // EthBEPortProtocolEnum Supported Protocols over Ethernet port. Currently only NVMe is supported. * NVMe  Was added in version 3.0.0.0.
 type EthBEPortProtocolEnum string
 
@@ -28,82 +23,6 @@ var AllowedEthBEPortProtocolEnumEnumValues = []EthBEPortProtocolEnum{
 	"NVMe",
 }
 
-func (v *EthBEPortProtocolEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := EthBEPortProtocolEnum(value)
-	for _, existing := range AllowedEthBEPortProtocolEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid EthBEPortProtocolEnum", value)
+func (v *EthBEPortProtocolEnum) Value() string {
+	return string(*v)
 }
-
-// NewEthBEPortProtocolEnumFromValue returns a pointer to a valid EthBEPortProtocolEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewEthBEPortProtocolEnumFromValue(v string) (*EthBEPortProtocolEnum, error) {
-	ev := EthBEPortProtocolEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for EthBEPortProtocolEnum: valid values are %v", v, AllowedEthBEPortProtocolEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v EthBEPortProtocolEnum) IsValid() bool {
-	for _, existing := range AllowedEthBEPortProtocolEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to EthBEPortProtocolEnum value
-func (v EthBEPortProtocolEnum) Ptr() *EthBEPortProtocolEnum {
-	return &v
-}
-
-type NullableEthBEPortProtocolEnum struct {
-	value *EthBEPortProtocolEnum
-	isSet bool
-}
-
-func (v NullableEthBEPortProtocolEnum) Get() *EthBEPortProtocolEnum {
-	return v.value
-}
-
-func (v *NullableEthBEPortProtocolEnum) Set(val *EthBEPortProtocolEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableEthBEPortProtocolEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableEthBEPortProtocolEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableEthBEPortProtocolEnum(val *EthBEPortProtocolEnum) *NullableEthBEPortProtocolEnum {
-	return &NullableEthBEPortProtocolEnum{value: val, isSet: true}
-}
-
-func (v NullableEthBEPortProtocolEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableEthBEPortProtocolEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

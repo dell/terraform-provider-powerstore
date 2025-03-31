@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FSNStatusEnum Current fail-safe network operational status: * Healthy - Fail-safe network is fully operational. * Degraded - Fail-safe network is degraded due to one of its ports being down. * Failed - Fail-safe network is down.  Was added in version 3.5.0.0.
 type FSNStatusEnum string
 
 // List of FSNStatusEnum
 const (
-	FSNSTATUSENUM_HEALTHY FSNStatusEnum = "Healthy"
+	FSNSTATUSENUM_HEALTHY  FSNStatusEnum = "Healthy"
 	FSNSTATUSENUM_DEGRADED FSNStatusEnum = "Degraded"
-	FSNSTATUSENUM_FAILED FSNStatusEnum = "Failed"
+	FSNSTATUSENUM_FAILED   FSNStatusEnum = "Failed"
 )
 
 // All allowed values of FSNStatusEnum enum
@@ -32,82 +27,6 @@ var AllowedFSNStatusEnumEnumValues = []FSNStatusEnum{
 	"Failed",
 }
 
-func (v *FSNStatusEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FSNStatusEnum(value)
-	for _, existing := range AllowedFSNStatusEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FSNStatusEnum", value)
+func (v *FSNStatusEnum) Value() string {
+	return string(*v)
 }
-
-// NewFSNStatusEnumFromValue returns a pointer to a valid FSNStatusEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFSNStatusEnumFromValue(v string) (*FSNStatusEnum, error) {
-	ev := FSNStatusEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FSNStatusEnum: valid values are %v", v, AllowedFSNStatusEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FSNStatusEnum) IsValid() bool {
-	for _, existing := range AllowedFSNStatusEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FSNStatusEnum value
-func (v FSNStatusEnum) Ptr() *FSNStatusEnum {
-	return &v
-}
-
-type NullableFSNStatusEnum struct {
-	value *FSNStatusEnum
-	isSet bool
-}
-
-func (v NullableFSNStatusEnum) Get() *FSNStatusEnum {
-	return v.value
-}
-
-func (v *NullableFSNStatusEnum) Set(val *FSNStatusEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFSNStatusEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFSNStatusEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFSNStatusEnum(val *FSNStatusEnum) *NullableFSNStatusEnum {
-	return &NullableFSNStatusEnum{value: val, isSet: true}
-}
-
-func (v NullableFSNStatusEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFSNStatusEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

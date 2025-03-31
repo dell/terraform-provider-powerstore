@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileSystemTypeEnum Indicates the type of a file system.  * Primary - Normal file system or clone.  * Snapshot - Snapshot of a file system. 
+// FileSystemTypeEnum Indicates the type of a file system.  * Primary - Normal file system or clone.  * Snapshot - Snapshot of a file system.
 type FileSystemTypeEnum string
 
 // List of FileSystemTypeEnum
 const (
-	FILESYSTEMTYPEENUM_PRIMARY FileSystemTypeEnum = "Primary"
+	FILESYSTEMTYPEENUM_PRIMARY  FileSystemTypeEnum = "Primary"
 	FILESYSTEMTYPEENUM_SNAPSHOT FileSystemTypeEnum = "Snapshot"
 )
 
@@ -30,82 +25,6 @@ var AllowedFileSystemTypeEnumEnumValues = []FileSystemTypeEnum{
 	"Snapshot",
 }
 
-func (v *FileSystemTypeEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := FileSystemTypeEnum(value)
-	for _, existing := range AllowedFileSystemTypeEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid FileSystemTypeEnum", value)
+func (v *FileSystemTypeEnum) Value() string {
+	return string(*v)
 }
-
-// NewFileSystemTypeEnumFromValue returns a pointer to a valid FileSystemTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewFileSystemTypeEnumFromValue(v string) (*FileSystemTypeEnum, error) {
-	ev := FileSystemTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for FileSystemTypeEnum: valid values are %v", v, AllowedFileSystemTypeEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v FileSystemTypeEnum) IsValid() bool {
-	for _, existing := range AllowedFileSystemTypeEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to FileSystemTypeEnum value
-func (v FileSystemTypeEnum) Ptr() *FileSystemTypeEnum {
-	return &v
-}
-
-type NullableFileSystemTypeEnum struct {
-	value *FileSystemTypeEnum
-	isSet bool
-}
-
-func (v NullableFileSystemTypeEnum) Get() *FileSystemTypeEnum {
-	return v.value
-}
-
-func (v *NullableFileSystemTypeEnum) Set(val *FileSystemTypeEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableFileSystemTypeEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableFileSystemTypeEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableFileSystemTypeEnum(val *FileSystemTypeEnum) *NullableFileSystemTypeEnum {
-	return &NullableFileSystemTypeEnum{value: val, isSet: true}
-}
-
-func (v NullableFileSystemTypeEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableFileSystemTypeEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

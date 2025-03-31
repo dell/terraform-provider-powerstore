@@ -10,23 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DataConnectionStateEnum Possible data connection states of a remote system: * OK                             - Normal conditions. * Partial_Data_Connection_Loss   - Partial data connection loss. * Complete_Data_Connection_Loss  - Complete data connection loss. * Status_Not_Available           - Status not available. * No_Targets_Discovered          - No targets discovered. * Initializing                   - Initializing * Data_Connection_Unstable       - Data_Connection_Unstable  Values was added in 4.0.0.0: Data_Connection_Unstable.
 type DataConnectionStateEnum string
 
 // List of DataConnectionStateEnum
 const (
-	DATACONNECTIONSTATEENUM_OK DataConnectionStateEnum = "OK"
-	DATACONNECTIONSTATEENUM_PARTIAL_DATA_CONNECTION_LOSS DataConnectionStateEnum = "Partial_Data_Connection_Loss"
+	DATACONNECTIONSTATEENUM_OK                            DataConnectionStateEnum = "OK"
+	DATACONNECTIONSTATEENUM_PARTIAL_DATA_CONNECTION_LOSS  DataConnectionStateEnum = "Partial_Data_Connection_Loss"
 	DATACONNECTIONSTATEENUM_COMPLETE_DATA_CONNECTION_LOSS DataConnectionStateEnum = "Complete_Data_Connection_Loss"
-	DATACONNECTIONSTATEENUM_STATUS_NOT_AVAILABLE DataConnectionStateEnum = "Status_Not_Available"
-	DATACONNECTIONSTATEENUM_NO_TARGETS_DISCOVERED DataConnectionStateEnum = "No_Targets_Discovered"
-	DATACONNECTIONSTATEENUM_INITIALIZING DataConnectionStateEnum = "Initializing"
-	DATACONNECTIONSTATEENUM_DATA_CONNECTION_UNSTABLE DataConnectionStateEnum = "Data_Connection_Unstable"
+	DATACONNECTIONSTATEENUM_STATUS_NOT_AVAILABLE          DataConnectionStateEnum = "Status_Not_Available"
+	DATACONNECTIONSTATEENUM_NO_TARGETS_DISCOVERED         DataConnectionStateEnum = "No_Targets_Discovered"
+	DATACONNECTIONSTATEENUM_INITIALIZING                  DataConnectionStateEnum = "Initializing"
+	DATACONNECTIONSTATEENUM_DATA_CONNECTION_UNSTABLE      DataConnectionStateEnum = "Data_Connection_Unstable"
 )
 
 // All allowed values of DataConnectionStateEnum enum
@@ -40,82 +35,6 @@ var AllowedDataConnectionStateEnumEnumValues = []DataConnectionStateEnum{
 	"Data_Connection_Unstable",
 }
 
-func (v *DataConnectionStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := DataConnectionStateEnum(value)
-	for _, existing := range AllowedDataConnectionStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid DataConnectionStateEnum", value)
+func (v *DataConnectionStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewDataConnectionStateEnumFromValue returns a pointer to a valid DataConnectionStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDataConnectionStateEnumFromValue(v string) (*DataConnectionStateEnum, error) {
-	ev := DataConnectionStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for DataConnectionStateEnum: valid values are %v", v, AllowedDataConnectionStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v DataConnectionStateEnum) IsValid() bool {
-	for _, existing := range AllowedDataConnectionStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to DataConnectionStateEnum value
-func (v DataConnectionStateEnum) Ptr() *DataConnectionStateEnum {
-	return &v
-}
-
-type NullableDataConnectionStateEnum struct {
-	value *DataConnectionStateEnum
-	isSet bool
-}
-
-func (v NullableDataConnectionStateEnum) Get() *DataConnectionStateEnum {
-	return v.value
-}
-
-func (v *NullableDataConnectionStateEnum) Set(val *DataConnectionStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableDataConnectionStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableDataConnectionStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableDataConnectionStateEnum(val *DataConnectionStateEnum) *NullableDataConnectionStateEnum {
-	return &NullableDataConnectionStateEnum{value: val, isSet: true}
-}
-
-func (v NullableDataConnectionStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableDataConnectionStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

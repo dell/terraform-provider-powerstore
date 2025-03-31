@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HardwareStaleStateEnum Stale state of the Hardware. Current states are:  * Not_Stale - Not stale.  * Disconnected - Either this Hardware or an ancestor of this Hardware has a Disconnected lifecycle state and therefore is not updated.  Was added in version 2.0.0.0.
 type HardwareStaleStateEnum string
 
 // List of HardwareStaleStateEnum
 const (
-	HARDWARESTALESTATEENUM_NOT_STALE HardwareStaleStateEnum = "Not_Stale"
+	HARDWARESTALESTATEENUM_NOT_STALE    HardwareStaleStateEnum = "Not_Stale"
 	HARDWARESTALESTATEENUM_DISCONNECTED HardwareStaleStateEnum = "Disconnected"
 )
 
@@ -30,82 +25,6 @@ var AllowedHardwareStaleStateEnumEnumValues = []HardwareStaleStateEnum{
 	"Disconnected",
 }
 
-func (v *HardwareStaleStateEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := HardwareStaleStateEnum(value)
-	for _, existing := range AllowedHardwareStaleStateEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid HardwareStaleStateEnum", value)
+func (v *HardwareStaleStateEnum) Value() string {
+	return string(*v)
 }
-
-// NewHardwareStaleStateEnumFromValue returns a pointer to a valid HardwareStaleStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewHardwareStaleStateEnumFromValue(v string) (*HardwareStaleStateEnum, error) {
-	ev := HardwareStaleStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for HardwareStaleStateEnum: valid values are %v", v, AllowedHardwareStaleStateEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v HardwareStaleStateEnum) IsValid() bool {
-	for _, existing := range AllowedHardwareStaleStateEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to HardwareStaleStateEnum value
-func (v HardwareStaleStateEnum) Ptr() *HardwareStaleStateEnum {
-	return &v
-}
-
-type NullableHardwareStaleStateEnum struct {
-	value *HardwareStaleStateEnum
-	isSet bool
-}
-
-func (v NullableHardwareStaleStateEnum) Get() *HardwareStaleStateEnum {
-	return v.value
-}
-
-func (v *NullableHardwareStaleStateEnum) Set(val *HardwareStaleStateEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableHardwareStaleStateEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableHardwareStaleStateEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableHardwareStaleStateEnum(val *HardwareStaleStateEnum) *NullableHardwareStaleStateEnum {
-	return &NullableHardwareStaleStateEnum{value: val, isSet: true}
-}
-
-func (v NullableHardwareStaleStateEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableHardwareStaleStateEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // VGPlacementRule This is set during creation, and determines resource balancer recommendations.  * Same_Appliance - All the members of the group should be on the same appliance in the cluster.  * No_Preference - The volumes can be placed on any of the appliances in the cluster.  Was deprecated in version 2.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 type VGPlacementRule string
 
 // List of VGPlacementRule
 const (
 	VGPLACEMENTRULE_SAME_APPLIANCE VGPlacementRule = "Same_Appliance"
-	VGPLACEMENTRULE_NO_PREFERENCE VGPlacementRule = "No_Preference"
+	VGPLACEMENTRULE_NO_PREFERENCE  VGPlacementRule = "No_Preference"
 )
 
 // All allowed values of VGPlacementRule enum
@@ -30,82 +25,6 @@ var AllowedVGPlacementRuleEnumValues = []VGPlacementRule{
 	"No_Preference",
 }
 
-func (v *VGPlacementRule) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := VGPlacementRule(value)
-	for _, existing := range AllowedVGPlacementRuleEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid VGPlacementRule", value)
+func (v *VGPlacementRule) Value() string {
+	return string(*v)
 }
-
-// NewVGPlacementRuleFromValue returns a pointer to a valid VGPlacementRule
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewVGPlacementRuleFromValue(v string) (*VGPlacementRule, error) {
-	ev := VGPlacementRule(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for VGPlacementRule: valid values are %v", v, AllowedVGPlacementRuleEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v VGPlacementRule) IsValid() bool {
-	for _, existing := range AllowedVGPlacementRuleEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to VGPlacementRule value
-func (v VGPlacementRule) Ptr() *VGPlacementRule {
-	return &v
-}
-
-type NullableVGPlacementRule struct {
-	value *VGPlacementRule
-	isSet bool
-}
-
-func (v NullableVGPlacementRule) Get() *VGPlacementRule {
-	return v.value
-}
-
-func (v *NullableVGPlacementRule) Set(val *VGPlacementRule) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableVGPlacementRule) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableVGPlacementRule) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableVGPlacementRule(val *VGPlacementRule) *NullableVGPlacementRule {
-	return &NullableVGPlacementRule{value: val, isSet: true}
-}
-
-func (v NullableVGPlacementRule) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableVGPlacementRule) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-

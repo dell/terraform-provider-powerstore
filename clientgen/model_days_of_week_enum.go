@@ -10,23 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// DaysOfWeekEnum Days of the week. Values are: * Monday * Tuesday * Wednesday * Thursday * Friday * Saturday * Sunday 
+// DaysOfWeekEnum Days of the week. Values are: * Monday * Tuesday * Wednesday * Thursday * Friday * Saturday * Sunday
 type DaysOfWeekEnum string
 
 // List of DaysOfWeekEnum
 const (
-	DAYSOFWEEKENUM_MONDAY DaysOfWeekEnum = "Monday"
-	DAYSOFWEEKENUM_TUESDAY DaysOfWeekEnum = "Tuesday"
+	DAYSOFWEEKENUM_MONDAY    DaysOfWeekEnum = "Monday"
+	DAYSOFWEEKENUM_TUESDAY   DaysOfWeekEnum = "Tuesday"
 	DAYSOFWEEKENUM_WEDNESDAY DaysOfWeekEnum = "Wednesday"
-	DAYSOFWEEKENUM_THURSDAY DaysOfWeekEnum = "Thursday"
-	DAYSOFWEEKENUM_FRIDAY DaysOfWeekEnum = "Friday"
-	DAYSOFWEEKENUM_SATURDAY DaysOfWeekEnum = "Saturday"
-	DAYSOFWEEKENUM_SUNDAY DaysOfWeekEnum = "Sunday"
+	DAYSOFWEEKENUM_THURSDAY  DaysOfWeekEnum = "Thursday"
+	DAYSOFWEEKENUM_FRIDAY    DaysOfWeekEnum = "Friday"
+	DAYSOFWEEKENUM_SATURDAY  DaysOfWeekEnum = "Saturday"
+	DAYSOFWEEKENUM_SUNDAY    DaysOfWeekEnum = "Sunday"
 )
 
 // All allowed values of DaysOfWeekEnum enum
@@ -40,82 +35,6 @@ var AllowedDaysOfWeekEnumEnumValues = []DaysOfWeekEnum{
 	"Sunday",
 }
 
-func (v *DaysOfWeekEnum) UnmarshalJSON(src []byte) error {
-	var value string
-	err := json.Unmarshal(src, &value)
-	if err != nil {
-		return err
-	}
-	enumTypeValue := DaysOfWeekEnum(value)
-	for _, existing := range AllowedDaysOfWeekEnumEnumValues {
-		if existing == enumTypeValue {
-			*v = enumTypeValue
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%+v is not a valid DaysOfWeekEnum", value)
+func (v *DaysOfWeekEnum) Value() string {
+	return string(*v)
 }
-
-// NewDaysOfWeekEnumFromValue returns a pointer to a valid DaysOfWeekEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDaysOfWeekEnumFromValue(v string) (*DaysOfWeekEnum, error) {
-	ev := DaysOfWeekEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for DaysOfWeekEnum: valid values are %v", v, AllowedDaysOfWeekEnumEnumValues)
-	}
-}
-
-// IsValid return true if the value is valid for the enum, false otherwise
-func (v DaysOfWeekEnum) IsValid() bool {
-	for _, existing := range AllowedDaysOfWeekEnumEnumValues {
-		if existing == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Ptr returns reference to DaysOfWeekEnum value
-func (v DaysOfWeekEnum) Ptr() *DaysOfWeekEnum {
-	return &v
-}
-
-type NullableDaysOfWeekEnum struct {
-	value *DaysOfWeekEnum
-	isSet bool
-}
-
-func (v NullableDaysOfWeekEnum) Get() *DaysOfWeekEnum {
-	return v.value
-}
-
-func (v *NullableDaysOfWeekEnum) Set(val *DaysOfWeekEnum) {
-	v.value = val
-	v.isSet = true
-}
-
-func (v NullableDaysOfWeekEnum) IsSet() bool {
-	return v.isSet
-}
-
-func (v *NullableDaysOfWeekEnum) Unset() {
-	v.value = nil
-	v.isSet = false
-}
-
-func NewNullableDaysOfWeekEnum(val *DaysOfWeekEnum) *NullableDaysOfWeekEnum {
-	return &NullableDaysOfWeekEnum{value: val, isSet: true}
-}
-
-func (v NullableDaysOfWeekEnum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.value)
-}
-
-func (v *NullableDaysOfWeekEnum) UnmarshalJSON(src []byte) error {
-	v.isSet = true
-	return json.Unmarshal(src, &v.value)
-}
-
