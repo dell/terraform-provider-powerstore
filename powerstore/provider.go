@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -39,7 +40,8 @@ type Pstoreprovider struct {
 	// client can contain the upstream provider SDK or HTTP client used to
 	// communicate with the upstream service. Resource and DataSource
 	// implementations can then make calls using this client.
-	client *client.Client
+	client    *client.Client
+	clinetGen *clientgen.APIClient
 
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
