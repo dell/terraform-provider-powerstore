@@ -69,7 +69,7 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceParamsFilter,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test3", "filesystem_snapshots.0.access_type", "powerstore_filesystem_snapshot.test", "access_type"),
+					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test", "filesystem_snapshots.0.access_type", "powerstore_filesystem_snapshot.test", "access_type"),
 				),
 			},
 			{
@@ -104,7 +104,7 @@ data "powerstore_filesystem_snapshot" "test" {
 
 var FileSystemSnapshotDataSourceParamsFilter = FileSystemSnapParamsCreate + `	
 data "powerstore_filesystem_snapshot" "test" {
-	filer_expression = "access_type=eq.Snapshot"
+	filter_expression = "access_type=eq.Snapshot"
 	depends_on = [powerstore_filesystem.test_fs_create, powerstore_filesystem_snapshot.test]
 }`
 
