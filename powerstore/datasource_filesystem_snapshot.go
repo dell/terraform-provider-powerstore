@@ -151,7 +151,6 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 		fileSystemSnapshots = append(fileSystemSnapshots, fileSystemSnapshot)
 	} else if state.Filters.ValueString() != "" {
 		// Read the File System Snapshot based on the filter expression
-		filterMap := make(map[string]string)
 		err = validateFileSystemFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
@@ -160,7 +159,7 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 			)
 			return
 		}
-		filterMap = convertQueriesToMap(state.Filters.ValueQueries())
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		if filterMap["filesystem_type"] != "" {
 			filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumSnapshot)
 		}
