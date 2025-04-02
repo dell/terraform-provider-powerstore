@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
@@ -64,7 +65,7 @@ func (d *fileSystemDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.MatchRoot("name"), path.MatchRoot("nas_server_id")),
+					stringvalidator.ConflictsWith(path.MatchRoot("name"), path.MatchRoot("nas_server_id"), path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -74,7 +75,7 @@ func (d *fileSystemDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-					stringvalidator.ConflictsWith(path.MatchRoot("id"), path.MatchRoot("nas_server_id")),
+					stringvalidator.ConflictsWith(path.MatchRoot("id"), path.MatchRoot("nas_server_id"), path.MatchRoot("filter_expression")),
 				},
 			},
 			"nas_server_id": schema.StringAttribute{
@@ -83,7 +84,14 @@ func (d *fileSystemDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
+			},
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Filesystems by. Conflicts with `id`, `name`, `nas_server_id` and `file_system_id`.",
+				MarkdownDescription: "PowerStore filter expression to filter Filesystems by. Conflicts with `id`, `name`, `nas_server_id` and `file_system_id`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 			"filesystems": schema.ListNestedAttribute{
 				Description:         "List of File Systems.",
@@ -120,7 +128,7 @@ func (d *fileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	filterMap := make(map[string]string)
 	filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumPrimary)
 
-	//Read the filesystem based on id/name/nas server id and if nothing is mentioned, then it returns all the file system
+	//Read the filesystem based on id/name/nas server id/filter_expression and if nothing is mentioned, then it returns all the file system
 	if plan.Name.ValueString() != "" {
 		filterMap["name"] = fmt.Sprintf("eq.%s", plan.Name.ValueString())
 	} else if plan.ID.ValueString() != "" {
@@ -135,6 +143,19 @@ func (d *fileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		fileSystems = append(fileSystems, fileSystem)
 	} else if plan.NasServerID.ValueString() != "" {
 		filterMap["nas_server_id"] = fmt.Sprintf("eq.%s", plan.NasServerID.ValueString())
+	} else if plan.Filters.ValueString() != "" {
+		err = validateFileSystemFilter(plan.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap = convertQueriesToMap(plan.Filters.ValueQueries())
+		if filterMap["filesystem_type"] != "" {
+			filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumPrimary)
+		}
 	}
 
 	if plan.ID.ValueString() == "" {
@@ -155,4 +176,11 @@ func (d *fileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+
+func validateFileSystemFilter(filters string) error {
+	if strings.Contains(filters, "filesystem_type") {
+		return fmt.Errorf("Filtering by filesystem_type is not allowed")
+	}
+	return nil
 }
