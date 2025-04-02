@@ -67,6 +67,12 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 				),
 			},
 			{
+				Config: ProviderConfigForTesting + FileSystemSnapshotDataSourceParamsFilter,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrPair("data.powerstore_filesystem_snapshot.test", "filesystem_snapshots.0.access_type", "powerstore_filesystem_snapshot.test", "access_type"),
+				),
+			},
+			{
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsIDAndNameNegative,
 				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 			},
@@ -82,6 +88,10 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsIDNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore File System Snapshot by ID"),
 			},
+			{
+				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsFilterNegative,
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore File System Snapshot"),
+			},
 		},
 	})
 }
@@ -89,6 +99,12 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 var FileSystemSnapshotDataSourceParamsNasServerID = FileSystemSnapParamsCreate + `	
 data "powerstore_filesystem_snapshot" "test" {
 	nas_server_id = "` + nasServerID + `"
+	depends_on = [powerstore_filesystem.test_fs_create, powerstore_filesystem_snapshot.test]
+}`
+
+var FileSystemSnapshotDataSourceParamsFilter = FileSystemSnapParamsCreate + `	
+data "powerstore_filesystem_snapshot" "test" {
+	filter_expression = "access_type=eq.Snapshot"
 	depends_on = [powerstore_filesystem.test_fs_create, powerstore_filesystem_snapshot.test]
 }`
 
@@ -144,5 +160,10 @@ data "powerstore_filesystem_snapshot" "test8" {
 var FileSystemSnapshotDataSourceparamsEmptyNameNegative = `
 data "powerstore_filesystem_snapshot" "test9" {
 	name = ""
+}
+`
+var FileSystemSnapshotDataSourceparamsFilterNegative = `
+data "powerstore_filesystem_snapshot" "test9" {
+	filter_expression = "name=InvalidName"
 }
 `
