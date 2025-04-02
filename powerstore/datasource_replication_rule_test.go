@@ -57,6 +57,15 @@ func TestAccReplicationRuleDataSource(t *testing.T) {
 				Config:      ProviderConfigForTesting + ReplicationRuleDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Replication Rules"),
 			},
+			{
+				// Get Replication Rule by invalid filter expression
+				Config: ProviderConfigForTesting + `
+				data "powerstore_replication_rule" "test" {
+					filter_expression = "name=inv.terraform"
+				}
+				`,
+				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore Replication Rules*"),
+			},
 		},
 	})
 }
