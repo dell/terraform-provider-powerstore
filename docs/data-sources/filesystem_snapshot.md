@@ -111,6 +111,10 @@ data "powerstore_filesystem_snapshot" "sales_catalog_snapshot_q4_under_filesyste
   filesystem_id = data.powerstore_filesystem.us_east_sales_catalog_fs.filesystems[0].id
 }
 
+# Fetching filesystems using filter expression
+data "powerstore_filesystem_snapshot" "user_or_root_created_snapshots" {
+  filter_expression = "and=(creator_type.eq.User, size_used.gt.6788440)"
+}
 
 # Fetching all filesystems
 data "powerstore_filesystem_snapshot" "all" {
@@ -130,6 +134,7 @@ After the successful execution of above said block, We can see the output by exe
 ### Optional
 
 - `filesystem_id` (String) File System ID of the Snapshot. Conflicts with `id` and `nas_server_id`.
+- `filter_expression` (String) PowerStore filter expression to filter Filesystem Snapshots by. Conflicts with `id`, `name`, `nas_server_id` and `file_system_id`.
 - `id` (String) Unique identifier of the File System Snapshot. Conflicts with `name` and `filesystem_id`.
 - `name` (String) File System Snapshot name. Conflicts with `id`.
 - `nas_server_id` (String) Nas Server ID of the Snapshot. Conflicts with `id` and `filesystem_id`.

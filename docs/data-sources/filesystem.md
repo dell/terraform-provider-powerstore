@@ -63,6 +63,11 @@ data "powerstore_filesystem" "us_east_sales_catalog_fs" {
   }
 }
 
+# Fetching filesystems using filter expression
+data "powerstore_filesystem" "east_sales_catalog_fs" {
+  filter_expression = "and=(name.ilike.*_east_sales_catalog_fs*, size_used.gt.594849)"
+}
+
 # Fetching a filesystem using id
 data "powerstore_filesystem" "filesystem_by_id" {
   id = "6568282e-c982-62ce-5ac3-52518d324736"
@@ -100,6 +105,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
+- `filter_expression` (String) PowerStore filter expression to filter Filesystems by. Conflicts with `id`, `name`, `nas_server_id` and `file_system_id`.
 - `id` (String) Unique identifier of the File System. Conflicts with `name` and `nas_server_id`.
 - `name` (String) File System name. Conflicts with `id` and `nas_server_id`.
 - `nas_server_id` (String) Nas server ID. Conflicts with `id` and `name`.

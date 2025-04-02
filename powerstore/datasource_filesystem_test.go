@@ -48,6 +48,9 @@ func TestAccFileSystemtDs(t *testing.T) {
 				Config: ProviderConfigForTesting + FileSystemDataSourceparamsNasServerId,
 			},
 			{
+				Config: ProviderConfigForTesting + FileSystemDataSourceparamsFilter,
+			},
+			{
 				Config: ProviderConfigForTesting + FileSystemtDataSourceparamsNameNegative,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.powerstore_filesystem.test1", "filesystems.#", "0"),
@@ -56,6 +59,10 @@ func TestAccFileSystemtDs(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + FileSystemDataSourceparamsIDNegative,
 				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore fileSystem.*"),
+			},
+			{
+				Config:      ProviderConfigForTesting + FileSystemDataSourceparamsFilterNegative,
+				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore File Systems*"),
 			},
 		},
 	})
@@ -67,6 +74,12 @@ data "powerstore_filesystem" "test1" {
 		powerstore_filesystem.test_fs_create
 	]
 	id = resource.powerstore_filesystem.test_fs_create.id
+}
+`
+
+var FileSystemDataSourceparamsFilter = `
+data "powerstore_filesystem" "test1" {
+	filter_expression = "name=ilike.*"
 }
 `
 
@@ -105,5 +118,10 @@ data "powerstore_filesystem" "test1" {
 var FileSystemDataSourceparamsIDNegative = `
 data "powerstore_filesystem" "test1" {
 	id = "InvalidID"
+}
+`
+var FileSystemDataSourceparamsFilterNegative = `
+data "powerstore_filesystem" "test1" {
+	filter_expression = "name=InvalidName"
 }
 `
