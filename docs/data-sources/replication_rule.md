@@ -85,7 +85,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
-- `filter_expression` (String) PowerStore filter expression to filter SMB shares by. Conflicts with `id`, `name` and `file_system_id`.
+- `filter_expression` (String) PowerStore filter expression to filter Replication rules by. Conflicts with `id`, `name` and `file_system_id`.
 - `id` (String) Unique identifier of the replication rule. Conflicts with `name`.
 - `name` (String) Name of the replication rule. Conflicts with `id`.
 

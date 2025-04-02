@@ -76,8 +76,8 @@ func (d *replicationRuleDataSource) Schema(_ context.Context, _ datasource.Schem
 				},
 			},
 			"filter_expression": schema.StringAttribute{
-				Description:         "PowerStore filter expression to filter SMB shares by. Conflicts with `id`, `name` and `file_system_id`.",
-				MarkdownDescription: "PowerStore filter expression to filter SMB shares by. Conflicts with `id`, `name` and `file_system_id`.",
+				Description:         "PowerStore filter expression to filter Replication rules by. Conflicts with `id`, `name` and `file_system_id`.",
+				MarkdownDescription: "PowerStore filter expression to filter Replication rules by. Conflicts with `id`, `name` and `file_system_id`.",
 				Optional:            true,
 				CustomType:          models.FilterExpressionType{},
 			},
