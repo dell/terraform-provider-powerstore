@@ -26,10 +26,26 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.1.0"
       source  = "registry.terraform.io/dell/powerstore"
     }
   }
+}
+
+provider "powerstore" {
+  username = "username"
+  password = "password"
+  endpoint = "https://yourhost.host.com/api/rest"
+  insecure = true
+  timeout  = 120
+
+  ## Provider can also be set using environment variables
+  ## If environment variables are set it will override this configuration
+  ## Example environment variables
+  # POWERSTORE_USERNAME="username"
+  # POWERSTORE_PASSWORD="password"
+  # POWERSTORE_ENDPOINT="https://yourhost.host.com/api/rest"
+  # POWERSTORE_INSECURE="false"
+  # POWERSTORE_TIMEOUT="120"
 }
 ```
 Then, in that workspace, run
