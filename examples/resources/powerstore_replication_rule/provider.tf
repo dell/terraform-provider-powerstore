@@ -30,4 +30,13 @@ provider "powerstore" {
   endpoint = var.endpoint
   insecure = true
   timeout  = var.timeout
+
+  ## Provider can also be set using environment variables
+  ## If environment variables are set it will override this configuration
+  ## Example environment variables
+  # POWERSTORE_USERNAME="username"
+  # POWERSTORE_PASSWORD="password"
+  # POWERSTORE_ENDPOINT="https://yourhost.host.com/api/rest"
+  # POWERSTORE_INSECURE="false"
+  # POWERSTORE_TIMEOUT="120"
 }

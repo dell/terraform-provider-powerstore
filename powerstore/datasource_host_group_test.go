@@ -18,7 +18,6 @@ limitations under the License.
 package powerstore
 
 import (
-	"os"
 	"regexp"
 	"testing"
 
@@ -27,9 +26,9 @@ import (
 
 // Test to Fetch Host Groups
 func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
+	// if os.Getenv("TF_ACC") == "" {
+	// 	t.Skip("Dont run with units tests because it will try to create the context")
+	// }
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
