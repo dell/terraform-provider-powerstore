@@ -736,6 +736,7 @@
 				"tags": [
 					"volume_group"
 				],
+				"x-flexible-query": "true",
 				"responses": {
 					"200": {
 						"description": "Success",
@@ -814,6 +815,7 @@
 				"tags": [
 					"volume_group"
 				],
+				"x-flexible-query": "true",
 				"responses": {
 					"200": {
 						"description": "Success",

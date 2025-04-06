@@ -19,15 +19,12 @@ import (
 	"strings"
 )
 
-// Rounak
-
 // VolumeGroupApiService VolumeGroupApi service
 type VolumeGroupApiService service
 
 type ApiDeleteVolumeGroupByIdRequest struct {
 	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	Queries    url.Values
 	id         string
 	body       *VolumeGroupDelete
 }
@@ -84,7 +81,7 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := r.Queries
+	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
@@ -169,7 +166,12 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 type ApiGetAllVolumeGroupsRequest struct {
 	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	Queries    url.Values
+	queries    url.Values
+}
+
+func (r ApiGetAllVolumeGroupsRequest) Queries(in url.Values) ApiGetAllVolumeGroupsRequest {
+	r.queries = in
+	return r
 }
 
 func (r ApiGetAllVolumeGroupsRequest) Execute() ([]VolumeGroupInstance, *http.Response, error) {
@@ -210,7 +212,7 @@ func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroup
 	localVarPath := localBasePath + "/volume_group"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := r.Queries
+	localVarQueryParams := r.queries
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
@@ -270,8 +272,13 @@ func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroup
 type ApiGetVolumeGroupByIdRequest struct {
 	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	Queries    url.Values
+	queries    url.Values
 	id         string
+}
+
+func (r ApiGetVolumeGroupByIdRequest) Queries(in url.Values) ApiGetVolumeGroupByIdRequest {
+	r.queries = in
+	return r
 }
 
 func (r ApiGetVolumeGroupByIdRequest) Execute() (*VolumeGroupInstance, *http.Response, error) {
@@ -315,7 +322,7 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := r.Queries
+	localVarQueryParams := r.queries
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
@@ -385,7 +392,6 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 type ApiPatchVolumeGroupByIdRequest struct {
 	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	Queries    url.Values
 	id         string
 	body       *VolumeGroupModify
 }
@@ -433,7 +439,7 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := r.Queries
+	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 	if r.body == nil {
 		return nil, reportError("body is required and must be specified")
@@ -521,7 +527,6 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 type ApiPostAllVolumeGroupsRequest struct {
 	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	Queries    url.Values
 	body       *VolumeGroupCreate
 }
 
@@ -569,7 +574,7 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 	localVarPath := localBasePath + "/volume_group"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := r.Queries
+	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 	if r.body == nil {
 		return localVarReturnValue, nil, reportError("body is required and must be specified")

@@ -23,7 +23,7 @@ import (
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
-	"time"
+	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -243,9 +243,6 @@ func (d *volumeGroupDataSource) Configure(_ context.Context, req datasource.Conf
 
 func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeGroupDataSourceModel
-	var volumeGroups []clientgen.VolumeGroupInstance
-	var volumeGroup *clientgen.VolumeGroupInstance
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -253,29 +250,19 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	sel := "id,name,description,creation_timestamp,is_protectable,protection_policy_id,migration_session_id,is_write_order_consistent,placement_rule,is_importing,is_replication_destination,type,type_l10n,volumes(id,name,description),protection_policy(id,name,description),protection_data(source_id,creator_type,expiration_timestamp),location_history(from_appliance_id,to_appliance_id),migration_session(id,name)"
+	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
 	//Read the volume group based on volume group id/name and if nothing is mentioned, then it returns all the volume groups
-	if state.Name.ValueString() != "" {
-		hreq := d.client.VolumeGroupApi.GetAllVolumeGroups(ctx)
-		hreq.Queries = url.Values{
-			"name":   []string{state.Name.ValueString()},
-			"select": []string{sel},
-		}
-		volumeGroups, _, err = hreq.Execute()
-	} else if state.ID.ValueString() != "" {
-		hreq := d.client.VolumeGroupApi.GetVolumeGroupById(ctx, state.ID.ValueString())
-		hreq.Queries = url.Values{
-			"select": []string{sel},
-		}
-		volumeGroup, _, err = hreq.Execute()
-		volumeGroups = append(volumeGroups, *volumeGroup)
-	} else {
-		hreq := d.client.VolumeGroupApi.GetAllVolumeGroups(ctx)
-		hreq.Queries = url.Values{
-			"select": []string{sel},
-		}
-		volumeGroups, _, err = hreq.Execute()
+	dsreq := helper.DsReq[clientgen.VolumeGroupInstance, clientgen.ApiGetVolumeGroupByIdRequest, clientgen.ApiGetAllVolumeGroupsRequest]{
+		Instance:   d.client.VolumeGroupApi.GetVolumeGroupById,
+		Collection: d.client.VolumeGroupApi.GetAllVolumeGroups,
 	}
+	id := state.ID.ValueString()
+	if state.Name.ValueString() != "" {
+		queries.Set("name", state.Name.ValueString())
+	}
+	volumeGroups, _, err := dsreq.Execute(ctx, queries, id)
 
 	//check if there is any error while getting the volume group
 	if err != nil {
@@ -286,14 +273,7 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	state.VolumeGroups, err = updateVolGroupState(volumeGroups)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Failed to update volume group state",
-			err.Error(),
-		)
-		return
-	}
+	state.VolumeGroups = updateVolGroupState(volumeGroups)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -302,78 +282,59 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 }
 
-func pointerToStringType(in *string) types.String {
-	if in == nil {
-		return types.StringNull()
-	}
-	return types.StringValue(*in)
-}
-
-func pTimeToStringType(in *time.Time) types.String {
-	if in == nil {
-		return types.StringNull()
-	}
-	return types.StringValue((*in).String())
-}
-
-func pointerToBoolType(in *bool) types.Bool {
-	if in == nil {
-		return types.BoolNull()
-	}
-	return types.BoolValue(*in)
-}
-
 // updateVolGroupState iterates over the volume groups list and update the state
-func updateVolGroupState(volumeGroups []clientgen.VolumeGroupInstance) (response []models.VolumeGroupDataSource, err error) {
-	for _, volumeGroupValue := range volumeGroups {
-		volumeGroupState := models.VolumeGroupDataSource{
-			ID:                       pointerToStringType(volumeGroupValue.Id),
-			Name:                     pointerToStringType(volumeGroupValue.Name),
-			Description:              pointerToStringType(volumeGroupValue.Description),
-			CreationTimestamp:        pTimeToStringType(volumeGroupValue.CreationTimestamp),
-			IsProtectable:            pointerToBoolType(volumeGroupValue.IsProtectable),
-			ProtectionPolicyID:       pointerToStringType(volumeGroupValue.ProtectionPolicyId),
-			MigrationSessionID:       pointerToStringType(volumeGroupValue.MigrationSessionId),
-			IsWriteOrderConsistent:   pointerToBoolType(volumeGroupValue.IsWriteOrderConsistent),
-			PlacementRule:            types.StringValue(volumeGroupValue.PlacementRule.Value()),
-			Type:                     types.StringValue(volumeGroupValue.Type.Value()),
-			IsReplicationDestination: pointerToBoolType(volumeGroupValue.IsReplicationDestination),
-			IsImporting:              pointerToBoolType(volumeGroupValue.IsImporting),
-			TypeL10:                  pointerToStringType(volumeGroupValue.TypeL10n),
+func updateVolGroupState(volumeGroups []clientgen.VolumeGroupInstance) []models.VolumeGroupDataSource {
+	return helper.SliceTransform(volumeGroups, func(in clientgen.VolumeGroupInstance) models.VolumeGroupDataSource {
+		return models.VolumeGroupDataSource{
+			ID:                       helper.PointerToStringType(in.Id),
+			Name:                     helper.PointerToStringType(in.Name),
+			Description:              helper.PointerToStringType(in.Description),
+			CreationTimestamp:        helper.PTimeToStringType(in.CreationTimestamp),
+			IsProtectable:            helper.PointerToBoolType(in.IsProtectable),
+			ProtectionPolicyID:       helper.PointerToStringType(in.ProtectionPolicyId),
+			MigrationSessionID:       helper.PointerToStringType(in.MigrationSessionId),
+			IsWriteOrderConsistent:   helper.PointerToBoolType(in.IsWriteOrderConsistent),
+			PlacementRule:            helper.PointerToStringType(in.PlacementRule),
+			Type:                     helper.PointerToStringType(in.Type),
+			IsReplicationDestination: helper.PointerToBoolType(in.IsReplicationDestination),
+			IsImporting:              helper.PointerToBoolType(in.IsImporting),
+			TypeL10:                  helper.PointerToStringType(in.TypeL10n),
 
-			ProtectionData: models.ProtectionData{
-				SourceID:            pointerToStringType(volumeGroupValue.ProtectionData.SourceId),
-				CreatorType:         types.StringValue(volumeGroupValue.ProtectionData.CreatorType.Value()),
-				ExpirationTimestamp: pTimeToStringType(volumeGroupValue.ProtectionData.ExpirationTimestamp),
-			},
+			ProtectionData: helper.PointerToStruct(in.ProtectionData, func(in clientgen.ProtectionDataInstance) models.ProtectionData {
+				return models.ProtectionData{
+					SourceID:            helper.PointerToStringType(in.SourceId),
+					CreatorType:         helper.PointerToStringType(in.CreatorType),
+					ExpirationTimestamp: helper.PTimeToStringType(in.ExpirationTimestamp),
+				}
+			}),
 
-			ProtectionPolicy: models.VolProtectionPolicy{
-				ID:          pointerToStringType(volumeGroupValue.ProtectionPolicy.Id),
-				Name:        pointerToStringType(volumeGroupValue.ProtectionPolicy.Name),
-				Description: pointerToStringType(volumeGroupValue.ProtectionPolicy.Description),
-			},
+			ProtectionPolicy: helper.PointerToStruct(in.ProtectionPolicy, func(in clientgen.PolicyInstance) models.VolProtectionPolicy {
+				return models.VolProtectionPolicy{
+					ID:          helper.PointerToStringType(in.Id),
+					Name:        helper.PointerToStringType(in.Name),
+					Description: helper.PointerToStringType(in.Description),
+				}
+			}),
 
-			MigrationSession: models.MigrationSession{
-				ID:   pointerToStringType(volumeGroupValue.MigrationSession.Id),
-				Name: pointerToStringType(volumeGroupValue.MigrationSession.Name),
-			},
+			MigrationSession: helper.PointerToStruct(in.MigrationSession, func(in clientgen.MigrationSessionInstance) models.MigrationSession {
+				return models.MigrationSession{
+					ID:   helper.PointerToStringType(in.Id),
+					Name: helper.PointerToStringType(in.Name),
+				}
+			}),
+			LocationHistory: helper.SliceTransform(in.LocationHistory, func(in clientgen.LocationHistoryInstance) models.LocationHistory {
+				return models.LocationHistory{
+					FromApplianceID: helper.PointerToStringType(in.FromApplianceId),
+					ToApplianceID:   helper.PointerToStringType(in.ToApplianceId),
+				}
+			}),
+			Volumes: helper.SliceTransform(in.Volumes, func(in clientgen.VolumeInstance) models.Volumes {
+				return models.Volumes{
+					ID:          helper.PointerToStringType(in.Id),
+					Name:        helper.PointerToStringType(in.Name),
+					Description: helper.PointerToStringType(in.Description),
+				}
+			}),
 		}
-
-		for _, history := range volumeGroupValue.LocationHistory {
-			volumeGroupState.LocationHistory = append(volumeGroupState.LocationHistory, models.LocationHistory{
-				FromApplianceID: pointerToStringType(history.FromApplianceId),
-				ToApplianceID:   pointerToStringType(history.ToApplianceId),
-			})
-		}
-
-		for _, volume := range volumeGroupValue.Volumes {
-			volumeGroupState.Volumes = append(volumeGroupState.Volumes, models.Volumes{
-				ID:          pointerToStringType(volume.Id),
-				Name:        pointerToStringType(volume.Name),
-				Description: pointerToStringType(volume.Description),
-			})
-		}
-		response = append(response, volumeGroupState)
-	}
-	return response, nil
+	})
 }

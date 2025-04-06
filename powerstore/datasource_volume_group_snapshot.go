@@ -19,9 +19,12 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -32,7 +35,7 @@ import (
 )
 
 type volumeGroupSnapshotDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 var (
@@ -228,14 +231,12 @@ func (d *volumeGroupSnapshotDataSource) Configure(_ context.Context, req datasou
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	client := req.ProviderData.(*client.Client)
+	d.client = client.GenClient
 }
 
 func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeGroupDataSourceModel
-	var volumeGroups []gopowerstore.VolumeGroup
-	var volumeGroup gopowerstore.VolumeGroup
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -244,15 +245,19 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 	}
 
 	//Read the volume group snapshot based on volume group snapshot id/name and if nothing is mentioned, then it returns all the volume group snapshots
-	if state.Name.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshotByName(context.Background(), state.Name.ValueString())
-		volumeGroups = append(volumeGroups, volumeGroup)
-	} else if state.ID.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), state.ID.ValueString())
-		volumeGroups = append(volumeGroups, volumeGroup)
-	} else {
-		volumeGroups, err = d.client.PStoreClient.GetVolumeGroupSnapshots(context.Background())
+	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	queries.Set("type", fmt.Sprintf("eq.%s", clientgen.VOLUMETYPEENUM_SNAPSHOT))
+	dsreq := helper.DsReq[clientgen.VolumeGroupInstance, clientgen.ApiGetVolumeGroupByIdRequest, clientgen.ApiGetAllVolumeGroupsRequest]{
+		Instance:   d.client.VolumeGroupApi.GetVolumeGroupById,
+		Collection: d.client.VolumeGroupApi.GetAllVolumeGroups,
 	}
+	id := state.ID.ValueString()
+	if state.Name.ValueString() != "" {
+		queries.Set("name", state.Name.ValueString())
+	}
+	volumeGroups, _, err := dsreq.Execute(ctx, queries, id)
 
 	//check if there is any error while getting the volume group
 	if err != nil {
@@ -263,14 +268,7 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 		return
 	}
 
-	// state.VolumeGroups, err = updateVolGroupState(volumeGroups)
-	// if err != nil {
-	// 	resp.Diagnostics.AddError(
-	// 		"Failed to update volume group snapshot state",
-	// 		err.Error(),
-	// 	)
-	// 	return
-	// }
+	state.VolumeGroups = updateVolGroupState(volumeGroups)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)

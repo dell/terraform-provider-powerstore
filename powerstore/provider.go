@@ -41,7 +41,7 @@ type Pstoreprovider struct {
 	// communicate with the upstream service. Resource and DataSource
 	// implementations can then make calls using this client.
 	client    *client.Client
-	clinetGen *clientgen.APIClient
+	clientGen *clientgen.APIClient
 
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
