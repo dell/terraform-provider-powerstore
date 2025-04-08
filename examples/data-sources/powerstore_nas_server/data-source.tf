@@ -35,6 +35,11 @@ data "powerstore_nas_server" "nas_server_by_name" {
   name = "nas_server_1"
 }
 
+# Fetching NAS Server by Filter Expression
+data "powerstore_nas_server" "nas_server_by_filter" {
+  filter_expression = "and=(operational_status.eq.Started, is_replication_destination.eq.false)"
+}
+
 output "powerstore_nas_server" {
   value = data.powerstore_nas_server.all.nas_servers
 }
