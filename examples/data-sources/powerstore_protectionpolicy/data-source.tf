@@ -21,6 +21,11 @@ limitations under the License.
 # If id or name is provided then it reads a particular protection policy with that id or name
 # Only one of the attribute can be provided among id and  name 
 
+# Fetching protection policy using filter expression
+data "powerstore_protectionpolicy" "test1" {
+  filter_expression = "name=eq.protectionpolicy-ny"
+}
+
 data "powerstore_protectionpolicy" "test1" {
   name = "terraform_protection_policy_2"
 }

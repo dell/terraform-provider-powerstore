@@ -56,6 +56,15 @@ func TestAccSnapshotRuleDs_FetchSnapshotRule(t *testing.T) {
 				Config:      ProviderConfigForTesting + SnapshotRuleDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
 			},
+			{
+				//Get Snapshot Rule by Filter Expression
+				Config: ProviderConfigForTesting + SnapshotRuleFilterConfig,
+			},
+			{
+				//Get Snapshot Rule by Invalid Filter Expression
+				Config:      ProviderConfigForTesting + SnapshotRuleFilterConfigNeg,
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
+			},
 		},
 	})
 }
@@ -66,6 +75,19 @@ data "powerstore_snapshotrule" "test1" {
 	name = powerstore_snapshotrule.test.name
 }
 `
+
+var SnapshotRuleFilterConfig = SnapshotRuleParamsWithTimeOfDay + `
+data "powerstore_snapshotrule" "test1" {
+	depends_on = [powerstore_snapshotrule.test]
+	filter_expression = format("name=eq.%s",powerstore_snapshotrule.test.name)
+}
+`
+var SnapshotRuleFilterConfigNeg = `
+data "powerstore_snapshotrule" "test1" {
+  filter_expression = "name=invalidName"
+}
+`
+
 var SnapshotRuleDataSourceparamsNameEmpty = `
 data "powerstore_snapshotrule" "test1" {
 	name = " "

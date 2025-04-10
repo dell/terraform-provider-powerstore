@@ -66,6 +66,15 @@ func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 			},
+			{
+				//Get Host Group by Filter Expression
+				Config: ProviderConfigForTesting + HostGroupDataSourceFilterConfig,
+			},
+			{
+				//Get Host Group by Invalid Filter Expression
+				Config:      ProviderConfigForTesting + HostGroupDataSourceFilterConfigNeg,
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore Host Group"),
+			},
 		},
 	})
 }
@@ -76,6 +85,18 @@ data "powerstore_hostgroup" "test1" {
 	name = powerstore_hostgroup.test.name
 }
 
+`
+
+var HostGroupDataSourceFilterConfig = HostGroupParamsCreate + `
+data "powerstore_hostgroup" "test1" {
+	depends_on = [powerstore_hostgroup.test]
+	filter_expression = format("name=eq.%s",powerstore_hostgroup.test.name)
+}
+`
+var HostGroupDataSourceFilterConfigNeg = `
+data "powerstore_hostgroup" "test" {
+  filter_expression = "name=invalidName"
+}
 `
 
 var HostGroupDataSourceparamsNameNegative = `

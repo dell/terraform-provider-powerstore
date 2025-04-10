@@ -19,8 +19,6 @@ package powerstore
 
 import (
 	"context"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -30,6 +28,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 )
 
 var (
@@ -47,9 +48,10 @@ type hostDataSource struct {
 }
 
 type hostDataSourceModel struct {
-	Hosts []models.HostDataSource `tfsdk:"host"`
-	ID    types.String            `tfsdk:"id"`
-	Name  types.String            `tfsdk:"name"`
+	Hosts   []models.HostDataSource      `tfsdk:"host"`
+	ID      types.String                 `tfsdk:"id"`
+	Name    types.String                 `tfsdk:"name"`
+	Filters models.FilterExpressionValue `tfsdk:"filter_expression"`
 }
 
 func (d *hostDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -67,6 +69,7 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
 					stringvalidator.LengthAtLeast(1),
 				},
@@ -76,8 +79,15 @@ func (d *hostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				MarkdownDescription: "Name of the host. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
+			},
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Host by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Host by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 			"host": schema.ListNestedAttribute{
 				Description:         "List of hosts.",
@@ -259,6 +269,7 @@ func (d *hostDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	var hosts []gopowerstore.Host
 	var host gopowerstore.Host
 	var err error
+	filterMap := make(map[string]string)
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -273,6 +284,17 @@ func (d *hostDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	} else if state.ID.ValueString() != "" {
 		host, err = d.client.PStoreClient.GetHost(context.Background(), state.ID.ValueString())
 		hosts = append(hosts, host)
+	} else if state.Filters.ValueString() != "" {
+		err = validateFileSystemFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap = convertQueriesToMap(state.Filters.ValueQueries())
+		hosts, err = d.client.GetHostByFilter(ctx, filterMap)
 	} else {
 		hosts, err = d.client.PStoreClient.GetHosts(context.Background())
 	}
