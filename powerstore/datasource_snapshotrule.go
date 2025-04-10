@@ -226,7 +226,6 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 	var snapshotRules []gopowerstore.SnapshotRule
 	var snapshotRule gopowerstore.SnapshotRule
 	var err error
-	filterMap := make(map[string]string)
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -249,7 +248,7 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 			)
 			return
 		}
-		filterMap = convertQueriesToMap(state.Filters.ValueQueries())
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		snapshotRules, err = d.client.GetSnapshotRuleByFilter(ctx, filterMap)
 	} else {
 		snapshotRules, err = d.client.PStoreClient.GetSnapshotRules(context.Background())

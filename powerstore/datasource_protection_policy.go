@@ -322,7 +322,6 @@ func (d *protectionPolicyDataSource) Read(ctx context.Context, req datasource.Re
 	var policies []gopowerstore.ProtectionPolicy
 	var policy gopowerstore.ProtectionPolicy
 	var err error
-	filterMap := make(map[string]string)
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -346,7 +345,7 @@ func (d *protectionPolicyDataSource) Read(ctx context.Context, req datasource.Re
 			)
 			return
 		}
-		filterMap = convertQueriesToMap(state.Filters.ValueQueries())
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		policies, err = d.client.GetProtectionPolicyByFilter(ctx, filterMap)
 	} else {
 		policies, err = d.client.PStoreClient.GetProtectionPolicies(context.Background())

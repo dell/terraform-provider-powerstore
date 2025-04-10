@@ -269,7 +269,6 @@ func (d *hostDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	var hosts []gopowerstore.Host
 	var host gopowerstore.Host
 	var err error
-	filterMap := make(map[string]string)
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -293,7 +292,7 @@ func (d *hostDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 			)
 			return
 		}
-		filterMap = convertQueriesToMap(state.Filters.ValueQueries())
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		hosts, err = d.client.GetHostByFilter(ctx, filterMap)
 	} else {
 		hosts, err = d.client.PStoreClient.GetHosts(context.Background())
