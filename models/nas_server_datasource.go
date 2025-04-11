@@ -23,6 +23,7 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 type NasServerConfigDataSource struct {
 	Id         types.String          `tfsdk:"id"`
 	Name       types.String          `tfsdk:"name"`
+	Filters    FilterExpressionValue `tfsdk:"filter_expression"`
 	NasServers []NasServerDataSource `tfsdk:"nas_servers"`
 }
 
