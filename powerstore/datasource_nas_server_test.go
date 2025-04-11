@@ -51,6 +51,11 @@ func TestAccNasServerDs(t *testing.T) {
 			},
 
 			{
+				//Get NAS Server by Filter Expression
+				Config: ProviderConfigForTesting + NasServerFilterConfig,
+			},
+
+			{
 				//Get NAS Server by Invalid Name
 				Config:      ProviderConfigForTesting + NasServerNameDsConfigNeg,
 				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore NAS Servers.*"),
@@ -59,6 +64,12 @@ func TestAccNasServerDs(t *testing.T) {
 			{
 				//Get NAS Server by Invalid ID
 				Config:      ProviderConfigForTesting + NasServerIDDsConfigNeg,
+				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore NAS Servers.*"),
+			},
+
+			{
+				//Get NAS Server by Invalid Filter Expression
+				Config:      ProviderConfigForTesting + NasServerFilterConfigNeg,
 				ExpectError: regexp.MustCompile(".*Unable to Read PowerStore NAS Servers.*"),
 			},
 		},
@@ -77,6 +88,17 @@ data "powerstore_nas_server" "test" {
 var NasServerNameDsConfig = `
 data "powerstore_nas_server" "test" {
 	name = "` + nasServerName + `"
+}
+`
+
+var NasServerFilterConfig = `
+data "powerstore_nas_server" "test" {
+  filter_expression = "name=eq.` + nasServerName + `"
+}
+`
+var NasServerFilterConfigNeg = `
+data "powerstore_nas_server" "test" {
+  filter_expression = "name=invalidName"
 }
 `
 
