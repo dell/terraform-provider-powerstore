@@ -62,6 +62,7 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -71,12 +72,13 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
 
 			"filter_expression": schema.StringAttribute{
-				Description:         "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
-				MarkdownDescription: "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				Description:         "PowerStore filter expression to filter Volume Snapshots by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Volume Snapshots by. Conflicts with `id` and `name`.",
 				Optional:            true,
 				CustomType:          models.FilterExpressionType{},
 			},

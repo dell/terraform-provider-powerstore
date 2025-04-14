@@ -72,6 +72,7 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -81,6 +82,7 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
 

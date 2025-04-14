@@ -84,7 +84,7 @@ data "powerstore_volume" "test1" {
 
 var VolumeDataSourceparamsFilter = VolumeParams + `
 depends_on = [powerstore_volume.volume_create_test]
-filter_expression = "and=(name.ilike.test_acc_, size.eq.2.5)"
+filter_expression = "name=ilike.test_acc_*"
 `
 
 var VolumeDataSourceparamsFilterNegative = VolumeParams + `
