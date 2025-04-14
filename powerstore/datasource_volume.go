@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
@@ -407,7 +408,7 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		volume, err = d.client.PStoreClient.GetVolume(context.Background(), state.ID.ValueString())
 		volumes = append(volumes, volume)
 	} else if state.Filters.ValueString() != "" {
-		err = validateVolumeFilter(state.Filters)
+		err = validateVolumeFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Invalid filter expression",
@@ -561,22 +562,15 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 	return response, nil
 }
 
-func validateVolumeFilter(filtersExp models.FilterExpressionValue) error {
-	filterMap := convertQueriesToMap(filtersExp.ValueQueries())
-	for key, _ := range filterMap {
-		if key == "type" {
-			return fmt.Errorf("filtering by type is not allowed")
-		}
-
-	}
-	filters := filtersExp.ValueString()
+func validateVolumeFilter(filters string) error {
 	patterns := []string{
-		`(type`,
-		`,type`,
-		`, type`,
+		`\btype\s*=\s*`,
+		`\btype\s*\.\s*`,
 	}
+
 	for _, pattern := range patterns {
-		if strings.Contains(filters, pattern) {
+		re := regexp.MustCompile(pattern)
+		if re.MatchString(filters) {
 			return fmt.Errorf("filtering by type is not allowed")
 		}
 	}

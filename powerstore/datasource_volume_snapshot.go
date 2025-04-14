@@ -398,7 +398,7 @@ func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.Read
 		volume, err = d.client.PStoreClient.GetSnapshot(context.Background(), state.ID.ValueString())
 		volumes = append(volumes, volume)
 	} else if state.Filters.ValueString() != "" {
-		err = validateVolumeFilter(state.Filters)
+		err = validateVolumeFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Invalid filter expression",
