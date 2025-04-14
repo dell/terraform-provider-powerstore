@@ -53,14 +53,14 @@ func NewClient(endpoint string, username string, password string, insecure bool,
 	}
 	clientOptions.SetDefaultTimeout(int64(timeout))
 
-	pstoreClient, err := newClientWithArgs(endpoint, username, password, clientOptions)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create gopowerstore client: %w", err)
-	}
-
 	genClient, err := newClientGen(context.Background(), endpoint, username, password, insecure, timeout)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create generated client: %w", err)
+	}
+
+	pstoreClient, err := newClientWithArgs(endpoint, username, password, clientOptions)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create gopowerstore client: %w", err)
 	}
 
 	var client = Client{
@@ -115,7 +115,7 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 		HTTPClient:    httpclient,
 		DefaultHeader: make(map[string]string),
 		UserAgent:     userAgent,
-		Debug:         false,
+		Debug:         true,
 		Servers: clientgen.ServerConfigurations{
 			{
 				URL:         url,
@@ -124,10 +124,24 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 		},
 		OperationServers: map[string]clientgen.ServerConfigurations{},
 	}
-	cfg.DefaultHeader = getHeaders()
 	cfg.AddDefaultHeader("Authorization", "Basic "+basicAuthString)
 
 	apiClient := clientgen.NewAPIClient(cfg)
+
+	_, resp, err := apiClient.LoginSessionApi.GetAllLoginSessions(ctx).Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	// get the DELL-EMC-TOKEN header from the response
+	token := resp.Header.Get("DELL-EMC-TOKEN")
+	if len(token) != 0 {
+		cfg.AddDefaultHeader("DELL-EMC-TOKEN", token)
+		apiClient = clientgen.NewAPIClient(cfg)
+	} else {
+		return nil, errors.New("no token returned during login")
+	}
+
 	return apiClient, nil
 
 }
@@ -136,13 +150,4 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 func basicAuth(username, password string) string {
 	auth := username + ":" + password
 	return base64.StdEncoding.EncodeToString([]byte(auth))
-}
-
-func getHeaders() map[string]string {
-	header := make(map[string]string)
-
-	header["Content-Type"] = "application/json; charset=utf-8"
-	header["Accept"] = "application/json; charset=utf-8"
-	return header
-
 }

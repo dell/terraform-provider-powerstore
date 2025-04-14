@@ -77,7 +77,7 @@ def get_openapi(file_path, paths):
     return json_obj
 
 # Example usage
-filtered_json = get_openapi('/root/terraform-provider-powerstore/goClientZip/spec_4_1.json', ['/volume_group', "/volume_group/{id}"])
+filtered_json = get_openapi('/root/terraform-provider-powerstore/goClientZip/spec_4_1.json', ['/volume_group', "/volume_group/{id}", "/login_session"])
 # write to file
 with open('/root/terraform-provider-powerstore/goClientZip/spec_4_1_filtered.json', 'w') as outfile:
     json.dump(filtered_json, outfile, indent="\t")

@@ -128,7 +128,7 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create powerstore client",
-			"Unable to authenticate user for authenticated powerstore client",
+			"Authentication failed"+err.Error(),
 		)
 		return
 	}

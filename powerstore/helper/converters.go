@@ -20,6 +20,7 @@ package helper
 import (
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -50,6 +51,25 @@ func PointerToStruct[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 		return ret
 	}
 	return transform(*in)
+}
+
+func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
+	if in.IsNull() || in.IsUnknown() {
+		return nil
+	}
+	var ret any
+	switch inv := any(in).(type) {
+	case types.String:
+		ret = inv.ValueString()
+	case types.Bool:
+		ret = inv.ValueBool()
+	}
+
+	switch retv := ret.(type) {
+	case T:
+		return &retv
+	}
+	return nil
 }
 
 func SliceTransform[tfT any, jT any](in []jT, transform func(jT) tfT) []tfT {

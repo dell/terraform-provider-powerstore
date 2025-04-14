@@ -260,7 +260,7 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 	id := state.ID.ValueString()
 	if state.Name.ValueString() != "" {
-		queries.Set("name", state.Name.ValueString())
+		queries.Set("name", "eq."+state.Name.ValueString())
 	}
 	volumeGroups, _, err := dsreq.Execute(ctx, queries, id)
 

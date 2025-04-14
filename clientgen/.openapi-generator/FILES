@@ -1,7 +1,9 @@
 README.md
+api_login_session.go
 api_volume_group.go
 client.go
 configuration.go
+docs/LoginSessionApi.md
 docs/VolumeGroupApi.md
 model_active_session_instance.go
 model_app_type_enum.go
@@ -123,6 +125,7 @@ model_ip_version_type_enum.go
 model_l2_discovery_details_instance.go
 model_location_history_instance.go
 model_location_history_reason_enum.go
+model_login_session_instance.go
 model_maintenance_window_instance.go
 model_member_details_instance.go
 model_message_severity_enum.go

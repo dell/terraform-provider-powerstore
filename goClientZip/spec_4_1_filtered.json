@@ -729,6 +729,40 @@
 		"application/json"
 	],
 	"paths": {
+		"/login_session": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Obtain the login session for the current user. \nThis resource type collection query does not support filtering, sorting or pagination.",
+				"x-simple_get": true,
+				"tags": [
+					"login_session"
+				],
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/login_session_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of login session instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/login_session_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_login_sessions"
+			}
+		},
 		"/volume_group": {
 			"get": {
 				"description": "Query volume groups, including snapshot sets and clones of volume groups.\n",
@@ -5850,6 +5884,47 @@
 			"x-display_enum_text": {
 				"Non_Disruptive": "Non Disruptive",
 				"Agentless": "Agentless"
+			}
+		},
+		"login_session_instance": {
+			"type": "object",
+			"x-select_cli": [
+				"id",
+				"user",
+				"idle_timeout",
+				"is_password_change_required"
+			],
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "Unique identifier of the login session."
+				},
+				"user": {
+					"type": "string",
+					"description": "Fully qualified user account name being used to log in."
+				},
+				"role_ids": {
+					"description": "Roles to which the logged-in user is mapped.",
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"idle_timeout": {
+					"type": "integer",
+					"description": "Remaining idle time until the session will expire, in seconds.",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"is_password_change_required": {
+					"type": "boolean",
+					"description": "Indicates whether the logged-in user requires a password change."
+				},
+				"is_built_in_user": {
+					"type": "boolean",
+					"description": "Indicates whether the logged-in user is predefined."
+				}
 			}
 		},
 		"initiator_instance": {

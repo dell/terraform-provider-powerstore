@@ -77,6 +77,7 @@ All URIs are relative to */api/rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*LoginSessionApi* | [**GetAllLoginSessions**](docs/LoginSessionApi.md#getallloginsessions) | **Get** /login_session | Collection Query
 *VolumeGroupApi* | [**DeleteVolumeGroupById**](docs/VolumeGroupApi.md#deletevolumegroupbyid) | **Delete** /volume_group/{id} | Delete
 *VolumeGroupApi* | [**GetAllVolumeGroups**](docs/VolumeGroupApi.md#getallvolumegroups) | **Get** /volume_group | Collection Query
 *VolumeGroupApi* | [**GetVolumeGroupById**](docs/VolumeGroupApi.md#getvolumegroupbyid) | **Get** /volume_group/{id} | Instance Query
@@ -206,6 +207,7 @@ Class | Method | HTTP request | Description
  - [L2DiscoveryDetailsInstance](docs/L2DiscoveryDetailsInstance.md)
  - [LocationHistoryInstance](docs/LocationHistoryInstance.md)
  - [LocationHistoryReasonEnum](docs/LocationHistoryReasonEnum.md)
+ - [LoginSessionInstance](docs/LoginSessionInstance.md)
  - [MaintenanceWindowInstance](docs/MaintenanceWindowInstance.md)
  - [MemberDetailsInstance](docs/MemberDetailsInstance.md)
  - [MessageSeverityEnum](docs/MessageSeverityEnum.md)

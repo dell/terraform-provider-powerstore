@@ -21,9 +21,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"strings"
 
 	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
 	"terraform-provider-powerstore/powerstore/helper"
 
@@ -44,7 +46,8 @@ func newVolumeGroupResource() resource.Resource {
 }
 
 type resourceVolumeGroup struct {
-	client *client.Client
+	client    *clientgen.APIClient
+	allclient *client.Client
 }
 
 // Metadata defines resource interface Metadata method
@@ -158,7 +161,8 @@ func (r *resourceVolumeGroup) Configure(ctx context.Context, req resource.Config
 		return
 	}
 
-	r.client = client
+	r.client = client.GenClient
+	r.allclient = client
 }
 
 // Create - method to create volume group resource
@@ -185,16 +189,16 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		volumeIds = append(volumeIds, strings.Trim(volume.String(), "\""))
 	}
 
-	volumeGroupCreate := &gopowerstore.VolumeGroupCreate{
+	volumeGroupCreate := clientgen.VolumeGroupCreate{
 		Name:                   plan.Name.ValueString(),
-		Description:            plan.Description.ValueString(),
-		VolumeIDs:              volumeIds,
+		Description:            helper.ValueToPointer[string](plan.Description),
+		VolumeIds:              volumeIds,
 		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
-		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
+		ProtectionPolicyId:     helper.ValueToPointer[string](plan.ProtectionPolicyID),
 	}
 
 	//Create New Volume Group
-	volGroupCreateResponse, err := r.client.PStoreClient.CreateVolumeGroup(context.Background(), volumeGroupCreate)
+	volGroupCreateResponse, _, err := r.client.VolumeGroupApi.PostAllVolumeGroups(ctx).Body(volumeGroupCreate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume group",
@@ -204,7 +208,7 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	//Get Volume Group details using ID retrived above
-	volGroupResponse, err := r.client.PStoreClient.GetVolumeGroup(context.Background(), volGroupCreateResponse.ID)
+	volGroupResponse, err := r.ReadAPI(context.Background(), *volGroupCreateResponse.Id)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group after creation",
@@ -239,7 +243,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 	volumeGroupID := state.ID.ValueString()
 
 	//Get Volume Group details using ID retrived above
-	volGroupResponse, err := r.client.PStoreClient.GetVolumeGroup(context.Background(), volumeGroupID)
+	volGroupResponse, err := r.allclient.PStoreClient.GetVolumeGroup(context.Background(), volumeGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group after creation",
@@ -253,7 +257,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 		volGroupChangePolicy := &gopowerstore.VolumeGroupChangePolicy{
 			ProtectionPolicyID: "",
 		}
-		_, err = r.client.PStoreClient.UpdateVolumeGroupProtectionPolicy(context.Background(), volumeGroupID, volGroupChangePolicy)
+		_, err = r.allclient.PStoreClient.UpdateVolumeGroupProtectionPolicy(context.Background(), volumeGroupID, volGroupChangePolicy)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error deleting volume group",
@@ -272,7 +276,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 		volGroupMembers := &gopowerstore.VolumeGroupMembers{
 			VolumeIDs: volumeIDs,
 		}
-		_, err = r.client.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), volGroupMembers, volumeGroupID)
+		_, err = r.allclient.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), volGroupMembers, volumeGroupID)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error deleting volume group",
@@ -283,7 +287,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	//Delete Volume Group by calling API
-	_, err = r.client.PStoreClient.DeleteVolumeGroup(context.Background(), volumeGroupID)
+	_, err = r.client.VolumeGroupApi.DeleteVolumeGroupById(ctx, volumeGroupID).Body(clientgen.VolumeGroupDelete{}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting volume group",
@@ -307,7 +311,7 @@ func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest
 
 	//Get volume group details from API and update what is in state from what the API returns
 	id := state.ID.ValueString()
-	response, err := r.client.PStoreClient.GetVolumeGroup(context.Background(), id)
+	response, err := r.ReadAPI(context.Background(), id)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -326,6 +330,14 @@ func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 	log.Printf("Done with Read")
+}
+
+func (r *resourceVolumeGroup) ReadAPI(ctx context.Context, id string) (*clientgen.VolumeGroupInstance, error) {
+	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	response, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(context.Background(), id).Queries(queries).Execute()
+	return response, err
 }
 
 // Update - method to update volume group resource
@@ -428,15 +440,16 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	// Get Volume Group ID from from state
 	volumeGroupID := state.ID.ValueString()
 
-	volumeGroupUpdate := &gopowerstore.VolumeGroupModify{
-		Description:            plan.Description.ValueString(),
-		ProtectionPolicyID:     plan.ProtectionPolicyID.ValueString(),
-		Name:                   plan.Name.ValueString(),
-		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
+	volumeGroupUpdate := clientgen.VolumeGroupModify{
+		Description:            helper.ValueToPointer[string](plan.Description),
+		ProtectionPolicyId:     helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		Name:                   helper.ValueToPointer[string](plan.Name),
+		IsWriteOrderConsistent: helper.ValueToPointer[bool](plan.IsWriteOrderConsistent),
 	}
 
 	//Update Volume Group by calling API
-	_, err := r.client.PStoreClient.ModifyVolumeGroup(context.Background(), volumeGroupUpdate, volumeGroupID)
+	_, err := r.client.VolumeGroupApi.PatchVolumeGroupById(ctx, volumeGroupID).Body(volumeGroupUpdate).Execute()
+	// r.client.PStoreClient.ModifyVolumeGroup(context.Background(), volumeGroupUpdate, volumeGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating volume group",
@@ -446,7 +459,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 
 	if len(addVolumeIdsSlice) != 0 {
 		//Add Volumes in Volume Group by calling API
-		_, err := r.client.PStoreClient.AddMembersToVolumeGroup(context.Background(), addVolumeGroupMembers, volumeGroupID)
+		_, err := r.allclient.PStoreClient.AddMembersToVolumeGroup(context.Background(), addVolumeGroupMembers, volumeGroupID)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error updating volume group",
@@ -457,7 +470,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 
 	if len(removeVolumeIdsSlice) != 0 {
 		//Remove Volumes in Volume Group by calling API
-		_, err := r.client.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), removeVolumeGroupMembers, volumeGroupID)
+		_, err := r.allclient.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), removeVolumeGroupMembers, volumeGroupID)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error updating volume group",
@@ -467,7 +480,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	//Get Volume Group details
-	getRes, err := r.client.PStoreClient.GetVolumeGroup(context.Background(), volumeGroupID)
+	getRes, err := r.ReadAPI(context.Background(), volumeGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group after update",
@@ -493,46 +506,40 @@ func (r *resourceVolumeGroup) ImportState(ctx context.Context, req resource.Impo
 }
 
 // updateVolGroupState - method to update terraform state
-func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse gopowerstore.VolumeGroup, volGroupPlan *models.Volumegroup) {
+func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse *clientgen.VolumeGroupInstance, volGroupPlan *models.Volumegroup) {
 	// Update value from Volume Group Response to State
-	volgroupState.ID = types.StringValue(volGroupResponse.ID)
-	volgroupState.Name = types.StringValue(volGroupResponse.Name)
-	volgroupState.Description = types.StringValue(volGroupResponse.Description)
-	volgroupState.IsWriteOrderConsistent = types.BoolValue(volGroupResponse.IsWriteOrderConsistent)
-	volgroupState.ProtectionPolicyID = types.StringValue(volGroupResponse.ProtectionPolicyID)
+	volgroupState.ID = helper.PointerToStringType(volGroupResponse.Id)
+	volgroupState.Name = helper.PointerToStringType(volGroupResponse.Name)
+	volgroupState.Description = helper.PointerToStringType(volGroupResponse.Description)
+	volgroupState.IsWriteOrderConsistent = helper.PointerToBoolType(volGroupResponse.IsWriteOrderConsistent)
+	volgroupState.ProtectionPolicyID = helper.PointerToStringType(volGroupResponse.ProtectionPolicyId)
 
 	//Update VolumeIDs value from Response to State
-	var volumeIds []string
-	for _, volume := range volGroupResponse.Volumes {
-		volumeIds = append(volumeIds, volume.ID)
-	}
-	volumeIDList := []attr.Value{}
-	for _, volumeID := range volumeIds {
-		volumeIDList = append(volumeIDList, types.StringValue(string(volumeID)))
-	}
-	volgroupState.VolumeIDs, _ = types.SetValue(types.StringType, volumeIDList)
+	volgroupState.VolumeIDs, _ = types.SetValue(
+		types.StringType,
+		helper.SliceTransform(volGroupResponse.Volumes, func(in clientgen.VolumeInstance) attr.Value {
+			return helper.PointerToStringType(in.Id)
+		}),
+	)
 
 	//Update VolumeNames value from Plan to State
-	var volumeNames []string
-	for _, volumeName := range volGroupPlan.VolumeNames.Elements() {
-		volumeNames = append(volumeNames, strings.Trim(volumeName.String(), "\""))
-	}
-	volumeNameList := []attr.Value{}
-	for _, volumeName := range volumeNames {
-		volumeNameList = append(volumeNameList, types.StringValue(string(volumeName)))
-	}
-	volgroupState.VolumeNames, _ = types.SetValue(types.StringType, volumeNameList)
+	volgroupState.VolumeNames, _ = types.SetValue(
+		types.StringType,
+		helper.SliceTransform(volGroupPlan.VolumeNames.Elements(), func(in attr.Value) attr.Value {
+			return types.StringValue(strings.Trim(in.String(), "\""))
+		}),
+	)
 
 	//Update ProtectionPolicyName value from Plan to State
 	volgroupState.ProtectionPolicyName = volGroupPlan.ProtectionPolicyName
 }
 
-// fetchByName fetches by name and updates respective ids in plan
+// fetchByName fetches by name and updates respective ids in plan/root/terraform-provider-powerstore/examples
 func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) string {
 	var volumeIds []string
 	if len(plan.VolumeNames.Elements()) != 0 {
 		for _, volumeName := range plan.VolumeNames.Elements() {
-			volume, err := r.client.PStoreClient.GetVolumeByName(context.Background(), strings.Trim(volumeName.String(), "\""))
+			volume, err := r.allclient.PStoreClient.GetVolumeByName(context.Background(), strings.Trim(volumeName.String(), "\""))
 			if err != nil {
 				return "Error getting volume with name: " + strings.Trim(volumeName.String(), "\"")
 			}
@@ -546,7 +553,7 @@ func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) string {
 	}
 
 	if plan.ProtectionPolicyName.ValueString() != "" {
-		policy, err := r.client.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
+		policy, err := r.allclient.PStoreClient.GetProtectionPolicyByName(context.Background(), plan.ProtectionPolicyName.ValueString())
 		if err != nil {
 			return "Error getting protection policy with name: " + strings.Trim(plan.ProtectionPolicyName.String(), "\"")
 		}
