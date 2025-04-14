@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -72,6 +73,14 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
+
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
+
 			"volumes": schema.ListNestedAttribute{
 				Description:         "List of volumes.",
 				MarkdownDescription: "List of volumes.",
@@ -386,6 +395,18 @@ func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.Read
 	} else if state.ID.ValueString() != "" {
 		volume, err = d.client.PStoreClient.GetSnapshot(context.Background(), state.ID.ValueString())
 		volumes = append(volumes, volume)
+	} else if state.Filters.ValueString() != "" {
+		err = validateVolumeFilter(state.Filters)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		volumes, err = d.client.GetVolumesSnapshotsByFilter(ctx, filterMap)
+
 	} else {
 		volumes, err = d.client.PStoreClient.GetSnapshots(context.Background())
 	}

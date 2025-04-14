@@ -19,6 +19,7 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
@@ -48,9 +49,10 @@ type volumeDataSource struct {
 }
 
 type volumeDataSourceModel struct {
-	Volumes []models.VolumeDataSource `tfsdk:"volumes"`
-	ID      types.String              `tfsdk:"id"`
-	Name    types.String              `tfsdk:"name"`
+	Volumes []models.VolumeDataSource    `tfsdk:"volumes"`
+	ID      types.String                 `tfsdk:"id"`
+	Name    types.String                 `tfsdk:"name"`
+	Filters models.FilterExpressionValue `tfsdk:"filter_expression"`
 }
 
 func (d *volumeDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -81,6 +83,14 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
+
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
+
 			"volumes": schema.ListNestedAttribute{
 				Description:         "List of volumes.",
 				MarkdownDescription: "List of volumes.",
@@ -394,6 +404,18 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	} else if state.ID.ValueString() != "" {
 		volume, err = d.client.PStoreClient.GetVolume(context.Background(), state.ID.ValueString())
 		volumes = append(volumes, volume)
+	} else if state.Filters.ValueString() != "" {
+		err = validateVolumeFilter(state.Filters)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		volumes, err = d.client.GetVolumesByFilter(ctx, filterMap)
+
 	} else {
 		volumes, err = d.client.PStoreClient.GetVolumes(context.Background())
 	}
@@ -535,4 +557,26 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 		response = append(response, volumeState)
 	}
 	return response, nil
+}
+
+func validateVolumeFilter(filtersExp models.FilterExpressionValue) error {
+	filterMap := convertQueriesToMap(filtersExp.ValueQueries())
+	for key, _ := range filterMap {
+		if key == "type" {
+			return fmt.Errorf("filtering by type is not allowed")
+		}
+
+	}
+	filters := filtersExp.ValueString()
+	patterns := []string{
+		`(type`,
+		`,type`,
+		`, type`,
+	}
+	for _, pattern := range patterns {
+		if strings.Contains(filters, pattern) {
+			return fmt.Errorf("filtering by type is not allowed")
+		}
+	}
+	return nil
 }
