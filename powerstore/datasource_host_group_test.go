@@ -44,6 +44,10 @@ func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
 				Config: ProviderConfigForTesting + HostGroupDataSourceparamsAll,
 			},
 			{
+				//Get Host Group by Filter Expression
+				Config: ProviderConfigForTesting + HostGroupDataSourceFilterConfig,
+			},
+			{
 				Config:      ProviderConfigForTesting + HostGroupDataSourceparamsIDAndNameNegative,
 				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 			},
@@ -65,10 +69,6 @@ func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
 			},
 			{
 				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
-			},
-			{
-				//Get Host Group by Filter Expression
-				Config: ProviderConfigForTesting + HostGroupDataSourceFilterConfig,
 			},
 			{
 				//Get Host Group by Invalid Filter Expression
