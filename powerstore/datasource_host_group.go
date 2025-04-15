@@ -235,14 +235,6 @@ func (d *hostGroupDataSource) Read(ctx context.Context, req datasource.ReadReque
 		hostGroup, err = d.client.PStoreClient.GetHostGroup(context.Background(), state.ID.ValueString())
 		hostGroups = append(hostGroups, hostGroup)
 	} else if state.Filters.ValueString() != "" {
-		err = validateFileSystemFilter(state.Filters.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Invalid filter expression",
-				err.Error(),
-			)
-			return
-		}
 		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		hostGroups, err = d.client.GetHostGroupByFilter(ctx, filterMap)
 	} else {

@@ -240,14 +240,6 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 		snapshotRule, err = d.client.PStoreClient.GetSnapshotRule(context.Background(), state.ID.ValueString())
 		snapshotRules = append(snapshotRules, snapshotRule)
 	} else if state.Filters.ValueString() != "" {
-		err = validateFileSystemFilter(state.Filters.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Invalid filter expression",
-				err.Error(),
-			)
-			return
-		}
 		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		snapshotRules, err = d.client.GetSnapshotRuleByFilter(ctx, filterMap)
 	} else {

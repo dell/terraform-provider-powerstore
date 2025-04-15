@@ -284,14 +284,6 @@ func (d *hostDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		host, err = d.client.PStoreClient.GetHost(context.Background(), state.ID.ValueString())
 		hosts = append(hosts, host)
 	} else if state.Filters.ValueString() != "" {
-		err = validateFileSystemFilter(state.Filters.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Invalid filter expression",
-				err.Error(),
-			)
-			return
-		}
 		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		hosts, err = d.client.GetHostByFilter(ctx, filterMap)
 	} else {

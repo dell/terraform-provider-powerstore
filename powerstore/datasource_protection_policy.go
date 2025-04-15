@@ -337,14 +337,6 @@ func (d *protectionPolicyDataSource) Read(ctx context.Context, req datasource.Re
 		policy, err = d.client.PStoreClient.GetProtectionPolicy(context.Background(), state.ID.ValueString())
 		policies = append(policies, policy)
 	} else if state.Filters.ValueString() != "" {
-		err = validateFileSystemFilter(state.Filters.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Invalid filter expression",
-				err.Error(),
-			)
-			return
-		}
 		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		policies, err = d.client.GetProtectionPolicyByFilter(ctx, filterMap)
 	} else {
