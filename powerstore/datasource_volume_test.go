@@ -83,11 +83,15 @@ data "powerstore_volume" "test1" {
 `
 
 var VolumeDataSourceparamsFilter = VolumeParams + `
-depends_on = [powerstore_volume.volume_create_test]
-filter_expression = "name=ilike.test_acc_*"
+data "powerstore_volume" "test1" {
+	depends_on = [powerstore_volume.volume_create_test]
+	filter_expression = "name=ilike.test_acc_*"
+}
 `
 
 var VolumeDataSourceparamsFilterNegative = VolumeParams + `
-depends_on = [powerstore_volume.volume_create_test]
-filter_expression = "name=invalidName"
+data "powerstore_volume" "test1" {
+	depends_on = [powerstore_volume.volume_create_test]
+	filter_expression = "name=invalidName"
+}
 `

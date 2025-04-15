@@ -127,6 +127,7 @@ data "powerstore_volume_snapshot" "test1" {
 
 var VolumeSnapshotDataSourceparamsFilter = SnapParamsCreate + `
 data "powerstore_volume_snapshot" "test1" {
+	depends_on = [powerstore_volume_snapshot.test]
 	filter_expression = "name=ilike.tf_snap_*"
 }
 `
