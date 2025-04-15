@@ -67,10 +67,6 @@ func TestAccVolumeDs_FetchVolumeSnapshot(t *testing.T) {
 				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Volume Snapshots"),
 			},
-			// {
-			// 	Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsFiltersNegative,
-			// 	ExpectError: regexp.MustCompile("Unable to Read PowerStore Volume Snapshots"),
-			// },
 		},
 	})
 }
