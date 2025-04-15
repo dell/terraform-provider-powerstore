@@ -84,10 +84,3 @@ data "powerstore_volume" "test1" {
 	filter_expression = "name=ilike.test_acc_*"
 }
 `
-
-var VolumeDataSourceparamsFilterNegative = VolumeParams + `
-data "powerstore_volume" "test1" {
-	depends_on = [powerstore_volume.volume_create_test]
-	filter_expression = "name=invalidName"
-}
-`

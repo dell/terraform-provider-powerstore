@@ -21,10 +21,26 @@ limitations under the License.
 # If id or name is provided then it reads a particular volume group snapshot with that id or name
 # Only one of the attribute can be provided among id and name
 
-data "powerstore_volumegroup_snapshot" "test1" {
-  #  name = "test_volumegroup_snap"
+# Fetch all volume group snapshots
+data "powerstore_volumegroup_snapshot" "all" {
+  depends_on = [powerstore_volumegroup_snapshot.test]
+}
+
+# Fetch volume group snapshots by name
+data "powerstore_volumegroup_snapshot" "name" {
+  name = data.powerstore_volumegroup_snapshot.all.volume_groups[0].name
+}
+
+# Fetch volume group snapshots by id
+data "powerstore_volumegroup_snapshot" "id" {
+  id = data.powerstore_volumegroup_snapshot.all.volume_groups[0].id
+}
+
+# Get volume group snapshots details using filter expression
+data "powerstore_volumegroup_snapshot" "filter" {
+  filter_expression = "name=ilike.snap"
 }
 
 output "volumeGroupSnapshotResult" {
-  value = data.powerstore_volumegroup_snapshot.test1.volume_groups
+  value = data.powerstore_volumegroup_snapshot.all.volume_groups
 }

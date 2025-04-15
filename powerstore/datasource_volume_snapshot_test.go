@@ -127,9 +127,3 @@ data "powerstore_volume_snapshot" "test1" {
 	filter_expression = "name=ilike.tf_snap_*"
 }
 `
-
-var VolumeSnapshotDataSourceparamsFiltersNegative = `
-data "powerstore_volume_snapshot" "test1" {
-	filter_expression = "name=invalidName"
-}
-`
