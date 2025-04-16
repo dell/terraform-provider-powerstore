@@ -110,7 +110,6 @@ func (d *nasServerDataSource) Read(ctx context.Context, req datasource.ReadReque
 	var nasServers []gopowerstore.NAS
 	var nasServer gopowerstore.NAS
 	var err error
-	filterMap := make(map[string]string)
 
 	diags := req.Config.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
@@ -126,15 +125,7 @@ func (d *nasServerDataSource) Read(ctx context.Context, req datasource.ReadReque
 		nasServer, err = d.client.PStoreClient.GetNASByName(context.Background(), plan.Name.ValueString())
 		nasServers = append(nasServers, nasServer)
 	} else if plan.Filters.ValueString() != "" {
-		err = validateFileSystemFilter(plan.Filters.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Invalid filter expression",
-				err.Error(),
-			)
-			return
-		}
-		filterMap = convertQueriesToMap(plan.Filters.ValueQueries())
+		filterMap := convertQueriesToMap(plan.Filters.ValueQueries())
 		nasServers, err = d.client.GetNaSServersByFilter(ctx, filterMap)
 	} else {
 		nasServers, err = d.client.PStoreClient.GetNASServers(ctx)

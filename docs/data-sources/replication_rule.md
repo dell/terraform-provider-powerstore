@@ -70,7 +70,7 @@ data "powerstore_replication_rule" "rule_by_id" {
 
 # Get replication rule details using filter expression
 data "powerstore_replication_rule" "rule_by_filter" {
- filter_expression = "and=(name=ilike.*sample*, managed_by.eq.User)"
+  filter_expression = "and=(name.ilike.sample*, managed_by.eq.User)"
 }
 
 output "replicationRule" {

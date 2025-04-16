@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -61,6 +62,7 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -70,8 +72,17 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
+
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Volume Snapshots by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Volume Snapshots by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
+
 			"volumes": schema.ListNestedAttribute{
 				Description:         "List of volumes.",
 				MarkdownDescription: "List of volumes.",
@@ -386,6 +397,19 @@ func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.Read
 	} else if state.ID.ValueString() != "" {
 		volume, err = d.client.PStoreClient.GetSnapshot(context.Background(), state.ID.ValueString())
 		volumes = append(volumes, volume)
+	} else if state.Filters.ValueString() != "" {
+		err = validateVolumeFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		volumes, err = d.client.GetVolumesSnapshotsByFilter(ctx, filterMap)
+
 	} else {
 		volumes, err = d.client.PStoreClient.GetSnapshots(context.Background())
 	}

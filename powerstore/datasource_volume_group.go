@@ -40,6 +40,7 @@ type volumeGroupDataSourceModel struct {
 	VolumeGroups []models.VolumeGroupDataSource `tfsdk:"volume_groups"`
 	ID           types.String                   `tfsdk:"id"`
 	Name         types.String                   `tfsdk:"name"`
+	Filters      models.FilterExpressionValue   `tfsdk:"filter_expression"`
 }
 
 var (
@@ -69,6 +70,7 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -77,10 +79,16 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				MarkdownDescription: "Volume group name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
-
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Replication rules by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Replication rules by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
 			"volume_groups": schema.ListNestedAttribute{
 				Description:         "List of volume groups.",
 				MarkdownDescription: "List of volume groups.",
@@ -258,7 +266,20 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		volumeGroup, err = d.client.PStoreClient.GetVolumeGroup(context.Background(), state.ID.ValueString())
 		volumeGroups = append(volumeGroups, volumeGroup)
 	} else {
-		volumeGroups, err = d.client.PStoreClient.GetVolumeGroups(context.Background())
+		err = validateVolumeFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filters := make(map[string]string)
+		if !state.Filters.IsNull() {
+			filters = convertQueriesToMap(state.Filters.ValueQueries())
+		}
+		volumeGroups, err = d.client.GetVolumeGroups(context.Background(), filters)
 	}
 
 	//check if there is any error while getting the volume group

@@ -153,7 +153,8 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 		// Read the File System Snapshot based on the filter expression
 		err = validateFileSystemFilter(state.Filters.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError(
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
 				"Invalid filter expression",
 				err.Error(),
 			)

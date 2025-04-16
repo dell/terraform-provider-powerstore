@@ -19,6 +19,8 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
+	"regexp"
 	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
@@ -48,9 +50,10 @@ type volumeDataSource struct {
 }
 
 type volumeDataSourceModel struct {
-	Volumes []models.VolumeDataSource `tfsdk:"volumes"`
-	ID      types.String              `tfsdk:"id"`
-	Name    types.String              `tfsdk:"name"`
+	Volumes []models.VolumeDataSource    `tfsdk:"volumes"`
+	ID      types.String                 `tfsdk:"id"`
+	Name    types.String                 `tfsdk:"name"`
+	Filters models.FilterExpressionValue `tfsdk:"filter_expression"`
 }
 
 func (d *volumeDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -70,6 +73,7 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -79,8 +83,17 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
+
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Volumes by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
+
 			"volumes": schema.ListNestedAttribute{
 				Description:         "List of volumes.",
 				MarkdownDescription: "List of volumes.",
@@ -394,6 +407,19 @@ func (d *volumeDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	} else if state.ID.ValueString() != "" {
 		volume, err = d.client.PStoreClient.GetVolume(context.Background(), state.ID.ValueString())
 		volumes = append(volumes, volume)
+	} else if state.Filters.ValueString() != "" {
+		err = validateVolumeFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		volumes, err = d.client.GetVolumesByFilter(ctx, filterMap)
+
 	} else {
 		volumes, err = d.client.PStoreClient.GetVolumes(context.Background())
 	}
@@ -535,4 +561,19 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 		response = append(response, volumeState)
 	}
 	return response, nil
+}
+
+func validateVolumeFilter(filters string) error {
+	patterns := []string{
+		`\btype\s*=\s*`,
+		`\btype\s*\.\s*`,
+	}
+
+	for _, pattern := range patterns {
+		re := regexp.MustCompile(pattern)
+		if re.MatchString(filters) {
+			return fmt.Errorf("filtering by type is not allowed")
+		}
+	}
+	return nil
 }

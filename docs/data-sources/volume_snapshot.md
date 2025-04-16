@@ -59,6 +59,12 @@ data "powerstore_volume_snapshot" "test1" {
   #id = "adeeef05-aa68-4c17-b2d0-12c4a8e69176"
 }
 
+# Fetching Volume Snapshots that have `is_replication_destination` as `false` 
+# and `state_l10n` as `Ready` using  Filter Expression
+data "powerstore_volume_snapshot" "volume_snapshot_by_filter" {
+  filter_expression = "and=(is_replication_destination.eq.false, state_l10n.eq.Ready)"
+}
+
 output "volumeSnapshotResult" {
   value = data.powerstore_volume_snapshot.test1.volumes
 }
@@ -71,6 +77,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
+- `filter_expression` (String) PowerStore filter expression to filter Volume Snapshots by. Conflicts with `id` and `name`.
 - `id` (String) Unique identifier of the volume snapshot instance.
 - `name` (String) Name of the volume snapshot.
 

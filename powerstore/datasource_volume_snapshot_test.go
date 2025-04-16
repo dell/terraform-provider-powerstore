@@ -45,6 +45,9 @@ func TestAccVolumeDs_FetchVolumeSnapshot(t *testing.T) {
 				Config: ProviderConfigForTesting + VolumeSnapshotDataSourceparamsAll,
 			},
 			{
+				Config: ProviderConfigForTesting + VolumeSnapshotDataSourceparamsFilter,
+			},
+			{
 				Config:      ProviderConfigForTesting + VolumeSnapshotDataSourceparamsIDAndName,
 				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 			},
@@ -115,5 +118,12 @@ var VolumeSnapshotDataSourceparamsIDAndName = SnapParamsCreate + `
 data "powerstore_volume_snapshot" "test1" {
 	id = powerstore_volume_snapshot.test.id
 	name = powerstore_volume_snapshot.test.name
+}
+`
+
+var VolumeSnapshotDataSourceparamsFilter = SnapParamsCreate + `
+data "powerstore_volume_snapshot" "test1" {
+	depends_on = [powerstore_volume_snapshot.test]
+	filter_expression = "name=ilike.tf_snap_*"
 }
 `
