@@ -146,7 +146,8 @@ func (d *fileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	} else if plan.Filters.ValueString() != "" {
 		err = validateFileSystemFilter(plan.Filters.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError(
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
 				"Invalid filter expression",
 				err.Error(),
 			)
@@ -180,7 +181,7 @@ func (d *fileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 func validateFileSystemFilter(filters string) error {
 	if strings.Contains(filters, "filesystem_type") {
-		return fmt.Errorf("Filtering by filesystem_type is not allowed")
+		return fmt.Errorf("filtering by filesystem_type is not allowed")
 	}
 	return nil
 }
