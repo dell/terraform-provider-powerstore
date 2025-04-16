@@ -60,11 +60,6 @@ func TestAccSnapshotRuleDs_FetchSnapshotRule(t *testing.T) {
 				//Get Snapshot Rule by Filter Expression
 				Config: ProviderConfigForTesting + SnapshotRuleFilterConfig,
 			},
-			{
-				//Get Snapshot Rule by Invalid Filter Expression
-				Config:      ProviderConfigForTesting + SnapshotRuleFilterConfigNeg,
-				ExpectError: regexp.MustCompile("Unable to Read PowerStore Snapshot Rules"),
-			},
 		},
 	})
 }

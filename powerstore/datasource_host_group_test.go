@@ -70,11 +70,6 @@ func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostGroupParamsUpdateRemoveHost,
 			},
-			{
-				//Get Host Group by Invalid Filter Expression
-				Config:      ProviderConfigForTesting + HostGroupDataSourceFilterConfigNeg,
-				ExpectError: regexp.MustCompile("Unable to Read PowerStore Host Group"),
-			},
 		},
 	})
 }

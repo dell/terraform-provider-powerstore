@@ -43,6 +43,10 @@ func TestAccProtectionPolicyDs_FetchPolicy(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + ProtectionPolicyDataSourceparamsAll,
 			},
+			{
+				//Get Protection Policy by Filter Expression
+				Config: ProviderConfigForTesting + ProtectionPolicyFilterConfig,
+			},
 		},
 	})
 }
@@ -72,10 +76,6 @@ func TestAccProtectionPolicyDs_FetchPolicyNegative(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + ProtectionPolicyDataSourceparamsEmptyName,
 				ExpectError: regexp.MustCompile("Invalid Attribute Value Length"),
-			},
-			{
-				//Get Protection Policy by Filter Expression
-				Config: ProviderConfigForTesting + ProtectionPolicyFilterConfig,
 			},
 			{
 				//Get Protection Policy by Invalid Filter Expression

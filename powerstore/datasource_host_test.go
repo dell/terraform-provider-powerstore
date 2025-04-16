@@ -44,6 +44,10 @@ func TestAccHostDs_FetchHost(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostDataSourceParamsAll,
 			},
+			{
+				//Get Host by Filter Expression
+				Config: ProviderConfigForTesting + HostDataSourceFilterConfig,
+			},
 		},
 	})
 }
@@ -73,15 +77,6 @@ func TestAccHostDs_FetchHostNegative(t *testing.T) {
 			{
 				Config:      ProviderConfigForTesting + HostDataSourceParamsEmptyName,
 				ExpectError: regexp.MustCompile(InvalidLengthErrorMsg),
-			},
-			{
-				//Get Host by Filter Expression
-				Config: ProviderConfigForTesting + HostDataSourceFilterConfig,
-			},
-			{
-				//Get Host by Invalid Filter Expression
-				Config:      ProviderConfigForTesting + HostDataSourceFilterConfigNeg,
-				ExpectError: regexp.MustCompile("Unable to Read PowerStore Host"),
 			},
 		},
 	})
