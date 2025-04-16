@@ -44,6 +44,10 @@ func TestAccHostDs_FetchHost(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + HostDataSourceParamsAll,
 			},
+			{
+				//Get Host by Filter Expression
+				Config: ProviderConfigForTesting + HostDataSourceFilterConfig,
+			},
 		},
 	})
 }
@@ -84,6 +88,18 @@ data "powerstore_host" "test1" {
 	name = powerstore_host.test.name
 }
 `
+var HostDataSourceFilterConfig = HostParamsCreate + `
+data "powerstore_host" "test1" {
+	depends_on = [powerstore_host.test]
+	filter_expression = format("name=eq.%s",powerstore_host.test.name)
+}
+`
+var HostDataSourceFilterConfigNeg = `
+data "powerstore_host" "test" {
+  filter_expression = "name=invalidName"
+}
+`
+
 var HostDataSourceParamsNameNegative = `
 data "powerstore_host" "test1" {
 	name = "invalid-name"

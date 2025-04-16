@@ -19,8 +19,6 @@ package powerstore
 
 import (
 	"context"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -29,6 +27,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 )
 
 type hostGroupDataSource struct {
@@ -39,6 +40,7 @@ type hostGroupDataSourceModel struct {
 	HostGroups []models.HostGroupDataSource `tfsdk:"host_groups"`
 	ID         types.String                 `tfsdk:"id"`
 	Name       types.String                 `tfsdk:"name"`
+	Filters    models.FilterExpressionValue `tfsdk:"filter_expression"`
 }
 
 var (
@@ -66,6 +68,7 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
 					stringvalidator.LengthAtLeast(1),
 				},
@@ -75,10 +78,16 @@ func (d *hostGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				MarkdownDescription: "Host group name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
-
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter HostGroup by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter HostGroup by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
 			"host_groups": schema.ListNestedAttribute{
 				Description:         "List of host groups.",
 				MarkdownDescription: "List of host groups.",
@@ -225,6 +234,9 @@ func (d *hostGroupDataSource) Read(ctx context.Context, req datasource.ReadReque
 	} else if state.ID.ValueString() != "" {
 		hostGroup, err = d.client.PStoreClient.GetHostGroup(context.Background(), state.ID.ValueString())
 		hostGroups = append(hostGroups, hostGroup)
+	} else if state.Filters.ValueString() != "" {
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		hostGroups, err = d.client.GetHostGroupByFilter(ctx, filterMap)
 	} else {
 		hostGroups, err = d.client.PStoreClient.GetHostGroups(context.Background())
 	}

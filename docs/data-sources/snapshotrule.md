@@ -54,6 +54,12 @@ limitations under the License.
 # If id or name is provided then it reads a particular Snapshot Rule with that id or name
 # Only one of the attribute can be provided among id and  name 
 
+# Fetching snapshot rule using filter expression
+data "powerstore_snapshotrule" "test1" {
+  filter_expression = "name=eq.snapshotrule-ny"
+}
+
+
 data "powerstore_snapshotrule" "test1" {
   name = "test_snapshotrule_1"
 }
@@ -70,6 +76,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
+- `filter_expression` (String) PowerStore filter expression to filter Host by. Conflicts with `id` and `name`.
 - `id` (String) Unique identifier of the snapshot rule instance. Conflicts with `name`.
 - `name` (String) Name of the snapshot rule. Conflicts with `id`.
 

@@ -19,8 +19,6 @@ package powerstore
 
 import (
 	"context"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -30,6 +28,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 )
 
 var (
@@ -50,6 +51,7 @@ type snapshotRuleDataSourceModel struct {
 	SnapshotRules []models.SnapshotRuleDataSource `tfsdk:"snapshot_rules"`
 	ID            types.String                    `tfsdk:"id"`
 	Name          types.String                    `tfsdk:"name"`
+	Filters       models.FilterExpressionValue    `tfsdk:"filter_expression"`
 }
 
 func (d *snapshotRuleDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -67,6 +69,7 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
 					stringvalidator.LengthAtLeast(1),
 				},
@@ -76,8 +79,15 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				MarkdownDescription: "Name of the snapshot rule. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
+			},
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Host by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Host by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 			"snapshot_rules": schema.ListNestedAttribute{
 				Description:         "List of snapshot rules.",
@@ -229,6 +239,9 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 	} else if state.ID.ValueString() != "" {
 		snapshotRule, err = d.client.PStoreClient.GetSnapshotRule(context.Background(), state.ID.ValueString())
 		snapshotRules = append(snapshotRules, snapshotRule)
+	} else if state.Filters.ValueString() != "" {
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		snapshotRules, err = d.client.GetSnapshotRuleByFilter(ctx, filterMap)
 	} else {
 		snapshotRules, err = d.client.PStoreClient.GetSnapshotRules(context.Background())
 	}

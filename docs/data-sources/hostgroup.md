@@ -54,6 +54,11 @@ limitations under the License.
 # If id or name is provided then it reads a particular host group with that id or name
 # Only one of the attribute can be provided among id and  name 
 
+# Fetching hostgroup using filter expression
+data "powerstore_hostgroup" "host-group" {
+  filter_expression = "name=eq.hostgroup-ny"
+}
+
 data "powerstore_hostgroup" "test1" {
   name = "test_hostgroup1"
 }
@@ -70,6 +75,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
+- `filter_expression` (String) PowerStore filter expression to filter HostGroup by. Conflicts with `id` and `name`.
 - `id` (String) Unique identifier of the host group. Conflicts with `name`.
 - `name` (String) Host group name. Conflicts with `id`.
 
