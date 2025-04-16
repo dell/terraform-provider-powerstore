@@ -261,7 +261,8 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 	} else if state.Filters.ValueString() != "" {
 		err = validateVolumeFilter(state.Filters.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError(
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
 				"Invalid filter expression",
 				err.Error(),
 			)
