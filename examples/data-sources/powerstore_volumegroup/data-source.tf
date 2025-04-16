@@ -27,12 +27,12 @@ data "powerstore_volumegroup" "all" {
 
 # Fetch volume group by name
 data "powerstore_volumegroup" "name" {
-  name = data.powerstore_volumegroup.all.volume_groups[0].name
+  name = "volume_group"
 }
 
 # Fetch volume group by id
 data "powerstore_volumegroup" "id" {
-  id = data.powerstore_volumegroup.all.volume_groups[0].id
+  id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e65"
 }
 
 # Get volume groups details using filter expression

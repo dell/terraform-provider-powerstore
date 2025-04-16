@@ -27,12 +27,12 @@ data "powerstore_replication_rule" "all" {
 
 # Get replication rule details using name
 data "powerstore_replication_rule" "rule_by_name" {
-  name = data.powerstore_replication_rule.all.replication_rules[0].name
+  name = "terraform_replication_rule"
 }
 
 # Get replication rule details using ID
 data "powerstore_replication_rule" "rule_by_id" {
-  id = data.powerstore_replication_rule.all.replication_rules[0].id
+  id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e26a9"
 }
 
 # Get replication rule details using filter expression

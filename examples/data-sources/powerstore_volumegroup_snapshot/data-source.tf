@@ -23,17 +23,16 @@ limitations under the License.
 
 # Fetch all volume group snapshots
 data "powerstore_volumegroup_snapshot" "all" {
-  depends_on = [powerstore_volumegroup_snapshot.test]
 }
 
 # Fetch volume group snapshots by name
 data "powerstore_volumegroup_snapshot" "name" {
-  name = data.powerstore_volumegroup_snapshot.all.volume_groups[0].name
+  name = "test_volumegroup_snap"
 }
 
 # Fetch volume group snapshots by id
 data "powerstore_volumegroup_snapshot" "id" {
-  id = data.powerstore_volumegroup_snapshot.all.volume_groups[0].id
+  id = "adeeef05-aa68-4c17-b2d0-12c4a8e69176"
 }
 
 # Get volume group snapshots details using filter expression
