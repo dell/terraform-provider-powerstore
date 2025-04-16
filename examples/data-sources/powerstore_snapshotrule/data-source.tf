@@ -21,6 +21,12 @@ limitations under the License.
 # If id or name is provided then it reads a particular Snapshot Rule with that id or name
 # Only one of the attribute can be provided among id and  name 
 
+# Fetching snapshot rule using filter expression
+data "powerstore_snapshotrule" "test1" {
+  filter_expression = "name=eq.snapshotrule-ny"
+}
+
+
 data "powerstore_snapshotrule" "test1" {
   name = "test_snapshotrule_1"
 }
