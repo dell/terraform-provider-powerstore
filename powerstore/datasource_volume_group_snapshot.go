@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -62,6 +63,7 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -71,9 +73,15 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
-
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Replication rules by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Replication rules by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
 			"volume_groups": schema.ListNestedAttribute{
 				Description:         "List of volume group snapshots.",
 				MarkdownDescription: "List of volume group snapshots.",
@@ -250,6 +258,18 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 	} else if state.ID.ValueString() != "" {
 		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), state.ID.ValueString())
 		volumeGroups = append(volumeGroups, volumeGroup)
+	} else if state.Filters.ValueString() != "" {
+		err = validateVolumeFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filters := convertQueriesToMap(state.Filters.ValueQueries())
+		volumeGroups, err = d.client.GetVolumeGroupSnapshots(context.Background(), filters)
 	} else {
 		volumeGroups, err = d.client.PStoreClient.GetVolumeGroupSnapshots(context.Background())
 	}

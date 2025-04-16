@@ -45,6 +45,9 @@ func TestAccVolumeGroupDs_FetchVolumeGroup(t *testing.T) {
 				Config: ProviderConfigForTesting + VolumeGroupDataSourceparamsAll,
 			},
 			{
+				Config: ProviderConfigForTesting + VolumeGroupDataSourceparamsFilter,
+			},
+			{
 				Config:      ProviderConfigForTesting + VolumeGroupDataSourceparamsIDAndNameNegative,
 				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 			},
@@ -115,5 +118,12 @@ data "powerstore_volumegroup" "test1" {
 var VolumeGroupDataSourceparamsEmptyNameNegative = `
 data "powerstore_volumegroup" "test1" {
 	name = ""
+}
+`
+
+var VolumeGroupDataSourceparamsFilter = VolumeGroupParamsWithVolumeName + `
+data "powerstore_volumegroup" "test1" {
+	depends_on = [powerstore_volumegroup.test]
+	filter_expression = "name=ilike.tf_volume_group_*"
 }
 `

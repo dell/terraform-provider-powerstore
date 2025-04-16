@@ -45,6 +45,9 @@ func TestAccVolumeDs_FetchVolume(t *testing.T) {
 				Config: ProviderConfigForTesting + VolumeDataSourceparamsAll,
 			},
 			{
+				Config: ProviderConfigForTesting + VolumeDataSourceparamsFilter,
+			},
+			{
 				Config:      ProviderConfigForTesting + VolumeDataSourceparamsNameNegative,
 				ExpectError: regexp.MustCompile("Unable to Read PowerStore Volumes"),
 			},
@@ -72,5 +75,12 @@ data "powerstore_volume" "test1" {
 var VolumeDataSourceparamsAll = VolumeParams + `
 data "powerstore_volume" "test1" {
 	depends_on = [powerstore_volume.volume_create_test]
+}
+`
+
+var VolumeDataSourceparamsFilter = VolumeParams + `
+data "powerstore_volume" "test1" {
+	depends_on = [powerstore_volume.volume_create_test]
+	filter_expression = "name=ilike.test_acc_*"
 }
 `
