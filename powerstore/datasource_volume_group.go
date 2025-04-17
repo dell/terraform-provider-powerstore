@@ -273,6 +273,15 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
+	// check that there is atleast one volume group if name is provided
+	if state.Name.ValueString() != "" && len(volumeGroups) == 0 {
+		resp.Diagnostics.AddError(
+			"Unable to Read PowerStore Volume Group",
+			"There is no volume group with name "+state.Name.ValueString(),
+		)
+		return
+	}
+
 	state.VolumeGroups = updateVolGroupState(volumeGroups)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)

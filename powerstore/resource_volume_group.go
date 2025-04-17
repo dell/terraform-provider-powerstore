@@ -254,10 +254,11 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 
 	//Remove protection policy from volume group if present
 	if volGroupResponse.ProtectionPolicyID != "" {
-		volGroupChangePolicy := &gopowerstore.VolumeGroupChangePolicy{
-			ProtectionPolicyID: "",
+		volumeGroupUpdate := clientgen.VolumeGroupModify{
+			ProtectionPolicyId: helper.GetPointer(""),
 		}
-		_, err = r.allclient.PStoreClient.UpdateVolumeGroupProtectionPolicy(context.Background(), volumeGroupID, volGroupChangePolicy)
+
+		_, err := r.client.VolumeGroupApi.PatchVolumeGroupById(ctx, volumeGroupID).Body(volumeGroupUpdate).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error deleting volume group",

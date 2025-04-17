@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
+	"strings"
 	"terraform-provider-powerstore/clientgen"
 	"time"
 
@@ -53,14 +54,14 @@ func NewClient(endpoint string, username string, password string, insecure bool,
 	}
 	clientOptions.SetDefaultTimeout(int64(timeout))
 
-	genClient, err := newClientGen(context.Background(), endpoint, username, password, insecure, timeout)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create generated client: %w", err)
-	}
-
 	pstoreClient, err := newClientWithArgs(endpoint, username, password, clientOptions)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create gopowerstore client: %w", err)
+	}
+
+	genClient, err := newClientGen(context.Background(), endpoint, username, password, insecure, timeout)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create generated client: %w", err)
 	}
 
 	var client = Client{
@@ -108,7 +109,7 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 		}
 	}
 
-	url := endpoint
+	url, _ := strings.CutSuffix(endpoint, "/")
 	basicAuthString := basicAuth(username, password)
 
 	cfg := &clientgen.Configuration{
