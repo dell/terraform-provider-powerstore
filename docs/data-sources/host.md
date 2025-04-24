@@ -54,6 +54,11 @@ limitations under the License.
 # If id or name is provided then it reads a particular host with that id or name
 # Only one of the attribute can be provided among id and name
 
+# Fetching host using filter expression
+data "powerstore_host" "host" {
+  filter_expression = "name=eq.host-ny"
+}
+
 data "powerstore_host" "test1" {
   name = "tf_host"
 }
@@ -70,6 +75,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
+- `filter_expression` (String) PowerStore filter expression to filter Host by. Conflicts with `id` and `name`.
 - `id` (String) Unique identifier of the host instance. Conflicts with `name`.
 - `name` (String) Name of the host. Conflicts with `id`.
 

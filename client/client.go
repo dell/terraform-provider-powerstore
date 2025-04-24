@@ -31,6 +31,7 @@ import (
 	"time"
 
 	pstore "github.com/dell/gopowerstore"
+	"github.com/dell/gopowerstore/api"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -42,6 +43,10 @@ type Client struct {
 
 var (
 	newClientWithArgs = pstore.NewClientWithArgs
+)
+
+const (
+	paginationDefaultPageSize = 1000
 )
 
 // NewClient returns the gopowerstore client
@@ -71,7 +76,7 @@ func NewClient(endpoint string, username string, password string, insecure bool,
 	return &client, nil
 }
 
-// NewClient returns the gopowerstore client
+// newClientGen returns the generated powerstore client
 func newClientGen(ctx context.Context, endpoint string, username string, password string, insecure bool, timeout int64) (*clientgen.APIClient, error) {
 
 	// Setup a User-Agent for your API client (replace the provider name for yours):
@@ -151,4 +156,35 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 func basicAuth(username, password string) string {
 	auth := username + ":" + password
 	return base64.StdEncoding.EncodeToString([]byte(auth))
+}
+
+// method allow to read paginated data from backend
+func (c *Client) readPaginatedData(f func(int) (api.RespMeta, error)) error {
+	var err error
+	var meta api.RespMeta
+	meta, err = f(0)
+	if err != nil {
+		return err
+	}
+	if meta.Pagination.IsPaginate {
+		for {
+			nextOffset := meta.Pagination.Last + 1
+			if nextOffset >= meta.Pagination.Total {
+				break
+			}
+			meta, err = f(nextOffset)
+			err = pstore.WrapErr(err)
+			if err != nil {
+				apiError, ok := err.(*pstore.APIError)
+				if !ok {
+					return err
+				}
+				if apiError.BadRange() {
+					// could happen if some instances was deleted during pagination
+					break
+				}
+			}
+		}
+	}
+	return nil
 }

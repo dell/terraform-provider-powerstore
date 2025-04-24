@@ -45,6 +45,9 @@ func TestAccVolumeGroupSnapshotDs_FetchVolumeGroupSnapshot(t *testing.T) {
 				Config: ProviderConfigForTesting + VolumeGroupSnapshotDataSourceparamsAll,
 			},
 			{
+				Config: ProviderConfigForTesting + VolumeGroupSnapshotDataSourceparamsFilter,
+			},
+			{
 				Config:      ProviderConfigForTesting + VolumeGroupSnapshotDataSourceparamsIDAndNameNegative,
 				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 			},
@@ -115,5 +118,12 @@ data "powerstore_volumegroup_snapshot" "test1" {
 var VolumeGroupSnapshotDataSourceparamsEmptyNameNegative = `
 data "powerstore_volumegroup_snapshot" "test1" {
 	name = ""
+}
+`
+
+var VolumeGroupSnapshotDataSourceparamsFilter = PreReqVolumeGroupSnap + `
+data "powerstore_volumegroup_snapshot" "test1" {
+	depends_on = [powerstore_volumegroup_snapshot.test]
+	filter_expression = "name=ilike.test_snap*"
 }
 `

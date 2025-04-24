@@ -43,6 +43,10 @@ func TestAccProtectionPolicyDs_FetchPolicy(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + ProtectionPolicyDataSourceparamsAll,
 			},
+			{
+				//Get Protection Policy by Filter Expression
+				Config: ProviderConfigForTesting + ProtectionPolicyFilterConfig,
+			},
 		},
 	})
 }
@@ -73,6 +77,11 @@ func TestAccProtectionPolicyDs_FetchPolicyNegative(t *testing.T) {
 				Config:      ProviderConfigForTesting + ProtectionPolicyDataSourceparamsEmptyName,
 				ExpectError: regexp.MustCompile("Invalid Attribute Value Length"),
 			},
+			{
+				//Get Protection Policy by Invalid Filter Expression
+				Config:      ProviderConfigForTesting + ProtectionPolicyFilterConfigNeg,
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore Protection"),
+			},
 		},
 	})
 }
@@ -83,6 +92,19 @@ data "powerstore_protectionpolicy" "test1" {
 	name = powerstore_protectionpolicy.test.name
 }
 `
+
+var ProtectionPolicyFilterConfig = ProtectionPolicyParamsCreate + `
+data "powerstore_protectionpolicy" "test1" {
+	depends_on = [powerstore_protectionpolicy.test]
+	filter_expression = format("name=eq.%s",powerstore_protectionpolicy.test.name)
+}
+`
+var ProtectionPolicyFilterConfigNeg = `
+data "powerstore_protectionpolicy" "test1" {
+  filter_expression = "name=invalidName"
+}
+`
+
 var ProtectionPolicyDataSourceparamsNameNegative = `
 data "powerstore_protectionpolicy" "test1" {
 	name = "invalid-name"

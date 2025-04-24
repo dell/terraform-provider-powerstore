@@ -32,6 +32,11 @@ data "powerstore_filesystem" "us_east_sales_catalog_fs" {
   }
 }
 
+# Fetching filesystems using filter expression
+data "powerstore_filesystem" "east_sales_catalog_fs" {
+  filter_expression = "and=(name.ilike.*_east_sales_catalog_fs*, size_used.gt.594849)"
+}
+
 # Fetching a filesystem using id
 data "powerstore_filesystem" "filesystem_by_id" {
   id = "6568282e-c982-62ce-5ac3-52518d324736"

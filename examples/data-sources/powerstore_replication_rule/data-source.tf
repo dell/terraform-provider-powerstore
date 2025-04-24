@@ -35,6 +35,11 @@ data "powerstore_replication_rule" "rule_by_id" {
   id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e26a9"
 }
 
+# Get replication rule details using filter expression
+data "powerstore_replication_rule" "rule_by_filter" {
+  filter_expression = "and=(name.ilike.sample*, managed_by.eq.User)"
+}
+
 output "replicationRule" {
   value = data.powerstore_replication_rule.all.replication_rules
 }

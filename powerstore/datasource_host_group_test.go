@@ -18,7 +18,6 @@ limitations under the License.
 package powerstore
 
 import (
-	"os"
 	"regexp"
 	"testing"
 
@@ -27,9 +26,9 @@ import (
 
 // Test to Fetch Host Groups
 func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
+	// if os.Getenv("TF_ACC") == "" {
+	// 	t.Skip("Dont run with units tests because it will try to create the context")
+	// }
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -43,6 +42,10 @@ func TestAccHostGroupDs_FetchHostGroup(t *testing.T) {
 			},
 			{
 				Config: ProviderConfigForTesting + HostGroupDataSourceparamsAll,
+			},
+			{
+				//Get Host Group by Filter Expression
+				Config: ProviderConfigForTesting + HostGroupDataSourceFilterConfig,
 			},
 			{
 				Config:      ProviderConfigForTesting + HostGroupDataSourceparamsIDAndNameNegative,
@@ -77,6 +80,18 @@ data "powerstore_hostgroup" "test1" {
 	name = powerstore_hostgroup.test.name
 }
 
+`
+
+var HostGroupDataSourceFilterConfig = HostGroupParamsCreate + `
+data "powerstore_hostgroup" "test1" {
+	depends_on = [powerstore_hostgroup.test]
+	filter_expression = format("name=eq.%s",powerstore_hostgroup.test.name)
+}
+`
+var HostGroupDataSourceFilterConfigNeg = `
+data "powerstore_hostgroup" "test" {
+  filter_expression = "name=invalidName"
+}
 `
 
 var HostGroupDataSourceparamsNameNegative = `

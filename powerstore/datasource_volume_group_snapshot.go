@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/models"
 	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -65,6 +66,7 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -74,9 +76,15 @@ func (d *volumeGroupSnapshotDataSource) Schema(_ context.Context, _ datasource.S
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
-
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Replication rules by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Replication rules by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
+			},
 			"volume_groups": schema.ListNestedAttribute{
 				Description:         "List of volume group snapshots.",
 				MarkdownDescription: "List of volume group snapshots.",
@@ -253,9 +261,21 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 		Instance:   d.client.VolumeGroupApi.GetVolumeGroupById,
 		Collection: d.client.VolumeGroupApi.GetAllVolumeGroups,
 	}
+
 	id := state.ID.ValueString()
-	if state.Name.ValueString() != "" {
+	if !state.Name.IsNull() {
 		queries.Set("name", "eq."+state.Name.ValueString())
+	} else if !state.Filters.IsNull() {
+		err := validateVolumeFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
 	volumeGroups, _, err := dsreq.Execute(ctx, queries, id)
 

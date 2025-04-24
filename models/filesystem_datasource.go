@@ -24,6 +24,7 @@ type FileSystemConfigDataSource struct {
 	ID          types.String           `tfsdk:"id"`
 	Name        types.String           `tfsdk:"name"`
 	NasServerID types.String           `tfsdk:"nas_server_id"`
+	Filters     FilterExpressionValue  `tfsdk:"filter_expression"`
 	FileSystems []FileSystemDatasource `tfsdk:"filesystems"`
 }
 

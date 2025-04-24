@@ -21,10 +21,26 @@ limitations under the License.
 # If id or name is provided then it reads a particular volume group with that id or name
 # Only one of the attribute can be provided among id and  name 
 
-data "powerstore_volumegroup" "test1" {
-  name = "test_volume_group1"
+# Fetch all volume groups
+data "powerstore_volumegroup" "all" {
+}
+
+# Fetch volume group by name
+data "powerstore_volumegroup" "name" {
+  name = "volume_group"
+}
+
+# Fetch volume group by id
+data "powerstore_volumegroup" "id" {
+  id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e65"
+}
+
+# Get volume groups details using filter expression
+# 
+data "powerstore_volumegroup" "filter" {
+  filter_expression = "name=ilike.vg*"
 }
 
 output "volumeGroupResult" {
-  value = data.powerstore_volumegroup.test1.volume_groups
+  value = data.powerstore_volumegroup.all.volume_groups
 }

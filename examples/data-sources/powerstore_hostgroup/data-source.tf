@@ -21,6 +21,11 @@ limitations under the License.
 # If id or name is provided then it reads a particular host group with that id or name
 # Only one of the attribute can be provided among id and  name 
 
+# Fetching hostgroup using filter expression
+data "powerstore_hostgroup" "host-group" {
+  filter_expression = "name=eq.hostgroup-ny"
+}
+
 data "powerstore_hostgroup" "test1" {
   name = "test_hostgroup1"
 }

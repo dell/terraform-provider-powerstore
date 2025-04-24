@@ -68,6 +68,11 @@ data "powerstore_replication_rule" "rule_by_id" {
   id = "2d0780e3-2ce7-4d8b-b2ec-349c5e9e26a9"
 }
 
+# Get replication rule details using filter expression
+data "powerstore_replication_rule" "rule_by_filter" {
+  filter_expression = "and=(name.ilike.sample*, managed_by.eq.User)"
+}
+
 output "replicationRule" {
   value = data.powerstore_replication_rule.all.replication_rules
 }
@@ -80,6 +85,7 @@ After the successful execution of above said block, We can see the output by exe
 
 ### Optional
 
+- `filter_expression` (String) PowerStore filter expression to filter Replication rules by. Conflicts with `id`, `name` and `file_system_id`.
 - `id` (String) Unique identifier of the replication rule. Conflicts with `name`.
 - `name` (String) Name of the replication rule. Conflicts with `id`.
 

@@ -19,6 +19,8 @@ package powerstore
 
 import (
 	"context"
+	"os"
+	"strconv"
 	client "terraform-provider-powerstore/client"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -68,36 +70,41 @@ func (p *Pstoreprovider) Schema(ctx context.Context, req provider.SchemaRequest,
 		MarkdownDescription: "Provider for PowerStore",
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
-				MarkdownDescription: "IP or FQDN of the PowerStore host",
-				Description:         "IP or FQDN of the PowerStore host",
-				Required:            true,
+				MarkdownDescription: "IP or FQDN of the PowerStore host. This can also be set using the environment variable POWERSTORE_ENDPOINT",
+				Description:         "IP or FQDN of the PowerStore host. This can also be set using the environment variable POWERSTORE_ENDPOINT",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 			},
 			"insecure": schema.BoolAttribute{
-				MarkdownDescription: "Boolean variable to specify whether to validate SSL certificate or not.",
-				Description:         "Boolean variable to specify whether to validate SSL certificate or not.",
-				Optional:            true,
+				MarkdownDescription: "Boolean variable to specify whether to validate SSL certificate or not. This can also be set using the environment variable POWERSTORE_INSECURE",
+				Description:         "Boolean variable to specify whether to validate SSL certificate or not. This can also be set using the environment variable POWERSTORE_INSECURE",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "The password of the PowerStore host.",
-				Description:         "The password of the PowerStore host.",
-				Required:            true,
-				Sensitive:           true,
+				MarkdownDescription: "The password of the PowerStore host. This can also be set using the environment variable POWERSTORE_PASSWORD",
+				Description:         "The password of the PowerStore host. This can also be set using the environment variable POWERSTORE_PASSWORD",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional:  true,
+				Sensitive: true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"username": schema.StringAttribute{
-				MarkdownDescription: "The username of the PowerStore host.",
-				Description:         "The username of the PowerStore host.",
-				Required:            true,
+				MarkdownDescription: "The username of the PowerStore host. This can also be set using the environment variable POWERSTORE_USERNAME",
+				Description:         "The username of the PowerStore host. This can also be set using the environment variable POWERSTORE_USERNAME",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
 			"timeout": schema.Int64Attribute{
-				MarkdownDescription: "The default timeout value for the Powerstore host.",
-				Description:         "The default timeout value for the Powerstore host.",
-				Optional:            true,
+				MarkdownDescription: "The default timeout value for the Powerstore host. This can also be set using the environment variable POWERSTORE_PASSWORD",
+				Description:         "The default timeout value for the Powerstore host. This can also be set using the environment variable POWERSTORE_PASSWORD",
+				// This should remain optional so user can use environment variables if they choose.
+				Optional: true,
 			},
 		},
 	}
@@ -113,6 +120,35 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
+	usernameEnv := os.Getenv("POWERSTORE_USERNAME")
+	if usernameEnv != "" {
+		config.Username = types.StringValue(usernameEnv)
+	}
+
+	passEnv := os.Getenv("POWERSTORE_PASSWORD")
+	if passEnv != "" {
+		config.Password = types.StringValue(passEnv)
+	}
+
+	endpointEnv := os.Getenv("POWERSTORE_ENDPOINT")
+	if endpointEnv != "" {
+		config.Endpoint = types.StringValue(endpointEnv)
+	}
+
+	insecureEnv, errInsecure := strconv.ParseBool(os.Getenv("POWERSTORE_INSECURE"))
+	if errInsecure == nil {
+		config.Insecure = types.BoolValue(insecureEnv)
+	}
+
+	timeoutEnv, errTimeout := strconv.ParseInt(os.Getenv("POWERSTORE_TIMEOUT"), 10, 64)
+	if errTimeout == nil {
+		config.Timeout = types.Int64Value(timeoutEnv)
+	}
+
+	if config.Timeout.IsNull() || config.Timeout.IsUnknown() {
+		config.Timeout = types.Int64Value(120)
+	}
+
 	// initializing powerstore client
 	pstoreClient, err := client.NewClient(
 		config.Endpoint.ValueString(),
@@ -121,12 +157,23 @@ func (p *Pstoreprovider) Configure(ctx context.Context, req provider.ConfigureRe
 		// as false is default value, so even if insecure parameter is not provided
 		// value will be false
 		config.Insecure.ValueBool(),
+		// Timeout defaults to 120 seconds
 		config.Timeout.ValueInt64(),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create powerstore client",
 			"Authentication failed"+err.Error(),
+		)
+		return
+	}
+
+	// Do a dummy call to validate the authentication
+	_, err = pstoreClient.PStoreClient.GetVolumes(context.Background())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to create powerstore client",
+			"Unable to authenticate with the PowerStore, double check the username, password and endpoint values (endpoint must end with '/api/rest').",
 		)
 		return
 	}

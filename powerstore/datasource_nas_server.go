@@ -65,6 +65,7 @@ func (d *nasServerDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
 			"name": schema.StringAttribute{
@@ -73,7 +74,15 @@ func (d *nasServerDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
+			},
+
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter NAS Servers by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter NAS Servers by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 
 			"nas_servers": schema.ListNestedAttribute{
@@ -115,6 +124,9 @@ func (d *nasServerDataSource) Read(ctx context.Context, req datasource.ReadReque
 	} else if plan.Name.ValueString() != "" {
 		nasServer, err = d.client.PStoreClient.GetNASByName(context.Background(), plan.Name.ValueString())
 		nasServers = append(nasServers, nasServer)
+	} else if plan.Filters.ValueString() != "" {
+		filterMap := convertQueriesToMap(plan.Filters.ValueQueries())
+		nasServers, err = d.client.GetNaSServersByFilter(ctx, filterMap)
 	} else {
 		nasServers, err = d.client.PStoreClient.GetNASServers(ctx)
 	}

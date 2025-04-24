@@ -75,3 +75,15 @@ func (v DsReq[T, iR, cR]) Execute(ctx context.Context, queries url.Values, id st
 	ret := []T{*resp}
 	return ret, hresp, nil
 }
+
+func MergeValues(dst, src url.Values) url.Values {
+	if dst == nil {
+		dst = make(url.Values)
+	}
+	for k, vs := range src {
+		for _, v := range vs {
+			dst.Add(k, v)
+		}
+	}
+	return dst
+}

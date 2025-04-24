@@ -34,6 +34,7 @@ type ReplicationRuleDataSourceModel struct {
 	ReplicationRules []ReplicationRuleDataSource `tfsdk:"replication_rules"`
 	ID               types.String                `tfsdk:"id"`
 	Name             types.String                `tfsdk:"name"`
+	Filters          FilterExpressionValue       `tfsdk:"filter_expression"`
 }
 
 // ReplicationRuleDataSource defines the model for replication rule details

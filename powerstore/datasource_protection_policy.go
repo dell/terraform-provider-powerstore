@@ -19,8 +19,6 @@ package powerstore
 
 import (
 	"context"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -29,6 +27,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/models"
 )
 
 type protectionPolicyDataSource struct {
@@ -39,6 +40,7 @@ type protectionPolicyDataSourceModel struct {
 	Policies []models.ProtectionPolicyDataSource `tfsdk:"policies"`
 	ID       types.String                        `tfsdk:"id"`
 	Name     types.String                        `tfsdk:"name"`
+	Filters  models.FilterExpressionValue        `tfsdk:"filter_expression"`
 }
 
 var (
@@ -66,6 +68,7 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.ConflictsWith(path.MatchRoot("name")),
 					stringvalidator.LengthAtLeast(1),
 				},
@@ -75,8 +78,15 @@ func (d *protectionPolicyDataSource) Schema(_ context.Context, _ datasource.Sche
 				MarkdownDescription: "Protection policy name. Conflicts with `id`.",
 				Optional:            true,
 				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
+			},
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Protection Policy by. Conflicts with `id` and `name`.",
+				MarkdownDescription: "PowerStore filter expression to filter Protection Policy by. Conflicts with `id` and `name`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 
 			"policies": schema.ListNestedAttribute{
@@ -326,6 +336,9 @@ func (d *protectionPolicyDataSource) Read(ctx context.Context, req datasource.Re
 	} else if state.ID.ValueString() != "" {
 		policy, err = d.client.PStoreClient.GetProtectionPolicy(context.Background(), state.ID.ValueString())
 		policies = append(policies, policy)
+	} else if state.Filters.ValueString() != "" {
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		policies, err = d.client.GetProtectionPolicyByFilter(ctx, filterMap)
 	} else {
 		policies, err = d.client.PStoreClient.GetProtectionPolicies(context.Background())
 	}

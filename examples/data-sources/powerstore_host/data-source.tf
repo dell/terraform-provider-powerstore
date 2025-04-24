@@ -21,6 +21,11 @@ limitations under the License.
 # If id or name is provided then it reads a particular host with that id or name
 # Only one of the attribute can be provided among id and name
 
+# Fetching host using filter expression
+data "powerstore_host" "host" {
+  filter_expression = "name=eq.host-ny"
+}
+
 data "powerstore_host" "test1" {
   name = "tf_host"
 }

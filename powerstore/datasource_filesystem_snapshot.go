@@ -65,7 +65,7 @@ func (d *fileSystemSnapshotDataSource) Schema(_ context.Context, _ datasource.Sc
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.MatchRoot("name"), path.MatchRoot("filesystem_id"), path.MatchRoot("nas_server_id")),
+					stringvalidator.ConflictsWith(path.MatchRoot("name"), path.MatchRoot("filesystem_id"), path.MatchRoot("nas_server_id"), path.MatchRoot("filter_expression")),
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
@@ -75,6 +75,7 @@ func (d *fileSystemSnapshotDataSource) Schema(_ context.Context, _ datasource.Sc
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
 			},
 
@@ -84,7 +85,7 @@ func (d *fileSystemSnapshotDataSource) Schema(_ context.Context, _ datasource.Sc
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
-					stringvalidator.ConflictsWith(path.MatchRoot("nas_server_id")),
+					stringvalidator.ConflictsWith(path.MatchRoot("nas_server_id"), path.MatchRoot("filter_expression")),
 				},
 			},
 
@@ -94,7 +95,15 @@ func (d *fileSystemSnapshotDataSource) Schema(_ context.Context, _ datasource.Sc
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filter_expression")),
 				},
+			},
+
+			"filter_expression": schema.StringAttribute{
+				Description:         "PowerStore filter expression to filter Filesystem Snapshots by. Conflicts with `id`, `name`, `nas_server_id` and `file_system_id`.",
+				MarkdownDescription: "PowerStore filter expression to filter Filesystem Snapshots by. Conflicts with `id`, `name`, `nas_server_id` and `file_system_id`.",
+				Optional:            true,
+				CustomType:          models.FilterExpressionType{},
 			},
 
 			"filesystem_snapshots": schema.ListNestedAttribute{
@@ -129,6 +138,7 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	// Read the File System Snapshot based on the ID
 	if state.ID.ValueString() != "" {
 		fileSystemSnapshot, err = d.client.PStoreClient.GetFsSnapshot(context.Background(), state.ID.ValueString())
 		if err != nil {
@@ -139,7 +149,32 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 			return
 		}
 		fileSystemSnapshots = append(fileSystemSnapshots, fileSystemSnapshot)
+	} else if state.Filters.ValueString() != "" {
+		// Read the File System Snapshot based on the filter expression
+		err = validateFileSystemFilter(state.Filters.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("filter_expression"),
+				"Invalid filter expression",
+				err.Error(),
+			)
+			return
+		}
+		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
+		if filterMap["filesystem_type"] != "" {
+			filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumSnapshot)
+		}
+		fileSystemSnapshots, err = d.client.PStoreClient.GetFsByFilter(context.Background(), filterMap)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Unable to Read PowerStore File System Snapshots",
+				err.Error(),
+			)
+			return
+		}
+
 	} else {
+		// Read the File System Snapshot based on the name, parent_id and nas_server_id
 		filterMap := make(map[string]string)
 		filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumSnapshot)
 		if state.Name.ValueString() != "" {
