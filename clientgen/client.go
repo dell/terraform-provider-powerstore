@@ -561,7 +561,7 @@ func detectContentType(body interface{}) string {
 	return contentType
 }
 
-// Ripped from https://github.com/gregjones/httpcache/blob/master/httpcache.go
+// Ripped from https://github.com/gregjones/httpcache/blob/<main>/httpcache.go
 type cacheControl map[string]string
 
 func parseCacheControl(headers http.Header) cacheControl {
