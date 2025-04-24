@@ -2,7 +2,7 @@ import argparse
 import json
 
 from requiredApis import RequiredAPIs
-from commonUtils import get_openapi
+from commonUtils import ProcessOpenapiSpec
 from powerStoreUtils import AddPowerStoreOpIds, AddPowerStoreFlexibleQuery
 
 parser = argparse.ArgumentParser(description='Process PowerStore OpenAPI spec.')
@@ -12,7 +12,7 @@ parser.add_argument('--output', help='Output filtered PowerStore OpenAPI spec fi
 args = parser.parse_args()
 
 # common processing of OpenAPI spec
-filtered_json = get_openapi(args.input, RequiredAPIs)
+filtered_json = ProcessOpenapiSpec(args.input, RequiredAPIs)
 
 # powerstore specific processing
 filtered_json = AddPowerStoreOpIds(filtered_json)

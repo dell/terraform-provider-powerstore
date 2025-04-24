@@ -17,7 +17,7 @@ build_client: build_spec
 	${OPENAPI_CMD} generate -i clientgen_utils/openapi_specs/spec_4_1_filtered.json \
 		-g go --type-mappings integer+unsigned64=uint64  -o ${OPENAPI_GEN_DIR} \
 		--global-property apis,models,supportingFiles=client.go:README.md:configuration.go:response.go:utils.go,modelTests=false,apiTests=false,modelDocs=false \
-		-c config.yaml
+		-c clientgen_utils/config.yaml
 		
 	cd ${OPENAPI_GEN_DIR} && goimports -w .
 
