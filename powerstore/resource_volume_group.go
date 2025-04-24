@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -531,7 +531,7 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.ProtectionPolicyName = volGroupPlan.ProtectionPolicyName
 }
 
-// fetchByName fetches by name and updates respective ids in plan/root/terraform-provider-powerstore/examples
+// fetchByName fetches by name and updates respective ids in plan
 func (r *resourceVolumeGroup) fetchByName(plan *models.Volumegroup) string {
 	var volumeIds []string
 	if len(plan.VolumeNames.Elements()) != 0 {

@@ -1,5 +1,19 @@
+# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
-def addOpId(path: str, opType: str) -> str:
+# Licensed under the Mozilla Public License Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://mozilla.org/MPL/2.0/
+
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+def _add_op_id(path: str, opType: str) -> str:
     """
     This function generates a unique operationId based on the provided path and operation type.
 
@@ -41,7 +55,7 @@ def AddPowerStoreOpIds(json_obj: dict) -> dict:
         for op in json_obj['paths'][key]:
             if op not in ['get', 'put', 'post', 'delete', 'options', 'head', 'patch']:
                 continue
-            json_obj['paths'][key][op]['operationId'] = addOpId(key, op)
+            json_obj['paths'][key][op]['operationId'] = _add_op_id(key, op)
     return json_obj
 
 def AddPowerStoreFlexibleQuery(json_obj: dict) -> dict:
