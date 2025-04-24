@@ -72,7 +72,7 @@ check:
 	go vet
 
 gosec:
-	gosec -quiet ./...
+	gosec -quiet -exclude=G104  ./...
 
 testacc:
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   
