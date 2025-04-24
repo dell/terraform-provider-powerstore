@@ -1,8 +1,4 @@
-templateDir: my_custom_templates
-files:
-#   model.mustache:
-#     templateType: API
-#   model_enum.mustache:
-#     templateType: API
-#   model_simple.mustache:
-#     templateType: API
+templateDir: clientgen_utils/templates
+enumClassPrefix: true
+packageName: clientgen
+isGoSubmodule: true

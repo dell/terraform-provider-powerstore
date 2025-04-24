@@ -29,7 +29,6 @@ import (
 	"terraform-provider-powerstore/models"
 	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -47,7 +46,7 @@ func newVolumeGroupResource() resource.Resource {
 
 type resourceVolumeGroup struct {
 	client    *clientgen.APIClient
-	allclient *client.Client
+	allclient *client.Client // used for non-volume_group apis for now
 }
 
 // Metadata defines resource interface Metadata method
@@ -243,7 +242,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 	volumeGroupID := state.ID.ValueString()
 
 	//Get Volume Group details using ID retrived above
-	volGroupResponse, err := r.allclient.PStoreClient.GetVolumeGroup(context.Background(), volumeGroupID)
+	volGroupResponse, err := r.ReadAPI(context.Background(), volumeGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group after creation",
@@ -253,7 +252,7 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	//Remove protection policy from volume group if present
-	if volGroupResponse.ProtectionPolicyID != "" {
+	if volGroupResponse.ProtectionPolicyId != nil {
 		volumeGroupUpdate := clientgen.VolumeGroupModify{
 			ProtectionPolicyId: helper.GetPointer(""),
 		}
@@ -272,12 +271,12 @@ func (r *resourceVolumeGroup) Delete(ctx context.Context, req resource.DeleteReq
 	if len(volGroupResponse.Volumes) != 0 {
 		var volumeIDs []string
 		for _, vol := range volGroupResponse.Volumes {
-			volumeIDs = append(volumeIDs, vol.ID)
+			volumeIDs = append(volumeIDs, *vol.Id)
 		}
-		volGroupMembers := &gopowerstore.VolumeGroupMembers{
-			VolumeIDs: volumeIDs,
+		volGroupMembers := clientgen.VolumeGroupRemoveMembers{
+			VolumeIds: volumeIDs,
 		}
-		_, err = r.allclient.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), volGroupMembers, volumeGroupID)
+		_, err := r.client.VolumeGroupApi.VolumeGroupRemoveMembers(ctx, volumeGroupID).Body(volGroupMembers).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error deleting volume group",
@@ -430,14 +429,6 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		addVolumeIdsSlice = append(addVolumeIdsSlice, volumeID)
 	}
 
-	removeVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
-		VolumeIDs: removeVolumeIdsSlice,
-	}
-
-	addVolumeGroupMembers := &gopowerstore.VolumeGroupMembers{
-		VolumeIDs: addVolumeIdsSlice,
-	}
-
 	// Get Volume Group ID from from state
 	volumeGroupID := state.ID.ValueString()
 
@@ -450,7 +441,6 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 
 	//Update Volume Group by calling API
 	_, err := r.client.VolumeGroupApi.PatchVolumeGroupById(ctx, volumeGroupID).Body(volumeGroupUpdate).Execute()
-	// r.client.PStoreClient.ModifyVolumeGroup(context.Background(), volumeGroupUpdate, volumeGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating volume group",
@@ -460,7 +450,10 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 
 	if len(addVolumeIdsSlice) != 0 {
 		//Add Volumes in Volume Group by calling API
-		_, err := r.allclient.PStoreClient.AddMembersToVolumeGroup(context.Background(), addVolumeGroupMembers, volumeGroupID)
+		addVolumeGroupMembers := clientgen.VolumeGroupAddMembers{
+			VolumeIds: addVolumeIdsSlice,
+		}
+		_, err := r.client.VolumeGroupApi.VolumeGroupAddMembers(context.Background(), volumeGroupID).Body(addVolumeGroupMembers).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error updating volume group",
@@ -471,7 +464,10 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 
 	if len(removeVolumeIdsSlice) != 0 {
 		//Remove Volumes in Volume Group by calling API
-		_, err := r.allclient.PStoreClient.RemoveMembersFromVolumeGroup(context.Background(), removeVolumeGroupMembers, volumeGroupID)
+		removeVolumeGroupMembers := clientgen.VolumeGroupRemoveMembers{
+			VolumeIds: removeVolumeIdsSlice,
+		}
+		_, err := r.client.VolumeGroupApi.VolumeGroupRemoveMembers(context.Background(), volumeGroupID).Body(removeVolumeGroupMembers).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error updating volume group",

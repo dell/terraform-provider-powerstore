@@ -24,6 +24,12 @@ type LoginSessionApiService service
 type ApiGetAllLoginSessionsRequest struct {
 	ctx        context.Context
 	ApiService *LoginSessionApiService
+	queries    url.Values
+}
+
+func (r ApiGetAllLoginSessionsRequest) Queries(in url.Values) ApiGetAllLoginSessionsRequest {
+	r.queries = in
+	return r
 }
 
 func (r ApiGetAllLoginSessionsRequest) Execute() ([]LoginSessionInstance, *http.Response, error) {
@@ -65,7 +71,7 @@ func (a *LoginSessionApiService) GetAllLoginSessionsExecute(r ApiGetAllLoginSess
 	localVarPath := localBasePath + "/login_session"
 
 	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
+	localVarQueryParams := r.queries
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header

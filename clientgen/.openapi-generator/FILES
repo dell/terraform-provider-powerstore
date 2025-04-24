@@ -220,10 +220,12 @@ model_virtual_volume_type_enum.go
 model_virtual_volume_usage_type_enum.go
 model_vm_protection_data_instance.go
 model_volume_block_size_enum.go
+model_volume_group_add_members.go
 model_volume_group_create.go
 model_volume_group_delete.go
 model_volume_group_instance.go
 model_volume_group_modify.go
+model_volume_group_remove_members.go
 model_volume_importable_criteria_enum.go
 model_volume_instance.go
 model_volume_state_enum.go

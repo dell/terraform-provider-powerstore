@@ -83,6 +83,8 @@ Class | Method | HTTP request | Description
 *VolumeGroupApi* | [**GetVolumeGroupById**](docs/VolumeGroupApi.md#getvolumegroupbyid) | **Get** /volume_group/{id} | Instance Query
 *VolumeGroupApi* | [**PatchVolumeGroupById**](docs/VolumeGroupApi.md#patchvolumegroupbyid) | **Patch** /volume_group/{id} | Modify
 *VolumeGroupApi* | [**PostAllVolumeGroups**](docs/VolumeGroupApi.md#postallvolumegroups) | **Post** /volume_group | Create
+*VolumeGroupApi* | [**VolumeGroupAddMembers**](docs/VolumeGroupApi.md#volumegroupaddmembers) | **Post** /volume_group/{id}/add_members | Add Members
+*VolumeGroupApi* | [**VolumeGroupRemoveMembers**](docs/VolumeGroupApi.md#volumegroupremovemembers) | **Post** /volume_group/{id}/remove_members | Remove Members
 
 
 ## Documentation For Models
@@ -302,10 +304,12 @@ Class | Method | HTTP request | Description
  - [VirtualVolumeUsageTypeEnum](docs/VirtualVolumeUsageTypeEnum.md)
  - [VmProtectionDataInstance](docs/VmProtectionDataInstance.md)
  - [VolumeBlockSizeEnum](docs/VolumeBlockSizeEnum.md)
+ - [VolumeGroupAddMembers](docs/VolumeGroupAddMembers.md)
  - [VolumeGroupCreate](docs/VolumeGroupCreate.md)
  - [VolumeGroupDelete](docs/VolumeGroupDelete.md)
  - [VolumeGroupInstance](docs/VolumeGroupInstance.md)
  - [VolumeGroupModify](docs/VolumeGroupModify.md)
+ - [VolumeGroupRemoveMembers](docs/VolumeGroupRemoveMembers.md)
  - [VolumeImportableCriteriaEnum](docs/VolumeImportableCriteriaEnum.md)
  - [VolumeInstance](docs/VolumeInstance.md)
  - [VolumeStateEnum](docs/VolumeStateEnum.md)

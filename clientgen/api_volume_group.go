@@ -656,3 +656,282 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
+
+type ApiVolumeGroupAddMembersRequest struct {
+	ctx        context.Context
+	ApiService *VolumeGroupApiService
+	id         string
+	body       *VolumeGroupAddMembers
+}
+
+func (r ApiVolumeGroupAddMembersRequest) Body(body VolumeGroupAddMembers) ApiVolumeGroupAddMembersRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiVolumeGroupAddMembersRequest) Execute() (*http.Response, error) {
+	return r.ApiService.VolumeGroupAddMembersExecute(r)
+}
+
+/*
+VolumeGroupAddMembers Add Members
+
+Add member volumes to an existing primary or clone volume
+group.
+
+This cannot be used to add members to a snapshot set. Members cannot be
+added to a volume group that is acting as the destination in a
+replication session.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiVolumeGroupAddMembersRequest
+*/
+func (a *VolumeGroupApiService) VolumeGroupAddMembers(ctx context.Context, id string) ApiVolumeGroupAddMembersRequest {
+	return ApiVolumeGroupAddMembersRequest{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
+	}
+}
+
+// Execute executes the request
+func (a *VolumeGroupApiService) VolumeGroupAddMembersExecute(r ApiVolumeGroupAddMembersRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.VolumeGroupAddMembers")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/volume_group/{id}/add_members"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
+type ApiVolumeGroupRemoveMembersRequest struct {
+	ctx        context.Context
+	ApiService *VolumeGroupApiService
+	id         string
+	body       *VolumeGroupRemoveMembers
+}
+
+func (r ApiVolumeGroupRemoveMembersRequest) Body(body VolumeGroupRemoveMembers) ApiVolumeGroupRemoveMembersRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiVolumeGroupRemoveMembersRequest) Execute() (*http.Response, error) {
+	return r.ApiService.VolumeGroupRemoveMembersExecute(r)
+}
+
+/*
+VolumeGroupRemoveMembers Remove Members
+
+Remove members from an existing primary or clone volume group.
+
+This cannot be used to remove members from a snapshot set. Members
+cannot be removed from a volume group that is a acting as the
+destination in a replication session.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiVolumeGroupRemoveMembersRequest
+*/
+func (a *VolumeGroupApiService) VolumeGroupRemoveMembers(ctx context.Context, id string) ApiVolumeGroupRemoveMembersRequest {
+	return ApiVolumeGroupRemoveMembersRequest{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
+	}
+}
+
+// Execute executes the request
+func (a *VolumeGroupApiService) VolumeGroupRemoveMembersExecute(r ApiVolumeGroupRemoveMembersRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.VolumeGroupRemoveMembers")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/volume_group/{id}/remove_members"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}

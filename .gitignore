@@ -8,6 +8,10 @@ terraform-provider-powerstore
 .vscode/*
 .vscode
 
+# Ignore client generation util artifacts
+__pycache__
+openapi-generator-cli-6.6.0.jar
+
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
@@ -21,6 +25,8 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 */.terraform.lock.hcl
+test*
+out
 
 # Crash log files
 crash.log
@@ -38,5 +44,7 @@ testlogfile
 **/.terraform/*
 
 # Coverage Test Files
-cover.*
+cover.*\
+coverage.*
+env*
 c.out

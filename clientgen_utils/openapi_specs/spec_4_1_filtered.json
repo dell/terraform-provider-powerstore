@@ -760,7 +760,8 @@
 						}
 					}
 				},
-				"operationId": "get_all_login_sessions"
+				"operationId": "get_all_login_sessions",
+				"x-flexible-query": "true"
 			}
 		},
 		"/volume_group": {
@@ -770,7 +771,6 @@
 				"tags": [
 					"volume_group"
 				],
-				"x-flexible-query": "true",
 				"responses": {
 					"200": {
 						"description": "Success",
@@ -791,7 +791,8 @@
 						}
 					}
 				},
-				"operationId": "get_all_volume_groups"
+				"operationId": "get_all_volume_groups",
+				"x-flexible-query": "true"
 			},
 			"post": {
 				"description": "Create a new volume group. The resulting volume group will\nhave a type of Primary.\n",
@@ -849,7 +850,6 @@
 				"tags": [
 					"volume_group"
 				],
-				"x-flexible-query": "true",
 				"responses": {
 					"200": {
 						"description": "Success",
@@ -864,7 +864,8 @@
 						}
 					}
 				},
-				"operationId": "get_volume_group_by_id"
+				"operationId": "get_volume_group_by_id",
+				"x-flexible-query": "true"
 			},
 			"patch": {
 				"description": "Modify a volume group, snapshot set, or clone.",
@@ -946,6 +947,112 @@
 					}
 				},
 				"operationId": "delete_volume_group_by_id"
+			}
+		},
+		"/volume_group/{id}/add_members": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the volume group. name:{name} can be used instead of {id}.",
+					"required": true,
+					"type": "string",
+					"x-ref": "volume_group"
+				}
+			],
+			"post": {
+				"description": "Add member volumes to an existing primary or clone volume\ngroup.\n\nThis cannot be used to add members to a snapshot set. Members cannot be\nadded to a volume group that is acting as the destination in a\nreplication session.\n",
+				"summary": "Add Members",
+				"tags": [
+					"volume_group"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_group_add_members"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_add_members"
+			}
+		},
+		"/volume_group/{id}/remove_members": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the volume group. name:{name} can be used instead of {id}.",
+					"required": true,
+					"type": "string",
+					"x-ref": "volume_group"
+				}
+			],
+			"post": {
+				"description": "Remove members from an existing primary or clone volume group.\n\nThis cannot be used to remove members from a snapshot set. Members\ncannot be removed from a volume group that is a acting as the\ndestination in a replication session.\n",
+				"summary": "Remove Members",
+				"tags": [
+					"volume_group"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_group_remove_members"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_remove_members"
 			}
 		}
 	},
@@ -7983,6 +8090,40 @@
 					"default": true,
 					"description": "Delete the volume group immediately and permanently, instead of moving the volume group to the Recycle Bin.\nIf the volume group is empty or the delete_members parameter is false,\nthis flag is ignored and the VG will be deleted immediately and permanently;\nA VG can only be added to the Recyle Bin if it has members and delete_members is true.\n\nWas added in version 3.5.0.0.",
 					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_group_add_members": {
+			"description": "Request to add members to a volume group.",
+			"required": [
+				"volume_ids"
+			],
+			"properties": {
+				"volume_ids": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "volume",
+						"description": " name:{name} can be used instead of {id}. For example: 'volume_ids':['name:volume_name']"
+					},
+					"description": "A list of primary or clone volumes to be added to the volume\ngroup. Snapshots cannot be added to a volume group. All the\nvolumes should be on the same appliance as the current members of the\nvolume group.\n\nThis list cannot be empty.\n"
+				}
+			}
+		},
+		"volume_group_remove_members": {
+			"description": "Request to remove members from a volume group.",
+			"required": [
+				"volume_ids"
+			],
+			"properties": {
+				"volume_ids": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "volume",
+						"description": " name:{name} can be used instead of {id}. For example: 'volume_ids':['name:volume_name']"
+					},
+					"description": "A list of volumes that need to be removed from the volume group.\nThis list cannot be empty.\n"
 				}
 			}
 		},

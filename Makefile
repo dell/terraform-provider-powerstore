@@ -5,27 +5,21 @@ NAME=powerstore
 BINARY=terraform-provider-${NAME}
 VERSION=1.2.1
 OS_ARCH=linux_amd64
-OPENAPI_CMD?=java -Xmx16G -jar ../terraform-provider-powerscale/openapi-generator-cli-6.6.0.jar
+OPENAPI_CMD?=java -Xmx16G -jar openapi-generator-cli-6.6.0.jar
 OPENAPI_GEN_DIR=clientgen
 
 default: install
 
-build_client:
-	python3 goClientZip/spec.py
-	rm -rf ${OPENAPI_GEN_DIR}
-	${OPENAPI_CMD} generate -i goClientZip/spec_4_1_filtered.json -g go --type-mappings integer+unsigned64=uint64  -o ${OPENAPI_GEN_DIR} --global-property apis,models,supportingFiles=client.go:README.md:configuration.go:response.go:utils.go,modelTests=false,apiTests=false,modelDocs=false -p enumClassPrefix=true,packageName=clientgen,isGoSubmodule=true -c config.yaml
-	#${OPENAPI_CMD} generate -i goClientZip/spec_4_1_filtered.json -g go --type-mappings integer+unsigned64=uint64  -o goclient --global-property supportingFiles=false,apis,apiTests=false -p enumClassPrefix=true,packageName=clientgen,isGoSubmodule=true
-	cd ${OPENAPI_GEN_DIR} && goimports -w .
+build_spec:
+	python3 clientgen_utils/main.py --input clientgen_utils/openapi_specs/spec_4_1.json --output clientgen_utils/openapi_specs/spec_4_1_filtered.json
 
-unused:
-	# add openapi-generator-cli as java -jar ./openapi-generator-cli-6.6.0.jar
-	# --ignore-file-override=/root/terraform-provider-powerstore/.openapi-generator-ignore
-	# java -jar openapi-generator-cli.jar generate -i /root/terraform-provider-powerscale/goClientZip/PowerScale_API_9.5.0.json --global-property apis --openapi-normalizer FILTER="tag:Filesystem|Filepool" -g go --type-mappings integer+unsigned64=uint64 -o goclient
-	#="/platform/1/filepool/policies" ="/volume_group"
-	# --openapi-normalizer FILTER="tag:volume|volume_group"
-	# ../terraform-provider-powerscale/openapi-generator-cli-6.6.0.jar
-	# ../terraform-provider-powerscale/openapi-generator-cli-6.6.0.jar
-	# --global-property apis="VolumeAPI" --global-property models="VolumeInstance|VolumeAttach|ErrorResponse|VolumeClone|VolumeCloneResponse|VolumeConfigureMetro|VolumeConfigureMetroResponse|VolumeDelete|VolumeDetach|VolumeEndMetro|VolumeModify|VolumeRefresh|VolumeRefreshResponse|VolumeRestore|VolumeRestoreResponse|VolumeSnapshot|VolumeSnapshotResponse|VolumeCreate|CreateResponse"
+build_client: build_spec
+	${OPENAPI_CMD} generate -i clientgen_utils/openapi_specs/spec_4_1_filtered.json \
+		-g go --type-mappings integer+unsigned64=uint64  -o ${OPENAPI_GEN_DIR} \
+		--global-property apis,models,supportingFiles=client.go:README.md:configuration.go:response.go:utils.go,modelTests=false,apiTests=false,modelDocs=false \
+		-c config.yaml
+		
+	cd ${OPENAPI_GEN_DIR} && goimports -w .
 
 build:
 	go build -o ${BINARY}
