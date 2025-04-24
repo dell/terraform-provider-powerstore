@@ -19,8 +19,18 @@ package helper
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
+
+	"errors"
+)
+
+const (
+	paginationHeader          = "content-range"
+	paginationDefaultPageSize = 1000
 )
 
 type datasourceFreeForm[T any] interface {
@@ -44,11 +54,6 @@ func GetDatasourceInstanceResponse[T any](ireq datasourceInstanceQueryRequest[T]
 	return ret, hresp, nil
 }
 
-// type dsReq[T any] interface {
-// 	Execute() (*T, *http.Response, error)
-// 	Queries(url.Values) dsReq[T]
-// }
-
 type dsInstanceQueryRequest[T any, R datasourceFreeForm[R]] interface {
 	datasourceFreeForm[R]
 	datasourceInstanceQueryRequest[T]
@@ -64,7 +69,7 @@ type DsReq[T any, iR dsInstanceQueryRequest[T, iR], cR dsCollectionQueryRequest[
 	Collection func(context.Context) cR
 }
 
-func (v DsReq[T, iR, cR]) Execute(ctx context.Context, queries url.Values, id string) ([]T, *http.Response, error) {
+func (v DsReq[T, iR, cR]) ExecuteNonPaginated(ctx context.Context, queries url.Values, id string) ([]T, *http.Response, error) {
 	if id == "" {
 		return v.Collection(ctx).Queries(queries).Execute()
 	}
@@ -74,6 +79,40 @@ func (v DsReq[T, iR, cR]) Execute(ctx context.Context, queries url.Values, id st
 	}
 	ret := []T{*resp}
 	return ret, hresp, nil
+}
+
+func (v DsReq[T, iR, cR]) Execute(ctx context.Context, queries url.Values, id string) ([]T, error) {
+	if id == "" {
+		ret := make([]T, 0)
+		for {
+			resp, hresp, err := v.Collection(ctx).Queries(queries).Execute()
+			if err != nil {
+				return nil, err
+			}
+			ret = append(ret, resp...)
+			meta, err := getPaginationData(hresp)
+			if err != nil {
+				return nil, err
+			}
+			if !meta.IsPaginate {
+				break
+			}
+			nextOffset := meta.Last + 1
+			if nextOffset >= meta.Total {
+				break
+			}
+			// qp.Offset(offset).Limit(paginationDefaultPageSize)
+			queries.Set("offset", fmt.Sprintf("%d", nextOffset))
+			queries.Set("limit", fmt.Sprintf("%d", paginationDefaultPageSize))
+		}
+		return ret, nil
+	}
+	resp, _, err := v.Instance(ctx, id).Queries(queries).Execute()
+	if err != nil {
+		return nil, err
+	}
+	ret := []T{*resp}
+	return ret, nil
 }
 
 func MergeValues(dst, src url.Values) url.Values {
@@ -86,4 +125,53 @@ func MergeValues(dst, src url.Values) url.Values {
 		}
 	}
 	return dst
+}
+
+// PaginationInfo stores information about pagination
+type PaginationInfo struct {
+	// first element index in response
+	First int
+	// last element index in response
+	Last int
+	// total elements count
+	Total int
+	// indicate that response is paginated
+	IsPaginate bool
+}
+
+func getPaginationData(r *http.Response) (PaginationInfo, error) {
+	paginationStatusCode := 206
+	ret := PaginationInfo{
+		IsPaginate: false,
+	}
+	if r.StatusCode != paginationStatusCode {
+		return ret, nil
+	}
+	paginationStr := r.Header.Get(paginationHeader)
+	if paginationStr == "" {
+		return ret, nil
+	}
+	ret.IsPaginate = true
+	splittedPaginationStr := strings.Split(paginationStr, "/")
+	if len(splittedPaginationStr) != 2 {
+		return ret, fmt.Errorf("got paginated result, but an invalid pagination header %s, expected format: <first>-<last>/<total>", paginationStr)
+	}
+	paginationRangeStr, paginationTotalStr := splittedPaginationStr[0], splittedPaginationStr[1]
+	splittedRange := strings.Split(paginationRangeStr, "-")
+	if len(splittedRange) != 2 {
+		return ret, fmt.Errorf("got paginated result, but an invalid pagination header %s, expected format: <first>-<last>/<total>", paginationStr)
+	}
+	firstStr, lastStr := splittedRange[0], splittedRange[1]
+	var converr error
+	for from, to := range map[string]*int{firstStr: &ret.First, lastStr: &ret.Last, paginationTotalStr: &ret.Total} {
+		val, err := strconv.Atoi(from)
+		if err != nil {
+			converr = errors.Join(converr, err)
+		}
+		*to = val
+	}
+	if converr != nil {
+		return ret, fmt.Errorf("could not parse pagination header %s components as numbers : %w", paginationStr, converr)
+	}
+	return ret, nil
 }

@@ -281,7 +281,7 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		}
 		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
-	volumeGroups, _, err := dsreq.Execute(ctx, queries, id)
+	volumeGroups, err := dsreq.Execute(ctx, queries, id)
 
 	//check if there is any error while getting the volume group
 	if err != nil {
