@@ -30,6 +30,7 @@ The Terraform Provider can be used to manage volumes, snapshot rules, protection
 * [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
 * [Documentation](#documentation)
 * [New to Terraform?](#new-to-terraform)
+* [Terraform Provider for PowerStore Developer Guide](./about/DEVELOPER_GUIDE.md)
 
 ## Support
 For any Terraform Provider for Dell PowerStore issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md)
