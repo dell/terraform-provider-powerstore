@@ -32,7 +32,7 @@ The Terraform Provider can be used to manage volumes, snapshot rules, protection
 * [New to Terraform?](#new-to-terraform)
 
 ## Support
-For any Terraform Provider for Dell PowerStore issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md)
+For any Terraform Provider for Dell PowerStore issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md). You can interact with us on [GitHub](https://github.com/dell/dell-terraform-providers) by creating various types of [GitHub Issues](https://github.com/dell/dell-terraform-providers/issues/new/choose) such as bugs, feature requests, and questions.
 
 ## License
 The Terraform Provider for PowerStore is released and licensed under the MPL-2.0 license. See [LICENSE](https://github.com/dell/terraform-provider-powerstore/blob/main/LICENSE) for the full terms.
