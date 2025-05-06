@@ -31,6 +31,22 @@ data "powerstore_snapshotrule" "test1" {
   name = "test_snapshotrule_1"
 }
 
-output "snapshotRule" {
+# Output all Snapshot Rules Details
+output "snapshotRules_all_details" {
   value = data.powerstore_snapshotrule.test1.snapshot_rules
+}
+
+# Output only Snapshot Rule IDs
+output "snapshot_rules_IDs_only" {
+  value = data.powerstore_snapshotrule.test1.snapshot_rules.*.id
+}
+
+# Output Snapshot Rule names and timezone with Snapshot Rule id as key
+output "snapshot_rule_name_and_timezone" {
+  value = {
+    for rule in data.powerstore_snapshotrule.test1.snapshot_rules : rule.id => {
+      name = rule.name
+      timezone = rule.timezone
+    }
+  }
 }

@@ -63,8 +63,27 @@ data "powerstore_hostgroup" "test1" {
   name = "test_hostgroup1"
 }
 
-output "hostGroupResult" {
-  value = data.powerstore_hostgroup.test1.host_groups
+data "powerstore_hostgroup" "all" {
+}
+
+# Output all host group details
+output "host_group_all_details" {
+  value = data.powerstore_hostgroup.all.host_groups
+}
+
+# Output only host group names
+output "host_group_names_only" {
+  value = data.powerstore_hostgroup.all.host_groups.*.name
+}
+
+# Ouptput host name and os type with host group id as key
+output "hostgroup_name_and_host_connectivity" {
+    value = {
+    for hostgroup in data.powerstore_hostgroup.all.host_groups : hostgroup.id => {
+      name = hostgroup.name
+      host_connectivity = hostgroup.host_connectivity 
+    }
+  }
 }
 ```
 

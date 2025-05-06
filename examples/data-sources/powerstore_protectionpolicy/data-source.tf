@@ -30,6 +30,22 @@ data "powerstore_protectionpolicy" "test1" {
   name = "terraform_protection_policy_2"
 }
 
-output "policyResult" {
+# Output all Protection Policy Details
+output "protection_policy_all_details" {
   value = data.powerstore_protectionpolicy.test1.policies
+}
+
+# Output only Protection Policy names
+output "protection_policy_names_only" {
+  value = data.powerstore_protectionpolicy.test1.policies.*.name
+}
+
+# Output Protection Policy IDs and volumes with Protection Policy name as key
+output "nfs_export_name_and_path" {
+  value = {
+    for policy in data.powerstore_protectionpolicy.test1.policies : policy.name => {
+      name = policy.id
+      volumes = policy.volumes  
+    }
+  }
 }
