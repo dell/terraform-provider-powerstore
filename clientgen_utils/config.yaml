@@ -1,0 +1,4 @@
+templateDir: clientgen_utils/templates
+enumClassPrefix: true
+packageName: clientgen
+isGoSubmodule: true

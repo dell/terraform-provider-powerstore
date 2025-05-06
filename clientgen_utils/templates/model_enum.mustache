@@ -1,0 +1,26 @@
+// {{{classname}}} {{{description}}}{{^description}}the model '{{{classname}}}'{{/description}}
+type {{{classname}}} {{{format}}}{{^format}}{{dataType}}{{/format}}
+
+// List of {{{name}}}
+const (
+	{{#allowableValues}}
+	{{#enumVars}}
+	{{^-first}}
+	{{/-first}}
+	{{#enumClassPrefix}}{{{classname.toUpperCase}}}_{{/enumClassPrefix}}{{name}} {{{classname}}} = {{{value}}}
+	{{/enumVars}}
+	{{/allowableValues}}
+)
+
+// All allowed values of {{{classname}}} enum
+var Allowed{{{classname}}}EnumValues = []{{{classname}}}{
+	{{#allowableValues}}
+	{{#enumVars}}
+	{{{value}}},
+	{{/enumVars}}
+	{{/allowableValues}}
+}
+
+func (v *{{{classname}}}) Value() {{{format}}}{{^format}}{{dataType}}{{/format}} {
+	return {{{format}}}{{^format}}{{dataType}}{{/format}}(*v)
+}
