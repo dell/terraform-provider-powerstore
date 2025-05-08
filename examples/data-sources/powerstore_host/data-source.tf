@@ -30,6 +30,25 @@ data "powerstore_host" "test1" {
   name = "tf_host"
 }
 
-output "hostResult" {
-  value = data.powerstore_host.test1.hosts
+data "powerstore_host" "all"{
+}
+
+# Output all host details
+output "host_all_details" {
+  value = data.powerstore_host.all.host
+}
+
+# Output only host IDs
+output "host_IDs_only" {
+  value = data.powerstore_host.all.host.*.id
+}
+
+# Ouptput host name and os type with host id as key
+output "host_name_and_os_type" {
+    value = {
+    for host in data.powerstore_host.all.host : host.id => {
+      name = host.name
+      os_type = host.os_type
+    }
+  }
 }
