@@ -74,8 +74,24 @@ data "powerstore_volumegroup" "filter" {
   filter_expression = "name=ilike.vg*"
 }
 
-output "volumeGroupResult" {
+# Output all Volume Group Details
+output "volumegroup_all_details" {
   value = data.powerstore_volumegroup.all.volume_groups
+}
+
+# Output only Volume Group names
+output "volume_group_names_only" {
+  value = data.powerstore_volumegroup.all.volume_groups.*.name
+}
+
+# Output Volume Group creation_timestamps and location_history with Volume Group ID as key
+output "volume_group_id_and_size" {
+  value = {
+    for volume_group in data.powerstore_volumegroup.all.volume_groups : volume_group.id => {
+      creation_timestamp  = volume_group.creation_timestamp 
+      location_history  = volume_group.location_history 
+    }
+  }
 }
 ```
 

@@ -64,8 +64,24 @@ data "powerstore_volume" "volume_by_filter" {
   filter_expression = "and=(is_replication_destination.eq.false, name.ilike.*vol*)"
 }
 
-output "volumeResult" {
+# Output all Volume Details
+output "volume_all_details" {
   value = data.powerstore_volume.test1.volumes
+}
+
+# Output only Volume IDs
+output "volumes_IDs_only" {
+  value = data.powerstore_volume.test1.volumes.*.id
+}
+
+# Output Volume IDs and sizes with Volume name as key
+output "volume_id_and_size" {
+  value = {
+    for volume in data.powerstore_volume.test1.volumes : volume.name => {
+      id = volume.id
+      size = volume.size
+    }
+  }
 }
 ```
 

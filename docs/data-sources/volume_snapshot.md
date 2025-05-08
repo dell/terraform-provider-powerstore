@@ -65,8 +65,24 @@ data "powerstore_volume_snapshot" "volume_snapshot_by_filter" {
   filter_expression = "and=(is_replication_destination.eq.false, state_l10n.eq.Ready)"
 }
 
-output "volumeSnapshotResult" {
+# Output all Volume Snapshot Details
+output "volume_snapshot_all_details" {
   value = data.powerstore_volume_snapshot.test1.volumes
+}
+
+# Output only Volume Snapshot IDs
+output "volume_snapshot_IDs_only" {
+  value = data.powerstore_volume_snapshot.test1.volumes.*.id
+}
+
+# Output Volume Snapshot IDs and sizes with Volume Snapshot name as key
+output "volume_snapshot_id_and_size" {
+  value = {
+    for volume_snapshot in data.powerstore_volume_snapshot.test1.volumes : volume_snapshot.name => {
+      id = volume_snapshot.id
+      size = volume_snapshot.size
+    }
+  }
 }
 ```
 

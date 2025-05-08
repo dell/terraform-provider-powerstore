@@ -92,9 +92,24 @@ data "powerstore_filesystem" "file_systems_us_east" {
 data "powerstore_filesystem" "all_file_systems" {
 }
 
-
-output "result" {
+// Output all filesystem details
+output "filesystem_all_details" {
   value = data.powerstore_filesystem.all_file_systems.filesystems
+}
+
+// Output only filesystem names
+output "filesystem_names_only" {
+  value = data.powerstore_filesystem.all_file_systems.filesystems.*.name
+}
+
+// Output filesystem name and access policy with filesystem id as key
+output "name_and_access_policy" {
+  value = {
+    for filesystem in data.powerstore_filesystem.all_file_systems.filesystems : filesystem.id => {
+      name = filesystem.name
+      access_policy = filesystem.access_policy
+    }
+  }
 }
 ```
 

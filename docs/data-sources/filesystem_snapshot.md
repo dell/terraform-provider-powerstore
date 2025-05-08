@@ -120,9 +120,24 @@ data "powerstore_filesystem_snapshot" "user_or_root_created_snapshots" {
 data "powerstore_filesystem_snapshot" "all" {
 }
 
+// Output all filesystem snapshot details
+output "filesystem_snapshot_all_details" {
+  value = data.powerstore_filesystem_snapshot.all.filesystem_snapshots
+}
 
-output "result" {
-  value = data.powerstore_filesystem_snapshot.all.filesystems
+// Output only filesystem snapshot IDs
+output "filesystem_snapshot_IDs_only" {
+  value = data.powerstore_filesystem_snapshot.all.filesystem_snapshots.*.id
+}
+
+// Output filesystem snapshot name and size used with filesystem snapshot id as key
+output "filesystem_snapshot_name_and_size_used" {
+  value = {
+    for filesystem_snapshot in data.powerstore_filesystem_snapshot.all.filesystem_snapshots : filesystem_snapshot.id => {
+      name = filesystem_snapshot.name
+      size_used = filesystem_snapshot.size_used
+    }
+  }
 }
 ```
 

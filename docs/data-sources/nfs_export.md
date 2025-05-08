@@ -93,8 +93,24 @@ data "powerstore_nfs_export" "nfs_export_by_name_regex" {
   filter_expression = "path=ilike./us-east-revenue/sports_cars/*&min_security=eq.Sys&default_access=eq.Root"
 }
 
-output "nfs_exports_with_name_regex" {
+# Output all NFS Export Details
+output "nfs_export_all_details" {
   value = data.powerstore_nfs_export.nfs_export_by_name_regex.nfs_exports
+}
+
+# Output only NFS Export names
+output "all_details" {
+  value = data.powerstore_nfs_export.nfs_export_by_name_regex.nfs_exports.*.name
+}
+
+# Output NFS Export IDs and paths with NFS Export name as key
+output "nfs_export_name_and_path" {
+  value = {
+    for nfs_export in data.powerstore_nfs_export.nfs_export_by_name_regex.nfs_exports : nfs_export.name => {
+      name = nfs_export.id
+      path = nfs_export.path  
+    }
+  }
 }
 ```
 

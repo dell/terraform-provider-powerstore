@@ -89,8 +89,24 @@ data "powerstore_smb_share" "smb_share_by_filters" {
   filter_expression = "path=ilike./us-east-revenue/sports_cars/*&is_encryption_enabled=is.true&offline_availability=in.(Documents,None)"
 }
 
-output "all_smb_shares" {
+# Output all SMB Shares Details
+output "smb_shares_all_details" {
   value = data.powerstore_smb_share.all_smb_shares.smb_shares
+}
+
+# Output only Replication share IDs
+output "smb_shares_IDs_only" {
+  value = data.powerstore_smb_share.all_smb_shares.smb_shares.*.id
+}
+
+# Output Replication share IDs and policies with Replication share ID as key
+output "smb_shares_id_and_policies" {
+  value = {
+    for share in data.powerstore_smb_share.all_smb_shares.smb_shares : share.id => {
+      file_system_id = share.file_system_id
+      path = share.path
+    }
+  }
 }
 ```
 

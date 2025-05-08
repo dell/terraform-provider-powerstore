@@ -72,8 +72,24 @@ data "powerstore_nas_server" "nas_server_by_filter" {
   filter_expression = "and=(operational_status.eq.Started, is_replication_destination.eq.false)"
 }
 
-output "powerstore_nas_server" {
+# Output all NAS Server details
+output "nas_server_all_details" {
   value = data.powerstore_nas_server.all.nas_servers
+}
+
+# Output only NAS Server IDs
+output "nas_server_IDs_only" {
+  value = data.powerstore_nas_server.all.nas_servers.*.id
+}
+
+# Output NAS Server name and current node ID with nas server ID as key
+output "nas_server_name_and_current_node_id" {
+  value = {
+    for nas_server in data.powerstore_nas_server.all.nas_servers : nas_server.id => {
+      name = nas_server.name
+      current_node_id = nas_server.current_node_id  
+    }
+  }
 }
 ```
 

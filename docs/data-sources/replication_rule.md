@@ -73,8 +73,24 @@ data "powerstore_replication_rule" "rule_by_filter" {
   filter_expression = "and=(name.ilike.sample*, managed_by.eq.User)"
 }
 
-output "replicationRule" {
+# Output all Replication Rules Details
+output "replication_rules_all_details" {
   value = data.powerstore_replication_rule.all.replication_rules
+}
+
+# Output only Replication Rule IDs
+output "replication_rules_IDs_only" {
+  value = data.powerstore_replication_rule.all.replication_rules.*.id
+}
+
+# Output Replication Rule IDs and policies with Replication Rule name as key
+output "replication_rule_id_and_policies" {
+  value = {
+    for rule in data.powerstore_replication_rule.all.replication_rules : rule.name => {
+      id = rule.id
+      policies = rule.policies
+    }
+  }
 }
 ```
 
