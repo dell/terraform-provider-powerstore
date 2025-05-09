@@ -111,12 +111,13 @@ data "powerstore_filesystem_snapshot" "sales_catalog_snapshot_q4_under_filesyste
   filesystem_id = data.powerstore_filesystem.us_east_sales_catalog_fs.filesystems[0].id
 }
 
-# Fetching filesystems using filter expression
+# Fetching filesystem snapshots using filter expression
+# This filter expression will fetch all the filesystems where creator type is User and size used is greater than 6788440
 data "powerstore_filesystem_snapshot" "user_or_root_created_snapshots" {
   filter_expression = "and=(creator_type.eq.User, size_used.gt.6788440)"
 }
 
-# Fetching all filesystems
+# Fetching all filesystem snapshots
 data "powerstore_filesystem_snapshot" "all" {
 }
 
