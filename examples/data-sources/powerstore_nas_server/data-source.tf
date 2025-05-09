@@ -35,7 +35,7 @@ data "powerstore_nas_server" "nas_server_by_name" {
   name = "nas_server_1"
 }
 
-# Get volume group snapshots details using filter expression
+# Get NAS Servers details using filter expression
 # This filter expression will fetch all the NAS Servers that have `operational_status` as `Started` and 
 # `is_replication_destination` as `false`
 data "powerstore_nas_server" "nas_server_by_filter" {
