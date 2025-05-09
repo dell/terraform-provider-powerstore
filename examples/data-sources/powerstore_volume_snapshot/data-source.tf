@@ -26,8 +26,8 @@ data "powerstore_volume_snapshot" "test1" {
   #id = "adeeef05-aa68-4c17-b2d0-12c4a8e69176"
 }
 
-# Fetching Volume Snapshots that have `is_replication_destination` as `false` 
-# and `state_l10n` as `Ready` using  Filter Expression
+# Get volume snapshot details using filter expression
+# This filter expression will fetch all the volume snapshots where `is_replication_destination` is set to `false` and `state_l10n` is `Ready`
 data "powerstore_volume_snapshot" "volume_snapshot_by_filter" {
   filter_expression = "and=(is_replication_destination.eq.false, state_l10n.eq.Ready)"
 }
@@ -46,7 +46,7 @@ output "volume_snapshot_IDs_only" {
 output "volume_snapshot_id_and_size" {
   value = {
     for volume_snapshot in data.powerstore_volume_snapshot.test1.volumes : volume_snapshot.name => {
-      id = volume_snapshot.id
+      id   = volume_snapshot.id
       size = volume_snapshot.size
     }
   }

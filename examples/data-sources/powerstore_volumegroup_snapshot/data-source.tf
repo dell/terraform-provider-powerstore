@@ -36,8 +36,9 @@ data "powerstore_volumegroup_snapshot" "id" {
 }
 
 # Get volume group snapshots details using filter expression
+# This filter expression will fetch all the volume group snapshots where name contains snap
 data "powerstore_volumegroup_snapshot" "filter" {
-  filter_expression = "name=ilike.snap"
+  filter_expression = "name=ilike.*snap*"
 }
 
 # Output all Volume Group Snapshot Details
