@@ -33,6 +33,7 @@ data "powerstore_filesystem" "us_east_sales_catalog_fs" {
 }
 
 # Fetching filesystems using filter expression
+# This filter expression will fetch all the filesystems where name contains _east_sales_catalog_fs and size used is greater than 594849
 data "powerstore_filesystem" "east_sales_catalog_fs" {
   filter_expression = "and=(name.ilike.*_east_sales_catalog_fs*, size_used.gt.594849)"
 }

@@ -69,6 +69,7 @@ data "powerstore_replication_rule" "rule_by_id" {
 }
 
 # Get replication rule details using filter expression
+# This filter expression will fetch all the replication rules where name starts with `sample` and managed_by is `User`
 data "powerstore_replication_rule" "rule_by_filter" {
   filter_expression = "and=(name.ilike.sample*, managed_by.eq.User)"
 }

@@ -69,7 +69,7 @@ data "powerstore_volumegroup" "id" {
 }
 
 # Get volume groups details using filter expression
-# 
+# This filter expression will fetch all the volume groups where name starts with `vg`
 data "powerstore_volumegroup" "filter" {
   filter_expression = "name=ilike.vg*"
 }

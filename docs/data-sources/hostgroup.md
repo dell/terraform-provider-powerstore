@@ -55,6 +55,7 @@ limitations under the License.
 # Only one of the attribute can be provided among id and  name 
 
 # Fetching hostgroup using filter expression
+# This filter expression will fetch all the hostgroups where `name` is `hostgroup-ny`
 data "powerstore_hostgroup" "host-group" {
   filter_expression = "name=eq.hostgroup-ny"
 }
