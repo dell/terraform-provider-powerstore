@@ -111,8 +111,8 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 			"protection_policy_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.",
-				MarkdownDescription: "Unique identifier of the protection policy assigned to the volume group. Conflicts with `protection_policy_name`.",
+				Description:         "Unique identifier of the protection policy assigned to the volume group. Give empty string to remove policy. Conflicts with `protection_policy_name`.",
+				MarkdownDescription: "Unique identifier of the protection policy assigned to the volume group. Give empty string to remove policy. Conflicts with `protection_policy_name`.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("protection_policy_name"),
@@ -505,17 +505,17 @@ func (r *resourceVolumeGroup) ImportState(ctx context.Context, req resource.Impo
 // updateVolGroupState - method to update terraform state
 func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse *clientgen.VolumeGroupInstance, volGroupPlan *models.Volumegroup) {
 	// Update value from Volume Group Response to State
-	volgroupState.ID = helper.PointerToStringType(volGroupResponse.Id)
-	volgroupState.Name = helper.PointerToStringType(volGroupResponse.Name)
-	volgroupState.Description = helper.PointerToStringType(volGroupResponse.Description)
-	volgroupState.IsWriteOrderConsistent = helper.PointerToBoolType(volGroupResponse.IsWriteOrderConsistent)
-	volgroupState.ProtectionPolicyID = helper.PointerToStringType(volGroupResponse.ProtectionPolicyId)
+	volgroupState.ID = helper.TfString(helper.SetDefault(volGroupResponse.Id, ""))
+	volgroupState.Name = helper.TfString(helper.SetDefault(volGroupResponse.Name, ""))
+	volgroupState.Description = helper.TfString(helper.SetDefault(volGroupResponse.Description, ""))
+	volgroupState.IsWriteOrderConsistent = helper.TfBool(helper.SetDefault(volGroupResponse.IsWriteOrderConsistent, false))
+	volgroupState.ProtectionPolicyID = helper.TfString(helper.SetDefault(volGroupResponse.ProtectionPolicyId, ""))
 
 	//Update VolumeIDs value from Response to State
 	volgroupState.VolumeIDs, _ = types.SetValue(
 		types.StringType,
 		helper.SliceTransform(volGroupResponse.Volumes, func(in clientgen.VolumeInstance) attr.Value {
-			return helper.PointerToStringType(in.Id)
+			return helper.TfString(in.Id)
 		}),
 	)
 

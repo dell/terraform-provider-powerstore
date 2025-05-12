@@ -314,53 +314,53 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 func updateVolGroupState(volumeGroups []clientgen.VolumeGroupInstance) []models.VolumeGroupDataSource {
 	return helper.SliceTransform(volumeGroups, func(in clientgen.VolumeGroupInstance) models.VolumeGroupDataSource {
 		return models.VolumeGroupDataSource{
-			ID:                       helper.PointerToStringType(in.Id),
-			Name:                     helper.PointerToStringType(in.Name),
-			Description:              helper.PointerToStringType(in.Description),
-			CreationTimestamp:        helper.PTimeToStringType(in.CreationTimestamp),
-			IsProtectable:            helper.PointerToBoolType(in.IsProtectable),
-			ProtectionPolicyID:       helper.PointerToStringType(in.ProtectionPolicyId),
-			MigrationSessionID:       helper.PointerToStringType(in.MigrationSessionId),
-			IsWriteOrderConsistent:   helper.PointerToBoolType(in.IsWriteOrderConsistent),
-			PlacementRule:            helper.PointerToStringType(in.PlacementRule),
-			Type:                     helper.PointerToStringType(in.Type),
-			IsReplicationDestination: helper.PointerToBoolType(in.IsReplicationDestination),
-			IsImporting:              helper.PointerToBoolType(in.IsImporting),
-			TypeL10:                  helper.PointerToStringType(in.TypeL10n),
+			ID:                       helper.TfString(in.Id),
+			Name:                     helper.TfString(in.Name),
+			Description:              helper.TfString(in.Description),
+			CreationTimestamp:        helper.TfStringFromPTime(in.CreationTimestamp),
+			IsProtectable:            helper.TfBool(in.IsProtectable),
+			ProtectionPolicyID:       helper.TfString(in.ProtectionPolicyId),
+			MigrationSessionID:       helper.TfString(in.MigrationSessionId),
+			IsWriteOrderConsistent:   helper.TfBool(in.IsWriteOrderConsistent),
+			PlacementRule:            helper.TfString(in.PlacementRule),
+			Type:                     helper.TfString(in.Type),
+			IsReplicationDestination: helper.TfBool(in.IsReplicationDestination),
+			IsImporting:              helper.TfBool(in.IsImporting),
+			TypeL10:                  helper.TfString(in.TypeL10n),
 
-			ProtectionData: helper.PointerToStruct(in.ProtectionData, func(in clientgen.ProtectionDataInstance) models.ProtectionData {
+			ProtectionData: helper.TfObject(in.ProtectionData, func(in clientgen.ProtectionDataInstance) models.ProtectionData {
 				return models.ProtectionData{
-					SourceID:            helper.PointerToStringType(in.SourceId),
-					CreatorType:         helper.PointerToStringType(in.CreatorType),
-					ExpirationTimestamp: helper.PTimeToStringType(in.ExpirationTimestamp),
+					SourceID:            helper.TfString(in.SourceId),
+					CreatorType:         helper.TfString(in.CreatorType),
+					ExpirationTimestamp: helper.TfStringFromPTime(in.ExpirationTimestamp),
 				}
 			}),
 
-			ProtectionPolicy: helper.PointerToStruct(in.ProtectionPolicy, func(in clientgen.PolicyInstance) models.VolProtectionPolicy {
+			ProtectionPolicy: helper.TfObject(in.ProtectionPolicy, func(in clientgen.PolicyInstance) models.VolProtectionPolicy {
 				return models.VolProtectionPolicy{
-					ID:          helper.PointerToStringType(in.Id),
-					Name:        helper.PointerToStringType(in.Name),
-					Description: helper.PointerToStringType(in.Description),
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
 				}
 			}),
 
-			MigrationSession: helper.PointerToStruct(in.MigrationSession, func(in clientgen.MigrationSessionInstance) models.MigrationSession {
+			MigrationSession: helper.TfObject(in.MigrationSession, func(in clientgen.MigrationSessionInstance) models.MigrationSession {
 				return models.MigrationSession{
-					ID:   helper.PointerToStringType(in.Id),
-					Name: helper.PointerToStringType(in.Name),
+					ID:   helper.TfString(in.Id),
+					Name: helper.TfString(in.Name),
 				}
 			}),
 			LocationHistory: helper.SliceTransform(in.LocationHistory, func(in clientgen.LocationHistoryInstance) models.LocationHistory {
 				return models.LocationHistory{
-					FromApplianceID: helper.PointerToStringType(in.FromApplianceId),
-					ToApplianceID:   helper.PointerToStringType(in.ToApplianceId),
+					FromApplianceID: helper.TfString(in.FromApplianceId),
+					ToApplianceID:   helper.TfString(in.ToApplianceId),
 				}
 			}),
 			Volumes: helper.SliceTransform(in.Volumes, func(in clientgen.VolumeInstance) models.Volumes {
 				return models.Volumes{
-					ID:          helper.PointerToStringType(in.Id),
-					Name:        helper.PointerToStringType(in.Name),
-					Description: helper.PointerToStringType(in.Description),
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
 				}
 			}),
 		}

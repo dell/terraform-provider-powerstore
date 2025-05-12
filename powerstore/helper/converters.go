@@ -24,28 +24,32 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func PointerToStringType[T ~string](in *T) types.String {
+// TfString - Converts *string to types.String, returns types.StringNull if input is nil
+func TfString[T ~string](in *T) types.String {
 	if in == nil {
 		return types.StringNull()
 	}
 	return types.StringValue(string(*in))
 }
 
-func PTimeToStringType(in *time.Time) types.String {
+// TfStringFromPTime - Converts *time.Time to types.String, returns types.StringNull if input is nil
+func TfStringFromPTime(in *time.Time) types.String {
 	if in == nil {
 		return types.StringNull()
 	}
 	return types.StringValue((*in).String())
 }
 
-func PointerToBoolType(in *bool) types.Bool {
+// TfBool - Converts *bool to types.Bool, returns types.BoolNull if input is nil
+func TfBool(in *bool) types.Bool {
 	if in == nil {
 		return types.BoolNull()
 	}
 	return types.BoolValue(*in)
 }
 
-func PointerToStruct[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
+// TfObject - Converts input using the transform transform function, returns empty output if input is nil
+func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	if in == nil {
 		var ret tfT
 		return ret
@@ -53,6 +57,10 @@ func PointerToStruct[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	return transform(*in)
 }
 
+// ValueToPointer - Extracts Go value pointer from attr.Value
+// Returns nil if input is not known
+// Supported types: types.String, types.Bool
+// We can add more types in the future when required
 func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
 	if in.IsNull() || in.IsUnknown() {
 		return nil
@@ -72,10 +80,19 @@ func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
 	return nil
 }
 
+// SliceTransform - Applies the transform function to each element in a slice
 func SliceTransform[tfT any, jT any](in []jT, transform func(jT) tfT) []tfT {
 	ret := make([]tfT, len(in))
 	for i, v := range in {
 		ret[i] = transform(v)
 	}
 	return ret
+}
+
+// SetDefault - Returns pointer to default value if input is nil, otherwise returns input
+func SetDefault[T any](in *T, defaultVal T) *T {
+	if in != nil {
+		return in
+	}
+	return &defaultVal
 }
