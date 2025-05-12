@@ -58,8 +58,8 @@ data "powerstore_volume" "test1" {
   name = "tf_vol"
 }
 
-# Fetching Volumes that have `is_replication_destination` as `false` 
-# and `name` containing `vol` using  Filter Expression
+# Get volume details using filter expression
+# This filter expression will fetch all the volumes where `is_replication_destination` is set to `false` and `name` contains `vol`
 data "powerstore_volume" "volume_by_filter" {
   filter_expression = "and=(is_replication_destination.eq.false, name.ilike.*vol*)"
 }

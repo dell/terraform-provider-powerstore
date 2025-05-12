@@ -22,6 +22,7 @@ limitations under the License.
 # Only one of the attribute can be provided among id and name
 
 # Fetching host using filter expression
+# This filter expression will fetch all the hosts where `name` is `host-ny`
 data "powerstore_host" "host" {
   filter_expression = "name=eq.host-ny"
 }
