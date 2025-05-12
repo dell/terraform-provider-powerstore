@@ -55,6 +55,7 @@ limitations under the License.
 # Only one of the attribute can be provided among id and  name 
 
 # Fetching snapshot rule using filter expression
+# This filter expression will fetch the snapshot rule where name is `snapshotrule-ny`
 data "powerstore_snapshotrule" "test1" {
   filter_expression = "name=eq.snapshotrule-ny"
 }
