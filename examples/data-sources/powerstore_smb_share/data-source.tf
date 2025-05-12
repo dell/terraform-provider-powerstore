@@ -48,14 +48,29 @@ data "powerstore_smb_share" "smb_share_by_filesystem" {
   file_system_id = data.powerstore_filesystem.us_east_sales_catalog.filesystems[0].id
 }
 
-# fetching SMB Shares using filter expression
-# Please refer to the guides section for filter expression syntax
-# here, we are fetching all SMB Shares of subdirectories of /us-east-revenue/sports_cars
+# Fetching SMB Shares using filter expression
+# This filter expression will fetch all SMB Shares of subdirectories of /us-east-revenue/sports_cars
 # with encryption enabled and offline availability as either Documents or None.
 data "powerstore_smb_share" "smb_share_by_filters" {
   filter_expression = "path=ilike./us-east-revenue/sports_cars/*&is_encryption_enabled=is.true&offline_availability=in.(Documents,None)"
 }
 
-output "all_smb_shares" {
+# Output all SMB Shares Details
+output "smb_shares_all_details" {
   value = data.powerstore_smb_share.all_smb_shares.smb_shares
+}
+
+# Output only Replication share IDs
+output "smb_shares_IDs_only" {
+  value = data.powerstore_smb_share.all_smb_shares.smb_shares.*.id
+}
+
+# Output Replication share IDs and policies with Replication share ID as key
+output "smb_shares_id_and_policies" {
+  value = {
+    for share in data.powerstore_smb_share.all_smb_shares.smb_shares : share.id => {
+      file_system_id = share.file_system_id
+      path = share.path
+    }
+  }
 }

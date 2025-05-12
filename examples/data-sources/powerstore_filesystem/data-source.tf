@@ -33,6 +33,7 @@ data "powerstore_filesystem" "us_east_sales_catalog_fs" {
 }
 
 # Fetching filesystems using filter expression
+# This filter expression will fetch all the filesystems where name contains _east_sales_catalog_fs and size used is greater than 594849
 data "powerstore_filesystem" "east_sales_catalog_fs" {
   filter_expression = "and=(name.ilike.*_east_sales_catalog_fs*, size_used.gt.594849)"
 }
@@ -61,7 +62,22 @@ data "powerstore_filesystem" "file_systems_us_east" {
 data "powerstore_filesystem" "all_file_systems" {
 }
 
-
-output "result" {
+// Output all filesystem details
+output "filesystem_all_details" {
   value = data.powerstore_filesystem.all_file_systems.filesystems
+}
+
+// Output only filesystem names
+output "filesystem_names_only" {
+  value = data.powerstore_filesystem.all_file_systems.filesystems.*.name
+}
+
+// Output filesystem name and access policy with filesystem id as key
+output "name_and_access_policy" {
+  value = {
+    for filesystem in data.powerstore_filesystem.all_file_systems.filesystems : filesystem.id => {
+      name = filesystem.name
+      access_policy = filesystem.access_policy
+    }
+  }
 }

@@ -31,13 +31,28 @@ data "powerstore_remote_system" "remote_system_by_name" {
   name = "RT-D4538"
 }
 
-# fetching Remote Systems using filter expression
-# Please refer to the guides section for filter expression syntax
-# here, we are fetching a Remote System with a particular management IP
+# Fetching Remote Systems using filter expression
+# This filter expression will fetch a Remote System with the particular management IP
 data "powerstore_remote_system" "remote_system_by_filters" {
   filter_expression = "management_address=eq.10.225.225.10"
 }
 
-output "all_remote_systems" {
+# Output all Remote System Details
+output "remote_systems_all_details" {
   value = data.powerstore_remote_system.all_remote_systems.remote_systems
+}
+
+# Output only Remote System IDs
+output "remote_systems_IDs_only" {
+  value = data.powerstore_remote_system.all_remote_systems.remote_systems.*.id
+}
+
+# Output Remote System capabilities and serial numbers with Remote System name as key
+output "remote_system_capabilities_and_serial_number" {
+  value = {
+    for remote_system in data.powerstore_remote_system.all_remote_systems.remote_systems : remote_system.name => {
+      capabilities = remote_system.capabilities
+      serial_number = remote_system.serial_number
+    }
+  }
 }

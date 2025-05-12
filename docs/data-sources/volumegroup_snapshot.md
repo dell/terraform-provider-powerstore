@@ -69,12 +69,30 @@ data "powerstore_volumegroup_snapshot" "id" {
 }
 
 # Get volume group snapshots details using filter expression
+# This filter expression will fetch all the volume group snapshots where name contains snap
 data "powerstore_volumegroup_snapshot" "filter" {
-  filter_expression = "name=ilike.snap"
+  filter_expression = "name=ilike.*snap*"
 }
 
-output "volumeGroupSnapshotResult" {
+# Output all Volume Group Snapshot Details
+output "volumegroupSnapshot_all_details" {
   value = data.powerstore_volumegroup_snapshot.all.volume_groups
+}
+
+
+# Output only Volume Group names
+output "volumeGroupSnapshot_names_only" {
+  value = data.powerstore_volumegroup_snapshot.all.volume_groups.*.name
+}
+
+# Output Volume Group Snapshot creation_timestamps and location_history with Volume Group Snapshot ID as key
+output "volumeGroupSnapshot_id_and_size" {
+  value = {
+    for volume_group in data.powerstore_volumegroup_snapshot.all.volume_groups : volume_group.id => {
+      creation_timestamp  = volume_group.creation_timestamp 
+      location_history  = volume_group.location_history 
+    }
+  }
 }
 ```
 

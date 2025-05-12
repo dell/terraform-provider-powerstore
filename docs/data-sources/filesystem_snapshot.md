@@ -111,18 +111,34 @@ data "powerstore_filesystem_snapshot" "sales_catalog_snapshot_q4_under_filesyste
   filesystem_id = data.powerstore_filesystem.us_east_sales_catalog_fs.filesystems[0].id
 }
 
-# Fetching filesystems using filter expression
+# Fetching filesystem snapshots using filter expression
+# This filter expression will fetch all the filesystems where creator type is User and size used is greater than 6788440
 data "powerstore_filesystem_snapshot" "user_or_root_created_snapshots" {
   filter_expression = "and=(creator_type.eq.User, size_used.gt.6788440)"
 }
 
-# Fetching all filesystems
+# Fetching all filesystem snapshots
 data "powerstore_filesystem_snapshot" "all" {
 }
 
+// Output all filesystem snapshot details
+output "filesystem_snapshot_all_details" {
+  value = data.powerstore_filesystem_snapshot.all.filesystem_snapshots
+}
 
-output "result" {
-  value = data.powerstore_filesystem_snapshot.all.filesystems
+// Output only filesystem snapshot IDs
+output "filesystem_snapshot_IDs_only" {
+  value = data.powerstore_filesystem_snapshot.all.filesystem_snapshots.*.id
+}
+
+// Output filesystem snapshot name and size used with filesystem snapshot id as key
+output "filesystem_snapshot_name_and_size_used" {
+  value = {
+    for filesystem_snapshot in data.powerstore_filesystem_snapshot.all.filesystem_snapshots : filesystem_snapshot.id => {
+      name = filesystem_snapshot.name
+      size_used = filesystem_snapshot.size_used
+    }
+  }
 }
 ```
 

@@ -25,12 +25,28 @@ data "powerstore_volume" "test1" {
   name = "tf_vol"
 }
 
-# Fetching Volumes that have `is_replication_destination` as `false` 
-# and `name` containing `vol` using  Filter Expression
+# Get volume details using filter expression
+# This filter expression will fetch all the volumes where `is_replication_destination` is set to `false` and `name` contains `vol`
 data "powerstore_volume" "volume_by_filter" {
   filter_expression = "and=(is_replication_destination.eq.false, name.ilike.*vol*)"
 }
 
-output "volumeResult" {
+# Output all Volume Details
+output "volume_all_details" {
   value = data.powerstore_volume.test1.volumes
+}
+
+# Output only Volume IDs
+output "volumes_IDs_only" {
+  value = data.powerstore_volume.test1.volumes.*.id
+}
+
+# Output Volume IDs and sizes with Volume name as key
+output "volume_id_and_size" {
+  value = {
+    for volume in data.powerstore_volume.test1.volumes : volume.name => {
+      id = volume.id
+      size = volume.size
+    }
+  }
 }
