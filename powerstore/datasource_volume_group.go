@@ -19,10 +19,12 @@ package powerstore
 
 import (
 	"context"
+	"net/url"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -33,7 +35,7 @@ import (
 )
 
 type volumeGroupDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 type volumeGroupDataSourceModel struct {
@@ -243,14 +245,12 @@ func (d *volumeGroupDataSource) Configure(_ context.Context, req datasource.Conf
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	c := req.ProviderData.(*client.Client)
+	d.client = c.GenClient
 }
 
 func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeGroupDataSourceModel
-	var volumeGroups []gopowerstore.VolumeGroup
-	var volumeGroup gopowerstore.VolumeGroup
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -258,15 +258,19 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
+	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
 	//Read the volume group based on volume group id/name and if nothing is mentioned, then it returns all the volume groups
-	if state.Name.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupByName(context.Background(), state.Name.ValueString())
-		volumeGroups = append(volumeGroups, volumeGroup)
-	} else if state.ID.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroup(context.Background(), state.ID.ValueString())
-		volumeGroups = append(volumeGroups, volumeGroup)
-	} else {
-		err = validateVolumeFilter(state.Filters.ValueString())
+	dsreq := helper.DsReq[clientgen.VolumeGroupInstance, clientgen.ApiGetVolumeGroupByIdRequest, clientgen.ApiGetAllVolumeGroupsRequest]{
+		Instance:   d.client.VolumeGroupApi.GetVolumeGroupById,
+		Collection: d.client.VolumeGroupApi.GetAllVolumeGroups,
+	}
+	id := state.ID.ValueString()
+	if !state.Name.IsNull() {
+		queries.Set("name", "eq."+state.Name.ValueString())
+	} else if !state.Filters.IsNull() {
+		err := validateVolumeFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("filter_expression"),
@@ -275,12 +279,9 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 			)
 			return
 		}
-		filters := make(map[string]string)
-		if !state.Filters.IsNull() {
-			filters = convertQueriesToMap(state.Filters.ValueQueries())
-		}
-		volumeGroups, err = d.client.GetVolumeGroups(context.Background(), filters)
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
+	volumeGroups, err := dsreq.Execute(ctx, queries, id)
 
 	//check if there is any error while getting the volume group
 	if err != nil {
@@ -291,14 +292,16 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	state.VolumeGroups, err = updateVolGroupState(volumeGroups, d.client)
-	if err != nil {
+	// check that there is atleast one volume group if name is provided
+	if state.Name.ValueString() != "" && len(volumeGroups) == 0 {
 		resp.Diagnostics.AddError(
-			"Failed to update volume group state",
-			err.Error(),
+			"Unable to Read PowerStore Volume Group",
+			"There is no volume group with name "+state.Name.ValueString(),
 		)
 		return
 	}
+
+	state.VolumeGroups = updateVolGroupState(volumeGroups)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -308,56 +311,58 @@ func (d *volumeGroupDataSource) Read(ctx context.Context, req datasource.ReadReq
 }
 
 // updateVolGroupState iterates over the volume groups list and update the state
-func updateVolGroupState(volumeGroups []gopowerstore.VolumeGroup, p *client.Client) (response []models.VolumeGroupDataSource, err error) {
-	for _, volumeGroupValue := range volumeGroups {
-		volumeGroupState := models.VolumeGroupDataSource{
-			ID:                       types.StringValue(volumeGroupValue.ID),
-			Name:                     types.StringValue(volumeGroupValue.Name),
-			Description:              types.StringValue(volumeGroupValue.Description),
-			CreationTimestamp:        types.StringValue(volumeGroupValue.CreationTimeStamp),
-			IsProtectable:            types.BoolValue(volumeGroupValue.IsProtectable),
-			ProtectionPolicyID:       types.StringValue(volumeGroupValue.ProtectionPolicyID),
-			MigrationSessionID:       types.StringValue(volumeGroupValue.MigrationSessionID),
-			IsWriteOrderConsistent:   types.BoolValue(volumeGroupValue.IsWriteOrderConsistent),
-			PlacementRule:            types.StringValue(string(volumeGroupValue.PlacementRule)),
-			Type:                     types.StringValue(string(volumeGroupValue.Type)),
-			IsReplicationDestination: types.BoolValue(volumeGroupValue.IsReplicationDestination),
-			IsImporting:              types.BoolValue(volumeGroupValue.IsImporting),
-			TypeL10:                  types.StringValue(volumeGroupValue.TypeL10),
+func updateVolGroupState(volumeGroups []clientgen.VolumeGroupInstance) []models.VolumeGroupDataSource {
+	return helper.SliceTransform(volumeGroups, func(in clientgen.VolumeGroupInstance) models.VolumeGroupDataSource {
+		return models.VolumeGroupDataSource{
+			ID:                       helper.TfString(in.Id),
+			Name:                     helper.TfString(in.Name),
+			Description:              helper.TfString(in.Description),
+			CreationTimestamp:        helper.TfStringFromPTime(in.CreationTimestamp),
+			IsProtectable:            helper.TfBool(in.IsProtectable),
+			ProtectionPolicyID:       helper.TfString(in.ProtectionPolicyId),
+			MigrationSessionID:       helper.TfString(in.MigrationSessionId),
+			IsWriteOrderConsistent:   helper.TfBool(in.IsWriteOrderConsistent),
+			PlacementRule:            helper.TfString(in.PlacementRule),
+			Type:                     helper.TfString(in.Type),
+			IsReplicationDestination: helper.TfBool(in.IsReplicationDestination),
+			IsImporting:              helper.TfBool(in.IsImporting),
+			TypeL10:                  helper.TfString(in.TypeL10n),
 
-			ProtectionData: models.ProtectionData{
-				SourceID:            types.StringValue(volumeGroupValue.ProtectionData.SourceID),
-				CreatorType:         types.StringValue(volumeGroupValue.ProtectionData.CreatorType),
-				ExpirationTimestamp: types.StringValue(volumeGroupValue.ProtectionData.ExpirationTimeStamp),
-			},
+			ProtectionData: helper.TfObject(in.ProtectionData, func(in clientgen.ProtectionDataInstance) models.ProtectionData {
+				return models.ProtectionData{
+					SourceID:            helper.TfString(in.SourceId),
+					CreatorType:         helper.TfString(in.CreatorType),
+					ExpirationTimestamp: helper.TfStringFromPTime(in.ExpirationTimestamp),
+				}
+			}),
 
-			ProtectionPolicy: models.VolProtectionPolicy{
-				ID:          types.StringValue(volumeGroupValue.ProtectionPolicy.ID),
-				Name:        types.StringValue(volumeGroupValue.ProtectionPolicy.Name),
-				Description: types.StringValue(volumeGroupValue.ProtectionPolicy.Description),
-			},
+			ProtectionPolicy: helper.TfObject(in.ProtectionPolicy, func(in clientgen.PolicyInstance) models.VolProtectionPolicy {
+				return models.VolProtectionPolicy{
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
+				}
+			}),
 
-			MigrationSession: models.MigrationSession{
-				ID:   types.StringValue(volumeGroupValue.MigrationSession.ID),
-				Name: types.StringValue(volumeGroupValue.MigrationSession.Name),
-			},
+			MigrationSession: helper.TfObject(in.MigrationSession, func(in clientgen.MigrationSessionInstance) models.MigrationSession {
+				return models.MigrationSession{
+					ID:   helper.TfString(in.Id),
+					Name: helper.TfString(in.Name),
+				}
+			}),
+			LocationHistory: helper.SliceTransform(in.LocationHistory, func(in clientgen.LocationHistoryInstance) models.LocationHistory {
+				return models.LocationHistory{
+					FromApplianceID: helper.TfString(in.FromApplianceId),
+					ToApplianceID:   helper.TfString(in.ToApplianceId),
+				}
+			}),
+			Volumes: helper.SliceTransform(in.Volumes, func(in clientgen.VolumeInstance) models.Volumes {
+				return models.Volumes{
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
+				}
+			}),
 		}
-
-		for _, history := range volumeGroupValue.LocationHistory {
-			volumeGroupState.LocationHistory = append(volumeGroupState.LocationHistory, models.LocationHistory{
-				FromApplianceID: types.StringValue(history.FromApplianceID),
-				ToApplianceID:   types.StringValue(history.ToApplianceID),
-			})
-		}
-
-		for _, volume := range volumeGroupValue.Volumes {
-			volumeGroupState.Volumes = append(volumeGroupState.Volumes, models.Volumes{
-				ID:          types.StringValue(volume.ID),
-				Name:        types.StringValue(volume.Name),
-				Description: types.StringValue(volume.Description),
-			})
-		}
-		response = append(response, volumeGroupState)
-	}
-	return response, nil
+	})
 }

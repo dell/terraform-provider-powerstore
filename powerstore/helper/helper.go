@@ -8,3 +8,7 @@ func GetKnownBoolPointer(in types.Bool) *bool {
 	}
 	return in.ValueBoolPointer()
 }
+
+func GetPointer[T any](in T) *T {
+	return &in
+}
