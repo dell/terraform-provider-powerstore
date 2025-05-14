@@ -19,10 +19,13 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -33,7 +36,7 @@ import (
 )
 
 type volumeGroupSnapshotDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 var (
@@ -236,14 +239,12 @@ func (d *volumeGroupSnapshotDataSource) Configure(_ context.Context, req datasou
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	client := req.ProviderData.(*client.Client)
+	d.client = client.GenClient
 }
 
 func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeGroupDataSourceModel
-	var volumeGroups []gopowerstore.VolumeGroup
-	var volumeGroup gopowerstore.VolumeGroup
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -252,14 +253,20 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 	}
 
 	//Read the volume group snapshot based on volume group snapshot id/name and if nothing is mentioned, then it returns all the volume group snapshots
-	if state.Name.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshotByName(context.Background(), state.Name.ValueString())
-		volumeGroups = append(volumeGroups, volumeGroup)
-	} else if state.ID.ValueString() != "" {
-		volumeGroup, err = d.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), state.ID.ValueString())
-		volumeGroups = append(volumeGroups, volumeGroup)
-	} else if state.Filters.ValueString() != "" {
-		err = validateVolumeFilter(state.Filters.ValueString())
+	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	queries.Set("type", fmt.Sprintf("eq.%s", clientgen.VOLUMETYPEENUM_SNAPSHOT))
+	dsreq := helper.DsReq[clientgen.VolumeGroupInstance, clientgen.ApiGetVolumeGroupByIdRequest, clientgen.ApiGetAllVolumeGroupsRequest]{
+		Instance:   d.client.VolumeGroupApi.GetVolumeGroupById,
+		Collection: d.client.VolumeGroupApi.GetAllVolumeGroups,
+	}
+
+	id := state.ID.ValueString()
+	if !state.Name.IsNull() {
+		queries.Set("name", "eq."+state.Name.ValueString())
+	} else if !state.Filters.IsNull() {
+		err := validateVolumeFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("filter_expression"),
@@ -268,11 +275,9 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 			)
 			return
 		}
-		filters := convertQueriesToMap(state.Filters.ValueQueries())
-		volumeGroups, err = d.client.GetVolumeGroupSnapshots(context.Background(), filters)
-	} else {
-		volumeGroups, err = d.client.PStoreClient.GetVolumeGroupSnapshots(context.Background())
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
+	volumeGroups, err := dsreq.Execute(ctx, queries, id)
 
 	//check if there is any error while getting the volume group
 	if err != nil {
@@ -283,14 +288,16 @@ func (d *volumeGroupSnapshotDataSource) Read(ctx context.Context, req datasource
 		return
 	}
 
-	state.VolumeGroups, err = updateVolGroupState(volumeGroups, d.client)
-	if err != nil {
+	// check that there is atleast one volume group if name is provided
+	if state.Name.ValueString() != "" && len(volumeGroups) == 0 {
 		resp.Diagnostics.AddError(
-			"Failed to update volume group snapshot state",
-			err.Error(),
+			"Unable to Read PowerStore Volume Group Snapshot",
+			"There is no volume group with name "+state.Name.ValueString(),
 		)
 		return
 	}
+
+	state.VolumeGroups = updateVolGroupState(volumeGroups)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)

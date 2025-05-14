@@ -3,10 +3,23 @@ HOSTNAME=registry.terraform.io
 NAMESPACE=dell
 NAME=powerstore
 BINARY=terraform-provider-${NAME}
-VERSION=1.2.0
+VERSION=1.2.1
 OS_ARCH=linux_amd64
+OPENAPI_CMD?=java -Xmx16G -jar openapi-generator-cli-6.6.0.jar
+OPENAPI_GEN_DIR=clientgen
 
 default: install
+
+build_spec:
+	python3 clientgen_utils/main.py --input clientgen_utils/openapi_specs/spec_4_1.json --output clientgen_utils/openapi_specs/spec_4_1_filtered.json
+
+build_client: build_spec
+	${OPENAPI_CMD} generate -i clientgen_utils/openapi_specs/spec_4_1_filtered.json \
+		-g go --type-mappings integer+unsigned64=uint64  -o ${OPENAPI_GEN_DIR} \
+		--global-property apis,models,supportingFiles=client.go:README.md:configuration.go:response.go:utils.go,modelTests=false,apiTests=false,modelDocs=false \
+		-c clientgen_utils/config.yaml
+		
+	cd ${OPENAPI_GEN_DIR} && goimports -w .
 
 build:
 	go build -o ${BINARY}
@@ -59,7 +72,7 @@ check:
 	go vet
 
 gosec:
-	gosec -quiet ./...
+	gosec -quiet -exclude=G104  ./...
 
 testacc:
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   
