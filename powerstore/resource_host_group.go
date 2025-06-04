@@ -220,8 +220,28 @@ func (r *resourceHostGroup) Delete(ctx context.Context, req resource.DeleteReque
 	//Get Host Group ID from state
 	hostGroupID := state.ID.ValueString()
 
+	// Get ids of hosts to be added/removed from host group
+	removeHostIds := GetHostIDsFromState(&state)
+
+	hostGroupUpdate := &gopowerstore.HostGroupModify{
+		Name:             state.Name.ValueString(),
+		Description:      state.Description.ValueString(),
+		HostConnectivity: state.HostConnectivity.ValueString(),
+		RemoveHostIDs:    removeHostIds,
+		AddHostIDs:       []string{},
+	}
+
+	//Update Host Group by calling API
+	_, err := r.client.PStoreClient.ModifyHostGroup(context.Background(), hostGroupUpdate, hostGroupID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating host group",
+			"Could not update hostGroupID "+hostGroupID+": "+err.Error(),
+		)
+	}
+
 	//Delete Host Group by calling API
-	_, err := r.client.PStoreClient.DeleteHostGroup(context.Background(), hostGroupID)
+	_, err = r.client.PStoreClient.DeleteHostGroup(context.Background(), hostGroupID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting host group",
@@ -231,6 +251,18 @@ func (r *resourceHostGroup) Delete(ctx context.Context, req resource.DeleteReque
 	}
 
 	log.Printf("Done with Delete")
+}
+
+// GetHostIDsFromState - get host ids from state
+func GetHostIDsFromState(state *models.HostGroup) []string {
+
+	//Get host ids from state into a slice
+	var stateHostIds []string
+	for _, host := range state.HostIDs.Elements() {
+		stateHostIds = append(stateHostIds, strings.Trim(host.String(), "\""))
+	}
+
+	return stateHostIds
 }
 
 // Read - reads host group resource information
