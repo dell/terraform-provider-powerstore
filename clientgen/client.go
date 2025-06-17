@@ -147,7 +147,7 @@ func parameterValueToString(obj interface{}, key string) string {
 func parameterAddToHeaderOrQuery(headerOrQueryParams interface{}, keyPrefix string, obj interface{}, collectionType string) {
 	var v = reflect.ValueOf(obj)
 	var value = ""
-	if v == reflect.ValueOf(nil) {
+	if !v.IsValid() {
 		value = "null"
 	} else {
 		switch v.Kind() {
@@ -170,7 +170,7 @@ func parameterAddToHeaderOrQuery(headerOrQueryParams interface{}, keyPrefix stri
 			value = v.Type().String() + " value"
 		case reflect.Slice:
 			var indValue = reflect.ValueOf(obj)
-			if indValue == reflect.ValueOf(nil) {
+			if indValue.IsNil() {
 				return
 			}
 			var lenIndValue = indValue.Len()
@@ -182,7 +182,7 @@ func parameterAddToHeaderOrQuery(headerOrQueryParams interface{}, keyPrefix stri
 
 		case reflect.Map:
 			var indValue = reflect.ValueOf(obj)
-			if indValue == reflect.ValueOf(nil) {
+			if indValue.IsNil() {
 				return
 			}
 			iter := indValue.MapRange()
