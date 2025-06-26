@@ -1,3 +1,28 @@
+# v1.2.1
+
+## Release Summary
+The release for the bug fixes.
+
+## Features
+
+### Data Sources
+
+NA
+
+### Resources
+
+NA
+
+### Others
+N/A
+
+## Enhancements
+N/A
+
+## Bug Fixes
+
+* Cannot delete hosts in a hostgroup in a single terraform run ([#33](https://github.com/dell/dell-terraform-providers/issues/33))
+
 # v1.2.0
 
 ## Release Summary

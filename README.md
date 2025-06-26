@@ -22,15 +22,28 @@ The Terraform Provider can be used to manage volumes, snapshot rules, protection
 
 ## Table of contents
 
-* [Support](#support)
-* [License](#license)
-* [Prerequisites](#prerequisites)
-* [List of Resources in Terraform Provider for Dell PowerStore](#list-of-resources-in-terraform-provider-for-dell-powerstore)
-* [List of DataSources in Terraform Provider for Dell PowerStore](#list-of-datasources-in-terraform-provider-for-dell-powerstore)
-* [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
-* [Documentation](#documentation)
-* [New to Terraform?](#new-to-terraform)
-* [Terraform Provider for PowerStore Developer Guide](./about/DEVELOPER_GUIDE.md)
+- [Terraform Provider for Dell Technologies PowerStore](#terraform-provider-for-dell-technologies-powerstore)
+  - [Table of contents](#table-of-contents)
+  - [Support](#support)
+  - [License](#license)
+  - [Prerequisites](#prerequisites)
+  - [List of Resources in Terraform Provider for Dell PowerStore](#list-of-resources-in-terraform-provider-for-dell-powerstore)
+    - [Block Storage Management](#block-storage-management)
+    - [File Storage Management](#file-storage-management)
+    - [Data Protection Management](#data-protection-management)
+    - [Host Access Management](#host-access-management)
+  - [List of DataSources in Terraform Provider for Dell PowerStore](#list-of-datasources-in-terraform-provider-for-dell-powerstore)
+    - [Block Storage Management](#block-storage-management-1)
+    - [File Storage Management](#file-storage-management-1)
+    - [Data Protection Management](#data-protection-management-1)
+    - [Host Access Management](#host-access-management-1)
+  - [Installation of Terraform Provider for Dell PowerStore](#installation-of-terraform-provider-for-dell-powerstore)
+  - [Installation from Terraform Registry](#installation-from-terraform-registry)
+  - [Installation from source code](#installation-from-source-code)
+  - [SSL Certificate Verification](#ssl-certificate-verification)
+  - [Releasing, Maintenance and Deprecation](#releasing-maintenance-and-deprecation)
+  - [Documentation](#documentation)
+  - [New to Terraform?](#new-to-terraform)
 
 ## Support
 For any Terraform Provider for Dell PowerStore issues, questions or feedback, please follow our [support process](https://github.com/dell/dell-terraform-providers/blob/main/docs/SUPPORT.md). You can interact with us on [GitHub](https://github.com/dell/dell-terraform-providers) by creating various types of [GitHub Issues](https://github.com/dell/dell-terraform-providers/issues/new/choose) such as bugs, feature requests, and questions.
@@ -42,7 +55,7 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.2.0 | 3.5/3.6/4.0/4.1 | Ubuntu 22.04 <br> RHEL 9.x | 1.9.x <br> 1.10.x <br> | 1.24.x
+| v1.2.1 | 3.5/3.6/4.0/4.1 | Ubuntu 22.04 <br> RHEL 9.x | 1.9.x <br> 1.10.x <br> | 1.24.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
 
@@ -112,7 +125,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.2.0"
+      version = "1.2.1"
       source = "registry.terraform.io/dell/powerstore"
     }
   }
