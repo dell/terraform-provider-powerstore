@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Dell Inc., or its subsidiaries. All Rights Reserved.
+Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
 
 Licensed under the Mozilla Public License Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ limitations under the License.
 terraform {
   required_providers {
     powerstore = {
-      version = "1.2.0"
+      version = "1.2.1"
       source  = "registry.terraform.io/dell/powerstore"
     }
   }
