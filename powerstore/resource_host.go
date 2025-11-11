@@ -28,11 +28,13 @@ import (
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 // newHostResource returns host new resource instance
@@ -183,10 +185,26 @@ func (r *resourceHost) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
+	// Check if initiators are known before processing
+	if plan.Initiators.IsUnknown() || plan.Initiators.IsNull() {
+		resp.Diagnostics.AddError(
+			"Invalid initiators",
+			"The 'initiators' attribute is unknown or null at plan time. This may happen when using dynamic blocks or for_each. Please ensure the value is known before applying.",
+		)
+		return
+	}
+
 	// traverse through initiators in plan and store them
 	var initiators []gopowerstore.InitiatorCreateModify
-	for _, v := range plan.Initiators {
-		initiator := r.addInitiatorFromPlan(v)
+	for _, v := range plan.Initiators.Elements() {
+		objVal := v.(types.Object)
+		initiatorModel := models.InitiatorCreateModify{}
+		diags := objVal.As(ctx, &initiatorModel, basetypes.ObjectAsOptions{})
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		initiator := r.addInitiatorFromPlan(initiatorModel)
 		initiators = append(initiators, initiator)
 	}
 
@@ -225,7 +243,7 @@ func (r *resourceHost) Create(ctx context.Context, req resource.CreateRequest, r
 	// Update details to state
 	result := models.Host{}
 
-	r.serverToState(&plan, &result, hostResponse, operationCreate)
+	r.serverToState(ctx, &plan, &result, hostResponse, operationCreate)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -257,7 +275,7 @@ func (r *resourceHost) Read(ctx context.Context, req resource.ReadRequest, resp 
 		return
 	}
 
-	r.serverToState(nil, &state, hostResponse, operationRead)
+	r.serverToState(ctx, nil, &state, hostResponse, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -307,7 +325,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	// first check if there is any addition in initiators
 	_, err = r.client.PStoreClient.ModifyHost(
 		context.Background(),
-		r.addInitiators(plan, state),
+		r.addInitiators(ctx, plan, state),
 		hostID,
 	)
 	if err != nil {
@@ -320,7 +338,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	// Check for removal of initiators
 	_, err = r.client.PStoreClient.ModifyHost(
 		context.Background(),
-		r.removeInitiators(plan, state),
+		r.removeInitiators(ctx, plan, state),
 		hostID,
 	)
 	if err != nil {
@@ -331,7 +349,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// Modify CHAP credentials based on PortName.
-	modifyInitiators := r.modifyOperation(plan, state)
+	modifyInitiators := r.modifyOperation(ctx, plan, state)
 	if len(modifyInitiators) > 0 {
 		hostUpdate := &gopowerstore.HostModify{
 			ModifyInitiators: &modifyInitiators,
@@ -360,7 +378,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// Update the data to state
-	r.serverToState(&plan, &state, hostResponse, operationUpdate)
+	r.serverToState(ctx, &plan, &state, hostResponse, operationUpdate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -404,7 +422,7 @@ func (r *resourceHost) ImportState(ctx context.Context, req resource.ImportState
 }
 
 // Update details to state from the API repsonse
-func (r resourceHost) serverToState(plan, state *models.Host, response gopowerstore.Host, operation operation) {
+func (r resourceHost) serverToState(ctx context.Context, plan, state *models.Host, response gopowerstore.Host, operation operation) {
 
 	if response.ID != "" {
 		state.ID = types.StringValue(response.ID)
@@ -423,19 +441,37 @@ func (r resourceHost) serverToState(plan, state *models.Host, response gopowerst
 
 	// fetch the plan data to get password value.
 	// Passwords are not queryable so in order to maintain state it is taken from the plan.
-	planInitiatorMap := make(map[types.String]models.InitiatorCreateModify)
-	if plan != nil && len(plan.Initiators) != 0 {
-		for i := 0; i < len(plan.Initiators); i++ {
-			planInitiatorMap[plan.Initiators[i].PortName] = plan.Initiators[i]
+	// Convert plan.Initiators to map
+	planInitiatorMap := make(map[string]models.InitiatorCreateModify)
+	if plan != nil && !plan.Initiators.IsNull() && !plan.Initiators.IsUnknown() {
+		for _, elem := range plan.Initiators.Elements() {
+			objVal := elem.(types.Object)
+			var model models.InitiatorCreateModify
+			diags := objVal.As(ctx, &model, basetypes.ObjectAsOptions{})
+			if diags.HasError() {
+				// optionally log or append diagnostics
+				continue
+			}
+			portName := model.PortName.ValueString()
+			planInitiatorMap[portName] = model
 		}
 	}
 
 	// fetch the plan data to get password value.
 	// Passwords are not queryable so in order to maintain state it is taken from the plan.
-	stateInitiatorMap := make(map[types.String]models.InitiatorCreateModify)
-	if state != nil && state.Initiators != nil && len(state.Initiators) != 0 {
-		for i := 0; i < len(state.Initiators); i++ {
-			stateInitiatorMap[state.Initiators[i].PortName] = state.Initiators[i]
+	// Convert state.Initiators to map
+	stateInitiatorMap := make(map[string]models.InitiatorCreateModify)
+	if state != nil && !state.Initiators.IsNull() && !state.Initiators.IsUnknown() {
+		for _, elem := range state.Initiators.Elements() {
+			objVal := elem.(types.Object)
+			var model models.InitiatorCreateModify
+			diags := objVal.As(ctx, &model, basetypes.ObjectAsOptions{})
+			if diags.HasError() {
+				// optionally log or append diagnostics
+				continue
+			}
+			portName := model.PortName.ValueString()
+			stateInitiatorMap[portName] = model
 		}
 	}
 
@@ -448,20 +484,20 @@ func (r resourceHost) serverToState(plan, state *models.Host, response gopowerst
 			initiatorModel.PortName = types.StringValue(initiator.PortName)
 			initiatorModel.PortType = types.StringValue(string(initiator.PortType))
 			if operation != operationRead {
-				initiatorModel.ChapSinglePassword = planInitiatorMap[types.StringValue(initiator.PortName)].ChapSinglePassword
+				initiatorModel.ChapSinglePassword = planInitiatorMap[initiator.PortName].ChapSinglePassword
 			} else {
-				initiatorModel.ChapSinglePassword = stateInitiatorMap[types.StringValue(initiator.PortName)].ChapSinglePassword
+				initiatorModel.ChapSinglePassword = stateInitiatorMap[initiator.PortName].ChapSinglePassword
 			}
 			initiatorModel.ChapSingleUsername = types.StringValue(initiator.ChapSingleUsername)
 		} else {
 			initiatorModel.PortName = types.StringValue(initiator.PortName)
 			initiatorModel.PortType = types.StringValue(string(initiator.PortType))
 			if operation != operationRead {
-				initiatorModel.ChapSinglePassword = planInitiatorMap[types.StringValue(initiator.PortName)].ChapSinglePassword
-				initiatorModel.ChapMutualPassword = planInitiatorMap[types.StringValue(initiator.PortName)].ChapMutualPassword
+				initiatorModel.ChapSinglePassword = planInitiatorMap[initiator.PortName].ChapSinglePassword
+				initiatorModel.ChapMutualPassword = planInitiatorMap[initiator.PortName].ChapMutualPassword
 			} else {
-				initiatorModel.ChapSinglePassword = stateInitiatorMap[types.StringValue(initiator.PortName)].ChapSinglePassword
-				initiatorModel.ChapMutualPassword = stateInitiatorMap[types.StringValue(initiator.PortName)].ChapMutualPassword
+				initiatorModel.ChapSinglePassword = stateInitiatorMap[initiator.PortName].ChapSinglePassword
+				initiatorModel.ChapMutualPassword = stateInitiatorMap[initiator.PortName].ChapMutualPassword
 			}
 			initiatorModel.ChapMutualUsername = types.StringValue(initiator.ChapMutualUsername)
 			initiatorModel.ChapSingleUsername = types.StringValue(initiator.ChapSingleUsername)
@@ -469,14 +505,31 @@ func (r resourceHost) serverToState(plan, state *models.Host, response gopowerst
 
 		initiators = append(initiators, initiatorModel)
 	}
-	state.Initiators = initiators
+	initiatorAttrTypes := map[string]attr.Type{
+		"port_name":            types.StringType,
+		"port_type":            types.StringType,
+		"chap_mutual_password": types.StringType,
+		"chap_mutual_username": types.StringType,
+		"chap_single_password": types.StringType,
+		"chap_single_username": types.StringType,
+	}
+
+	initiatorObjects := make([]attr.Value, 0, len(initiators))
+	for _, i := range initiators {
+		obj, _ := types.ObjectValueFrom(ctx, initiatorAttrTypes, i)
+		initiatorObjects = append(initiatorObjects, obj)
+	}
+
+	setVal, _ := types.SetValue(types.ObjectType{AttrTypes: initiatorAttrTypes}, initiatorObjects)
+	state.Initiators = setVal
+
 	if operation == operationRead {
 		state.HostGroupID = types.StringValue(response.HostGroupID)
 	}
 }
 
 // Attributes to be updated in update operation
-func (r resourceHost) addInitiators(plan, state models.Host) *gopowerstore.HostModify {
+func (r resourceHost) addInitiators(ctx context.Context, plan, state models.Host) *gopowerstore.HostModify {
 
 	hostUpdate := &gopowerstore.HostModify{}
 	name := plan.Name.ValueString()
@@ -487,14 +540,17 @@ func (r resourceHost) addInitiators(plan, state models.Host) *gopowerstore.HostM
 	}
 
 	// Create a map of initiators from state with PortName as key, as it is unique
-	stateInitiatorsMap := r.getInitiatorMap(state.Initiators)
+	stateInitiatorsMap := r.getInitiatorMap(ctx, state.Initiators)
 
 	// Create map of initiators to be added
 	addInitiatorsMap := make(map[types.String]models.InitiatorCreateModify)
-	for i := 0; i < len(plan.Initiators); i++ {
-		_, found := stateInitiatorsMap[plan.Initiators[i].PortName]
+	for _, elem := range plan.Initiators.Elements() {
+		objVal := elem.(types.Object)
+		var model models.InitiatorCreateModify
+		_ = objVal.As(ctx, &model, basetypes.ObjectAsOptions{})
+		_, found := stateInitiatorsMap[model.PortName.ValueString()]
 		if !found {
-			addInitiatorsMap[plan.Initiators[i].PortName] = plan.Initiators[i]
+			addInitiatorsMap[model.PortName] = model
 		}
 	}
 
@@ -514,17 +570,20 @@ func (r resourceHost) addInitiators(plan, state models.Host) *gopowerstore.HostM
 }
 
 // Attributes to be updated in update operation
-func (r resourceHost) removeInitiators(plan, state models.Host) *gopowerstore.HostModify {
+func (r resourceHost) removeInitiators(ctx context.Context, plan, state models.Host) *gopowerstore.HostModify {
 
 	// Create a map of initiators from plan with PortName as key, as it is unique
-	planInitiatorsMap := r.getInitiatorMap(plan.Initiators)
+	planInitiatorsMap := r.getInitiatorMap(ctx, plan.Initiators)
 
 	// create a map to find initiators to be removed
 	removeInitiatorsMap := make(map[types.String]models.InitiatorCreateModify)
-	for i := 0; i < len(state.Initiators); i++ {
-		_, found := planInitiatorsMap[state.Initiators[i].PortName]
+	for _, elem := range state.Initiators.Elements() {
+		objVal := elem.(types.Object)
+		var model models.InitiatorCreateModify
+		_ = objVal.As(ctx, &model, basetypes.ObjectAsOptions{})
+		_, found := planInitiatorsMap[model.PortName.ValueString()]
 		if !found {
-			removeInitiatorsMap[state.Initiators[i].PortName] = state.Initiators[i]
+			removeInitiatorsMap[model.PortName] = model
 		}
 	}
 
@@ -542,13 +601,16 @@ func (r resourceHost) removeInitiators(plan, state models.Host) *gopowerstore.Ho
 }
 
 // to perform modify operation in update
-func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.UpdateInitiatorInHost {
+func (r resourceHost) modifyOperation(ctx context.Context, plan, state models.Host) []gopowerstore.UpdateInitiatorInHost {
 	// update CHAP credentials based on port name
-	modifyInitiators := make([]gopowerstore.UpdateInitiatorInHost, 0, len(plan.Initiators))
+	modifyInitiators := make([]gopowerstore.UpdateInitiatorInHost, 0, len(plan.Initiators.Elements()))
 
-	stateInitiatorMap := r.getInitiatorMap(state.Initiators)
-	for _, initiator := range plan.Initiators {
-		if _, ok := stateInitiatorMap[initiator.PortName]; ok {
+	stateInitiatorMap := r.getInitiatorMap(ctx, state.Initiators)
+	for _, elem := range plan.Initiators.Elements() {
+		objVal := elem.(types.Object)
+		var initiator models.InitiatorCreateModify
+		_ = objVal.As(ctx, &initiator, basetypes.ObjectAsOptions{})
+		if _, ok := stateInitiatorMap[initiator.PortName.ValueString()]; ok {
 
 			var updateInitiator gopowerstore.UpdateInitiatorInHost
 
@@ -595,7 +657,20 @@ func (r resourceHost) modifyOperation(plan, state models.Host) []gopowerstore.Up
 func (r *resourceHost) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
 	var data models.Host
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-	for _, initiator := range data.Initiators {
+
+	if data.Initiators.IsNull() || data.Initiators.IsUnknown() {
+		return
+	}
+
+	for _, elem := range data.Initiators.Elements() {
+		objVal := elem.(types.Object)
+		var initiator models.InitiatorCreateModify
+		diags := objVal.As(ctx, &initiator, basetypes.ObjectAsOptions{})
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
 		// PortName is required. It can be unknown, but not null. Ignore if unknown.
 		if !initiator.PortName.IsUnknown() &&
 			// if port type is not iSCSI then check further
@@ -643,11 +718,15 @@ func (r resourceHost) getPortType(portName string) string {
 	return portType
 }
 
-func (r resourceHost) getInitiatorMap(initiators []models.InitiatorCreateModify) map[types.String]models.InitiatorCreateModify {
-	initiatorsMap := make(map[types.String]models.InitiatorCreateModify)
-	if len(initiators) != 0 {
-		for i := 0; i < len(initiators); i++ {
-			initiatorsMap[initiators[i].PortName] = initiators[i]
+func (r resourceHost) getInitiatorMap(ctx context.Context, set types.Set) map[string]models.InitiatorCreateModify {
+	initiatorsMap := make(map[string]models.InitiatorCreateModify)
+
+	if !set.IsNull() && !set.IsUnknown() {
+		for _, elem := range set.Elements() {
+			objVal := elem.(types.Object)
+			var model models.InitiatorCreateModify
+			_ = objVal.As(ctx, &model, basetypes.ObjectAsOptions{})
+			initiatorsMap[model.PortName.ValueString()] = model
 		}
 	}
 	return initiatorsMap
