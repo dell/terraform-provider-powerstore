@@ -335,7 +335,7 @@ func (r *resourceHost) Update(ctx context.Context, req resource.UpdateRequest, r
 		)
 	}
 
-	// Check for removal of initiators
+	// Check if there is any removal in initiators
 	_, err = r.client.PStoreClient.ModifyHost(
 		context.Background(),
 		r.removeInitiators(ctx, plan, state),
