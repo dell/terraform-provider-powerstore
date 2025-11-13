@@ -21,13 +21,13 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 
 // Host - Host properties
 type Host struct {
-	ID               types.String            `tfsdk:"id"`
-	Name             types.String            `tfsdk:"name"`
-	Description      types.String            `tfsdk:"description"`
-	HostGroupID      types.String            `tfsdk:"host_group_id"`
-	OsType           types.String            `tfsdk:"os_type"`
-	Initiators       []InitiatorCreateModify `tfsdk:"initiators"`
-	HostConnectivity types.String            `tfsdk:"host_connectivity"`
+	ID               types.String `tfsdk:"id"`
+	Name             types.String `tfsdk:"name"`
+	Description      types.String `tfsdk:"description"`
+	HostGroupID      types.String `tfsdk:"host_group_id"`
+	OsType           types.String `tfsdk:"os_type"`
+	Initiators       types.Set    `tfsdk:"initiators"`
+	HostConnectivity types.String `tfsdk:"host_connectivity"`
 }
 
 // InitiatorCreateModify - for adding and modifying initiator to the host
