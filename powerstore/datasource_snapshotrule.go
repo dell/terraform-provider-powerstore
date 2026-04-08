@@ -183,6 +183,11 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 							MarkdownDescription: "Localized message string corresponding to managed_by.",
 							Computed:            true,
 						},
+						"is_secure": schema.BoolAttribute{
+							Description:         "Indicates whether the snapshot rule creates secure snapshots.",
+							MarkdownDescription: "Indicates whether the snapshot rule creates secure snapshots.",
+							Computed:            true,
+						},
 						"policies": schema.ListNestedAttribute{
 							Description:         "List of the protection policies that are associated with the snapshot_rule.",
 							MarkdownDescription: "List of the protection policies that are associated with the snapshot_rule..",
@@ -297,6 +302,7 @@ func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (respons
 			TimeZoneL10N:     types.StringValue(SnapshotRuleValue.TimezoneL10n),
 			NASAccessType10N: types.StringValue(SnapshotRuleValue.NASAccessTypeL10n),
 			ManagedByID10N:   types.StringValue(SnapshotRuleValue.ManagedNyL10n),
+			IsSecure:         types.BoolValue(SnapshotRuleValue.IsSecure),
 		}
 		snapshotRuleState.DaysOfWeek, _ = types.ListValue(types.StringType, daysOfWeekList)
 		snapshotRuleState.DaysOfWeek10N, _ = types.ListValue(types.StringType, daysOfWeekL10NList)

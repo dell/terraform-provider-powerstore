@@ -160,6 +160,7 @@ func (d *volumeGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 								"source_id":            types.StringType,
 								"creator_type":         types.StringType,
 								"expiration_timestamp": types.StringType,
+								"is_secure":            types.BoolType,
 							},
 						},
 						"is_importing": schema.BoolAttribute{
@@ -333,6 +334,7 @@ func updateVolGroupState(volumeGroups []clientgen.VolumeGroupInstance) []models.
 					SourceID:            helper.TfString(in.SourceId),
 					CreatorType:         helper.TfString(in.CreatorType),
 					ExpirationTimestamp: helper.TfStringFromPTime(in.ExpirationTimestamp),
+					IsSecure:            helper.TfBool(in.IsSecure),
 				}
 			}),
 

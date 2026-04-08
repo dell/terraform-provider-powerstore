@@ -319,6 +319,13 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
+
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether the snapshot rule creates secure snapshots. Secure snapshots cannot be deleted before their expiration time.",
+				MarkdownDescription: "Indicates whether the snapshot rule creates secure snapshots. Secure snapshots cannot be deleted before their expiration time.",
+			},
 		},
 	}
 }
@@ -593,6 +600,7 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 
 	state.DesiredRetention = types.Int32Value(response.DesiredRetention)
 	state.IsReplica = types.BoolValue(response.IsReplica)
+	state.IsSecure = types.BoolValue(response.IsSecure)
 	state.ManagedBy = types.StringValue(string(response.ManagedBy))
 	state.ManagedByID = types.StringValue(string(response.ManagedByID))
 

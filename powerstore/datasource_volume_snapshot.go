@@ -247,6 +247,7 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 								"source_id":            types.StringType,
 								"creator_type":         types.StringType,
 								"expiration_timestamp": types.StringType,
+								"is_secure":            types.BoolType,
 							},
 						},
 						"location_history": schema.ListNestedAttribute{

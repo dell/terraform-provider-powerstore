@@ -30,6 +30,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -135,6 +136,15 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 					}...),
 				},
 			},
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before their expiration time and the expiration time can only be extended.",
+				MarkdownDescription: "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before their expiration time and the expiration time can only be extended.",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
+			},
 		},
 	}
 }
@@ -228,7 +238,7 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume snapshot after creation",
-			"Could not get volume snapshot, unexpected error: "+err.Error(),
+			"Could not get volume snapshot, unexpected error: "+err1.Error(),
 		)
 		return
 	}
@@ -408,6 +418,7 @@ func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot
 	}
 	state.VolumeID = types.StringValue(response.ProtectionData.ParentID)
 	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
+	state.IsSecure = types.BoolValue(response.ProtectionData.IsSecure)
 	if plan != nil {
 		state.VolumeName = plan.VolumeName
 		state.CreatorType = plan.CreatorType

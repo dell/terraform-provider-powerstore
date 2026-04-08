@@ -30,6 +30,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -104,6 +106,15 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
 						"Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
 					),
+				},
+			},
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether the volume group snapshot is secure. Secure snapshots cannot be deleted before their expiration time and the expiration time can only be extended.",
+				MarkdownDescription: "Indicates whether the volume group snapshot is secure. Secure snapshots cannot be deleted before their expiration time and the expiration time can only be extended.",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 		},
@@ -362,6 +373,7 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
 	}
 	state.VolumeGroupID = types.StringValue(response.ProtectionData.ParentID)
+	state.IsSecure = types.BoolValue(response.ProtectionData.IsSecure)
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
 	}

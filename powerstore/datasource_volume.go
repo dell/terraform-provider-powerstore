@@ -258,6 +258,7 @@ func (d *volumeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 								"source_id":            types.StringType,
 								"creator_type":         types.StringType,
 								"expiration_timestamp": types.StringType,
+								"is_secure":            types.BoolType,
 							},
 						},
 						"location_history": schema.ListNestedAttribute{
@@ -516,6 +517,7 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 				SourceID:            types.StringValue(volumeValue.ProtectionData.SourceID),
 				CreatorType:         types.StringValue(volumeValue.ProtectionData.CreatorType),
 				ExpirationTimestamp: types.StringValue(volumeValue.ProtectionData.ExpirationTimeStamp),
+				IsSecure:            types.BoolValue(volumeValue.ProtectionData.IsSecure),
 			},
 
 			Appliance: models.Appliance{

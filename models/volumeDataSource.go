@@ -105,6 +105,7 @@ type ProtectionData struct {
 	SourceID            types.String `tfsdk:"source_id"`
 	CreatorType         types.String `tfsdk:"creator_type"`
 	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
+	IsSecure            types.Bool   `tfsdk:"is_secure"`
 }
 
 // VolProtectionPolicy - details of protection policy associated with volume
