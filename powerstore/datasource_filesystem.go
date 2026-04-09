@@ -170,7 +170,7 @@ func (d *fileSystemDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		}
 	}
 
-	plan.FileSystems = updateFileSystemState(fileSystems)
+	plan.FileSystems = updateFileSystemState(fileSystems, d.client)
 	plan.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)

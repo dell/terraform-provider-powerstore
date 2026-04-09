@@ -15,17 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package models
+# Example: Create a secure volume group snapshot
+# Secure snapshots cannot be deleted before their expiration time,
+# and the expiration time can only be extended.
+# Was added in PowerStore API version 3.5.0.0.
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
-
-// FileSystemSnapshot - FileSystem Snapshot properties
-type FileSystemSnapshot struct {
-	ID                  types.String `tfsdk:"id"`
-	Name                types.String `tfsdk:"name"`
-	Description         types.String `tfsdk:"description"`
-	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
-	FileSystemID        types.String `tfsdk:"filesystem_id"`
-	AccessType          types.String `tfsdk:"access_type"`
-	IsSecure            types.Bool   `tfsdk:"is_secure"`
+resource "powerstore_volumegroup_snapshot" "secure_snap" {
+  name                 = "secure_vg_snap"
+  description          = "Secure volume group snapshot for data protection"
+  volume_group_id      = "01d88dea-7d71-4a1b-abd6-be07f94aecd9"
+  is_secure            = true
+  expiration_timestamp = "2035-05-06T09:01:47Z"
 }

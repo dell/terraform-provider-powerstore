@@ -183,6 +183,11 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 							MarkdownDescription: "Localized message string corresponding to managed_by.",
 							Computed:            true,
 						},
+						"is_secure": schema.BoolAttribute{
+							Description:         "Indicates whether the snapshot rule creates secure snapshots.",
+							MarkdownDescription: "Indicates whether the snapshot rule creates secure snapshots.",
+							Computed:            true,
+						},
 						"policies": schema.ListNestedAttribute{
 							Description:         "List of the protection policies that are associated with the snapshot_rule.",
 							MarkdownDescription: "List of the protection policies that are associated with the snapshot_rule..",
@@ -254,7 +259,7 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	state.SnapshotRules, err = updateSnapshotRuleState(snapshotRules)
+	state.SnapshotRules, err = updateSnapshotRuleState(snapshotRules, d.client)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Failed to update snapshot rule state",
@@ -271,7 +276,7 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 }
 
 // updateSnapshotRuleState iterates over the snapshot rules list and update the state
-func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (response []models.SnapshotRuleDataSource, err error) {
+func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule, c *client.Client) (response []models.SnapshotRuleDataSource, err error) {
 	for _, SnapshotRuleValue := range SnapshotRules {
 		daysOfWeekList := []attr.Value{}
 		for _, day := range SnapshotRuleValue.DaysOfWeek {
@@ -297,6 +302,7 @@ func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (respons
 			TimeZoneL10N:     types.StringValue(SnapshotRuleValue.TimezoneL10n),
 			NASAccessType10N: types.StringValue(SnapshotRuleValue.NASAccessTypeL10n),
 			ManagedByID10N:   types.StringValue(SnapshotRuleValue.ManagedNyL10n),
+			IsSecure:         types.BoolValue(c.FetchIsSecure(context.Background(), "snapshot_rule", SnapshotRuleValue.ID)),
 		}
 		snapshotRuleState.DaysOfWeek, _ = types.ListValue(types.StringType, daysOfWeekList)
 		snapshotRuleState.DaysOfWeek10N, _ = types.ListValue(types.StringType, daysOfWeekL10NList)

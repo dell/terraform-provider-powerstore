@@ -28,6 +28,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -114,6 +116,15 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 					stringvalidator.OneOf("Snapshot", "Protocol"),
 				},
 				Default: stringdefault.StaticString("Snapshot"),
+			},
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether the filesystem snapshot is secure. Secure snapshots cannot be deleted before their expiration time and the expiration time can only be extended.",
+				MarkdownDescription: "Indicates whether the filesystem snapshot is secure. Secure snapshots cannot be deleted before their expiration time and the expiration time can only be extended.",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 		},
 	}
@@ -338,6 +349,7 @@ func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSys
 	}
 	state.AccessType = types.StringValue(response.AccessType)
 	state.FileSystemID = types.StringValue(response.ParentID)
+	state.IsSecure = types.BoolValue(r.client.FetchIsSecure(context.Background(), "file_system", response.ID))
 }
 
 func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {

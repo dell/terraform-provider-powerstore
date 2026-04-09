@@ -15,17 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package models
+# Example: Create a secure snapshot rule
+# Secure snapshot rules create secure snapshots that cannot be deleted
+# before their expiration time.
+# Was added in PowerStore API version 3.5.0.0.
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
-
-// FileSystemSnapshot - FileSystem Snapshot properties
-type FileSystemSnapshot struct {
-	ID                  types.String `tfsdk:"id"`
-	Name                types.String `tfsdk:"name"`
-	Description         types.String `tfsdk:"description"`
-	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
-	FileSystemID        types.String `tfsdk:"filesystem_id"`
-	AccessType          types.String `tfsdk:"access_type"`
-	IsSecure            types.Bool   `tfsdk:"is_secure"`
+resource "powerstore_snapshotrule" "secure_rule" {
+  name              = "secure_hourly_rule"
+  interval          = "One_Hour"
+  desired_retention = 168
+  is_secure         = true
 }

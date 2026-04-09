@@ -18,6 +18,8 @@ limitations under the License.
 package powerstore
 
 import (
+	"context"
+	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
 	"github.com/dell/gopowerstore"
@@ -25,15 +27,15 @@ import (
 )
 
 // updateFileSystemState returns the list of filesystems
-func updateFileSystemState(filesystems []gopowerstore.FileSystem) (response []models.FileSystemDatasource) {
+func updateFileSystemState(filesystems []gopowerstore.FileSystem, c *client.Client) (response []models.FileSystemDatasource) {
 	for _, filesystem := range filesystems {
-		response = append(response, newFileSystem(filesystem))
+		response = append(response, newFileSystem(filesystem, c))
 	}
 	return response
 }
 
 // newFileSystem returns a new filesystem
-func newFileSystem(input gopowerstore.FileSystem) models.FileSystemDatasource {
+func newFileSystem(input gopowerstore.FileSystem, c *client.Client) models.FileSystemDatasource {
 	return models.FileSystemDatasource{
 		AccessPolicy:               types.StringValue(input.AccessPolicy),
 		AccessType:                 types.StringValue(input.AccessType),
@@ -68,6 +70,7 @@ func newFileSystem(input gopowerstore.FileSystem) models.FileSystemDatasource {
 		CreatorType:                types.StringValue(input.CreatorType),
 		FileEventsPublishingMode:   types.StringValue(input.FileEventsPublishingMode),
 		HostIOSize:                 types.StringValue(input.HostIOSize),
+		IsSecure:                   types.BoolValue(c.FetchIsSecure(context.Background(), "file_system", input.ID)),
 		FlrAttributes: models.FLRAttributesDatasource{
 			DefaultRetention:     types.StringValue(input.FlrCreate.DefaultRetention),
 			MaximumRetention:     types.StringValue(input.FlrCreate.MaximumRetention),

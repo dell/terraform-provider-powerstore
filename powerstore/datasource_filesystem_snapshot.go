@@ -197,7 +197,7 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 		}
 	}
 
-	state.FileSystemSnapshots = updateFileSystemState(fileSystemSnapshots)
+	state.FileSystemSnapshots = updateFileSystemState(fileSystemSnapshots, d.client)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)

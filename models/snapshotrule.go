@@ -34,4 +34,5 @@ type SnapshotRule struct {
 	ManagedBy        types.String `tfsdk:"managed_by"`
 	ManagedByID      types.String `tfsdk:"managed_by_id"`
 	DeleteSnaps      types.Bool   `tfsdk:"delete_snaps"`
+	IsSecure         types.Bool   `tfsdk:"is_secure"`
 }
