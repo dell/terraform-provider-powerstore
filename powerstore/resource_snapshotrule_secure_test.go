@@ -95,10 +95,10 @@ func TestSecureSnapshotRule_Create(t *testing.T) {
 							Name:             "tf_secure_rule_test",
 							Interval:         gopowerstore.SnapshotRuleIntervalEnum("One_Hour"),
 							DesiredRetention: int32(168),
-							IsSecure:         true,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshotRule).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureRuleMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -149,10 +149,10 @@ func TestSecureSnapshotRule_ReadState(t *testing.T) {
 							Name:             "tf_secure_rule_test",
 							Interval:         gopowerstore.SnapshotRuleIntervalEnum("One_Hour"),
 							DesiredRetention: int32(168),
-							IsSecure:         true,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshotRule).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureRuleMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -207,10 +207,10 @@ func TestSecureSnapshotRule_Update(t *testing.T) {
 							Name:             "tf_secure_rule_test",
 							Interval:         gopowerstore.SnapshotRuleIntervalEnum("One_Hour"),
 							DesiredRetention: int32(168),
-							IsSecure:         true,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshotRule).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureRuleMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -235,7 +235,6 @@ func TestSecureSnapshotRule_Update(t *testing.T) {
 							Name:             "tf_secure_rule_test",
 							Interval:         gopowerstore.SnapshotRuleIntervalEnum("One_Hour"),
 							DesiredRetention: int32(336),
-							IsSecure:         true,
 						}, nil).Build()
 				},
 				Config: ProviderConfigForTesting + secureRuleMockedUpdateConfig,
@@ -285,10 +284,10 @@ func TestSecureSnapshotRule_CreateDefault(t *testing.T) {
 							Name:             "tf_secure_rule_default",
 							Interval:         gopowerstore.SnapshotRuleIntervalEnum("One_Hour"),
 							DesiredRetention: int32(168),
-							IsSecure:         false,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshotRule).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(false).Build()
 				},
 				Config: ProviderConfigForTesting + secureRuleMockedDefaultConfig,
 				Check: resource.ComposeTestCheckFunc(

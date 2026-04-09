@@ -349,7 +349,7 @@ func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSys
 	}
 	state.AccessType = types.StringValue(response.AccessType)
 	state.FileSystemID = types.StringValue(response.ParentID)
-	state.IsSecure = types.BoolValue(response.IsSecure)
+	state.IsSecure = types.BoolValue(r.client.FetchIsSecure(context.Background(), "file_system", response.ID))
 }
 
 func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {

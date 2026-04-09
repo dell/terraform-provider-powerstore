@@ -103,7 +103,6 @@ func TestSecureVolSnapshotDatasource_Read(t *testing.T) {
 							ProtectionData: gopowerstore.ProtectionData{
 								SourceID:    "vol-parent-001",
 								CreatorType: "User",
-								IsSecure:    true,
 							},
 						}, nil,
 					).Build()
@@ -113,6 +112,7 @@ func TestSecureVolSnapshotDatasource_Read(t *testing.T) {
 					getVolGroupMocker = mockey.Mock((*gopowerstore.ClientIMPL).GetVolumeGroupsByVolumeID).Return(
 						gopowerstore.VolumeGroups{}, nil,
 					).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureVolSnapDatasourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -170,10 +170,10 @@ func TestSecureFSSnapshotDatasource_Read(t *testing.T) {
 								ID:             "fs-snap-secure-001",
 								Name:           "tf_secure_fs_snap_test",
 								FilesystemType: gopowerstore.FileSystemTypeEnumSnapshot,
-								IsSecure:       true,
 							},
 						}, nil,
 					).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureFSSnapDatasourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -232,9 +232,9 @@ func TestSecureSnapshotRuleDatasource_Read(t *testing.T) {
 							DesiredRetention: 24,
 							IsReplica:        false,
 							IsReadOnly:       false,
-							IsSecure:         true,
 						}, nil,
 					).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureRuleDatasourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(

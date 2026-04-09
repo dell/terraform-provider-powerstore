@@ -1,8 +1,8 @@
 module terraform-provider-powerstore
 
-go 1.25.0
+go 1.24.0
 
-replace github.com/dell/gopowerstore => ./gopowerstore-local
+toolchain go1.24.1
 
 require (
 	github.com/bytedance/mockey v1.2.14

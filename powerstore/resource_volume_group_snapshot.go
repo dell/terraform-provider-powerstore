@@ -373,7 +373,7 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
 	}
 	state.VolumeGroupID = types.StringValue(response.ProtectionData.ParentID)
-	state.IsSecure = types.BoolValue(response.ProtectionData.IsSecure)
+	state.IsSecure = types.BoolValue(r.client.FetchIsSecure(context.Background(), "volume_group", response.ID))
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
 	}

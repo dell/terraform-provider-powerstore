@@ -101,10 +101,10 @@ func TestSecureFSSnapshot_Create(t *testing.T) {
 							ExpirationTimestamp: "2035-05-06T09:01:47+00:00",
 							ParentID:            "fs-parent-001",
 							AccessType:          "Snapshot",
-							IsSecure:            true,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteFsSnapshot).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + securefsSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -156,10 +156,10 @@ func TestSecureFSSnapshot_CreateDefault(t *testing.T) {
 							ExpirationTimestamp: "2035-05-06T09:01:47+00:00",
 							ParentID:            "fs-parent-001",
 							AccessType:          "Snapshot",
-							IsSecure:            false,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteFsSnapshot).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(false).Build()
 				},
 				Config: ProviderConfigForTesting + securefsSnapMockedDefaultConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -210,10 +210,10 @@ func TestSecureFSSnapshot_ReadState(t *testing.T) {
 							ExpirationTimestamp: "2035-05-06T09:01:47+00:00",
 							ParentID:            "fs-parent-001",
 							AccessType:          "Snapshot",
-							IsSecure:            true,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteFsSnapshot).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + securefsSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -271,10 +271,10 @@ func TestSecureFSSnapshot_UpdateDescription(t *testing.T) {
 							ExpirationTimestamp: "2035-05-06T09:01:47+00:00",
 							ParentID:            "fs-parent-001",
 							AccessType:          "Snapshot",
-							IsSecure:            true,
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteFsSnapshot).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + securefsSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -301,7 +301,6 @@ func TestSecureFSSnapshot_UpdateDescription(t *testing.T) {
 							ExpirationTimestamp: "2035-05-06T09:01:47+00:00",
 							ParentID:            "fs-parent-001",
 							AccessType:          "Snapshot",
-							IsSecure:            true,
 						}, nil).Build()
 				},
 				Config: ProviderConfigForTesting + securefsSnapMockedUpdateConfig,
@@ -349,6 +348,7 @@ func TestSecureFSSnapshot_CreateReadError(t *testing.T) {
 						Return(gopowerstore.FileSystem{}, fmt.Errorf("mock error: unable to read filesystem snapshot")).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteFsSnapshot).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config:      ProviderConfigForTesting + securefsSnapMockedConfig,
 				ExpectError: regexp.MustCompile(".*Error getting filesystem snapshot after creation.*"),

@@ -418,7 +418,7 @@ func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot
 	}
 	state.VolumeID = types.StringValue(response.ProtectionData.ParentID)
 	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
-	state.IsSecure = types.BoolValue(response.ProtectionData.IsSecure)
+	state.IsSecure = types.BoolValue(r.client.FetchIsSecure(context.Background(), "volume", response.ID))
 	if plan != nil {
 		state.VolumeName = plan.VolumeName
 		state.CreatorType = plan.CreatorType

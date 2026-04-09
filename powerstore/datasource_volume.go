@@ -517,7 +517,7 @@ func updateVolumeState(volumes []gopowerstore.Volume, p *client.Client) (respons
 				SourceID:            types.StringValue(volumeValue.ProtectionData.SourceID),
 				CreatorType:         types.StringValue(volumeValue.ProtectionData.CreatorType),
 				ExpirationTimestamp: types.StringValue(volumeValue.ProtectionData.ExpirationTimeStamp),
-				IsSecure:            types.BoolValue(volumeValue.ProtectionData.IsSecure),
+				IsSecure:            types.BoolValue(p.FetchIsSecure(context.Background(), "volume", volumeValue.ID)),
 			},
 
 			Appliance: models.Appliance{

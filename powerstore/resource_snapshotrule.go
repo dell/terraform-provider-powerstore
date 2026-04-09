@@ -600,7 +600,7 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 
 	state.DesiredRetention = types.Int32Value(response.DesiredRetention)
 	state.IsReplica = types.BoolValue(response.IsReplica)
-	state.IsSecure = types.BoolValue(response.IsSecure)
+	state.IsSecure = types.BoolValue(r.client.FetchIsSecure(context.Background(), "snapshot_rule", response.ID))
 	state.ManagedBy = types.StringValue(string(response.ManagedBy))
 	state.ManagedByID = types.StringValue(string(response.ManagedByID))
 

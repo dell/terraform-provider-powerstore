@@ -82,11 +82,11 @@ func TestSecureVGSnapshot_Create(t *testing.T) {
 							ProtectionData: gopowerstore.ProtectionData{
 								ExpirationTimeStamp: "2035-05-06T09:01:47+00:00",
 								ParentID:            "vg-parent-001",
-								IsSecure:            true,
 							},
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteVolumeGroup).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureVGSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -138,11 +138,11 @@ func TestSecureVGSnapshot_ReadState(t *testing.T) {
 							ProtectionData: gopowerstore.ProtectionData{
 								ExpirationTimeStamp: "2035-05-06T09:01:47+00:00",
 								ParentID:            "vg-parent-001",
-								IsSecure:            true,
 							},
 						}, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteVolumeGroup).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureVGSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -188,6 +188,7 @@ func TestSecureVGSnapshot_CreateError(t *testing.T) {
 						Return(gopowerstore.CreateResponse{}, fmt.Errorf("mock error: failed to create volume group snapshot")).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteVolumeGroup).
 						Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config:      ProviderConfigForTesting + secureVGSnapMockedConfig,
 				ExpectError: regexp.MustCompile(".*Error creating volume group snapshot.*"),

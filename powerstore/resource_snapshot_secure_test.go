@@ -39,7 +39,6 @@ var mockSecureVolSnap = gopowerstore.Volume{
 	ProtectionData: gopowerstore.ProtectionData{
 		ExpirationTimeStamp: "2035-05-06T09:01:47+00:00",
 		ParentID:            "vol-parent-001",
-		IsSecure:            true,
 	},
 	PerformancePolicyID: "default_medium",
 }
@@ -51,7 +50,6 @@ var mockDefaultVolSnap = gopowerstore.Volume{
 	ProtectionData: gopowerstore.ProtectionData{
 		ExpirationTimeStamp: "2035-05-06T09:01:47+00:00",
 		ParentID:            "vol-parent-001",
-		IsSecure:            false,
 	},
 	PerformancePolicyID: "default_medium",
 }
@@ -63,7 +61,6 @@ var mockSecureVolSnapUpdated = gopowerstore.Volume{
 	ProtectionData: gopowerstore.ProtectionData{
 		ExpirationTimeStamp: "2035-05-06T09:01:47+00:00",
 		ParentID:            "vol-parent-001",
-		IsSecure:            true,
 	},
 	PerformancePolicyID: "default_medium",
 }
@@ -155,6 +152,7 @@ func TestSecureVolumeSnapshot_Create(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockSecureVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -200,6 +198,7 @@ func TestSecureVolumeSnapshot_CreateDefault(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-default-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockDefaultVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(false).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedDefaultConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -245,6 +244,7 @@ func TestSecureVolumeSnapshot_ReadState(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockSecureVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -297,6 +297,7 @@ func TestSecureVolumeSnapshot_Update(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockSecureVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -360,6 +361,7 @@ func TestSecureVolumeSnapshot_CreateReadError(t *testing.T) {
 					getVolumesMock = mockey.Mock((*gopowerstore.ClientIMPL).GetVolumes).Return([]gopowerstore.Volume{}, nil).Build()
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(gopowerstore.Volume{}, fmt.Errorf("mock error")).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config:      ProviderConfigForTesting + secureSnapMockedConfig,
 				ExpectError: regexp.MustCompile(".*Error getting volume snapshot after creation.*"),
@@ -404,6 +406,7 @@ func TestSecureVolumeSnapshot_ReadError(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockSecureVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedConfig,
 			},
@@ -471,6 +474,7 @@ func TestSecureVolumeSnapshot_DeleteSecureError(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockSecureVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedConfig,
 			},
@@ -542,6 +546,7 @@ func TestSecureVolumeSnapshot_UpdateModifyError(t *testing.T) {
 					FunctionMocker = mockey.Mock((*gopowerstore.ClientIMPL).CreateSnapshot).Return(gopowerstore.CreateResponse{ID: "snap-secure-001"}, nil).Build()
 					getMock = mockey.Mock((*gopowerstore.ClientIMPL).GetSnapshot).Return(mockSecureVolSnap, nil).Build()
 					deleteMock = mockey.Mock((*gopowerstore.ClientIMPL).DeleteSnapshot).Return(nil, nil).Build()
+					mockey.Mock((*client.Client).FetchIsSecure).Return(true).Build()
 				},
 				Config: ProviderConfigForTesting + secureSnapMockedConfig,
 			},
