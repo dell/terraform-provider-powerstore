@@ -27,10 +27,10 @@ type RecycleBinConfigResource struct {
 
 // RecycleBinDataSourceModel - Terraform state model for recycle_bin data source
 type RecycleBinDataSourceModel struct {
-	ID               types.String              `tfsdk:"id"`
-	ResourceType     types.String              `tfsdk:"resource_type"`
-	Filters          FilterExpressionValue     `tfsdk:"filter_expression"`
-	RecycleBinItems  []RecycleBinItemModel     `tfsdk:"recycle_bin_items"`
+	ID              types.String          `tfsdk:"id"`
+	ResourceType    types.String          `tfsdk:"resource_type"`
+	Filters         FilterExpressionValue `tfsdk:"filter_expression"`
+	RecycleBinItems []RecycleBinItemModel `tfsdk:"recycle_bin_items"`
 }
 
 // RecycleBinItemModel - Terraform state model for a single recycle bin item

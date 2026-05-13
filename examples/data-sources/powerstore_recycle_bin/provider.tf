@@ -18,7 +18,7 @@ limitations under the License.
 terraform {
   required_providers {
     powerstore = {
-      source  = "registry.terraform.io/dell/powerstore"
+      source = "registry.terraform.io/dell/powerstore"
     }
   }
 }
