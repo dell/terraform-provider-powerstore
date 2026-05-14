@@ -257,17 +257,34 @@ func (d *recycleBinDataSource) Read(ctx context.Context, req datasource.ReadRequ
 func mapRecycleBinItemsToState(items []map[string]interface{}) []models.RecycleBinItemModel {
 	var result []models.RecycleBinItemModel
 	for _, item := range items {
-		result = append(result, models.RecycleBinItemModel{
-			ID:                  types.StringValue(item["id"].(string)),
-			Name:                types.StringValue(item["name"].(string)),
-			ResourceType:        types.StringValue(item["resource_type"].(string)),
-			LogicalProvisioned:  types.Int64Value(int64(item["logical_provisioned"].(float64))),
-			LogicalUsed:         types.Int64Value(int64(item["logical_used"].(float64))),
-			ApplianceID:         types.StringValue(item["appliance_id"].(string)),
-			DeletionTimestamp:   types.StringValue(item["deletion_timestamp"].(string)),
-			ExpirationTimestamp: types.StringValue(item["expiration_timestamp"].(string)),
-			ResourceTypeL10N:    types.StringValue(item["resource_type_l10n"].(string)),
-		})
+		model := models.RecycleBinItemModel{
+			ID: types.StringValue(item["id"].(string)),
+		}
+		if val, ok := item["name"].(string); ok {
+			model.Name = types.StringValue(val)
+		}
+		if val, ok := item["resource_type"].(string); ok {
+			model.ResourceType = types.StringValue(val)
+		}
+		if val, ok := item["logical_provisioned"].(float64); ok {
+			model.LogicalProvisioned = types.Int64Value(int64(val))
+		}
+		if val, ok := item["logical_used"].(float64); ok {
+			model.LogicalUsed = types.Int64Value(int64(val))
+		}
+		if val, ok := item["appliance_id"].(string); ok {
+			model.ApplianceID = types.StringValue(val)
+		}
+		if val, ok := item["deletion_timestamp"].(string); ok {
+			model.DeletionTimestamp = types.StringValue(val)
+		}
+		if val, ok := item["expiration_timestamp"].(string); ok {
+			model.ExpirationTimestamp = types.StringValue(val)
+		}
+		if val, ok := item["resource_type_l10n"].(string); ok {
+			model.ResourceTypeL10N = types.StringValue(val)
+		}
+		result = append(result, model)
 	}
 	return result
 }

@@ -164,8 +164,10 @@ func (r *resourceRecycleBinConfig) Create(ctx context.Context, req resource.Crea
 	}
 
 	state := models.RecycleBinConfigResource{
-		ID:                 types.StringValue(getRes["id"].(string)),
-		ExpirationDuration: types.Int32Value(int32(getRes["expiration_duration"].(float64))),
+		ID: types.StringValue(getRes["id"].(string)),
+	}
+	if val, ok := getRes["expiration_duration"].(float64); ok {
+		state.ExpirationDuration = types.Int32Value(int32(val))
 	}
 
 	diags = resp.State.Set(ctx, state)
@@ -197,7 +199,9 @@ func (r *resourceRecycleBinConfig) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	state.ID = types.StringValue(getRes["id"].(string))
-	state.ExpirationDuration = types.Int32Value(int32(getRes["expiration_duration"].(float64)))
+	if val, ok := getRes["expiration_duration"].(float64); ok {
+		state.ExpirationDuration = types.Int32Value(int32(val))
+	}
 
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -259,7 +263,9 @@ func (r *resourceRecycleBinConfig) Update(ctx context.Context, req resource.Upda
 	}
 
 	state.ID = types.StringValue(getRes["id"].(string))
-	state.ExpirationDuration = types.Int32Value(int32(getRes["expiration_duration"].(float64)))
+	if val, ok := getRes["expiration_duration"].(float64); ok {
+		state.ExpirationDuration = types.Int32Value(int32(val))
+	}
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
