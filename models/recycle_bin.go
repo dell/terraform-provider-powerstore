@@ -46,10 +46,13 @@ type RecycleBinItemModel struct {
 	ResourceTypeL10N    types.String `tfsdk:"resource_type_l10n"`
 }
 
-// RecycleBinResource - Terraform state model for recycle_bin resource (recover/delete/empty)
+// RecycleBinResource - Terraform state model for recycle_bin resource (config/recover/delete/empty)
 type RecycleBinResource struct {
-	ID              types.String `tfsdk:"id"`
-	ResourceID      types.String `tfsdk:"resource_id"`
-	Action          types.String `tfsdk:"action"`
-	EmptyRecycleBin types.Bool   `tfsdk:"empty_recycle_bin"`
+	ID                 types.String `tfsdk:"id"`
+	ExpirationDuration types.Int32  `tfsdk:"expiration_duration"`
+	ResourceID         types.String `tfsdk:"resource_id"`
+	ResourceName       types.String `tfsdk:"resource_name"`
+	ResourceType       types.String `tfsdk:"resource_type"`
+	Action             types.String `tfsdk:"action"`
+	EmptyRecycleBin    types.Bool   `tfsdk:"empty_recycle_bin"`
 }
