@@ -200,7 +200,7 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 		newReplicationRuleResource,
 		newNFSExportResource,
 		newSMBShareResource,
-		newRecycleBinConfigResource,
+		newRecycleBinResource,
 	}
 }
 

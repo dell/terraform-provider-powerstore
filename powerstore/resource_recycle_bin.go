@@ -35,22 +35,22 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// newRecycleBinConfigResource returns recycle bin config new resource instance
-func newRecycleBinConfigResource() resource.Resource {
-	return &resourceRecycleBinConfig{}
+// newRecycleBinResource returns recycle bin new resource instance
+func newRecycleBinResource() resource.Resource {
+	return &resourceRecycleBin{}
 }
 
-type resourceRecycleBinConfig struct {
+type resourceRecycleBin struct {
 	client *client.Client
 }
 
 // Metadata defines resource interface Metadata method
-func (r *resourceRecycleBinConfig) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_recycle_bin_config"
+func (r *resourceRecycleBin) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_recycle_bin"
 }
 
 // Schema defines resource interface Schema method
-func (r *resourceRecycleBinConfig) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *resourceRecycleBin) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "This resource is used to manage the recycle bin configuration of a PowerStore array. " +
 			"The recycle bin allows recovery of intentionally or accidentally deleted volumes and volume groups " +
@@ -83,8 +83,8 @@ func (r *resourceRecycleBinConfig) Schema(ctx context.Context, req resource.Sche
 	}
 }
 
-// Configure - defines configuration for recycle bin config resource
-func (r *resourceRecycleBinConfig) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+// Configure defines resource interface Configure method
+func (r *resourceRecycleBin) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -101,8 +101,8 @@ func (r *resourceRecycleBinConfig) Configure(ctx context.Context, req resource.C
 	r.client = c
 }
 
-// getRecycleBinConfig fetches the recycle bin configuration using APIClient
-func (r *resourceRecycleBinConfig) getRecycleBinConfig(ctx context.Context, id string) (map[string]interface{}, error) {
+// getRecycleBinConfig fetches the recycle bin configuration
+func (r *resourceRecycleBin) getRecycleBinConfig(ctx context.Context, id string) (map[string]interface{}, error) {
 	var result map[string]interface{}
 	_, err := r.client.PStoreClient.APIClient().Query(
 		ctx,
@@ -115,8 +115,8 @@ func (r *resourceRecycleBinConfig) getRecycleBinConfig(ctx context.Context, id s
 	return result, err
 }
 
-// Create - recycle bin config always exists on the array; "create" reads the current state and applies the desired config.
-func (r *resourceRecycleBinConfig) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+// Create defines resource interface Create method
+func (r *resourceRecycleBin) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	log.Printf("Started Creating Recycle Bin Config")
 
 	var plan models.RecycleBinConfigResource
@@ -175,8 +175,8 @@ func (r *resourceRecycleBinConfig) Create(ctx context.Context, req resource.Crea
 	log.Printf("Successfully done with Create Recycle Bin Config")
 }
 
-// Read - reads the recycle bin configuration from the array
-func (r *resourceRecycleBinConfig) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+// Read defines resource interface Read method
+func (r *resourceRecycleBin) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state models.RecycleBinConfigResource
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -208,8 +208,8 @@ func (r *resourceRecycleBinConfig) Read(ctx context.Context, req resource.ReadRe
 	log.Printf("Done with Read Recycle Bin Config")
 }
 
-// Update - updates the recycle bin configuration
-func (r *resourceRecycleBinConfig) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+// Update defines resource interface Update method
+func (r *resourceRecycleBin) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	log.Printf("Started Update Recycle Bin Config")
 
 	var plan models.RecycleBinConfigResource
@@ -272,14 +272,14 @@ func (r *resourceRecycleBinConfig) Update(ctx context.Context, req resource.Upda
 	log.Printf("Successfully done with Update Recycle Bin Config")
 }
 
-// Delete - recycle bin config cannot be deleted; we remove it from state only.
-func (r *resourceRecycleBinConfig) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+// Delete defines resource interface Delete method
+func (r *resourceRecycleBin) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	log.Printf("Recycle Bin Config Delete called — removing from Terraform state only (cannot delete on array)")
 	// The recycle bin config always exists on the array and cannot be deleted.
 	// Removing from Terraform state is all we can do.
 }
 
-// ImportState imports an existing recycle bin configuration into Terraform state
-func (r *resourceRecycleBinConfig) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+// ImportState defines resource interface ImportState method
+func (r *resourceRecycleBin) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
