@@ -104,12 +104,15 @@ func (r *resourceRecycleBin) Configure(ctx context.Context, req resource.Configu
 // getRecycleBinConfig fetches the recycle bin configuration
 func (r *resourceRecycleBin) getRecycleBinConfig(ctx context.Context, id string) (map[string]interface{}, error) {
 	var result map[string]interface{}
+	qp := r.client.PStoreClient.APIClient().QueryParams()
+	qp.Select("id", "expiration_duration")
 	_, err := r.client.PStoreClient.APIClient().Query(
 		ctx,
 		api.RequestConfig{
-			Method:   "GET",
-			Endpoint: "recycle_bin_config",
-			ID:       id,
+			Method:      "GET",
+			Endpoint:    "recycle_bin_config",
+			ID:          id,
+			QueryParams: qp,
 		},
 		&result)
 	return result, err
