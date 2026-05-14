@@ -114,5 +114,4 @@ Import is supported using the following syntax:
 # }
 # Step 3 - Execute the command: terraform import "powerstore_recycle_bin_config.resource_block_name" "0"
 # Step 4 - After successful execution of the command, check the state file
-terraform import "powerstore_recycle_bin_config.resource_block_name" "0"
 ```
