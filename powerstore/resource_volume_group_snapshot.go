@@ -106,6 +106,12 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 					),
 				},
 			},
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether this snapshot is secure. Secure snapshots cannot be deleted before their expiration time. This is a one-way lock: once set to true, it cannot be changed back to false.",
+				MarkdownDescription: "Indicates whether this snapshot is secure. Secure snapshots cannot be deleted before their expiration time. This is a one-way lock: once set to true, it cannot be changed back to false.",
+			},
 		},
 	}
 }
@@ -142,6 +148,11 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	// Validate secure snapshot parameters
+	if !validateSecureSnapshotParams(plan.IsSecure, plan.ExpirationTimestamp, &resp.Diagnostics) {
+		return
+	}
+
 	name := plan.Name.ValueString()
 	description := plan.Description.ValueString()
 	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
@@ -163,10 +174,12 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	// Create new volume group snapshot
+	isSecure := plan.IsSecure.ValueBool()
 	vgSnapCreate := &gopowerstore.VolumeGroupSnapshotCreate{
 		Name:                name,
 		Description:         description,
 		ExpirationTimestamp: expirationTimestamp,
+		IsSecure:            &isSecure,
 	}
 
 	snapCreateResponse, err := r.client.PStoreClient.CreateVolumeGroupSnapshot(context.Background(), volGroupID, vgSnapCreate)
@@ -250,6 +263,16 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Validate secure snapshot parameters
+	if !validateSecureSnapshotParams(plan.IsSecure, plan.ExpirationTimestamp, &resp.Diagnostics) {
+		return
+	}
+
+	// Validate one-way lock: cannot change is_secure from true to false
+	if !validateOneWayLock(state.IsSecure, plan.IsSecure, &resp.Diagnostics) {
 		return
 	}
 
@@ -362,6 +385,14 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
 	}
 	state.VolumeGroupID = types.StringValue(response.ProtectionData.ParentID)
+	// Map is_secure from ProtectionData response
+	if response.ProtectionData.IsSecure != nil {
+		state.IsSecure = types.BoolValue(*response.ProtectionData.IsSecure)
+	} else if plan != nil && !plan.IsSecure.IsNull() && !plan.IsSecure.IsUnknown() {
+		state.IsSecure = plan.IsSecure
+	} else {
+		state.IsSecure = types.BoolValue(false)
+	}
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
 	}
@@ -372,10 +403,12 @@ func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *gopow
 	description := plan.Description.ValueString()
 	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
 
+	isSecure := plan.IsSecure.ValueBool()
 	volGroupSnapshotUpdate := &gopowerstore.VolumeGroupSnapshotModify{
 		Description:         description,
 		Name:                name,
 		ExpirationTimestamp: &expirationTimeStamp,
+		IsSecure:            &isSecure,
 	}
 	return volGroupSnapshotUpdate
 }

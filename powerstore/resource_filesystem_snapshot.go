@@ -115,6 +115,12 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 				},
 				Default: stringdefault.StaticString("Snapshot"),
 			},
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether this snapshot is secure. Secure snapshots cannot be deleted before their expiration time. This is a one-way lock: once set to true, it cannot be changed back to false.",
+				MarkdownDescription: "Indicates whether this snapshot is secure. Secure snapshots cannot be deleted before their expiration time. This is a one-way lock: once set to true, it cannot be changed back to false.",
+			},
 		},
 	}
 }
@@ -151,14 +157,21 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
+	// Validate secure snapshot parameters
+	if !validateSecureSnapshotParams(plan.IsSecure, plan.ExpirationTimestamp, &resp.Diagnostics) {
+		return
+	}
+
 	fileSystemID := plan.FileSystemID.ValueString()
 
 	// Create new filesystem snapshot
+	isSecure := plan.IsSecure.ValueBool()
 	snapCreate := &gopowerstore.SnapshotFSCreate{
 		Name:                plan.Name.ValueString(),
 		Description:         plan.Description.ValueString(),
 		ExpirationTimestamp: plan.ExpirationTimestamp.ValueString(),
 		AccessType:          plan.AccessType.ValueString(),
+		IsSecure:            &isSecure,
 	}
 
 	snapCreateResponse, err := r.client.PStoreClient.CreateFsSnapshot(context.Background(), snapCreate, fileSystemID)
@@ -244,6 +257,16 @@ func (r *resourceFileSystemSnapshot) Update(ctx context.Context, req resource.Up
 		return
 	}
 
+	// Validate secure snapshot parameters
+	if !validateSecureSnapshotParams(plan.IsSecure, plan.ExpirationTimestamp, &resp.Diagnostics) {
+		return
+	}
+
+	// Validate one-way lock: cannot change is_secure from true to false
+	if !validateOneWayLock(state.IsSecure, plan.IsSecure, &resp.Diagnostics) {
+		return
+	}
+
 	// Check not modifiable attributes
 	if !plan.Name.Equal(state.Name) || !plan.FileSystemID.Equal(state.FileSystemID) || !plan.AccessType.Equal(state.AccessType) {
 		resp.Diagnostics.AddError(
@@ -324,7 +347,7 @@ func (r *resourceFileSystemSnapshot) ImportState(ctx context.Context, req resour
 }
 
 // updateSnapshotState - method to update terraform state
-func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSystemSnapshot, response gopowerstore.FileSystem) {
+func (r resourceFileSystemSnapshot) updateSnapshotState(plan, state *models.FileSystemSnapshot, response gopowerstore.FileSystem) {
 
 	expTime := response.ExpirationTimestamp
 	state.ID = types.StringValue(response.ID)
@@ -338,6 +361,14 @@ func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSys
 	}
 	state.AccessType = types.StringValue(response.AccessType)
 	state.FileSystemID = types.StringValue(response.ParentID)
+	// Map is_secure from FileSystem response
+	if response.IsSecure != nil {
+		state.IsSecure = types.BoolValue(*response.IsSecure)
+	} else if plan != nil && !plan.IsSecure.IsNull() && !plan.IsSecure.IsUnknown() {
+		state.IsSecure = plan.IsSecure
+	} else {
+		state.IsSecure = types.BoolValue(false)
+	}
 }
 
 func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {
@@ -345,9 +376,11 @@ func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot)
 	if !plan.ExpirationTimestamp.IsNull() && expirationTimestamp == "" {
 		expirationTimestamp = "1970-01-01T00:00:00.000Z"
 	}
+	isSecure := plan.IsSecure.ValueBool()
 	fsSnapshotUpdate := &gopowerstore.FSModify{
 		Description:         plan.Description.ValueString(),
 		ExpirationTimestamp: expirationTimestamp,
+		IsSecure:            &isSecure,
 	}
 	return fsSnapshotUpdate
 }

@@ -319,6 +319,12 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"is_secure": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Indicates whether snapshots created by this rule will be secure. Secure snapshots cannot be deleted before their expiration time. This is a one-way lock: once set to true, it cannot be changed back to false.",
+				MarkdownDescription: "Indicates whether snapshots created by this rule will be secure. Secure snapshots cannot be deleted before their expiration time. This is a one-way lock: once set to true, it cannot be changed back to false.",
+			},
 		},
 	}
 }
@@ -355,6 +361,9 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	// Note: snapshot rules don't need expiration_timestamp validation
+	// because they use desired_retention instead
 
 	snapshotRuleCreate := r.planToServer(plan)
 
@@ -450,6 +459,11 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Validate one-way lock: cannot change is_secure from true to false
+	if !validateOneWayLock(state.IsSecure, plan.IsSecure, &resp.Diagnostics) {
 		return
 	}
 
@@ -596,6 +610,15 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 	state.ManagedBy = types.StringValue(string(response.ManagedBy))
 	state.ManagedByID = types.StringValue(string(response.ManagedByID))
 
+	// Map is_secure from SnapshotRule response
+	if response.IsSecure != nil {
+		state.IsSecure = types.BoolValue(*response.IsSecure)
+	} else if plan != nil && !plan.IsSecure.IsNull() && !plan.IsSecure.IsUnknown() {
+		state.IsSecure = plan.IsSecure
+	} else {
+		state.IsSecure = types.BoolValue(false)
+	}
+
 	if operation != operationRead {
 		// we are saving delete_snaps value in state from plan
 		// for future deleteion, if required
@@ -608,6 +631,7 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 
 func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
 
+	isSecure := plan.IsSecure.ValueBool()
 	snapshotRuleCreate := &gopowerstore.SnapshotRuleCreate{
 		Name:             plan.Name.ValueString(),
 		Interval:         gopowerstore.SnapshotRuleIntervalEnum(plan.Interval.ValueString()),
@@ -615,6 +639,7 @@ func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *gopowersto
 		TimeZone:         gopowerstore.TimeZoneEnum(plan.TimeZone.ValueString()),
 		DesiredRetention: plan.DesiredRetention.ValueInt32(),
 		NASAccessType:    gopowerstore.NASAccessTypeEnum(plan.NASAccessType.ValueString()),
+		IsSecure:         &isSecure,
 	}
 
 	if len(plan.DaysOfWeek.Elements()) > 0 {

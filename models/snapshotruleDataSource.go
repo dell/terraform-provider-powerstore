@@ -38,6 +38,7 @@ type SnapshotRuleDataSource struct {
 	DaysOfWeek10N    types.List   `tfsdk:"days_of_week_l10n"`
 	NASAccessType10N types.String `tfsdk:"nas_access_type_l10n"`
 	ManagedByID10N   types.String `tfsdk:"managed_by_l10n"`
+	IsSecure         types.Bool   `tfsdk:"is_secure"`
 	Policies         []Policies   `tfsdk:"policies"`
 }
 

@@ -27,4 +27,5 @@ type FileSystemSnapshot struct {
 	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
 	FileSystemID        types.String `tfsdk:"filesystem_id"`
 	AccessType          types.String `tfsdk:"access_type"`
+	IsSecure            types.Bool   `tfsdk:"is_secure"`
 }

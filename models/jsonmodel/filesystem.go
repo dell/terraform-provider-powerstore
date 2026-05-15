@@ -38,6 +38,7 @@ type FSModify struct {
 	FileEventsPublishingMode   string        `json:"file_events_publishing_mode,omitempty"`
 	FlrCreate                  FlrAttributes `json:"flr_attributes,omitempty"`
 	ExpirationTimestamp        string        `json:"expiration_timestamp,omitempty"`
+	IsSecure                   *bool         `json:"is_secure,omitempty"`
 }
 
 type FlrAttributes struct {
