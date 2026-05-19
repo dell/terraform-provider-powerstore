@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // StorageContainerStorageProtocolEnum The type of Storage Container. * SCSI - A storage container is dedicated to SCSI usage. * NVMe - A storage container is dedicated to NVMe usage.  Was added in version 3.0.0.0.
 type StorageContainerStorageProtocolEnum string
 
@@ -28,3 +33,4 @@ var AllowedStorageContainerStorageProtocolEnumEnumValues = []StorageContainerSto
 func (v *StorageContainerStorageProtocolEnum) Value() string {
 	return string(*v)
 }
+

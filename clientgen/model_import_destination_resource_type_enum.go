@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
-// ImportDestinationResourceTypeEnum Storage resource type of the import destination. Values are: * volume - The destination resource of the import session is a volume. * volume_group - The destination resource of the import session is a volume group.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// ImportDestinationResourceTypeEnum Storage resource type of the import destination. Values are: * volume - The destination resource of the import session is a volume. * volume_group - The destination resource of the import session is a volume group. 
 type ImportDestinationResourceTypeEnum string
 
 // List of ImportDestinationResourceTypeEnum
 const (
-	IMPORTDESTINATIONRESOURCETYPEENUM_VOLUME       ImportDestinationResourceTypeEnum = "volume"
+	IMPORTDESTINATIONRESOURCETYPEENUM_VOLUME ImportDestinationResourceTypeEnum = "volume"
 	IMPORTDESTINATIONRESOURCETYPEENUM_VOLUME_GROUP ImportDestinationResourceTypeEnum = "volume_group"
 )
 
@@ -28,3 +33,4 @@ var AllowedImportDestinationResourceTypeEnumEnumValues = []ImportDestinationReso
 func (v *ImportDestinationResourceTypeEnum) Value() string {
 	return string(*v)
 }
+

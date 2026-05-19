@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // L2DiscoveryDetailsInstance Link local discovery information received from the uplink port. Was added in version 4.1.0.0.  Filtering on the fields of this embedded resource is not supported.
 type L2DiscoveryDetailsInstance struct {
 	// Remote switch MAC address.
@@ -25,3 +30,5 @@ type L2DiscoveryDetailsInstance struct {
 	// MTU of the remote switch.
 	RemoteMtu *int32 `json:"remote_mtu,omitempty"`
 }
+
+

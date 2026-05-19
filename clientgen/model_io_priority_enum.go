@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-// IoPriorityEnum The I/O priority for quality of service rules. Values are: * Low * Medium * High
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// IoPriorityEnum The I/O priority for quality of service rules. Values are: * Low * Medium * High 
 type IoPriorityEnum string
 
 // List of IoPriorityEnum
 const (
-	IOPRIORITYENUM_LOW    IoPriorityEnum = "Low"
+	IOPRIORITYENUM_LOW IoPriorityEnum = "Low"
 	IOPRIORITYENUM_MEDIUM IoPriorityEnum = "Medium"
-	IOPRIORITYENUM_HIGH   IoPriorityEnum = "High"
+	IOPRIORITYENUM_HIGH IoPriorityEnum = "High"
 )
 
 // All allowed values of IoPriorityEnum enum
@@ -30,3 +35,4 @@ var AllowedIoPriorityEnumEnumValues = []IoPriorityEnum{
 func (v *IoPriorityEnum) Value() string {
 	return string(*v)
 }
+

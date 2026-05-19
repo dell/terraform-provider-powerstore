@@ -11,16 +11,18 @@ API version: 4.1.0.0
 package clientgen
 
 import (
+	"encoding/json"
 	"time"
 )
+
 
 // VmProtectionDataInstance Protection data associated with the VM snapshot.  Filtering on the fields of this embedded resource is not supported.
 type VmProtectionDataInstance struct {
 	// Unique identifier of the protection rule that created the VM snapshot.
 	CreatedByRuleId *string `json:"created_by_rule_id,omitempty"`
-	// Name of the rule that created the VM snapshot. This value is not updated if the name of the rule changes after snapshot creation.
-	CreatedByRuleName *string                 `json:"created_by_rule_name,omitempty"`
-	CreatorType       *StorageCreatorTypeEnum `json:"creator_type,omitempty"`
+	// Name of the rule that created the VM snapshot. This value is not updated if the name of the rule changes after snapshot creation. 
+	CreatedByRuleName *string `json:"created_by_rule_name,omitempty"`
+	CreatorType *StorageCreatorTypeEnum `json:"creator_type,omitempty"`
 	// Date when the VM snapshot can be automatically purged.
 	ExpirationTimestamp *time.Time `json:"expiration_timestamp,omitempty"`
 	// Time when the snapshot was created.
@@ -32,3 +34,5 @@ type VmProtectionDataInstance struct {
 	// Localized message string corresponding to creator_type
 	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
 }
+
+

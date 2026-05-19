@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // ReplicationRoleEnum Role of the replication session: * Source      - The local resource is the source of the remote replication session. * Destination - The local resource is the destination of the remote replication session. * Metro_Preferred - The local resource is designated preferred side of the metro type replication session. * Metro_Non_Preferred - The local resource is designated non-preferred side of the metro type replication session.  Values was added in 3.0.0.0: Metro_Preferred, Metro_Non_Preferred.
 type ReplicationRoleEnum string
 
 // List of ReplicationRoleEnum
 const (
-	REPLICATIONROLEENUM_DESTINATION         ReplicationRoleEnum = "Destination"
+	REPLICATIONROLEENUM_DESTINATION ReplicationRoleEnum = "Destination"
 	REPLICATIONROLEENUM_METRO_NON_PREFERRED ReplicationRoleEnum = "Metro_Non_Preferred"
-	REPLICATIONROLEENUM_METRO_PREFERRED     ReplicationRoleEnum = "Metro_Preferred"
-	REPLICATIONROLEENUM_SOURCE              ReplicationRoleEnum = "Source"
+	REPLICATIONROLEENUM_METRO_PREFERRED ReplicationRoleEnum = "Metro_Preferred"
+	REPLICATIONROLEENUM_SOURCE ReplicationRoleEnum = "Source"
 )
 
 // All allowed values of ReplicationRoleEnum enum
@@ -32,3 +37,4 @@ var AllowedReplicationRoleEnumEnumValues = []ReplicationRoleEnum{
 func (v *ReplicationRoleEnum) Value() string {
 	return string(*v)
 }
+

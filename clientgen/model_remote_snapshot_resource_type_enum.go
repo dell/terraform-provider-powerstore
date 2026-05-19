@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // RemoteSnapshotResourceTypeEnum Type of the remote snapshot resource:  * volume - Remote snapshot is volume type.  * volume_group - Remote snapshot is volume_group type.  Was added in version 3.5.0.0.
 type RemoteSnapshotResourceTypeEnum string
 
 // List of RemoteSnapshotResourceTypeEnum
 const (
-	REMOTESNAPSHOTRESOURCETYPEENUM_VOLUME       RemoteSnapshotResourceTypeEnum = "volume"
+	REMOTESNAPSHOTRESOURCETYPEENUM_VOLUME RemoteSnapshotResourceTypeEnum = "volume"
 	REMOTESNAPSHOTRESOURCETYPEENUM_VOLUME_GROUP RemoteSnapshotResourceTypeEnum = "volume_group"
 )
 
@@ -28,3 +33,4 @@ var AllowedRemoteSnapshotResourceTypeEnumEnumValues = []RemoteSnapshotResourceTy
 func (v *RemoteSnapshotResourceTypeEnum) Value() string {
 	return string(*v)
 }
+

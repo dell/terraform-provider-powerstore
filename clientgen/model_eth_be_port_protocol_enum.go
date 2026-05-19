@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // EthBEPortProtocolEnum Supported Protocols over Ethernet port. Currently only NVMe is supported. * NVMe  Was added in version 3.0.0.0.
 type EthBEPortProtocolEnum string
 
@@ -26,3 +31,4 @@ var AllowedEthBEPortProtocolEnumEnumValues = []EthBEPortProtocolEnum{
 func (v *EthBEPortProtocolEnum) Value() string {
 	return string(*v)
 }
+

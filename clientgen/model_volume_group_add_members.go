@@ -10,8 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // VolumeGroupAddMembers Request to add members to a volume group.
 type VolumeGroupAddMembers struct {
-	// A list of primary or clone volumes to be added to the volume group. Snapshots cannot be added to a volume group. All the volumes should be on the same appliance as the current members of the volume group.  This list cannot be empty.
+	// A list of primary or clone volumes to be added to the volume group. Snapshots cannot be added to a volume group. All the volumes should be on the same appliance as the current members of the volume group.  This list cannot be empty. 
 	VolumeIds []string `json:"volume_ids"`
 }
+
+

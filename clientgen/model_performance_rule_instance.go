@@ -10,15 +10,22 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // PerformanceRuleInstance Quality of service rule in a performance policy for policy based management of storage resources. This resource type has queriable association from policy
 type PerformanceRuleInstance struct {
 	// Unique identifier representing a performance rule.
 	Id *string `json:"id,omitempty"`
 	// Name of the performance rule.  This property supports case-insensitive filtering.
-	Name       *string         `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 	IoPriority *IoPriorityEnum `json:"io_priority,omitempty"`
 	// Localized message string corresponding to io_priority
 	IoPriorityL10n *string `json:"io_priority_l10n,omitempty"`
 	// List of the policies that are associated with this performance_rule.
 	Policies []PolicyInstance `json:"policies,omitempty"`
 }
+
+

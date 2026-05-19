@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-// NFSExportMinSecurityEnum NFS enforced security type for users accessing an NFS Export. * Sys - Allow the user to authenticate with any NFS security types: UNIX, Kerberos, Kerberos with integrity, or Kerberos with encryption. * Kerberos - Allow only Kerberos security for user authentication. * Kerberos_With_Integrity- Allow only Kerberos with integrity and Kerberos with encryption security for user authentication. * Kerberos_With_Encryption- Allow only Kerberos with encryption security for user authentication.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// NFSExportMinSecurityEnum NFS enforced security type for users accessing an NFS Export. * Sys - Allow the user to authenticate with any NFS security types: UNIX, Kerberos, Kerberos with integrity, or Kerberos with encryption. * Kerberos - Allow only Kerberos security for user authentication. * Kerberos_With_Integrity- Allow only Kerberos with integrity and Kerberos with encryption security for user authentication. * Kerberos_With_Encryption- Allow only Kerberos with encryption security for user authentication. 
 type NFSExportMinSecurityEnum string
 
 // List of NFSExportMinSecurityEnum
 const (
-	NFSEXPORTMINSECURITYENUM_SYS                      NFSExportMinSecurityEnum = "Sys"
-	NFSEXPORTMINSECURITYENUM_KERBEROS                 NFSExportMinSecurityEnum = "Kerberos"
-	NFSEXPORTMINSECURITYENUM_KERBEROS_WITH_INTEGRITY  NFSExportMinSecurityEnum = "Kerberos_With_Integrity"
+	NFSEXPORTMINSECURITYENUM_SYS NFSExportMinSecurityEnum = "Sys"
+	NFSEXPORTMINSECURITYENUM_KERBEROS NFSExportMinSecurityEnum = "Kerberos"
+	NFSEXPORTMINSECURITYENUM_KERBEROS_WITH_INTEGRITY NFSExportMinSecurityEnum = "Kerberos_With_Integrity"
 	NFSEXPORTMINSECURITYENUM_KERBEROS_WITH_ENCRYPTION NFSExportMinSecurityEnum = "Kerberos_With_Encryption"
 )
 
@@ -32,3 +37,4 @@ var AllowedNFSExportMinSecurityEnumEnumValues = []NFSExportMinSecurityEnum{
 func (v *NFSExportMinSecurityEnum) Value() string {
 	return string(*v)
 }
+

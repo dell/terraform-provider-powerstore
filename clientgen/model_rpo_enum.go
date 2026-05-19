@@ -10,19 +10,24 @@ API version: 4.1.0.0
 
 package clientgen
 
-// RPOEnum Recovery point objective (RPO), which is the acceptable amount of data, measured in units of time, that may be lost in case of a failure. When RPO is Zero, it implies synchronous replication. Values are:   * Five_Minutes   * Fifteen_Minutes   * Thirty_Minutes   * One_Hour   * Six_Hours   * Twelve_Hours   * One_Day   * Zero
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// RPOEnum Recovery point objective (RPO), which is the acceptable amount of data, measured in units of time, that may be lost in case of a failure. When RPO is Zero, it implies synchronous replication. Values are:   * Five_Minutes   * Fifteen_Minutes   * Thirty_Minutes   * One_Hour   * Six_Hours   * Twelve_Hours   * One_Day   * Zero 
 type RPOEnum string
 
 // List of RPOEnum
 const (
-	RPOENUM_FIVE_MINUTES    RPOEnum = "Five_Minutes"
+	RPOENUM_FIVE_MINUTES RPOEnum = "Five_Minutes"
 	RPOENUM_FIFTEEN_MINUTES RPOEnum = "Fifteen_Minutes"
-	RPOENUM_THIRTY_MINUTES  RPOEnum = "Thirty_Minutes"
-	RPOENUM_ONE_HOUR        RPOEnum = "One_Hour"
-	RPOENUM_SIX_HOURS       RPOEnum = "Six_Hours"
-	RPOENUM_TWELVE_HOURS    RPOEnum = "Twelve_Hours"
-	RPOENUM_ONE_DAY         RPOEnum = "One_Day"
-	RPOENUM_ZERO            RPOEnum = "Zero"
+	RPOENUM_THIRTY_MINUTES RPOEnum = "Thirty_Minutes"
+	RPOENUM_ONE_HOUR RPOEnum = "One_Hour"
+	RPOENUM_SIX_HOURS RPOEnum = "Six_Hours"
+	RPOENUM_TWELVE_HOURS RPOEnum = "Twelve_Hours"
+	RPOENUM_ONE_DAY RPOEnum = "One_Day"
+	RPOENUM_ZERO RPOEnum = "Zero"
 )
 
 // All allowed values of RPOEnum enum
@@ -40,3 +45,4 @@ var AllowedRPOEnumEnumValues = []RPOEnum{
 func (v *RPOEnum) Value() string {
 	return string(*v)
 }
+

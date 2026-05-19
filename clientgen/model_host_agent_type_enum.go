@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-// HostAgentTypeEnum Type of import host system. Valid values are:  * EQL - EQL MPIO.  * Native_MPIO - Native MPIO.  * Power_Path - POWER PATH MPIO.  * Unknown - Type of host agent is unknown to PowerStore.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// HostAgentTypeEnum Type of import host system. Valid values are:  * EQL - EQL MPIO.  * Native_MPIO - Native MPIO.  * Power_Path - POWER PATH MPIO.  * Unknown - Type of host agent is unknown to PowerStore. 
 type HostAgentTypeEnum string
 
 // List of HostAgentTypeEnum
 const (
-	HOSTAGENTTYPEENUM_EQL         HostAgentTypeEnum = "EQL"
+	HOSTAGENTTYPEENUM_EQL HostAgentTypeEnum = "EQL"
 	HOSTAGENTTYPEENUM_NATIVE_MPIO HostAgentTypeEnum = "Native_MPIO"
-	HOSTAGENTTYPEENUM_POWER_PATH  HostAgentTypeEnum = "Power_Path"
-	HOSTAGENTTYPEENUM_UNKNOWN     HostAgentTypeEnum = "Unknown"
+	HOSTAGENTTYPEENUM_POWER_PATH HostAgentTypeEnum = "Power_Path"
+	HOSTAGENTTYPEENUM_UNKNOWN HostAgentTypeEnum = "Unknown"
 )
 
 // All allowed values of HostAgentTypeEnum enum
@@ -32,3 +37,4 @@ var AllowedHostAgentTypeEnumEnumValues = []HostAgentTypeEnum{
 func (v *HostAgentTypeEnum) Value() string {
 	return string(*v)
 }
+

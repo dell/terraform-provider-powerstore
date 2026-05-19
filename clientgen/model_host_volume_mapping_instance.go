@@ -10,19 +10,26 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // HostVolumeMappingInstance Details about a configured host or host group attached to a volume. The host or host group may not necessarily be connected.  This resource type has queriable associations from host, host_group, volume
 type HostVolumeMappingInstance struct {
 	// Unique identifier of a mapping between a host and a volume.
 	Id *string `json:"id,omitempty"`
-	// Unique identifier of a host attached to a volume. The host_id and host_group_id cannot both be set.
+	// Unique identifier of a host attached to a volume. The host_id and host_group_id cannot both be set. 
 	HostId *string `json:"host_id,omitempty"`
-	// Unique identifier of a host group attached to a volume. The host_id and host_group_id cannot both be set.
+	// Unique identifier of a host group attached to a volume. The host_id and host_group_id cannot both be set. 
 	HostGroupId *string `json:"host_group_id,omitempty"`
 	// Unique identifier of the volume to which the host is attached.
 	VolumeId *string `json:"volume_id,omitempty"`
 	// Logical unit number for the host volume access.
-	LogicalUnitNumber *int32             `json:"logical_unit_number,omitempty"`
-	Host              *HostInstance      `json:"host,omitempty"`
-	HostGroup         *HostGroupInstance `json:"host_group,omitempty"`
-	Volume            *VolumeInstance    `json:"volume,omitempty"`
+	LogicalUnitNumber *int32 `json:"logical_unit_number,omitempty"`
+	Host *HostInstance `json:"host,omitempty"`
+	HostGroup *HostGroupInstance `json:"host_group,omitempty"`
+	Volume *VolumeInstance `json:"volume,omitempty"`
 }
+
+

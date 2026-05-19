@@ -11,16 +11,18 @@ API version: 4.1.0.0
 package clientgen
 
 import (
+	"encoding/json"
 	"time"
 )
 
+
 // VolumeGroupModify Modify volume group request.
 type VolumeGroupModify struct {
-	// New name for the volume group. The name should contain no special HTTP characters and no unprintable characters. Although the case of the name provided is reserved, uniqueness check is case-insensitive, so the same name in two different cases is not considered unique.
+	// New name for the volume group. The name should contain no special HTTP characters and no unprintable characters. Although the case of the name provided is reserved, uniqueness check is case-insensitive, so the same name in two different cases is not considered unique. 
 	Name *string `json:"name,omitempty"`
-	// New description for the volume group. The description should not have any unprintable characters.  If an empty string is specified, the description will be cleared.
+	// New description for the volume group. The description should not have any unprintable characters.  If an empty string is specified, the description will be cleared. 
 	Description *string `json:"description,omitempty"`
-	// A boolean flag to indicate whether snapshot sets of the volume group will be write-order consistent.   This parameter is only valid when modifying a primary or a clone volume group.
+	// A boolean flag to indicate whether snapshot sets of the volume group will be write-order consistent.   This parameter is only valid when modifying a primary or a clone volume group. 
 	IsWriteOrderConsistent *bool `json:"is_write_order_consistent,omitempty"`
 	// Unique identifier of the protection policy to assign to a primary or clone volume group.  If an empty string or null is specified, protection policy will be removed from the volume group.  name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'
 	ProtectionPolicyId *string `json:"protection_policy_id,omitempty"`
@@ -30,8 +32,10 @@ type VolumeGroupModify struct {
 	ExpirationTimestamp *time.Time `json:"expiration_timestamp,omitempty"`
 	// This parameter only applies to snapshots. If true, mark the snapshot as a secure snapshot. An expiration timestamp must also exist or be specified. A secure snapshot can not be unlocked by setting this flag to false.  Was added in version 3.5.0.0.
 	IsSecure *bool `json:"is_secure,omitempty"`
-	// New value for is_replication_destination property. is_replication_destination property of all the volumes in the volume group will be modified to the specified value.   Modification of is_replication will not be transactional in nature. If the command only succeeds in modifying the is_replication_destination property of a subset of volumes, is_replication_destination property for the volume group will be set to true.   Modification of this property is idempotent.   This parameter is only valid when modifying a primary or a clone volume group, only when the volume group is no longer the destination of a replication session, and may only be set to false.
+	// New value for is_replication_destination property. is_replication_destination property of all the volumes in the volume group will be modified to the specified value.   Modification of is_replication will not be transactional in nature. If the command only succeeds in modifying the is_replication_destination property of a subset of volumes, is_replication_destination property for the volume group will be set to true.   Modification of this property is idempotent.   This parameter is only valid when modifying a primary or a clone volume group, only when the volume group is no longer the destination of a replication session, and may only be set to false. 
 	IsReplicationDestination *bool `json:"is_replication_destination,omitempty"`
-	// Normally a replication destination volume group cannot be modified since it is controlled by replication. However, there can be cases where replication has failed or is no longer active and the replication destination volume group needs to be cleaned up.  With the force option, the user will be allowed to remove the protection policy from the replication destination volume group provided that the replication session has never been synchronized.  This parameter defaults to false, if not specified.
+	// Normally a replication destination volume group cannot be modified since it is controlled by replication. However, there can be cases where replication has failed or is no longer active and the replication destination volume group needs to be cleaned up.  With the force option, the user will be allowed to remove the protection policy from the replication destination volume group provided that the replication session has never been synchronized.  This parameter defaults to false, if not specified. 
 	Force *bool `json:"force,omitempty"`
 }
+
+

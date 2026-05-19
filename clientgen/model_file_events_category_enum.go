@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // FileEventsCategoryEnum The category of the setting determines when and whether events for specific protocol operations are sent to the file events pool, and in the case of Pre_Events category, whether the operation is allowed to proceed. The categories are: * Pre_Events - The NAS server sends notification before such protocol                operations occur, and from the response decides whether                to allow the operation to proceed. * Post_Events - The NAS server sends notification after such protocol                 operations occur. * Post_Error_Events - The NAS server sends notification only when such                       protocol operations generate an error.  Was added in version 3.0.0.0.
 type FileEventsCategoryEnum string
 
 // List of FileEventsCategoryEnum
 const (
-	FILEEVENTSCATEGORYENUM_PRE_EVENTS        FileEventsCategoryEnum = "Pre_Events"
-	FILEEVENTSCATEGORYENUM_POST_EVENTS       FileEventsCategoryEnum = "Post_Events"
+	FILEEVENTSCATEGORYENUM_PRE_EVENTS FileEventsCategoryEnum = "Pre_Events"
+	FILEEVENTSCATEGORYENUM_POST_EVENTS FileEventsCategoryEnum = "Post_Events"
 	FILEEVENTSCATEGORYENUM_POST_ERROR_EVENTS FileEventsCategoryEnum = "Post_Error_Events"
 )
 
@@ -30,3 +35,4 @@ var AllowedFileEventsCategoryEnumEnumValues = []FileEventsCategoryEnum{
 func (v *FileEventsCategoryEnum) Value() string {
 	return string(*v)
 }
+

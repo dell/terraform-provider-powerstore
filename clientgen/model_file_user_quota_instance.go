@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // FileUserQuotaInstance This resource type has queriable associations from file_system, file_tree_quota
 type FileUserQuotaInstance struct {
 	// Unique identifier of the user quota.
 	Id *string `json:"id,omitempty"`
 	// Unique identifier of the associated filesystem.
 	FileSystemId *string `json:"file_system_id,omitempty"`
-	// Unique identifier of the associated tree quota. Values are: - null - if the user quota is not within a quota tree. - tree_quota instance id - if the user quota is within a quota tree.
+	// Unique identifier of the associated tree quota. Values are: - null - if the user quota is not within a quota tree. - tree_quota instance id - if the user quota is within a quota tree. 
 	TreeQuotaId *string `json:"tree_quota_id,omitempty"`
 	// Unix user identifier (UID) of the user.
 	Uid *int64 `json:"uid,omitempty"`
@@ -25,18 +30,20 @@ type FileUserQuotaInstance struct {
 	// Windows username. The format is domain\\\\user for the domain user.
 	WindowsName *string `json:"windows_name,omitempty"`
 	// Windows Security Identifier of the user.
-	WindowsSid *string             `json:"windows_sid,omitempty"`
-	State      *FileQuotaStateEnum `json:"state,omitempty"`
+	WindowsSid *string `json:"windows_sid,omitempty"`
+	State *FileQuotaStateEnum `json:"state,omitempty"`
 	// Hard limit of the user quota, in bytes. No hard limit when set to 0. This value can be used to compute amount of space that is consumed without limiting the space.
 	HardLimit *int64 `json:"hard_limit,omitempty"`
 	// Soft limit of the user quota, in bytes. No soft limit when set to 0.
 	SoftLimit *int64 `json:"soft_limit,omitempty"`
-	// Remaining grace period, in seconds, after the soft limit is exceeded:   - 0 - Grace period has already expired   - -1 - No grace period in-progress, or infinite grace period set The grace period of user quotas is set in the file system quota configuration.
+	// Remaining grace period, in seconds, after the soft limit is exceeded:   - 0 - Grace period has already expired   - -1 - No grace period in-progress, or infinite grace period set The grace period of user quotas is set in the file system quota configuration. 
 	RemainingGracePeriod *int32 `json:"remaining_grace_period,omitempty"`
 	// Size currently consumed by the user on the filesystem, in bytes.
 	SizeUsed *int64 `json:"size_used,omitempty"`
 	// Localized message string corresponding to state
-	StateL10n  *string                `json:"state_l10n,omitempty"`
-	FileSystem *FileSystemInstance    `json:"file_system,omitempty"`
-	TreeQuota  *FileTreeQuotaInstance `json:"tree_quota,omitempty"`
+	StateL10n *string `json:"state_l10n,omitempty"`
+	FileSystem *FileSystemInstance `json:"file_system,omitempty"`
+	TreeQuota *FileTreeQuotaInstance `json:"tree_quota,omitempty"`
 }
+
+

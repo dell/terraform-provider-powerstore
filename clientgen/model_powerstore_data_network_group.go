@@ -10,14 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // PowerstoreDataNetworkGroup Group of local and remote PowerStore storage networks to use for configuring data connections for replication data transfers.  Was added in version 4.0.0.0.
 type PowerstoreDataNetworkGroup struct {
-	// Unique identifier of the data network group.
+	// Unique identifier of the data network group. 
 	Id *string `json:"id,omitempty"`
-	// User or system generated name for group of local and remote replication networks.
+	// User or system generated name for group of local and remote replication networks. 
 	Name *string `json:"name,omitempty"`
-	// List of local storage networks that are defined to be used for replication data transfer.
+	// List of local storage networks that are defined to be used for replication data transfer. 
 	LocalPowerstoreNetworks []PowerstoreNetworkInfo `json:"local_powerstore_networks,omitempty"`
-	// List of remote storage networks that are defined to be used for replication data transfer.
+	// List of remote storage networks that are defined to be used for replication data transfer. 
 	RemotePowerstoreNetworks []PowerstoreNetworkInfo `json:"remote_powerstore_networks,omitempty"`
 }
+
+

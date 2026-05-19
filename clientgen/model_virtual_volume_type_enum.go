@@ -10,16 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-// VirtualVolumeTypeEnum The logical type of a virtual volume. Values are: * Primary * Snapshot * Prepared_Snapshot * Clone * Fast_Clone
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// VirtualVolumeTypeEnum The logical type of a virtual volume. Values are: * Primary * Snapshot * Prepared_Snapshot * Clone * Fast_Clone 
 type VirtualVolumeTypeEnum string
 
 // List of VirtualVolumeTypeEnum
 const (
-	VIRTUALVOLUMETYPEENUM_PRIMARY           VirtualVolumeTypeEnum = "Primary"
-	VIRTUALVOLUMETYPEENUM_SNAPSHOT          VirtualVolumeTypeEnum = "Snapshot"
+	VIRTUALVOLUMETYPEENUM_PRIMARY VirtualVolumeTypeEnum = "Primary"
+	VIRTUALVOLUMETYPEENUM_SNAPSHOT VirtualVolumeTypeEnum = "Snapshot"
 	VIRTUALVOLUMETYPEENUM_PREPARED_SNAPSHOT VirtualVolumeTypeEnum = "Prepared_Snapshot"
-	VIRTUALVOLUMETYPEENUM_CLONE             VirtualVolumeTypeEnum = "Clone"
-	VIRTUALVOLUMETYPEENUM_FAST_CLONE        VirtualVolumeTypeEnum = "Fast_Clone"
+	VIRTUALVOLUMETYPEENUM_CLONE VirtualVolumeTypeEnum = "Clone"
+	VIRTUALVOLUMETYPEENUM_FAST_CLONE VirtualVolumeTypeEnum = "Fast_Clone"
 )
 
 // All allowed values of VirtualVolumeTypeEnum enum
@@ -34,3 +39,4 @@ var AllowedVirtualVolumeTypeEnumEnumValues = []VirtualVolumeTypeEnum{
 func (v *VirtualVolumeTypeEnum) Value() string {
 	return string(*v)
 }
+

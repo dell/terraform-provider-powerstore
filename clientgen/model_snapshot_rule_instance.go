@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // SnapshotRuleInstance Snapshot rule instance. Values was added in 3.0.0.0: timezone, is_read_only, is_replica. Values was added in 3.5.0.0: remote_system_id. This resource type has queriable associations from remote_system, remote_snapshot_session, policy
 type SnapshotRuleInstance struct {
 	// Unique identifier of the snapshot rule.
@@ -17,21 +22,21 @@ type SnapshotRuleInstance struct {
 	// Snapshot rule name.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// If set, the unique identifier of the Data Domain remote system to which snaps will be transported. Otherwise, snaps will be taken locally. Was added in version 3.5.0.0.
-	RemoteSystemId *string               `json:"remote_system_id,omitempty"`
-	Interval       *SnapRuleIntervalEnum `json:"interval,omitempty"`
-	// Time of the day to take a daily snapshot, with format \"hh:mm\" using a 24 hour clock. Either the interval parameter or the time_of_day parameter will be set, but not both.
-	TimeOfDay *string       `json:"time_of_day,omitempty"`
-	Timezone  *TimeZoneEnum `json:"timezone,omitempty"`
-	// Days of the week when the snapshot rule should be applied. Days are determined based on the UTC time zone, unless the time_of_day and timezone properties are set.
+	RemoteSystemId *string `json:"remote_system_id,omitempty"`
+	Interval *SnapRuleIntervalEnum `json:"interval,omitempty"`
+	// Time of the day to take a daily snapshot, with format \"hh:mm\" using a 24 hour clock. Either the interval parameter or the time_of_day parameter will be set, but not both. 
+	TimeOfDay *string `json:"time_of_day,omitempty"`
+	Timezone *TimeZoneEnum `json:"timezone,omitempty"`
+	// Days of the week when the snapshot rule should be applied. Days are determined based on the UTC time zone, unless the time_of_day and timezone properties are set. 
 	DaysOfWeek []DaysOfWeekEnum `json:"days_of_week,omitempty"`
-	// Desired snapshot retention period in hours. The system will retain snapshots for this time period.
+	// Desired snapshot retention period in hours. The system will retain snapshots for this time period. 
 	DesiredRetention *int32 `json:"desired_retention,omitempty"`
-	// Indicates whether this is a replica of a snapshot rule on a remote system that is the source of a replication session replicating a storage resource to the local system.
-	IsReplica     *bool              `json:"is_replica,omitempty"`
+	// Indicates whether this is a replica of a snapshot rule on a remote system that is the source of a replication session replicating a storage resource to the local system. 
+	IsReplica *bool `json:"is_replica,omitempty"`
 	NasAccessType *NASAccessTypeEnum `json:"nas_access_type,omitempty"`
 	// Indicates whether this snapshot rule can be modified.  Was added in version 3.0.0.0.
-	IsReadOnly *bool                `json:"is_read_only,omitempty"`
-	ManagedBy  *PolicyManagedByEnum `json:"managed_by,omitempty"`
+	IsReadOnly *bool `json:"is_read_only,omitempty"`
+	ManagedBy *PolicyManagedByEnum `json:"managed_by,omitempty"`
 	// Unique identifier of the managing entity based on the value of the managed_by property, as shown below:   * User - Empty   * Metro - Unique identifier of the remote system where the policy was assigned.   * Replication - Unique identifier of the source remote system.   * VMware_vSphere - Unique identifier of the owning VMware vSphere/vCenter.  Was added in version 3.0.0.0.
 	ManagedById *string `json:"managed_by_id,omitempty"`
 	// Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced. Secure snapshots will only be created for block volumes, volume groups and file systems.  Was added in version 3.5.0.0.
@@ -45,10 +50,12 @@ type SnapshotRuleInstance struct {
 	// Localized message string corresponding to nas_access_type Was added in version 3.0.0.0.
 	NasAccessTypeL10n *string `json:"nas_access_type_l10n,omitempty"`
 	// Localized message string corresponding to managed_by Was added in version 3.0.0.0.
-	ManagedByL10n *string               `json:"managed_by_l10n,omitempty"`
-	RemoteSystem  *RemoteSystemInstance `json:"remote_system,omitempty"`
+	ManagedByL10n *string `json:"managed_by_l10n,omitempty"`
+	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
 	RemoteSnapshotSessions []RemoteSnapshotSessionInstance `json:"remote_snapshot_sessions,omitempty"`
 	// List of the policies that are associated with this snapshot_rule.
 	Policies []PolicyInstance `json:"policies,omitempty"`
 }
+
+

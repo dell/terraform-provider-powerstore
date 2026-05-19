@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-// VolumeBlockSizeEnum Block size of the volume. Valid values are:  * 512_Bytes - 512 byte block size.  * 4K_Bytes - 4096 byte block size.  * Unknown - Block size cannot be determined.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// VolumeBlockSizeEnum Block size of the volume. Valid values are:  * 512_Bytes - 512 byte block size.  * 4K_Bytes - 4096 byte block size.  * Unknown - Block size cannot be determined. 
 type VolumeBlockSizeEnum string
 
 // List of VolumeBlockSizeEnum
 const (
 	VOLUMEBLOCKSIZEENUM__512_BYTES VolumeBlockSizeEnum = "512_Bytes"
 	VOLUMEBLOCKSIZEENUM__4_K_BYTES VolumeBlockSizeEnum = "4K_Bytes"
-	VOLUMEBLOCKSIZEENUM_UNKNOWN    VolumeBlockSizeEnum = "Unknown"
+	VOLUMEBLOCKSIZEENUM_UNKNOWN VolumeBlockSizeEnum = "Unknown"
 )
 
 // All allowed values of VolumeBlockSizeEnum enum
@@ -30,3 +35,4 @@ var AllowedVolumeBlockSizeEnumEnumValues = []VolumeBlockSizeEnum{
 func (v *VolumeBlockSizeEnum) Value() string {
 	return string(*v)
 }
+

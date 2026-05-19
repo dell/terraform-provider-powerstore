@@ -10,10 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // MemberDetailsInstance Details of one member volume and its corresponding snapshot info for volume_group sessions.  Was added in version 3.5.0.0.
 type MemberDetailsInstance struct {
-	// The local member volume unique identifier. For instant_access session, this will be unique identifier of the proxy volume through which remote backup snapshot is accessed.
+	// The local member volume unique identifier. For instant_access session, this will be unique identifier of the proxy volume through which remote backup snapshot is accessed. 
 	VolumeId *string `json:"volume_id,omitempty"`
-	// The unique identifier of the local snapshot of the volume that is being copied to or from. For instant_access session, this will be null.
+	// The unique identifier of the local snapshot of the volume that is being copied to or from. For instant_access session, this will be null. 
 	LocalSnapId *string `json:"local_snap_id,omitempty"`
 }
+
+

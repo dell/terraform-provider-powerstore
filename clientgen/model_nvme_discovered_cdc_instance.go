@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // NvmeDiscoveredCdcInstance Properties of an NVMe Centralized Discovery Controller (CDC). Was added in version 3.0.0.0. This resource type has queriable association from ip_pool_address
 type NvmeDiscoveredCdcInstance struct {
 	// Unique identifier of the CDC.
@@ -21,9 +26,11 @@ type NvmeDiscoveredCdcInstance struct {
 	// TCP port of the CDC.
 	NvmeCdcPort *int32 `json:"nvme_cdc_port,omitempty"`
 	// NVMe Qualified Name of the CDC.
-	NvmeCdcNqn             *string                     `json:"nvme_cdc_nqn,omitempty"`
+	NvmeCdcNqn *string `json:"nvme_cdc_nqn,omitempty"`
 	NvmeCdcConnectionState *NvmeCdcConnectionStateEnum `json:"nvme_cdc_connection_state,omitempty"`
 	// Localized message string corresponding to nvme_cdc_connection_state Was added in version 3.0.0.0.
-	NvmeCdcConnectionStateL10n *string                `json:"nvme_cdc_connection_state_l10n,omitempty"`
-	IpPoolAddress              *IpPoolAddressInstance `json:"ip_pool_address,omitempty"`
+	NvmeCdcConnectionStateL10n *string `json:"nvme_cdc_connection_state_l10n,omitempty"`
+	IpPoolAddress *IpPoolAddressInstance `json:"ip_pool_address,omitempty"`
 }
+
+

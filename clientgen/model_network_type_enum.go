@@ -10,17 +10,22 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // NetworkTypeEnum Network type. * Management - External cluster and appliance management. * Intra_Cluster_Management - Management within the cluster. * Intra_Cluster_Data - Data within the cluster. * Storage - External data transfer. * VMotion - Data movement controlled by VMotion. * File_Mobility - Network for NAS file replication and import control connection.  Values was added in 3.0.0.0: File_Mobility.
 type NetworkTypeEnum string
 
 // List of NetworkTypeEnum
 const (
-	NETWORKTYPEENUM_MANAGEMENT               NetworkTypeEnum = "Management"
+	NETWORKTYPEENUM_MANAGEMENT NetworkTypeEnum = "Management"
 	NETWORKTYPEENUM_INTRA_CLUSTER_MANAGEMENT NetworkTypeEnum = "Intra_Cluster_Management"
-	NETWORKTYPEENUM_INTRA_CLUSTER_DATA       NetworkTypeEnum = "Intra_Cluster_Data"
-	NETWORKTYPEENUM_STORAGE                  NetworkTypeEnum = "Storage"
-	NETWORKTYPEENUM_V_MOTION                 NetworkTypeEnum = "VMotion"
-	NETWORKTYPEENUM_FILE_MOBILITY            NetworkTypeEnum = "File_Mobility"
+	NETWORKTYPEENUM_INTRA_CLUSTER_DATA NetworkTypeEnum = "Intra_Cluster_Data"
+	NETWORKTYPEENUM_STORAGE NetworkTypeEnum = "Storage"
+	NETWORKTYPEENUM_V_MOTION NetworkTypeEnum = "VMotion"
+	NETWORKTYPEENUM_FILE_MOBILITY NetworkTypeEnum = "File_Mobility"
 )
 
 // All allowed values of NetworkTypeEnum enum
@@ -36,3 +41,4 @@ var AllowedNetworkTypeEnumEnumValues = []NetworkTypeEnum{
 func (v *NetworkTypeEnum) Value() string {
 	return string(*v)
 }
+

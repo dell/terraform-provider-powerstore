@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // EthBEPortSpeedEnum Ethernet Backend port transmission speed. * 25_Gbps - 25 Gigabits per second. * 100_Gbps - 100 Gigabits per second.  Was added in version 3.0.0.0.
 type EthBEPortSpeedEnum string
 
 // List of EthBEPortSpeedEnum
 const (
-	ETHBEPORTSPEEDENUM__25_GBPS  EthBEPortSpeedEnum = "25_Gbps"
+	ETHBEPORTSPEEDENUM__25_GBPS EthBEPortSpeedEnum = "25_Gbps"
 	ETHBEPORTSPEEDENUM__100_GBPS EthBEPortSpeedEnum = "100_Gbps"
 )
 
@@ -28,3 +33,4 @@ var AllowedEthBEPortSpeedEnumEnumValues = []EthBEPortSpeedEnum{
 func (v *EthBEPortSpeedEnum) Value() string {
 	return string(*v)
 }
+

@@ -10,18 +10,23 @@ API version: 4.1.0.0
 
 package clientgen
 
-// NASServerOperationalStatusEnum NAS server operational status: * Stopped - NAS server is stopped. * Starting - NAS server is starting. * Started - NAS server is started. * Stopping - NAS server is stopping. * Failover - NAS server has failed over. * Degraded - NAS server is degraded (running without backup). * Unknown - NAS server state is unknown.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// NASServerOperationalStatusEnum NAS server operational status: * Stopped - NAS server is stopped. * Starting - NAS server is starting. * Started - NAS server is started. * Stopping - NAS server is stopping. * Failover - NAS server has failed over. * Degraded - NAS server is degraded (running without backup). * Unknown - NAS server state is unknown. 
 type NASServerOperationalStatusEnum string
 
 // List of NASServerOperationalStatusEnum
 const (
-	NASSERVEROPERATIONALSTATUSENUM_STOPPED  NASServerOperationalStatusEnum = "Stopped"
+	NASSERVEROPERATIONALSTATUSENUM_STOPPED NASServerOperationalStatusEnum = "Stopped"
 	NASSERVEROPERATIONALSTATUSENUM_STARTING NASServerOperationalStatusEnum = "Starting"
-	NASSERVEROPERATIONALSTATUSENUM_STARTED  NASServerOperationalStatusEnum = "Started"
+	NASSERVEROPERATIONALSTATUSENUM_STARTED NASServerOperationalStatusEnum = "Started"
 	NASSERVEROPERATIONALSTATUSENUM_STOPPING NASServerOperationalStatusEnum = "Stopping"
 	NASSERVEROPERATIONALSTATUSENUM_FAILOVER NASServerOperationalStatusEnum = "Failover"
 	NASSERVEROPERATIONALSTATUSENUM_DEGRADED NASServerOperationalStatusEnum = "Degraded"
-	NASSERVEROPERATIONALSTATUSENUM_UNKNOWN  NASServerOperationalStatusEnum = "Unknown"
+	NASSERVEROPERATIONALSTATUSENUM_UNKNOWN NASServerOperationalStatusEnum = "Unknown"
 )
 
 // All allowed values of NASServerOperationalStatusEnum enum
@@ -38,3 +43,4 @@ var AllowedNASServerOperationalStatusEnumEnumValues = []NASServerOperationalStat
 func (v *NASServerOperationalStatusEnum) Value() string {
 	return string(*v)
 }
+

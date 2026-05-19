@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-// VolumeStateEnum Volume life cycle states.  * Ready - Volume is operating normally.  * Initializing - Volume is starting but not yet ready for use.  * Offline - Volume is not available.  * Destroying - Volume is being deleted. No new operations are allowed.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// VolumeStateEnum Volume life cycle states.  * Ready - Volume is operating normally.  * Initializing - Volume is starting but not yet ready for use.  * Offline - Volume is not available.  * Destroying - Volume is being deleted. No new operations are allowed. 
 type VolumeStateEnum string
 
 // List of VolumeStateEnum
 const (
-	VOLUMESTATEENUM_READY        VolumeStateEnum = "Ready"
+	VOLUMESTATEENUM_READY VolumeStateEnum = "Ready"
 	VOLUMESTATEENUM_INITIALIZING VolumeStateEnum = "Initializing"
-	VOLUMESTATEENUM_OFFLINE      VolumeStateEnum = "Offline"
-	VOLUMESTATEENUM_DESTROYING   VolumeStateEnum = "Destroying"
+	VOLUMESTATEENUM_OFFLINE VolumeStateEnum = "Offline"
+	VOLUMESTATEENUM_DESTROYING VolumeStateEnum = "Destroying"
 )
 
 // All allowed values of VolumeStateEnum enum
@@ -32,3 +37,4 @@ var AllowedVolumeStateEnumEnumValues = []VolumeStateEnum{
 func (v *VolumeStateEnum) Value() string {
 	return string(*v)
 }
+

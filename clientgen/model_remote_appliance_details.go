@@ -10,10 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // RemoteApplianceDetails Appliance information.  Was added in version 3.0.0.0.
 type RemoteApplianceDetails struct {
-	// Unique identifier of the appliance.
+	// Unique identifier of the appliance. 
 	ApplianceId *string `json:"appliance_id,omitempty"`
-	// Serial number of the appliance.
+	// Serial number of the appliance. 
 	ApplianceSerial *string `json:"appliance_serial,omitempty"`
 }
+
+

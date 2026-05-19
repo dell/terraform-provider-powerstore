@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // ImportUniversalVolumeInstance An instance of a Universal volume. Was added in version 4.0.0.0. This resource type has queriable association from remote_system
 type ImportUniversalVolumeInstance struct {
 	// Unique identifier of the Universal volume.
@@ -19,16 +24,18 @@ type ImportUniversalVolumeInstance struct {
 	// Name of the Universal volume. During discovery name will come as null from proxy layer and can later be updated by calling Modify Volume API.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// Size of the Universal volume, in bytes.
-	Size      *int64               `json:"size,omitempty"`
+	Size *int64 `json:"size,omitempty"`
 	BlockSize *VolumeBlockSizeEnum `json:"block_size,omitempty"`
-	// Unique identifier of the Remote storage system to which the Universal volume belongs.
-	RemoteSystemId     *string                       `json:"remote_system_id,omitempty"`
+	// Unique identifier of the Remote storage system to which the Universal volume belongs. 
+	RemoteSystemId *string `json:"remote_system_id,omitempty"`
 	ImportableCriteria *VolumeImportableCriteriaEnum `json:"importable_criteria,omitempty"`
-	// Unique identifier of the Universal Consistency Group to which the Universal volume belongs.
+	// Unique identifier of the Universal Consistency Group to which the Universal volume belongs. 
 	ImportUniversalConsistencyGroupId *string `json:"import_universal_consistency_group_id,omitempty"`
 	// Localized message string corresponding to block_size Was added in version 4.0.0.0.
 	BlockSizeL10n *string `json:"block_size_l10n,omitempty"`
 	// Localized message string corresponding to importable_criteria Was added in version 4.0.0.0.
-	ImportableCriteriaL10n *string               `json:"importable_criteria_l10n,omitempty"`
-	RemoteSystem           *RemoteSystemInstance `json:"remote_system,omitempty"`
+	ImportableCriteriaL10n *string `json:"importable_criteria_l10n,omitempty"`
+	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
 }
+
+

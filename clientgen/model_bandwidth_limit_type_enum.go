@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // BandwidthLimitTypeEnum This type setting determines how the max_iops and max_bw attributes are used. * Absolute - Limits are absolute values specified, either I/O operations per second or bandwidth * Density - Limits specified are per GB, e.g. I/O operations per second per GB  Was added in version 4.0.0.0.
 type BandwidthLimitTypeEnum string
 
 // List of BandwidthLimitTypeEnum
 const (
 	BANDWIDTHLIMITTYPEENUM_ABSOLUTE BandwidthLimitTypeEnum = "Absolute"
-	BANDWIDTHLIMITTYPEENUM_DENSITY  BandwidthLimitTypeEnum = "Density"
+	BANDWIDTHLIMITTYPEENUM_DENSITY BandwidthLimitTypeEnum = "Density"
 )
 
 // All allowed values of BandwidthLimitTypeEnum enum
@@ -28,3 +33,4 @@ var AllowedBandwidthLimitTypeEnumEnumValues = []BandwidthLimitTypeEnum{
 func (v *BandwidthLimitTypeEnum) Value() string {
 	return string(*v)
 }
+

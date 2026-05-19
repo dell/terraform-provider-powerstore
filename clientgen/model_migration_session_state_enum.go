@@ -10,25 +10,30 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // MigrationSessionStateEnum Migration session states.  * Initializing - Migration session starts and stays in this state until the session initialization completes.  * Automatic_Rescan_In_Progress - Migration session is rescanning hosts that are capable of being automatically rescanned.  * Manual_Rescan_Required - Migration session has discovered hosts that need to be manually rescanned.  * Initialized - Migration session transitions to this state when session initialization completes and no further rescans are required.  * Synchronizing - Background copy is in progress.  * Idle - Migration session transitions to this state when initial background copy completes.  * Cutting_Over - Final phase of the migration, when ownership of the volume, vVol, or application group is transferred to the new appliance.  * Deleting - Migration session is being deleted.  * Completed - Migration session is complete and it is safe to delete the session.  * Pausing - Migration session transitions to this state when the pause command is issued.  * Paused - Migration session is paused. User intervention is required to resume the session.  * System_Paused - Migration session transitions to this state if it encounters any error. User may resume or delete the migration session after resolving the error.  * Resuming - Migration session background copy being resumed.  * Failed - Migration session encountered an error.  Values was added in 3.0.0.0: Automatic_Rescan_In_Progress, Manual_Rescan_Required.
 type MigrationSessionStateEnum string
 
 // List of MigrationSessionStateEnum
 const (
-	MIGRATIONSESSIONSTATEENUM_INITIALIZING                 MigrationSessionStateEnum = "Initializing"
+	MIGRATIONSESSIONSTATEENUM_INITIALIZING MigrationSessionStateEnum = "Initializing"
 	MIGRATIONSESSIONSTATEENUM_AUTOMATIC_RESCAN_IN_PROGRESS MigrationSessionStateEnum = "Automatic_Rescan_In_Progress"
-	MIGRATIONSESSIONSTATEENUM_MANUAL_RESCAN_REQUIRED       MigrationSessionStateEnum = "Manual_Rescan_Required"
-	MIGRATIONSESSIONSTATEENUM_INITIALIZED                  MigrationSessionStateEnum = "Initialized"
-	MIGRATIONSESSIONSTATEENUM_SYNCHRONIZING                MigrationSessionStateEnum = "Synchronizing"
-	MIGRATIONSESSIONSTATEENUM_IDLE                         MigrationSessionStateEnum = "Idle"
-	MIGRATIONSESSIONSTATEENUM_CUTTING_OVER                 MigrationSessionStateEnum = "Cutting_Over"
-	MIGRATIONSESSIONSTATEENUM_DELETING                     MigrationSessionStateEnum = "Deleting"
-	MIGRATIONSESSIONSTATEENUM_COMPLETED                    MigrationSessionStateEnum = "Completed"
-	MIGRATIONSESSIONSTATEENUM_PAUSING                      MigrationSessionStateEnum = "Pausing"
-	MIGRATIONSESSIONSTATEENUM_PAUSED                       MigrationSessionStateEnum = "Paused"
-	MIGRATIONSESSIONSTATEENUM_SYSTEM_PAUSED                MigrationSessionStateEnum = "System_Paused"
-	MIGRATIONSESSIONSTATEENUM_RESUMING                     MigrationSessionStateEnum = "Resuming"
-	MIGRATIONSESSIONSTATEENUM_FAILED                       MigrationSessionStateEnum = "Failed"
+	MIGRATIONSESSIONSTATEENUM_MANUAL_RESCAN_REQUIRED MigrationSessionStateEnum = "Manual_Rescan_Required"
+	MIGRATIONSESSIONSTATEENUM_INITIALIZED MigrationSessionStateEnum = "Initialized"
+	MIGRATIONSESSIONSTATEENUM_SYNCHRONIZING MigrationSessionStateEnum = "Synchronizing"
+	MIGRATIONSESSIONSTATEENUM_IDLE MigrationSessionStateEnum = "Idle"
+	MIGRATIONSESSIONSTATEENUM_CUTTING_OVER MigrationSessionStateEnum = "Cutting_Over"
+	MIGRATIONSESSIONSTATEENUM_DELETING MigrationSessionStateEnum = "Deleting"
+	MIGRATIONSESSIONSTATEENUM_COMPLETED MigrationSessionStateEnum = "Completed"
+	MIGRATIONSESSIONSTATEENUM_PAUSING MigrationSessionStateEnum = "Pausing"
+	MIGRATIONSESSIONSTATEENUM_PAUSED MigrationSessionStateEnum = "Paused"
+	MIGRATIONSESSIONSTATEENUM_SYSTEM_PAUSED MigrationSessionStateEnum = "System_Paused"
+	MIGRATIONSESSIONSTATEENUM_RESUMING MigrationSessionStateEnum = "Resuming"
+	MIGRATIONSESSIONSTATEENUM_FAILED MigrationSessionStateEnum = "Failed"
 )
 
 // All allowed values of MigrationSessionStateEnum enum
@@ -52,3 +57,4 @@ var AllowedMigrationSessionStateEnumEnumValues = []MigrationSessionStateEnum{
 func (v *MigrationSessionStateEnum) Value() string {
 	return string(*v)
 }
+

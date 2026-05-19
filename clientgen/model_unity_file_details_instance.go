@@ -10,8 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // UnityFileDetailsInstance Unity file details to register with Powerstore as a remote system for file import.  Was added in version 4.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 type UnityFileDetailsInstance struct {
-	// User-specified Unity service account username. service account is preferred for file import.
+	// User-specified Unity service account username. service account is preferred for file import. 
 	ServiceAccountUsername *string `json:"service_account_username,omitempty"`
 }
+
+

@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-// RemoteSystemChapModeEnum Challenge Handshake Authentication Protocol (CHAP) status: * Disabled      * Single       - Enabled for initiator authentication. * Mutual       - Enabled for initiator and target authentication.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// RemoteSystemChapModeEnum Challenge Handshake Authentication Protocol (CHAP) status: * Disabled      * Single       - Enabled for initiator authentication. * Mutual       - Enabled for initiator and target authentication. 
 type RemoteSystemChapModeEnum string
 
 // List of RemoteSystemChapModeEnum
 const (
 	REMOTESYSTEMCHAPMODEENUM_DISABLED RemoteSystemChapModeEnum = "Disabled"
-	REMOTESYSTEMCHAPMODEENUM_SINGLE   RemoteSystemChapModeEnum = "Single"
-	REMOTESYSTEMCHAPMODEENUM_MUTUAL   RemoteSystemChapModeEnum = "Mutual"
+	REMOTESYSTEMCHAPMODEENUM_SINGLE RemoteSystemChapModeEnum = "Single"
+	REMOTESYSTEMCHAPMODEENUM_MUTUAL RemoteSystemChapModeEnum = "Mutual"
 )
 
 // All allowed values of RemoteSystemChapModeEnum enum
@@ -30,3 +35,4 @@ var AllowedRemoteSystemChapModeEnumEnumValues = []RemoteSystemChapModeEnum{
 func (v *RemoteSystemChapModeEnum) Value() string {
 	return string(*v)
 }
+

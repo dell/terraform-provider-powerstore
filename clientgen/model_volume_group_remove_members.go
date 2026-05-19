@@ -10,8 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // VolumeGroupRemoveMembers Request to remove members from a volume group.
 type VolumeGroupRemoveMembers struct {
-	// A list of volumes that need to be removed from the volume group. This list cannot be empty.
+	// A list of volumes that need to be removed from the volume group. This list cannot be empty. 
 	VolumeIds []string `json:"volume_ids"`
 }
+
+

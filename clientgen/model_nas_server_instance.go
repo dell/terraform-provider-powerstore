@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // NasServerInstance This resource type has queriable associations from policy, file_interface, file_ndmp, file_virus_checker, nfs_server, smb_server, file_dns, file_ftp, file_kerberos, file_ldap, file_nis, file_system, file_dhsm_config, file_events_publisher
 type NasServerInstance struct {
 	// Unique identifier of the NAS server.
@@ -17,7 +22,7 @@ type NasServerInstance struct {
 	// Name of the NAS server.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// Description of the NAS server.
-	Description       *string                         `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 	OperationalStatus *NASServerOperationalStatusEnum `json:"operational_status,omitempty"`
 	// Unique identifier of the node on which the NAS server is running.
 	CurrentNodeId *string `json:"current_node_id,omitempty"`
@@ -26,11 +31,11 @@ type NasServerInstance struct {
 	// Default Unix user name used for granting access in case of Windows to Unix user mapping failure. When empty, access in such case is denied.
 	DefaultUnixUser *string `json:"default_unix_user,omitempty"`
 	// Default Windows user name used for granting access in case of Unix to Windows user mapping failure. When empty, access in such case is denied.
-	DefaultWindowsUser          *string                                   `json:"default_windows_user,omitempty"`
+	DefaultWindowsUser *string `json:"default_windows_user,omitempty"`
 	CurrentUnixDirectoryService *NASServerCurrentUnixDirectoryServiceEnum `json:"current_unix_directory_service,omitempty"`
 	// Enable the possibility to match a windows account to a Unix account with different names.
 	IsUsernameTranslationEnabled *bool `json:"is_username_translation_enabled,omitempty"`
-	// A Windows user must have a corresponding matching Unix user (uid) in order to connect. This attribute enables you to automatically generate this Unix user (uid), if that Windows user does not have any in the configured Unix directory service (UDS). In a pure SMB or non multi-protocol environment, this should be set to true.
+	// A Windows user must have a corresponding matching Unix user (uid) in order to connect. This attribute enables you to automatically generate this Unix user (uid), if that Windows user does not have any in the configured Unix directory service (UDS). In a pure SMB or non multi-protocol environment, this should be set to true. 
 	IsAutoUserMappingEnabled *bool `json:"is_auto_user_mapping_enabled,omitempty"`
 	// Unique identifier of the preferred IPv4 production interface.
 	ProductionIPv4InterfaceId *string `json:"production_IPv4_interface_id,omitempty"`
@@ -47,7 +52,7 @@ type NasServerInstance struct {
 	// Id of the protection policy applied to the nas server. Was added in version 3.0.0.0.
 	ProtectionPolicyId *string `json:"protection_policy_id,omitempty"`
 	// Unique identifier of a File_Performance type policy applied to the nas_server. If not set, there is no performance policy governing the nas_server.  Was added in version 4.1.0.0.
-	PerformancePolicyId      *string                       `json:"performance_policy_id,omitempty"`
+	PerformancePolicyId *string `json:"performance_policy_id,omitempty"`
 	FileEventsPublishingMode *FileEventsPublishingModeEnum `json:"file_events_publishing_mode,omitempty"`
 	// Indicates whether this NAS Server is a replication destination. A replication destination will be created by the system when a replication session is created. After the replication session is deleted, the replication destination will remain as it is until the end user changes it to be a non-replication destination. After the change, it becomes a production NAS server. If the end user keeps it as a replication destination, when the replication session is recreated, the replication destination NAS server could potentially be reused in the new session.  Was added in version 3.0.0.0.
 	IsReplicationDestination *bool `json:"is_replication_destination,omitempty"`
@@ -60,9 +65,9 @@ type NasServerInstance struct {
 	// Localized message string corresponding to current_unix_directory_service
 	CurrentUnixDirectoryServiceL10n *string `json:"current_unix_directory_service_l10n,omitempty"`
 	// Localized message string corresponding to file_events_publishing_mode Was added in version 3.0.0.0.
-	FileEventsPublishingModeL10n *string         `json:"file_events_publishing_mode_l10n,omitempty"`
-	ProtectionPolicy             *PolicyInstance `json:"protection_policy,omitempty"`
-	PerformancePolicy            *PolicyInstance `json:"performance_policy,omitempty"`
+	FileEventsPublishingModeL10n *string `json:"file_events_publishing_mode_l10n,omitempty"`
+	ProtectionPolicy *PolicyInstance `json:"protection_policy,omitempty"`
+	PerformancePolicy *PolicyInstance `json:"performance_policy,omitempty"`
 	// This is the inverse of the resource type file_interface association.
 	FileInterfaces []FileInterfaceInstance `json:"file_interfaces,omitempty"`
 	// This is the inverse of the resource type file_ndmp association.
@@ -90,3 +95,5 @@ type NasServerInstance struct {
 	// List of the file_events_publishers that are associated with this nas_server.
 	FileEventsPublishers []FileEventsPublisherInstance `json:"file_events_publishers,omitempty"`
 }
+
+

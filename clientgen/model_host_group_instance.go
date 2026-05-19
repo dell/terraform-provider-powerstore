@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // HostGroupInstance Properties of a host group. This resource type has queriable associations from host, host_volume_mapping, host_virtual_volume_mapping
 type HostGroupInstance struct {
 	// The host group unique identifier.
@@ -17,7 +22,7 @@ type HostGroupInstance struct {
 	// The host group name.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// A description for the host group.
-	Description      *string               `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 	HostConnectivity *HostConnectivityEnum `json:"host_connectivity,omitempty"`
 	// Localized message string corresponding to host_connectivity Was added in version 3.0.0.0.
 	HostConnectivityL10n *string `json:"host_connectivity_l10n,omitempty"`
@@ -28,3 +33,5 @@ type HostGroupInstance struct {
 	// This is the inverse of the resource type host_virtual_volume_mapping association.
 	HostVirtualVolumeMappings []HostVirtualVolumeMappingInstance `json:"host_virtual_volume_mappings,omitempty"`
 }
+
+

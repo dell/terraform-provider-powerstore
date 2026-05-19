@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-// HAOSTypeEnum Operating system of the import host system. Valid values are:  * Windows - Windows.  * Linux - Linux.  * ESXi - ESXi.  * Unknown - Operating system of the host system is unknown to PowerStore.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// HAOSTypeEnum Operating system of the import host system. Valid values are:  * Windows - Windows.  * Linux - Linux.  * ESXi - ESXi.  * Unknown - Operating system of the host system is unknown to PowerStore. 
 type HAOSTypeEnum string
 
 // List of HAOSTypeEnum
 const (
 	HAOSTYPEENUM_WINDOWS HAOSTypeEnum = "Windows"
-	HAOSTYPEENUM_LINUX   HAOSTypeEnum = "Linux"
-	HAOSTYPEENUM_ESXI    HAOSTypeEnum = "ESXi"
+	HAOSTYPEENUM_LINUX HAOSTypeEnum = "Linux"
+	HAOSTYPEENUM_ESXI HAOSTypeEnum = "ESXi"
 	HAOSTYPEENUM_UNKNOWN HAOSTypeEnum = "Unknown"
 )
 
@@ -32,3 +37,4 @@ var AllowedHAOSTypeEnumEnumValues = []HAOSTypeEnum{
 func (v *HAOSTypeEnum) Value() string {
 	return string(*v)
 }
+

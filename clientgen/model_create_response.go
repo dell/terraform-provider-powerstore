@@ -10,8 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-// CreateResponse Create response for an operation.
+import (
+	"encoding/json"
+)
+
+
+// CreateResponse Create response for an operation. 
 type CreateResponse struct {
 	// Unique identifier of the new instance created.
 	Id *string `json:"id,omitempty"`
 }
+
+

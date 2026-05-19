@@ -10,8 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // FileLdapInstanceSourceParameters Information about the corresponding source NAS Server's File LDAP settings. Only populated when is_destination_override_enabled flag is set to true. Was added in version 3.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 type FileLdapInstanceSourceParameters struct {
 	// The list of LDAP server IP addresses. The addresses may be IPv4 or IPv6.
 	Addresses []string `json:"addresses,omitempty"`
 }
+
+

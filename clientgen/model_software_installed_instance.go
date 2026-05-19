@@ -11,8 +11,10 @@ API version: 4.1.0.0
 package clientgen
 
 import (
+	"encoding/json"
 	"time"
 )
+
 
 // SoftwareInstalledInstance Summary of the software packages that are installed on each appliance, or on the cluster as a whole.
 type SoftwareInstalledInstance struct {
@@ -27,14 +29,16 @@ type SoftwareInstalledInstance struct {
 	// Date and time when this software package was produced.
 	ReleaseTimestamp *time.Time `json:"release_timestamp,omitempty"`
 	// Date and time when the software was successfully installed and committed on the cluster. If the software package has not been commited, this value is null.
-	InstalledDate *time.Time                        `json:"installed_date,omitempty"`
-	BuildFlavor   *SoftwareInstalledBuildFlavorEnum `json:"build_flavor,omitempty"`
-	BuildType     *SoftwareInstalledBuildTypeEnum   `json:"build_type,omitempty"`
+	InstalledDate *time.Time `json:"installed_date,omitempty"`
+	BuildFlavor *SoftwareInstalledBuildFlavorEnum `json:"build_flavor,omitempty"`
+	BuildType *SoftwareInstalledBuildTypeEnum `json:"build_type,omitempty"`
 	// Unique identifier of this build. Was added in version 2.0.0.0.
 	BuildId *string `json:"build_id,omitempty"`
 	// Localized message string corresponding to build_flavor Was added in version 2.0.0.0.
 	BuildFlavorL10n *string `json:"build_flavor_l10n,omitempty"`
 	// Localized message string corresponding to build_type Was added in version 2.0.0.0.
-	BuildTypeL10n *string            `json:"build_type_l10n,omitempty"`
-	Appliance     *ApplianceInstance `json:"appliance,omitempty"`
+	BuildTypeL10n *string `json:"build_type_l10n,omitempty"`
+	Appliance *ApplianceInstance `json:"appliance,omitempty"`
 }
+
+

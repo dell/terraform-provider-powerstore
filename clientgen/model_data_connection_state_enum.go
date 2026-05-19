@@ -10,18 +10,23 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // DataConnectionStateEnum Possible data connection states of a remote system: * OK                             - Normal conditions. * Partial_Data_Connection_Loss   - Partial data connection loss. * Complete_Data_Connection_Loss  - Complete data connection loss. * Status_Not_Available           - Status not available. * No_Targets_Discovered          - No targets discovered. * Initializing                   - Initializing * Data_Connection_Unstable       - Data_Connection_Unstable  Values was added in 4.0.0.0: Data_Connection_Unstable.
 type DataConnectionStateEnum string
 
 // List of DataConnectionStateEnum
 const (
-	DATACONNECTIONSTATEENUM_OK                            DataConnectionStateEnum = "OK"
-	DATACONNECTIONSTATEENUM_PARTIAL_DATA_CONNECTION_LOSS  DataConnectionStateEnum = "Partial_Data_Connection_Loss"
+	DATACONNECTIONSTATEENUM_OK DataConnectionStateEnum = "OK"
+	DATACONNECTIONSTATEENUM_PARTIAL_DATA_CONNECTION_LOSS DataConnectionStateEnum = "Partial_Data_Connection_Loss"
 	DATACONNECTIONSTATEENUM_COMPLETE_DATA_CONNECTION_LOSS DataConnectionStateEnum = "Complete_Data_Connection_Loss"
-	DATACONNECTIONSTATEENUM_STATUS_NOT_AVAILABLE          DataConnectionStateEnum = "Status_Not_Available"
-	DATACONNECTIONSTATEENUM_NO_TARGETS_DISCOVERED         DataConnectionStateEnum = "No_Targets_Discovered"
-	DATACONNECTIONSTATEENUM_INITIALIZING                  DataConnectionStateEnum = "Initializing"
-	DATACONNECTIONSTATEENUM_DATA_CONNECTION_UNSTABLE      DataConnectionStateEnum = "Data_Connection_Unstable"
+	DATACONNECTIONSTATEENUM_STATUS_NOT_AVAILABLE DataConnectionStateEnum = "Status_Not_Available"
+	DATACONNECTIONSTATEENUM_NO_TARGETS_DISCOVERED DataConnectionStateEnum = "No_Targets_Discovered"
+	DATACONNECTIONSTATEENUM_INITIALIZING DataConnectionStateEnum = "Initializing"
+	DATACONNECTIONSTATEENUM_DATA_CONNECTION_UNSTABLE DataConnectionStateEnum = "Data_Connection_Unstable"
 )
 
 // All allowed values of DataConnectionStateEnum enum
@@ -38,3 +43,4 @@ var AllowedDataConnectionStateEnumEnumValues = []DataConnectionStateEnum{
 func (v *DataConnectionStateEnum) Value() string {
 	return string(*v)
 }
+

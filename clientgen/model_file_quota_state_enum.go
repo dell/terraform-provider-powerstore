@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-// FileQuotaStateEnum State of the user quota or tree quota record period. * Ok - No quota limits are exceeded. * Soft_Exceeded - Soft limit is exceeded, and grace period is not expired. * Soft_Exceeded_And_Expired - Soft limit is exceeded, and grace period is expired. * Hard_Reached - Hard limit is reached.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// FileQuotaStateEnum State of the user quota or tree quota record period. * Ok - No quota limits are exceeded. * Soft_Exceeded - Soft limit is exceeded, and grace period is not expired. * Soft_Exceeded_And_Expired - Soft limit is exceeded, and grace period is expired. * Hard_Reached - Hard limit is reached. 
 type FileQuotaStateEnum string
 
 // List of FileQuotaStateEnum
 const (
-	FILEQUOTASTATEENUM_OK                        FileQuotaStateEnum = "Ok"
-	FILEQUOTASTATEENUM_SOFT_EXCEEDED             FileQuotaStateEnum = "Soft_Exceeded"
+	FILEQUOTASTATEENUM_OK FileQuotaStateEnum = "Ok"
+	FILEQUOTASTATEENUM_SOFT_EXCEEDED FileQuotaStateEnum = "Soft_Exceeded"
 	FILEQUOTASTATEENUM_SOFT_EXCEEDED_AND_EXPIRED FileQuotaStateEnum = "Soft_Exceeded_And_Expired"
-	FILEQUOTASTATEENUM_HARD_REACHED              FileQuotaStateEnum = "Hard_Reached"
+	FILEQUOTASTATEENUM_HARD_REACHED FileQuotaStateEnum = "Hard_Reached"
 )
 
 // All allowed values of FileQuotaStateEnum enum
@@ -32,3 +37,4 @@ var AllowedFileQuotaStateEnumEnumValues = []FileQuotaStateEnum{
 func (v *FileQuotaStateEnum) Value() string {
 	return string(*v)
 }
+

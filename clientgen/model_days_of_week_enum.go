@@ -10,18 +10,23 @@ API version: 4.1.0.0
 
 package clientgen
 
-// DaysOfWeekEnum Days of the week. Values are: * Monday * Tuesday * Wednesday * Thursday * Friday * Saturday * Sunday
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// DaysOfWeekEnum Days of the week. Values are: * Monday * Tuesday * Wednesday * Thursday * Friday * Saturday * Sunday 
 type DaysOfWeekEnum string
 
 // List of DaysOfWeekEnum
 const (
-	DAYSOFWEEKENUM_MONDAY    DaysOfWeekEnum = "Monday"
-	DAYSOFWEEKENUM_TUESDAY   DaysOfWeekEnum = "Tuesday"
+	DAYSOFWEEKENUM_MONDAY DaysOfWeekEnum = "Monday"
+	DAYSOFWEEKENUM_TUESDAY DaysOfWeekEnum = "Tuesday"
 	DAYSOFWEEKENUM_WEDNESDAY DaysOfWeekEnum = "Wednesday"
-	DAYSOFWEEKENUM_THURSDAY  DaysOfWeekEnum = "Thursday"
-	DAYSOFWEEKENUM_FRIDAY    DaysOfWeekEnum = "Friday"
-	DAYSOFWEEKENUM_SATURDAY  DaysOfWeekEnum = "Saturday"
-	DAYSOFWEEKENUM_SUNDAY    DaysOfWeekEnum = "Sunday"
+	DAYSOFWEEKENUM_THURSDAY DaysOfWeekEnum = "Thursday"
+	DAYSOFWEEKENUM_FRIDAY DaysOfWeekEnum = "Friday"
+	DAYSOFWEEKENUM_SATURDAY DaysOfWeekEnum = "Saturday"
+	DAYSOFWEEKENUM_SUNDAY DaysOfWeekEnum = "Sunday"
 )
 
 // All allowed values of DaysOfWeekEnum enum
@@ -38,3 +43,4 @@ var AllowedDaysOfWeekEnumEnumValues = []DaysOfWeekEnum{
 func (v *DaysOfWeekEnum) Value() string {
 	return string(*v)
 }
+

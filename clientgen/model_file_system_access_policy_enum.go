@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-// FileSystemAccessPolicyEnum File system security access policies. Each file system uses its access policy to determine how to reconcile the differences between NFS and SMB access control. Selecting an access policy determines which mechanism is used to enforce file security on the particular file system.  * Native - Native Security.  * UNIX - UNIX Security.  * Windows - Windows Security.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// FileSystemAccessPolicyEnum File system security access policies. Each file system uses its access policy to determine how to reconcile the differences between NFS and SMB access control. Selecting an access policy determines which mechanism is used to enforce file security on the particular file system.  * Native - Native Security.  * UNIX - UNIX Security.  * Windows - Windows Security. 
 type FileSystemAccessPolicyEnum string
 
 // List of FileSystemAccessPolicyEnum
 const (
-	FILESYSTEMACCESSPOLICYENUM_NATIVE  FileSystemAccessPolicyEnum = "Native"
-	FILESYSTEMACCESSPOLICYENUM_UNIX    FileSystemAccessPolicyEnum = "UNIX"
+	FILESYSTEMACCESSPOLICYENUM_NATIVE FileSystemAccessPolicyEnum = "Native"
+	FILESYSTEMACCESSPOLICYENUM_UNIX FileSystemAccessPolicyEnum = "UNIX"
 	FILESYSTEMACCESSPOLICYENUM_WINDOWS FileSystemAccessPolicyEnum = "Windows"
 )
 
@@ -30,3 +35,4 @@ var AllowedFileSystemAccessPolicyEnumEnumValues = []FileSystemAccessPolicyEnum{
 func (v *FileSystemAccessPolicyEnum) Value() string {
 	return string(*v)
 }
+

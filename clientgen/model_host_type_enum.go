@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // HostTypeEnum Type of host. Defaults to external, so normal clients can only create external hosts. * External - A host that is not part of the PowerStore hardware. * Internal - ESXi host running on the PowerStore+ hardware. Not applicable for SAN only deployments. Internal hosts are read-only and managed automatically by the system.  Was added in version 2.0.0.0.
 type HostTypeEnum string
 
@@ -28,3 +33,4 @@ var AllowedHostTypeEnumEnumValues = []HostTypeEnum{
 func (v *HostTypeEnum) Value() string {
 	return string(*v)
 }
+

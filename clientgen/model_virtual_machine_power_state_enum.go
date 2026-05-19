@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // VirtualMachinePowerStateEnum The current power state of the VM in vCenter. Not applicable to VM snapshots. * Powered_Off - VM is currently powered off. * Powered_On - VM is currently powered on. * Suspended - VM is currently suspended.  Was added in version 3.0.0.0.
 type VirtualMachinePowerStateEnum string
 
 // List of VirtualMachinePowerStateEnum
 const (
 	VIRTUALMACHINEPOWERSTATEENUM_POWERED_OFF VirtualMachinePowerStateEnum = "Powered_Off"
-	VIRTUALMACHINEPOWERSTATEENUM_POWERED_ON  VirtualMachinePowerStateEnum = "Powered_On"
-	VIRTUALMACHINEPOWERSTATEENUM_SUSPENDED   VirtualMachinePowerStateEnum = "Suspended"
+	VIRTUALMACHINEPOWERSTATEENUM_POWERED_ON VirtualMachinePowerStateEnum = "Powered_On"
+	VIRTUALMACHINEPOWERSTATEENUM_SUSPENDED VirtualMachinePowerStateEnum = "Suspended"
 )
 
 // All allowed values of VirtualMachinePowerStateEnum enum
@@ -30,3 +35,4 @@ var AllowedVirtualMachinePowerStateEnumEnumValues = []VirtualMachinePowerStateEn
 func (v *VirtualMachinePowerStateEnum) Value() string {
 	return string(*v)
 }
+

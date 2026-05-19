@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // ApplianceInstance Properties of an appliance. This resource type has queriable associations from node, ip_pool_address, fsn, veth_port, virtual_volume, maintenance_window, fc_port, sas_port, eth_port, eth_be_port, software_installed, hardware, volume
 type ApplianceInstance struct {
 	// Unique identifier of the appliance.
@@ -21,12 +26,12 @@ type ApplianceInstance struct {
 	// Express Service Code.
 	ExpressServiceCode *string `json:"express_service_code,omitempty"`
 	// Model of the appliance.
-	Model *string            `json:"model,omitempty"`
-	Mode  *ApplianceModeEnum `json:"mode,omitempty"`
+	Model *string `json:"model,omitempty"`
+	Mode *ApplianceModeEnum `json:"mode,omitempty"`
 	// The number of nodes deployed on an appliance. Was added in version 3.0.0.0.
-	NodeCount                  *int32                          `json:"node_count,omitempty"`
+	NodeCount *int32 `json:"node_count,omitempty"`
 	DriveFailureToleranceLevel *DriveFailureToleranceLevelEnum `json:"drive_failure_tolerance_level,omitempty"`
-	StorageClass               *ApplianceStorageClassEnum      `json:"storage_class,omitempty"`
+	StorageClass *ApplianceStorageClassEnum `json:"storage_class,omitempty"`
 	// Is this a HyperConverged Appliance Was added in version 3.2.0.0.
 	IsHyperConverged *bool `json:"is_hyper_converged,omitempty"`
 	// Localized message string corresponding to mode Was added in version 4.0.0.0.
@@ -62,3 +67,5 @@ type ApplianceInstance struct {
 	// This is the inverse of the resource type volume association.
 	Volumes []VolumeInstance `json:"volumes,omitempty"`
 }
+
+

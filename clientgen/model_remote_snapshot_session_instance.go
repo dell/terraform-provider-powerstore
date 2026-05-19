@@ -11,18 +11,20 @@ API version: 4.1.0.0
 package clientgen
 
 import (
+	"encoding/json"
 	"time"
 )
+
 
 // RemoteSnapshotSessionInstance Information about a remote snapshot session. Was added in version 3.5.0.0. This resource type has queriable associations from remote_system, volume, volume_group, remote_snapshot, snapshot_rule
 type RemoteSnapshotSessionInstance struct {
 	// Unique identifier of the remote snapshot session.
 	Id *string `json:"id,omitempty"`
 	// System-specified name of the remote snapshot session.  This property supports case-insensitive filtering.
-	Name         *string                         `json:"name,omitempty"`
-	SessionType  *RemoteSnapshotSessionTypeEnum  `json:"session_type,omitempty"`
+	Name *string `json:"name,omitempty"`
+	SessionType *RemoteSnapshotSessionTypeEnum `json:"session_type,omitempty"`
 	ResourceType *RemoteSnapshotResourceTypeEnum `json:"resource_type,omitempty"`
-	State        *RemoteSnapshotSessionStateEnum `json:"state,omitempty"`
+	State *RemoteSnapshotSessionStateEnum `json:"state,omitempty"`
 	// Unique identifier of the remote system.
 	RemoteSystemId *string `json:"remote_system_id,omitempty"`
 	// ID of the volume to which this session belongs.
@@ -56,9 +58,9 @@ type RemoteSnapshotSessionInstance struct {
 	// Unique identifier of the corresponding session on the remote system.
 	RemoteSessionId *string `json:"remote_session_id,omitempty"`
 	// For backup type session, the timestamp of the most recent snapshot successfully copied to the remote system.
-	LastBackupTimestamp *time.Time                     `json:"last_backup_timestamp,omitempty"`
-	CreatorType         *RemoteSnapshotCreatorTypeEnum `json:"creator_type,omitempty"`
-	Error               *ErrorInstance                 `json:"error,omitempty"`
+	LastBackupTimestamp *time.Time `json:"last_backup_timestamp,omitempty"`
+	CreatorType *RemoteSnapshotCreatorTypeEnum `json:"creator_type,omitempty"`
+	Error *ErrorInstance `json:"error,omitempty"`
 	// Localized message string corresponding to session_type Was added in version 3.5.0.0.
 	SessionTypeL10n *string `json:"session_type_l10n,omitempty"`
 	// Localized message string corresponding to resource_type Was added in version 3.5.0.0.
@@ -66,12 +68,14 @@ type RemoteSnapshotSessionInstance struct {
 	// Localized message string corresponding to state Was added in version 3.5.0.0.
 	StateL10n *string `json:"state_l10n,omitempty"`
 	// Localized message string corresponding to creator_type Was added in version 3.5.0.0.
-	CreatorTypeL10n          *string                 `json:"creator_type_l10n,omitempty"`
-	RemoteSystem             *RemoteSystemInstance   `json:"remote_system,omitempty"`
-	Volume                   *VolumeInstance         `json:"volume,omitempty"`
-	VolumeGroup              *VolumeGroupInstance    `json:"volume_group,omitempty"`
-	RemoteSnapshot           *RemoteSnapshotInstance `json:"remote_snapshot,omitempty"`
-	Rule                     *SnapshotRuleInstance   `json:"rule,omitempty"`
-	LocalVolumeSnapshot      *VolumeInstance         `json:"local_volume_snapshot,omitempty"`
-	LocalVolumeGroupSnapshot *VolumeGroupInstance    `json:"local_volume_group_snapshot,omitempty"`
+	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
+	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
+	Volume *VolumeInstance `json:"volume,omitempty"`
+	VolumeGroup *VolumeGroupInstance `json:"volume_group,omitempty"`
+	RemoteSnapshot *RemoteSnapshotInstance `json:"remote_snapshot,omitempty"`
+	Rule *SnapshotRuleInstance `json:"rule,omitempty"`
+	LocalVolumeSnapshot *VolumeInstance `json:"local_volume_snapshot,omitempty"`
+	LocalVolumeGroupSnapshot *VolumeGroupInstance `json:"local_volume_group_snapshot,omitempty"`
 }
+
+

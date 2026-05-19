@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // NetworkInstance Properties of the network. Values was added in 2.0.0.0: name, purposes. Values was added in 3.0.0.0: nvme_discovery_mode, nvme_cdc_address, nvme_cdc_port. This resource type has queriable association from ip_pool_address
 type NetworkInstance struct {
 	// Unique identifier of the network.
-	Id   *string          `json:"id,omitempty"`
+	Id *string `json:"id,omitempty"`
 	Type *NetworkTypeEnum `json:"type,omitempty"`
 	// Name of the network.  This property supports case-insensitive filtering. Was added in version 2.0.0.0.
-	Name      *string            `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 	IpVersion *IpVersionTypeEnum `json:"ip_version,omitempty"`
 	// Purposes of the network. This returns a list of purposes for the networks that support multiple purposes per network, like storage network. Empty list is returned for single purposed networks, like management, vMotion, ICD and ICM.  Was added in version 2.0.0.0.
 	Purposes []NetworkPurposeEnum `json:"purposes,omitempty"`
@@ -27,7 +32,7 @@ type NetworkInstance struct {
 	// Network gateway in IPv4 or IPv6 format, corresponding to the network's IP version.
 	Gateway *string `json:"gateway,omitempty"`
 	// Maximum Transmission Unit (MTU) packet size set on network interfaces, in bytes.
-	Mtu               *int32                 `json:"mtu,omitempty"`
+	Mtu *int32 `json:"mtu,omitempty"`
 	NvmeDiscoveryMode *NVMeDiscoveryModeEnum `json:"nvme_discovery_mode,omitempty"`
 	// IP address of the NVMe Centralized Discovery Controller (CDC). This is only applicable if network contains NVMe_TCP among its purposes, and nvme_discovery_mode is set to Manual_CDC.  Was added in version 3.0.0.0.
 	NvmeCdcAddress *string `json:"nvme_cdc_address,omitempty"`
@@ -44,3 +49,5 @@ type NetworkInstance struct {
 	// This is the inverse of the resource type ip_pool_address association.
 	IpPoolAddresses []IpPoolAddressInstance `json:"ip_pool_addresses,omitempty"`
 }
+
+

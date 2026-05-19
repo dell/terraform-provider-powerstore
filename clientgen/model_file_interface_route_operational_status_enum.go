@@ -10,16 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-// FileInterfaceRouteOperationalStatusEnum File interface route operational status: * Ok - The route is working fine. * Invalid_IP_Version - Source interfaces have a different IP protocol version than the route. * Invalid_Source_Interface - No source interfaces set up on the system. * Invalid_Gateway - Source interfaces in a different subnet than the gateway. * Not_Operational - The route is not operational.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// FileInterfaceRouteOperationalStatusEnum File interface route operational status: * Ok - The route is working fine. * Invalid_IP_Version - Source interfaces have a different IP protocol version than the route. * Invalid_Source_Interface - No source interfaces set up on the system. * Invalid_Gateway - Source interfaces in a different subnet than the gateway. * Not_Operational - The route is not operational. 
 type FileInterfaceRouteOperationalStatusEnum string
 
 // List of FileInterfaceRouteOperationalStatusEnum
 const (
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_OK                       FileInterfaceRouteOperationalStatusEnum = "Ok"
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_IP_VERSION       FileInterfaceRouteOperationalStatusEnum = "Invalid_IP_Version"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_OK FileInterfaceRouteOperationalStatusEnum = "Ok"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_IP_VERSION FileInterfaceRouteOperationalStatusEnum = "Invalid_IP_Version"
 	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_SOURCE_INTERFACE FileInterfaceRouteOperationalStatusEnum = "Invalid_Source_Interface"
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_GATEWAY          FileInterfaceRouteOperationalStatusEnum = "Invalid_Gateway"
-	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_NOT_OPERATIONAL          FileInterfaceRouteOperationalStatusEnum = "Not_Operational"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_INVALID_GATEWAY FileInterfaceRouteOperationalStatusEnum = "Invalid_Gateway"
+	FILEINTERFACEROUTEOPERATIONALSTATUSENUM_NOT_OPERATIONAL FileInterfaceRouteOperationalStatusEnum = "Not_Operational"
 )
 
 // All allowed values of FileInterfaceRouteOperationalStatusEnum enum
@@ -34,3 +39,4 @@ var AllowedFileInterfaceRouteOperationalStatusEnumEnumValues = []FileInterfaceRo
 func (v *FileInterfaceRouteOperationalStatusEnum) Value() string {
 	return string(*v)
 }
+

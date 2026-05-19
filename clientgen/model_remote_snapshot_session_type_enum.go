@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // RemoteSnapshotSessionTypeEnum Type of the remote snapshot session:  * Backup - Remote snapshot session to backup the snapshot to remote.  * Retrieve - Remote snapshot session to retrieve the snapshot from the remote.  * Instant_Access - Provides instant access to remote backup snapshot through proxy volume/volume_group without bringing the remote copy on to the PoweStore.  Was added in version 3.5.0.0.
 type RemoteSnapshotSessionTypeEnum string
 
 // List of RemoteSnapshotSessionTypeEnum
 const (
-	REMOTESNAPSHOTSESSIONTYPEENUM_BACKUP         RemoteSnapshotSessionTypeEnum = "Backup"
-	REMOTESNAPSHOTSESSIONTYPEENUM_RETRIEVE       RemoteSnapshotSessionTypeEnum = "Retrieve"
+	REMOTESNAPSHOTSESSIONTYPEENUM_BACKUP RemoteSnapshotSessionTypeEnum = "Backup"
+	REMOTESNAPSHOTSESSIONTYPEENUM_RETRIEVE RemoteSnapshotSessionTypeEnum = "Retrieve"
 	REMOTESNAPSHOTSESSIONTYPEENUM_INSTANT_ACCESS RemoteSnapshotSessionTypeEnum = "Instant_Access"
 )
 
@@ -30,3 +35,4 @@ var AllowedRemoteSnapshotSessionTypeEnumEnumValues = []RemoteSnapshotSessionType
 func (v *RemoteSnapshotSessionTypeEnum) Value() string {
 	return string(*v)
 }
+

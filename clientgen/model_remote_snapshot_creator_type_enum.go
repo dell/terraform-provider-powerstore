@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // RemoteSnapshotCreatorTypeEnum Creator type of the remote snapshot:  * PowerProtect_DD - Remote snapshot created by PowerProtect DD.  * Power_Store - Remote snapshot created by PowerStore.  Was added in version 3.5.0.0.
 type RemoteSnapshotCreatorTypeEnum string
 
 // List of RemoteSnapshotCreatorTypeEnum
 const (
 	REMOTESNAPSHOTCREATORTYPEENUM_POWER_PROTECT_DD RemoteSnapshotCreatorTypeEnum = "PowerProtect_DD"
-	REMOTESNAPSHOTCREATORTYPEENUM_POWER_STORE      RemoteSnapshotCreatorTypeEnum = "Power_Store"
+	REMOTESNAPSHOTCREATORTYPEENUM_POWER_STORE RemoteSnapshotCreatorTypeEnum = "Power_Store"
 )
 
 // All allowed values of RemoteSnapshotCreatorTypeEnum enum
@@ -28,3 +33,4 @@ var AllowedRemoteSnapshotCreatorTypeEnumEnumValues = []RemoteSnapshotCreatorType
 func (v *RemoteSnapshotCreatorTypeEnum) Value() string {
 	return string(*v)
 }
+

@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // NASAccessTypeEnum NAS filesystem snapshot access method. Applies only to file system type snapshots taken locally (no remote_system_id set). The setting is ignored for volume, virtual_volume, and volume_group snapshots. The possible values are: * Snapshot - Creates read-only auto mounted snapshots accessible from the hidden .snapshot subdirectory of the production file system. * Protocol - Creates read-only snapshots which can be mounted and accessed at a later time via NFS Export or SMB share.  Was added in version 3.0.0.0.
 type NASAccessTypeEnum string
 
@@ -28,3 +33,4 @@ var AllowedNASAccessTypeEnumEnumValues = []NASAccessTypeEnum{
 func (v *NASAccessTypeEnum) Value() string {
 	return string(*v)
 }
+

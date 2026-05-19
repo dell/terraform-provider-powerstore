@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // FcPortProtocolEnum Protocols supported over FC port. Types of protocol:        * SCSI - SCSI protocol.        * NVMe - NVMe protocol.  Was added in version 2.0.0.0.
 type FcPortProtocolEnum string
 
@@ -28,3 +33,4 @@ var AllowedFcPortProtocolEnumEnumValues = []FcPortProtocolEnum{
 func (v *FcPortProtocolEnum) Value() string {
 	return string(*v)
 }
+

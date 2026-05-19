@@ -10,16 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-// NodeAffinityEnum This attribute shows which node will be advertised as the optimized IO path to the volume. It is initially set to System_Select_At_Attach and can be modified to other values. When a volume is first attached to a host, if node_affinity is System_Select_At_Attach then the system will make the assignment to either System_Selected_Node_A or System_Selected_Node_B. The node_affinity may be modified to one of System_Select_At_Attach or Preferred_Node_A or Preferred_Node_B. Both System_Selected_Node_A and System_Selected_Node_B are reserved for system use only and cannot be set as the volume's node_affinity.   Possible affinity for a volume.  * System_Select_At_Attach - Volume currently has no node affinity, affinity will be assigned when the volume is first attached.  * System_Selected_Node_A - System selected Node A as the optimized IO path to volume.  * System_Selected_Node_B - System selected Node B as the optimized IO path to volume.  * Preferred_Node_A - Node A will always advertise as the optimized IO path to volume.  * Preferred_Node_B - Node B will always advertise as the optimized IO path to volume.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// NodeAffinityEnum This attribute shows which node will be advertised as the optimized IO path to the volume. It is initially set to System_Select_At_Attach and can be modified to other values. When a volume is first attached to a host, if node_affinity is System_Select_At_Attach then the system will make the assignment to either System_Selected_Node_A or System_Selected_Node_B. The node_affinity may be modified to one of System_Select_At_Attach or Preferred_Node_A or Preferred_Node_B. Both System_Selected_Node_A and System_Selected_Node_B are reserved for system use only and cannot be set as the volume's node_affinity.   Possible affinity for a volume.  * System_Select_At_Attach - Volume currently has no node affinity, affinity will be assigned when the volume is first attached.  * System_Selected_Node_A - System selected Node A as the optimized IO path to volume.  * System_Selected_Node_B - System selected Node B as the optimized IO path to volume.  * Preferred_Node_A - Node A will always advertise as the optimized IO path to volume.  * Preferred_Node_B - Node B will always advertise as the optimized IO path to volume. 
 type NodeAffinityEnum string
 
 // List of NodeAffinityEnum
 const (
 	NODEAFFINITYENUM_SYSTEM_SELECT_AT_ATTACH NodeAffinityEnum = "System_Select_At_Attach"
-	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_A  NodeAffinityEnum = "System_Selected_Node_A"
-	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_B  NodeAffinityEnum = "System_Selected_Node_B"
-	NODEAFFINITYENUM_PREFERRED_NODE_A        NodeAffinityEnum = "Preferred_Node_A"
-	NODEAFFINITYENUM_PREFERRED_NODE_B        NodeAffinityEnum = "Preferred_Node_B"
+	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_A NodeAffinityEnum = "System_Selected_Node_A"
+	NODEAFFINITYENUM_SYSTEM_SELECTED_NODE_B NodeAffinityEnum = "System_Selected_Node_B"
+	NODEAFFINITYENUM_PREFERRED_NODE_A NodeAffinityEnum = "Preferred_Node_A"
+	NODEAFFINITYENUM_PREFERRED_NODE_B NodeAffinityEnum = "Preferred_Node_B"
 )
 
 // All allowed values of NodeAffinityEnum enum
@@ -34,3 +39,4 @@ var AllowedNodeAffinityEnumEnumValues = []NodeAffinityEnum{
 func (v *NodeAffinityEnum) Value() string {
 	return string(*v)
 }
+

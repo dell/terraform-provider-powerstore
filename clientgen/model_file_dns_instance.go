@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // FileDnsInstance This resource type has queriable association from nas_server
 type FileDnsInstance struct {
 	// Unique identifier of the DNS server.
@@ -19,12 +24,14 @@ type FileDnsInstance struct {
 	// Name of the DNS domain, where the NAS Server does host names lookup when an FQDN is not specified in the request.
 	Domain *string `json:"domain,omitempty"`
 	// The list of DNS server IP addresses. The addresses may be IPv4 or IPv6.
-	IpAddresses []string              `json:"ip_addresses,omitempty"`
-	Transport   *FileDNSTransportEnum `json:"transport,omitempty"`
+	IpAddresses []string `json:"ip_addresses,omitempty"`
+	Transport *FileDNSTransportEnum `json:"transport,omitempty"`
 	// Used in replication context when the user wants to override the settings on the destination. Was added in version 3.0.0.0.
-	IsDestinationOverrideEnabled *bool                            `json:"is_destination_override_enabled,omitempty"`
-	SourceParameters             *FileDnsInstanceSourceParameters `json:"source_parameters,omitempty"`
+	IsDestinationOverrideEnabled *bool `json:"is_destination_override_enabled,omitempty"`
+	SourceParameters *FileDnsInstanceSourceParameters `json:"source_parameters,omitempty"`
 	// Localized message string corresponding to transport
-	TransportL10n *string            `json:"transport_l10n,omitempty"`
-	NasServer     *NasServerInstance `json:"nas_server,omitempty"`
+	TransportL10n *string `json:"transport_l10n,omitempty"`
+	NasServer *NasServerInstance `json:"nas_server,omitempty"`
 }
+
+

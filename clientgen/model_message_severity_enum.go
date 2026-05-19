@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-// MessageSeverityEnum Message severity. Values are: * Info * Warning * Error
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// MessageSeverityEnum Message severity. Values are: * Info * Warning * Error 
 type MessageSeverityEnum string
 
 // List of MessageSeverityEnum
 const (
-	MESSAGESEVERITYENUM_INFO    MessageSeverityEnum = "Info"
+	MESSAGESEVERITYENUM_INFO MessageSeverityEnum = "Info"
 	MESSAGESEVERITYENUM_WARNING MessageSeverityEnum = "Warning"
-	MESSAGESEVERITYENUM_ERROR   MessageSeverityEnum = "Error"
+	MESSAGESEVERITYENUM_ERROR MessageSeverityEnum = "Error"
 )
 
 // All allowed values of MessageSeverityEnum enum
@@ -30,3 +35,4 @@ var AllowedMessageSeverityEnumEnumValues = []MessageSeverityEnum{
 func (v *MessageSeverityEnum) Value() string {
 	return string(*v)
 }
+

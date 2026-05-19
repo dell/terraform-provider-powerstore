@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // FileDhsmConfigInstance  Was added in version 3.0.0.0. This resource type has queriable association from nas_server
 type FileDhsmConfigInstance struct {
 	// Unique identifier of the DHSM Server object.
@@ -17,6 +22,8 @@ type FileDhsmConfigInstance struct {
 	// Identifier of the parent NAS server.
 	NasServerId *string `json:"nas_server_id,omitempty"`
 	// User name for authentication to the DHSM server.
-	UserName  *string            `json:"user_name,omitempty"`
+	UserName *string `json:"user_name,omitempty"`
 	NasServer *NasServerInstance `json:"nas_server,omitempty"`
 }
+
+

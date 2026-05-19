@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // NVMeDiscoveryModeEnum The NVMe-oF specification defines a Discovery mechanism that a host can use to determine the NVMe subsystems that expose namespaces available to the hose. A CDC is a Centralized Discovery Controller. A discovery controller reports discovery information from registered Direct Discovery controllers (DDC) and Hosts. CDC is one of the StFS services, located on the Fabric to which the NVMe Clients (NVMe Subsystems/DDCs and Hosts) are registered. A DDC is a Direct Discovery Controller, located on the Subsystem Port - Storage Interface. A Host may use CDC (if detected) or DDC (if CDC is not detected) to determine the IO NVMe subsystem ports. This only applicable to networks that have NVMe_TCP among their purposes. * Auto_Discovery_CDC - Automatically discover the IP Address of the Centralized Discovery Controller (CDC) using mDNS/DNS-SD. If a CDC is found, the NVMe/TCP Interface will be registered with it. * Manual_CDC - the CDC IP address is manually set. If a CDC IP address is set, the NVMe/TCP Interface will be registered with it. * Advertise_DDC - Direct Discovery Controller IP address is advertised using mDNS/DNS-SD and can be discovered by external hosts. * Auto_Discovery_Disabled - mDNS/DNS-SD is disabled, no attempt will be made to discover CDC, no attempt will be made to register with CDC if one exists, nor will DDC IP address be advertised.  Was added in version 3.0.0.0.
 type NVMeDiscoveryModeEnum string
 
 // List of NVMeDiscoveryModeEnum
 const (
-	NVMEDISCOVERYMODEENUM_AUTO_DISCOVERY_CDC      NVMeDiscoveryModeEnum = "Auto_Discovery_CDC"
-	NVMEDISCOVERYMODEENUM_MANUAL_CDC              NVMeDiscoveryModeEnum = "Manual_CDC"
-	NVMEDISCOVERYMODEENUM_ADVERTISE_DDC           NVMeDiscoveryModeEnum = "Advertise_DDC"
+	NVMEDISCOVERYMODEENUM_AUTO_DISCOVERY_CDC NVMeDiscoveryModeEnum = "Auto_Discovery_CDC"
+	NVMEDISCOVERYMODEENUM_MANUAL_CDC NVMeDiscoveryModeEnum = "Manual_CDC"
+	NVMEDISCOVERYMODEENUM_ADVERTISE_DDC NVMeDiscoveryModeEnum = "Advertise_DDC"
 	NVMEDISCOVERYMODEENUM_AUTO_DISCOVERY_DISABLED NVMeDiscoveryModeEnum = "Auto_Discovery_Disabled"
 )
 
@@ -32,3 +37,4 @@ var AllowedNVMeDiscoveryModeEnumEnumValues = []NVMeDiscoveryModeEnum{
 func (v *NVMeDiscoveryModeEnum) Value() string {
 	return string(*v)
 }
+

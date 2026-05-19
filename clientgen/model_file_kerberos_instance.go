@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // FileKerberosInstance This resource type has queriable association from nas_server
 type FileKerberosInstance struct {
 	// Unique identifier of the Kerberos service settings instance.
@@ -21,6 +26,8 @@ type FileKerberosInstance struct {
 	// Fully Qualified domain names of the Kerberos Key Distribution Center (KDC) servers. IPv4 and IPv6 addresses are not supported.
 	KdcAddresses []string `json:"kdc_addresses,omitempty"`
 	// KDC servers TCP port.
-	PortNumber *int32             `json:"port_number,omitempty"`
-	NasServer  *NasServerInstance `json:"nas_server,omitempty"`
+	PortNumber *int32 `json:"port_number,omitempty"`
+	NasServer *NasServerInstance `json:"nas_server,omitempty"`
 }
+
+

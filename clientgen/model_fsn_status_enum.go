@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // FSNStatusEnum Current fail-safe network operational status: * Healthy - Fail-safe network is fully operational. * Degraded - Fail-safe network is degraded due to one of its ports being down. * Failed - Fail-safe network is down.  Was added in version 3.5.0.0.
 type FSNStatusEnum string
 
 // List of FSNStatusEnum
 const (
-	FSNSTATUSENUM_HEALTHY  FSNStatusEnum = "Healthy"
+	FSNSTATUSENUM_HEALTHY FSNStatusEnum = "Healthy"
 	FSNSTATUSENUM_DEGRADED FSNStatusEnum = "Degraded"
-	FSNSTATUSENUM_FAILED   FSNStatusEnum = "Failed"
+	FSNSTATUSENUM_FAILED FSNStatusEnum = "Failed"
 )
 
 // All allowed values of FSNStatusEnum enum
@@ -30,3 +35,4 @@ var AllowedFSNStatusEnumEnumValues = []FSNStatusEnum{
 func (v *FSNStatusEnum) Value() string {
 	return string(*v)
 }
+

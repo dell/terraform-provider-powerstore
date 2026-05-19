@@ -11,8 +11,10 @@ API version: 4.1.0.0
 package clientgen
 
 import (
+	"encoding/json"
 	"time"
 )
+
 
 // RemoteSnapshotInstance Information about a remote snapshot. Was added in version 3.5.0.0. This resource type has queriable associations from volume, volume_group, remote_system, remote_snapshot_session
 type RemoteSnapshotInstance struct {
@@ -27,9 +29,9 @@ type RemoteSnapshotInstance struct {
 	// Unique identifier of the local volume_group to which this snapshot belongs. This will be null if the volume_group is deleted or this is a volume snapshot.
 	VolumeGroupId *string `json:"volume_group_id,omitempty"`
 	// This indicates whether local volume or volume group to which this snapshot belongs is in recycle bin. If local volume or volume group is deleted this will be false.
-	IsSourceInRecycleBin *bool                           `json:"is_source_in_recycle_bin,omitempty"`
-	State                *RemoteSnapshotStateEnum        `json:"state,omitempty"`
-	ResourceType         *RemoteSnapshotResourceTypeEnum `json:"resource_type,omitempty"`
+	IsSourceInRecycleBin *bool `json:"is_source_in_recycle_bin,omitempty"`
+	State *RemoteSnapshotStateEnum `json:"state,omitempty"`
+	ResourceType *RemoteSnapshotResourceTypeEnum `json:"resource_type,omitempty"`
 	// List of remote member snapshots. Only applies to volume_group type.  Filtering on the fields of this embedded resource is not supported.
 	RemoteMemberDetails []RemoteMemberDetailsInstance `json:"remote_member_details,omitempty"`
 	// Date/time the remote snapshot was taken by the array.
@@ -41,7 +43,7 @@ type RemoteSnapshotInstance struct {
 	// Unique identifier of the source volume or volume_group. This preserves the value when the local volume/volume_group is deleted.
 	SourceId *string `json:"source_id,omitempty"`
 	// Name of the source volume or volume_group. This preserves the value when the local volume/volume_group is deleted.  This property supports case-insensitive filtering.
-	SourceName  *string                        `json:"source_name,omitempty"`
+	SourceName *string `json:"source_name,omitempty"`
 	CreatorType *RemoteSnapshotCreatorTypeEnum `json:"creator_type,omitempty"`
 	// Localized message string corresponding to state Was added in version 3.5.0.0.
 	StateL10n *string `json:"state_l10n,omitempty"`
@@ -51,7 +53,9 @@ type RemoteSnapshotInstance struct {
 	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
 	RemoteSnapshots []RemoteSnapshotSessionInstance `json:"remote_snapshots,omitempty"`
-	Volume          *VolumeInstance                 `json:"volume,omitempty"`
-	VolumeGroup     *VolumeGroupInstance            `json:"volume_group,omitempty"`
-	RemoteSystem    *RemoteSystemInstance           `json:"remote_system,omitempty"`
+	Volume *VolumeInstance `json:"volume,omitempty"`
+	VolumeGroup *VolumeGroupInstance `json:"volume_group,omitempty"`
+	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
 }
+
+

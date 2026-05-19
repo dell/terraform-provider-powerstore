@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // VGPlacementRule This is set during creation, and determines resource balancer recommendations.  * Same_Appliance - All the members of the group should be on the same appliance in the cluster.  * No_Preference - The volumes can be placed on any of the appliances in the cluster.  Was deprecated in version 2.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 type VGPlacementRule string
 
 // List of VGPlacementRule
 const (
 	VGPLACEMENTRULE_SAME_APPLIANCE VGPlacementRule = "Same_Appliance"
-	VGPLACEMENTRULE_NO_PREFERENCE  VGPlacementRule = "No_Preference"
+	VGPLACEMENTRULE_NO_PREFERENCE VGPlacementRule = "No_Preference"
 )
 
 // All allowed values of VGPlacementRule enum
@@ -28,3 +33,4 @@ var AllowedVGPlacementRuleEnumValues = []VGPlacementRule{
 func (v *VGPlacementRule) Value() string {
 	return string(*v)
 }
+

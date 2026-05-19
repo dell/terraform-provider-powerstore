@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-// HardwareStatusLEDStateEnum State of the status LED of the hardware. The LED is On when there is a hardware fault. Current values are:  * Off - Hardware Status LED is turned off.  * On - Hardware Status LED is turned on.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// HardwareStatusLEDStateEnum State of the status LED of the hardware. The LED is On when there is a hardware fault. Current values are:  * Off - Hardware Status LED is turned off.  * On - Hardware Status LED is turned on. 
 type HardwareStatusLEDStateEnum string
 
 // List of HardwareStatusLEDStateEnum
 const (
 	HARDWARESTATUSLEDSTATEENUM_OFF HardwareStatusLEDStateEnum = "Off"
-	HARDWARESTATUSLEDSTATEENUM_ON  HardwareStatusLEDStateEnum = "On"
+	HARDWARESTATUSLEDSTATEENUM_ON HardwareStatusLEDStateEnum = "On"
 )
 
 // All allowed values of HardwareStatusLEDStateEnum enum
@@ -28,3 +33,4 @@ var AllowedHardwareStatusLEDStateEnumEnumValues = []HardwareStatusLEDStateEnum{
 func (v *HardwareStatusLEDStateEnum) Value() string {
 	return string(*v)
 }
+

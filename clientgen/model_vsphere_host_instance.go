@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // VsphereHostInstance Properties of a vsphere_host. Was added in version 3.0.0.0. This resource type has queriable associations from vcenter, vsphere_host_license_assignment, virtual_machine, datastore, host
 type VsphereHostInstance struct {
 	// Unique identifier of the vsphere_host instance.
@@ -23,7 +28,7 @@ type VsphereHostInstance struct {
 	// ESXi host version.
 	Version *string `json:"version,omitempty"`
 	// ESXi host build.
-	Build   *string          `json:"build,omitempty"`
+	Build *string `json:"build,omitempty"`
 	Vcenter *VcenterInstance `json:"vcenter,omitempty"`
 	// This is the inverse of the resource type vsphere_host_license_assignment association.
 	LicenseAssignments []VsphereHostLicenseAssignmentInstance `json:"license_assignments,omitempty"`
@@ -34,3 +39,5 @@ type VsphereHostInstance struct {
 	// List of the hosts that are associated with this vsphere_host.
 	Hosts []HostInstance `json:"hosts,omitempty"`
 }
+
+

@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // BondStatusEnum Current bond operational status: * Healthy - Bond is fully operational. * Degraded - Bond is degraded due to Link Aggregation Control Protocol (LACP) being in degraded state. * Failed - Bond is down.  Was added in version 3.0.0.0.
 type BondStatusEnum string
 
 // List of BondStatusEnum
 const (
-	BONDSTATUSENUM_HEALTHY  BondStatusEnum = "Healthy"
+	BONDSTATUSENUM_HEALTHY BondStatusEnum = "Healthy"
 	BONDSTATUSENUM_DEGRADED BondStatusEnum = "Degraded"
-	BONDSTATUSENUM_FAILED   BondStatusEnum = "Failed"
+	BONDSTATUSENUM_FAILED BondStatusEnum = "Failed"
 )
 
 // All allowed values of BondStatusEnum enum
@@ -30,3 +35,4 @@ var AllowedBondStatusEnumEnumValues = []BondStatusEnum{
 func (v *BondStatusEnum) Value() string {
 	return string(*v)
 }
+

@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // HardwareStaleStateEnum Stale state of the Hardware. Current states are:  * Not_Stale - Not stale.  * Disconnected - Either this Hardware or an ancestor of this Hardware has a Disconnected lifecycle state and therefore is not updated.  Was added in version 2.0.0.0.
 type HardwareStaleStateEnum string
 
 // List of HardwareStaleStateEnum
 const (
-	HARDWARESTALESTATEENUM_NOT_STALE    HardwareStaleStateEnum = "Not_Stale"
+	HARDWARESTALESTATEENUM_NOT_STALE HardwareStaleStateEnum = "Not_Stale"
 	HARDWARESTALESTATEENUM_DISCONNECTED HardwareStaleStateEnum = "Disconnected"
 )
 
@@ -28,3 +33,4 @@ var AllowedHardwareStaleStateEnumEnumValues = []HardwareStaleStateEnum{
 func (v *HardwareStaleStateEnum) Value() string {
 	return string(*v)
 }
+

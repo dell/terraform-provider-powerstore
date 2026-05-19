@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // DatastoreTypeEnum Type of datastore file system. Values are: * vVol * VMFS * NFS  Was added in version 3.0.0.0.
 type DatastoreTypeEnum string
 
 // List of DatastoreTypeEnum
 const (
 	DATASTORETYPEENUM_V_VOL DatastoreTypeEnum = "vVol"
-	DATASTORETYPEENUM_VMFS  DatastoreTypeEnum = "VMFS"
-	DATASTORETYPEENUM_NFS   DatastoreTypeEnum = "NFS"
+	DATASTORETYPEENUM_VMFS DatastoreTypeEnum = "VMFS"
+	DATASTORETYPEENUM_NFS DatastoreTypeEnum = "NFS"
 )
 
 // All allowed values of DatastoreTypeEnum enum
@@ -30,3 +35,4 @@ var AllowedDatastoreTypeEnumEnumValues = []DatastoreTypeEnum{
 func (v *DatastoreTypeEnum) Value() string {
 	return string(*v)
 }
+

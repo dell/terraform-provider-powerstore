@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // VendorProviderStatusEnum General status of the VASA vendor provider in vCenter. * Not_Registered - The provider is not registered with vCenter. * Offline - vCenter cannot connect with the provider. * Online - vCenter is communicating with the provider. * Unavailable - VASA provider status can't be determined due to lost connection to vCenter.  Was added in version 2.0.0.0. Values was added in 3.5.0.0: Unavailable.
 type VendorProviderStatusEnum string
 
 // List of VendorProviderStatusEnum
 const (
 	VENDORPROVIDERSTATUSENUM_NOT_REGISTERED VendorProviderStatusEnum = "Not_Registered"
-	VENDORPROVIDERSTATUSENUM_OFFLINE        VendorProviderStatusEnum = "Offline"
-	VENDORPROVIDERSTATUSENUM_ONLINE         VendorProviderStatusEnum = "Online"
-	VENDORPROVIDERSTATUSENUM_UNAVAILABLE    VendorProviderStatusEnum = "Unavailable"
+	VENDORPROVIDERSTATUSENUM_OFFLINE VendorProviderStatusEnum = "Offline"
+	VENDORPROVIDERSTATUSENUM_ONLINE VendorProviderStatusEnum = "Online"
+	VENDORPROVIDERSTATUSENUM_UNAVAILABLE VendorProviderStatusEnum = "Unavailable"
 )
 
 // All allowed values of VendorProviderStatusEnum enum
@@ -32,3 +37,4 @@ var AllowedVendorProviderStatusEnumEnumValues = []VendorProviderStatusEnum{
 func (v *VendorProviderStatusEnum) Value() string {
 	return string(*v)
 }
+

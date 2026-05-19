@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // StorageElementTypeEnum Storage element type being replicated: * volume                  - Replicating storage element type for a volume. * virtual_volume          - Replicating storage element type for a virtual volume. * file_system             - Replicating storage element type for a file system.  Values was added in 3.5.0.0: file_system.
 type StorageElementTypeEnum string
 
 // List of StorageElementTypeEnum
 const (
-	STORAGEELEMENTTYPEENUM_VOLUME         StorageElementTypeEnum = "volume"
+	STORAGEELEMENTTYPEENUM_VOLUME StorageElementTypeEnum = "volume"
 	STORAGEELEMENTTYPEENUM_VIRTUAL_VOLUME StorageElementTypeEnum = "virtual_volume"
-	STORAGEELEMENTTYPEENUM_FILE_SYSTEM    StorageElementTypeEnum = "file_system"
+	STORAGEELEMENTTYPEENUM_FILE_SYSTEM StorageElementTypeEnum = "file_system"
 )
 
 // All allowed values of StorageElementTypeEnum enum
@@ -30,3 +35,4 @@ var AllowedStorageElementTypeEnumEnumValues = []StorageElementTypeEnum{
 func (v *StorageElementTypeEnum) Value() string {
 	return string(*v)
 }
+

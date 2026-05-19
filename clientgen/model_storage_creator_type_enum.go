@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // StorageCreatorTypeEnum Creator type of the storage resource. * User - A resource created by a user. * System - A resource created by the replication engine. * Scheduler - A resource created by the snapshot scheduler. * External - A resource created by an external entity.  Values was added in 3.5.0.0: External.
 type StorageCreatorTypeEnum string
 
 // List of StorageCreatorTypeEnum
 const (
-	STORAGECREATORTYPEENUM_USER      StorageCreatorTypeEnum = "User"
-	STORAGECREATORTYPEENUM_SYSTEM    StorageCreatorTypeEnum = "System"
+	STORAGECREATORTYPEENUM_USER StorageCreatorTypeEnum = "User"
+	STORAGECREATORTYPEENUM_SYSTEM StorageCreatorTypeEnum = "System"
 	STORAGECREATORTYPEENUM_SCHEDULER StorageCreatorTypeEnum = "Scheduler"
-	STORAGECREATORTYPEENUM_EXTERNAL  StorageCreatorTypeEnum = "External"
+	STORAGECREATORTYPEENUM_EXTERNAL StorageCreatorTypeEnum = "External"
 )
 
 // All allowed values of StorageCreatorTypeEnum enum
@@ -32,3 +37,4 @@ var AllowedStorageCreatorTypeEnumEnumValues = []StorageCreatorTypeEnum{
 func (v *StorageCreatorTypeEnum) Value() string {
 	return string(*v)
 }
+

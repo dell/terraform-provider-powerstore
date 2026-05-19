@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-// HardwareSFPModeEnum SFP mode. Available on the SFP hardware type. Current modes are:  * Unknown - This SFP has unknown support.  * Multi_Mode - This SFP supports multi-mode fiber.  * Single_Mode - This SFP supports single-mode fiber.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// HardwareSFPModeEnum SFP mode. Available on the SFP hardware type. Current modes are:  * Unknown - This SFP has unknown support.  * Multi_Mode - This SFP supports multi-mode fiber.  * Single_Mode - This SFP supports single-mode fiber. 
 type HardwareSFPModeEnum string
 
 // List of HardwareSFPModeEnum
 const (
-	HARDWARESFPMODEENUM_UNKNOWN     HardwareSFPModeEnum = "Unknown"
-	HARDWARESFPMODEENUM_MULTI_MODE  HardwareSFPModeEnum = "Multi_Mode"
+	HARDWARESFPMODEENUM_UNKNOWN HardwareSFPModeEnum = "Unknown"
+	HARDWARESFPMODEENUM_MULTI_MODE HardwareSFPModeEnum = "Multi_Mode"
 	HARDWARESFPMODEENUM_SINGLE_MODE HardwareSFPModeEnum = "Single_Mode"
 )
 
@@ -30,3 +35,4 @@ var AllowedHardwareSFPModeEnumEnumValues = []HardwareSFPModeEnum{
 func (v *HardwareSFPModeEnum) Value() string {
 	return string(*v)
 }
+

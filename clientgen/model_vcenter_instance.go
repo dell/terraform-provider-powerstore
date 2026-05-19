@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // VcenterInstance Properties of a vCenter. This resource type has queriable associations from virtual_machine, datastore, vsphere_host
 type VcenterInstance struct {
 	// Unique identifier of the vCenter instance.
@@ -23,7 +28,7 @@ type VcenterInstance struct {
 	// Indicates whether the connection is secured with the vCenter SSL certificate validation or not.  Was added in version 4.0.0.0.
 	IsVerifyServerCert *bool `json:"is_verify_server_cert,omitempty"`
 	// Version of the vCenter including its build number. Was added in version 3.0.0.0.
-	Version              *string                   `json:"version,omitempty"`
+	Version *string `json:"version,omitempty"`
 	VendorProviderStatus *VendorProviderStatusEnum `json:"vendor_provider_status,omitempty"`
 	// Localized message string corresponding to vendor_provider_status Was added in version 2.0.0.0.
 	VendorProviderStatusL10n *string `json:"vendor_provider_status_l10n,omitempty"`
@@ -34,3 +39,5 @@ type VcenterInstance struct {
 	// This is the inverse of the resource type vsphere_host association.
 	VsphereHosts []VsphereHostInstance `json:"vsphere_hosts,omitempty"`
 }
+
+

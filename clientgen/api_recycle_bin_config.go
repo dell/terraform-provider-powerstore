@@ -19,14 +19,15 @@ import (
 	"strings"
 )
 
+
 // RecycleBinConfigApiService RecycleBinConfigApi service
 type RecycleBinConfigApiService service
 
 type ApiGetRecycleBinConfigByIdRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *RecycleBinConfigApiService
-	queries    url.Values
-	id         string
+	queries url.Values
+	id string
 }
 
 func (r ApiGetRecycleBinConfigByIdRequest) Queries(in url.Values) ApiGetRecycleBinConfigByIdRequest {
@@ -44,27 +45,26 @@ GetRecycleBinConfigById Instance Query
 Query a specific recycle bin configuration instance.
 Was added in version 3.5.0.0.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of the instance to retrieve (always = \"0\")
-	@return ApiGetRecycleBinConfigByIdRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id Unique identifier of the instance to retrieve (always = \"0\")
+ @return ApiGetRecycleBinConfigByIdRequest
 */
 func (a *RecycleBinConfigApiService) GetRecycleBinConfigById(ctx context.Context, id string) ApiGetRecycleBinConfigByIdRequest {
 	return ApiGetRecycleBinConfigByIdRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
-//
-//	@return RecycleBinConfigInstance
+//  @return RecycleBinConfigInstance
 func (a *RecycleBinConfigApiService) GetRecycleBinConfigByIdExecute(r ApiGetRecycleBinConfigByIdRequest) (*RecycleBinConfigInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *RecycleBinConfigInstance
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *RecycleBinConfigInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinConfigApiService.GetRecycleBinConfigById")
@@ -125,8 +125,8 @@ func (a *RecycleBinConfigApiService) GetRecycleBinConfigByIdExecute(r ApiGetRecy
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -144,10 +144,10 @@ func (a *RecycleBinConfigApiService) GetRecycleBinConfigByIdExecute(r ApiGetRecy
 }
 
 type ApiPatchRecycleBinConfigByIdRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *RecycleBinConfigApiService
-	id         string
-	body       *RecycleBinConfigModify
+	id string
+	body *RecycleBinConfigModify
 }
 
 func (r ApiPatchRecycleBinConfigByIdRequest) Body(body RecycleBinConfigModify) ApiPatchRecycleBinConfigByIdRequest {
@@ -165,24 +165,24 @@ PatchRecycleBinConfigById Modify
 Modify recycle bin configuration settings.
 Was added in version 3.5.0.0.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of the instance to modify (always = \"0\")
-	@return ApiPatchRecycleBinConfigByIdRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id Unique identifier of the instance to modify (always = \"0\")
+ @return ApiPatchRecycleBinConfigByIdRequest
 */
 func (a *RecycleBinConfigApiService) PatchRecycleBinConfigById(ctx context.Context, id string) ApiPatchRecycleBinConfigByIdRequest {
 	return ApiPatchRecycleBinConfigByIdRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
 func (a *RecycleBinConfigApiService) PatchRecycleBinConfigByIdExecute(r ApiPatchRecycleBinConfigByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPatch
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPatch
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinConfigApiService.PatchRecycleBinConfigById")
@@ -248,8 +248,8 @@ func (a *RecycleBinConfigApiService) PatchRecycleBinConfigByIdExecute(r ApiPatch
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -259,8 +259,8 @@ func (a *RecycleBinConfigApiService) PatchRecycleBinConfigByIdExecute(r ApiPatch
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -270,8 +270,8 @@ func (a *RecycleBinConfigApiService) PatchRecycleBinConfigByIdExecute(r ApiPatch
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

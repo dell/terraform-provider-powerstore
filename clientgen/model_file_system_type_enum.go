@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
-// FileSystemTypeEnum Indicates the type of a file system.  * Primary - Normal file system or clone.  * Snapshot - Snapshot of a file system.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// FileSystemTypeEnum Indicates the type of a file system.  * Primary - Normal file system or clone.  * Snapshot - Snapshot of a file system. 
 type FileSystemTypeEnum string
 
 // List of FileSystemTypeEnum
 const (
-	FILESYSTEMTYPEENUM_PRIMARY  FileSystemTypeEnum = "Primary"
+	FILESYSTEMTYPEENUM_PRIMARY FileSystemTypeEnum = "Primary"
 	FILESYSTEMTYPEENUM_SNAPSHOT FileSystemTypeEnum = "Snapshot"
 )
 
@@ -28,3 +33,4 @@ var AllowedFileSystemTypeEnumEnumValues = []FileSystemTypeEnum{
 func (v *FileSystemTypeEnum) Value() string {
 	return string(*v)
 }
+

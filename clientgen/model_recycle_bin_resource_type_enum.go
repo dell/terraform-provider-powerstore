@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // RecycleBinResourceTypeEnum Type of storage object. * volume - A volume type storage object. * volume_group - A volume_group type storage object.  Was added in version 3.5.0.0.
 type RecycleBinResourceTypeEnum string
 
 // List of RecycleBinResourceTypeEnum
 const (
-	RECYCLEBINRESOURCETYPEENUM_VOLUME       RecycleBinResourceTypeEnum = "volume"
+	RECYCLEBINRESOURCETYPEENUM_VOLUME RecycleBinResourceTypeEnum = "volume"
 	RECYCLEBINRESOURCETYPEENUM_VOLUME_GROUP RecycleBinResourceTypeEnum = "volume_group"
 )
 
@@ -28,3 +33,4 @@ var AllowedRecycleBinResourceTypeEnumEnumValues = []RecycleBinResourceTypeEnum{
 func (v *RecycleBinResourceTypeEnum) Value() string {
 	return string(*v)
 }
+

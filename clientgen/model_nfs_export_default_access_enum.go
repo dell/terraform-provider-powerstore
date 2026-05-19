@@ -10,15 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-// NFSExportDefaultAccessEnum Default access level for all hosts that can access the Export. * No_Access- Deny access to the Export for the hosts. * Read_Only- Allow read only access to the Export for the hosts. * Read_Write- Allow read write access to the Export for the hosts. * Root - Allow read write access to the Export for the hosts. Allow access to the Export for root user. * Read_Only_Root- Allow read only root access to the Export for the hosts.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// NFSExportDefaultAccessEnum Default access level for all hosts that can access the Export. * No_Access- Deny access to the Export for the hosts. * Read_Only- Allow read only access to the Export for the hosts. * Read_Write- Allow read write access to the Export for the hosts. * Root - Allow read write access to the Export for the hosts. Allow access to the Export for root user. * Read_Only_Root- Allow read only root access to the Export for the hosts. 
 type NFSExportDefaultAccessEnum string
 
 // List of NFSExportDefaultAccessEnum
 const (
-	NFSEXPORTDEFAULTACCESSENUM_NO_ACCESS      NFSExportDefaultAccessEnum = "No_Access"
-	NFSEXPORTDEFAULTACCESSENUM_READ_ONLY      NFSExportDefaultAccessEnum = "Read_Only"
-	NFSEXPORTDEFAULTACCESSENUM_READ_WRITE     NFSExportDefaultAccessEnum = "Read_Write"
-	NFSEXPORTDEFAULTACCESSENUM_ROOT           NFSExportDefaultAccessEnum = "Root"
+	NFSEXPORTDEFAULTACCESSENUM_NO_ACCESS NFSExportDefaultAccessEnum = "No_Access"
+	NFSEXPORTDEFAULTACCESSENUM_READ_ONLY NFSExportDefaultAccessEnum = "Read_Only"
+	NFSEXPORTDEFAULTACCESSENUM_READ_WRITE NFSExportDefaultAccessEnum = "Read_Write"
+	NFSEXPORTDEFAULTACCESSENUM_ROOT NFSExportDefaultAccessEnum = "Root"
 	NFSEXPORTDEFAULTACCESSENUM_READ_ONLY_ROOT NFSExportDefaultAccessEnum = "Read_Only_Root"
 )
 
@@ -34,3 +39,4 @@ var AllowedNFSExportDefaultAccessEnumEnumValues = []NFSExportDefaultAccessEnum{
 func (v *NFSExportDefaultAccessEnum) Value() string {
 	return string(*v)
 }
+

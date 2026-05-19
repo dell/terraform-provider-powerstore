@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // ImportUniversalConsistencyGroupInstance Information about a universal consistency group. Was added in version 4.0.0.0. This resource type has queriable association from remote_system
 type ImportUniversalConsistencyGroupInstance struct {
 	// Unique identifier of the universal consistency group.
@@ -17,9 +22,11 @@ type ImportUniversalConsistencyGroupInstance struct {
 	// Name of the universal consistency group. After import is completed this name will be applied to the new consistency group.   This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// Unique identifier of the Remote storage system to which the Universal volume belongs.
-	RemoteSystemId     *string                   `json:"remote_system_id,omitempty"`
+	RemoteSystemId *string `json:"remote_system_id,omitempty"`
 	ImportableCriteria *CGImportableCriteriaEnum `json:"importable_criteria,omitempty"`
 	// Localized message string corresponding to importable_criteria Was added in version 4.0.0.0.
-	ImportableCriteriaL10n *string               `json:"importable_criteria_l10n,omitempty"`
-	RemoteSystem           *RemoteSystemInstance `json:"remote_system,omitempty"`
+	ImportableCriteriaL10n *string `json:"importable_criteria_l10n,omitempty"`
+	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
 }
+
+

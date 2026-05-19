@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // RemoteMemberDetailsInstance Details of remote member snapshots. Was added in version 3.5.0.0.
 type RemoteMemberDetailsInstance struct {
 	// The member volume id.
@@ -23,3 +28,5 @@ type RemoteMemberDetailsInstance struct {
 	// The size of the member snapshot in bytes.
 	SnapshotSize *int64 `json:"snapshot_size,omitempty"`
 }
+
+

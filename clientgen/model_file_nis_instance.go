@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // FileNisInstance This resource type has queriable association from nas_server
 type FileNisInstance struct {
 	// Unique identifier of the NIS Service.
@@ -21,7 +26,9 @@ type FileNisInstance struct {
 	// The list of NIS server IP addresses.
 	IpAddresses []string `json:"ip_addresses,omitempty"`
 	// Used in replication context when the user wants to override the settings on the destination. Was added in version 3.0.0.0.
-	IsDestinationOverrideEnabled *bool                            `json:"is_destination_override_enabled,omitempty"`
-	SourceParameters             *FileNisInstanceSourceParameters `json:"source_parameters,omitempty"`
-	NasServer                    *NasServerInstance               `json:"nas_server,omitempty"`
+	IsDestinationOverrideEnabled *bool `json:"is_destination_override_enabled,omitempty"`
+	SourceParameters *FileNisInstanceSourceParameters `json:"source_parameters,omitempty"`
+	NasServer *NasServerInstance `json:"nas_server,omitempty"`
 }
+
+

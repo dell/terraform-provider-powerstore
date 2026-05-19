@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // BondInstance Properties of a bond. Values was added in 2.0.0.0: type, description, partner_id. Values was added in 3.0.0.0: status. This resource type has queriable associations from bond, fsn, ip_port, eth_port
 type BondInstance struct {
 	// Unique identifier of the bond.
@@ -20,11 +25,11 @@ type BondInstance struct {
 	PartnerId *string `json:"partner_id,omitempty"`
 	// Identifier of the associated fail-safe network, or null if the bond is not in an FSN. Was added in version 3.5.0.0.
 	FsnId *string `json:"fsn_id,omitempty"`
-	// Indicates whether the bond's link is up. Values are: * true - Link is up. * false - Link is down.
-	IsLinkUp *bool           `json:"is_link_up,omitempty"`
-	Status   *BondStatusEnum `json:"status,omitempty"`
+	// Indicates whether the bond's link is up. Values are: * true - Link is up. * false - Link is down. 
+	IsLinkUp *bool `json:"is_link_up,omitempty"`
+	Status *BondStatusEnum `json:"status,omitempty"`
 	// Maximum Transmission Unit (MTU) packet size of the bond, in bytes.
-	Mtu  *int32           `json:"mtu,omitempty"`
+	Mtu *int32 `json:"mtu,omitempty"`
 	Mode *BondingModeEnum `json:"mode,omitempty"`
 	Type *BondingTypeEnum `json:"type,omitempty"`
 	// User supplied description of the bond.
@@ -37,8 +42,10 @@ type BondInstance struct {
 	TypeL10n *string `json:"type_l10n,omitempty"`
 	// This is the inverse of the resource type ip_port association.
 	IpPorts []IpPortInstance `json:"ip_ports,omitempty"`
-	Partner *BondInstance    `json:"partner,omitempty"`
-	Fsn     *FsnInstance     `json:"fsn,omitempty"`
+	Partner *BondInstance `json:"partner,omitempty"`
+	Fsn *FsnInstance `json:"fsn,omitempty"`
 	// This is the inverse of the resource type eth_port association.
 	EthPorts []EthPortInstance `json:"eth_ports,omitempty"`
 }
+
+

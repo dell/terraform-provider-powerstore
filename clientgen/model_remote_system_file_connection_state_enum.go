@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // RemoteSystemFileConnectionStateEnum file connection states for remote system * OK                       - Normal conditions. * Update_Needed            - Verify and update needed to handle network configuration changes on the systems. * Not_OK                   - File connection to the remote peer is lost. * Status_Unknown           - File Connection status is unknown at the moment.  Was added in version 3.0.0.0.
 type RemoteSystemFileConnectionStateEnum string
 
 // List of RemoteSystemFileConnectionStateEnum
 const (
-	REMOTESYSTEMFILECONNECTIONSTATEENUM_OK             RemoteSystemFileConnectionStateEnum = "OK"
-	REMOTESYSTEMFILECONNECTIONSTATEENUM_UPDATE_NEEDED  RemoteSystemFileConnectionStateEnum = "Update_Needed"
-	REMOTESYSTEMFILECONNECTIONSTATEENUM_NOT_OK         RemoteSystemFileConnectionStateEnum = "Not_OK"
+	REMOTESYSTEMFILECONNECTIONSTATEENUM_OK RemoteSystemFileConnectionStateEnum = "OK"
+	REMOTESYSTEMFILECONNECTIONSTATEENUM_UPDATE_NEEDED RemoteSystemFileConnectionStateEnum = "Update_Needed"
+	REMOTESYSTEMFILECONNECTIONSTATEENUM_NOT_OK RemoteSystemFileConnectionStateEnum = "Not_OK"
 	REMOTESYSTEMFILECONNECTIONSTATEENUM_STATUS_UNKNOWN RemoteSystemFileConnectionStateEnum = "Status_Unknown"
 )
 
@@ -32,3 +37,4 @@ var AllowedRemoteSystemFileConnectionStateEnumEnumValues = []RemoteSystemFileCon
 func (v *RemoteSystemFileConnectionStateEnum) Value() string {
 	return string(*v)
 }
+

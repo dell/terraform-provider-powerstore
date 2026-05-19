@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // SasPortInstance  Values was added in 3.0.0.0: is_in_use. This resource type has queriable associations from appliance, hardware, sas_port
 type SasPortInstance struct {
 	// Unique identifier of the SAS port.
@@ -20,12 +25,12 @@ type SasPortInstance struct {
 	ApplianceId *string `json:"appliance_id,omitempty"`
 	// Unique identifier of the hardware instance of type 'Node' containing the port.
 	NodeId *string `json:"node_id,omitempty"`
-	// Indicates whether the SAS port's link is up. Values are: * true - Link is up. * false - Link is down.
+	// Indicates whether the SAS port's link is up. Values are: * true - Link is up. * false - Link is down. 
 	IsLinkUp *bool `json:"is_link_up,omitempty"`
 	// Indicates whether the port is in use. Values are: * true - Is in use. * false - Is not in use.  Was added in version 3.0.0.0.
-	IsInUse *bool             `json:"is_in_use,omitempty"`
-	Speed   *SasPortSpeedEnum `json:"speed,omitempty"`
-	// Unique identifier of the hardware instance of type 'SFP' (Small Form-factor Pluggable) inserted into the port.
+	IsInUse *bool `json:"is_in_use,omitempty"`
+	Speed *SasPortSpeedEnum `json:"speed,omitempty"`
+	// Unique identifier of the hardware instance of type 'SFP' (Small Form-factor Pluggable) inserted into the port. 
 	SfpId *string `json:"sfp_id,omitempty"`
 	// Unique identifier of the hardware instance of type 'IO_Module' handling the port. Was deprecated in version 2.0.0.0.
 	IoModuleId *string `json:"io_module_id,omitempty"`
@@ -34,16 +39,18 @@ type SasPortInstance struct {
 	// Index of the SAS port in IO module.
 	PortIndex *int32 `json:"port_index,omitempty"`
 	// Unique identifier of the SAS partner port.
-	PartnerId  *string             `json:"partner_id,omitempty"`
+	PartnerId *string `json:"partner_id,omitempty"`
 	StaleState *PortStaleStateEnum `json:"stale_state,omitempty"`
 	// Localized message string corresponding to speed
 	SpeedL10n *string `json:"speed_l10n,omitempty"`
 	// Localized message string corresponding to stale_state Was added in version 2.0.0.0.
-	StaleStateL10n *string            `json:"stale_state_l10n,omitempty"`
-	Appliance      *ApplianceInstance `json:"appliance,omitempty"`
-	Node           *HardwareInstance  `json:"node,omitempty"`
-	Sfp            *HardwareInstance  `json:"sfp,omitempty"`
-	IoModule       *HardwareInstance  `json:"io_module,omitempty"`
-	HardwareParent *HardwareInstance  `json:"hardware_parent,omitempty"`
-	Partner        *SasPortInstance   `json:"partner,omitempty"`
+	StaleStateL10n *string `json:"stale_state_l10n,omitempty"`
+	Appliance *ApplianceInstance `json:"appliance,omitempty"`
+	Node *HardwareInstance `json:"node,omitempty"`
+	Sfp *HardwareInstance `json:"sfp,omitempty"`
+	IoModule *HardwareInstance `json:"io_module,omitempty"`
+	HardwareParent *HardwareInstance `json:"hardware_parent,omitempty"`
+	Partner *SasPortInstance `json:"partner,omitempty"`
 }
+
+

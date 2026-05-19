@@ -10,14 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // PolicyManagedByEnum Entity that owns and manages this instance. The possible values are:   * User - This instance is managed by the end user.   * Metro - This instance is managed by the peer system where the policy was assigned, in a Metro Cluster configuration.   * Replication - This destination instance is managed by the source system in a Replication configuration.   * VMware_vSphere - This instance is managed by the system through VMware vSphere/vCenter.  Was added in version 3.0.0.0.
 type PolicyManagedByEnum string
 
 // List of PolicyManagedByEnum
 const (
-	POLICYMANAGEDBYENUM_USER             PolicyManagedByEnum = "User"
-	POLICYMANAGEDBYENUM_METRO            PolicyManagedByEnum = "Metro"
-	POLICYMANAGEDBYENUM_REPLICATION      PolicyManagedByEnum = "Replication"
+	POLICYMANAGEDBYENUM_USER PolicyManagedByEnum = "User"
+	POLICYMANAGEDBYENUM_METRO PolicyManagedByEnum = "Metro"
+	POLICYMANAGEDBYENUM_REPLICATION PolicyManagedByEnum = "Replication"
 	POLICYMANAGEDBYENUM_V_MWARE_V_SPHERE PolicyManagedByEnum = "VMware_vSphere"
 )
 
@@ -32,3 +37,4 @@ var AllowedPolicyManagedByEnumEnumValues = []PolicyManagedByEnum{
 func (v *PolicyManagedByEnum) Value() string {
 	return string(*v)
 }
+

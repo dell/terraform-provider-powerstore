@@ -10,22 +10,27 @@ API version: 4.1.0.0
 
 package clientgen
 
-// SnapRuleIntervalEnum Interval between snapshots taken by a snapshot rule. Values are: * Five_Minutes * Fifteen_Minutes * Thirty_Minutes * One_Hour * Two_Hours * Three_Hours * Four_Hours * Six_Hours * Eight_Hours * Twelve_Hours * One_Day
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// SnapRuleIntervalEnum Interval between snapshots taken by a snapshot rule. Values are: * Five_Minutes * Fifteen_Minutes * Thirty_Minutes * One_Hour * Two_Hours * Three_Hours * Four_Hours * Six_Hours * Eight_Hours * Twelve_Hours * One_Day 
 type SnapRuleIntervalEnum string
 
 // List of SnapRuleIntervalEnum
 const (
-	SNAPRULEINTERVALENUM_FIVE_MINUTES    SnapRuleIntervalEnum = "Five_Minutes"
+	SNAPRULEINTERVALENUM_FIVE_MINUTES SnapRuleIntervalEnum = "Five_Minutes"
 	SNAPRULEINTERVALENUM_FIFTEEN_MINUTES SnapRuleIntervalEnum = "Fifteen_Minutes"
-	SNAPRULEINTERVALENUM_THIRTY_MINUTES  SnapRuleIntervalEnum = "Thirty_Minutes"
-	SNAPRULEINTERVALENUM_ONE_HOUR        SnapRuleIntervalEnum = "One_Hour"
-	SNAPRULEINTERVALENUM_TWO_HOURS       SnapRuleIntervalEnum = "Two_Hours"
-	SNAPRULEINTERVALENUM_THREE_HOURS     SnapRuleIntervalEnum = "Three_Hours"
-	SNAPRULEINTERVALENUM_FOUR_HOURS      SnapRuleIntervalEnum = "Four_Hours"
-	SNAPRULEINTERVALENUM_SIX_HOURS       SnapRuleIntervalEnum = "Six_Hours"
-	SNAPRULEINTERVALENUM_EIGHT_HOURS     SnapRuleIntervalEnum = "Eight_Hours"
-	SNAPRULEINTERVALENUM_TWELVE_HOURS    SnapRuleIntervalEnum = "Twelve_Hours"
-	SNAPRULEINTERVALENUM_ONE_DAY         SnapRuleIntervalEnum = "One_Day"
+	SNAPRULEINTERVALENUM_THIRTY_MINUTES SnapRuleIntervalEnum = "Thirty_Minutes"
+	SNAPRULEINTERVALENUM_ONE_HOUR SnapRuleIntervalEnum = "One_Hour"
+	SNAPRULEINTERVALENUM_TWO_HOURS SnapRuleIntervalEnum = "Two_Hours"
+	SNAPRULEINTERVALENUM_THREE_HOURS SnapRuleIntervalEnum = "Three_Hours"
+	SNAPRULEINTERVALENUM_FOUR_HOURS SnapRuleIntervalEnum = "Four_Hours"
+	SNAPRULEINTERVALENUM_SIX_HOURS SnapRuleIntervalEnum = "Six_Hours"
+	SNAPRULEINTERVALENUM_EIGHT_HOURS SnapRuleIntervalEnum = "Eight_Hours"
+	SNAPRULEINTERVALENUM_TWELVE_HOURS SnapRuleIntervalEnum = "Twelve_Hours"
+	SNAPRULEINTERVALENUM_ONE_DAY SnapRuleIntervalEnum = "One_Day"
 )
 
 // All allowed values of SnapRuleIntervalEnum enum
@@ -46,3 +51,4 @@ var AllowedSnapRuleIntervalEnumEnumValues = []SnapRuleIntervalEnum{
 func (v *SnapRuleIntervalEnum) Value() string {
 	return string(*v)
 }
+

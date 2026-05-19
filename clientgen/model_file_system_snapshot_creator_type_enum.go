@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-// FileSystemSnapshotCreatorTypeEnum Enumeration of possible snapshot creator types. * Scheduler - Created by a snapshot schedule. * User - Created by a user.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// FileSystemSnapshotCreatorTypeEnum Enumeration of possible snapshot creator types. * Scheduler - Created by a snapshot schedule. * User - Created by a user.  
 type FileSystemSnapshotCreatorTypeEnum string
 
 // List of FileSystemSnapshotCreatorTypeEnum
 const (
 	FILESYSTEMSNAPSHOTCREATORTYPEENUM_SCHEDULER FileSystemSnapshotCreatorTypeEnum = "Scheduler"
-	FILESYSTEMSNAPSHOTCREATORTYPEENUM_USER      FileSystemSnapshotCreatorTypeEnum = "User"
+	FILESYSTEMSNAPSHOTCREATORTYPEENUM_USER FileSystemSnapshotCreatorTypeEnum = "User"
 )
 
 // All allowed values of FileSystemSnapshotCreatorTypeEnum enum
@@ -28,3 +33,4 @@ var AllowedFileSystemSnapshotCreatorTypeEnumEnumValues = []FileSystemSnapshotCre
 func (v *FileSystemSnapshotCreatorTypeEnum) Value() string {
 	return string(*v)
 }
+

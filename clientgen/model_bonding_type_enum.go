@@ -10,13 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // BondingTypeEnum Bond type: * System_Bond - Immutable default system bond. * User_Bond - User created LACP based link aggregation group.  Was added in version 2.0.0.0.
 type BondingTypeEnum string
 
 // List of BondingTypeEnum
 const (
 	BONDINGTYPEENUM_SYSTEM_BOND BondingTypeEnum = "System_Bond"
-	BONDINGTYPEENUM_USER_BOND   BondingTypeEnum = "User_Bond"
+	BONDINGTYPEENUM_USER_BOND BondingTypeEnum = "User_Bond"
 )
 
 // All allowed values of BondingTypeEnum enum
@@ -28,3 +33,4 @@ var AllowedBondingTypeEnumEnumValues = []BondingTypeEnum{
 func (v *BondingTypeEnum) Value() string {
 	return string(*v)
 }
+

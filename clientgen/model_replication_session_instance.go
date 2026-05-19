@@ -11,31 +11,33 @@ API version: 4.1.0.0
 package clientgen
 
 import (
+	"encoding/json"
 	"time"
 )
 
+
 // ReplicationSessionInstance A replication session.  This resource type has queriable associations from remote_system, replication_rule, volume, volume_group
 type ReplicationSessionInstance struct {
-	// Unique identifier of the replication session instance.
-	Id                *string                     `json:"id,omitempty"`
-	State             *ReplicationStateEnum       `json:"state,omitempty"`
-	Role              *ReplicationRoleEnum        `json:"role,omitempty"`
-	ResourceType      *ReplicatedResourceTypeEnum `json:"resource_type,omitempty"`
-	DataTransferState *DataTransferStateEnum      `json:"data_transfer_state,omitempty"`
-	Type              *ReplicationSessionTypeEnum `json:"type,omitempty"`
-	// Time of last successful synchronization. For metro type replication sessions, this property is updated only during asynchronous copy phases. This is not supported for Nas Server replication sessions.
+	// Unique identifier of the replication session instance. 
+	Id *string `json:"id,omitempty"`
+	State *ReplicationStateEnum `json:"state,omitempty"`
+	Role *ReplicationRoleEnum `json:"role,omitempty"`
+	ResourceType *ReplicatedResourceTypeEnum `json:"resource_type,omitempty"`
+	DataTransferState *DataTransferStateEnum `json:"data_transfer_state,omitempty"`
+	Type *ReplicationSessionTypeEnum `json:"type,omitempty"`
+	// Time of last successful synchronization. For metro type replication sessions, this property is updated only during asynchronous copy phases. This is not supported for Nas Server replication sessions. 
 	LastSyncTimestamp *time.Time `json:"last_sync_timestamp,omitempty"`
-	// Unique identifier of the local storage resource for the replication session.
+	// Unique identifier of the local storage resource for the replication session. 
 	LocalResourceId *string `json:"local_resource_id,omitempty"`
-	// Unique identifier of the remote storage resource for the replication session.
+	// Unique identifier of the remote storage resource for the replication session. 
 	RemoteResourceId *string `json:"remote_resource_id,omitempty"`
-	// Unique identifier of the remote system instance.
+	// Unique identifier of the remote system instance. 
 	RemoteSystemId *string `json:"remote_system_id,omitempty"`
-	// Progress of the current replication operation. This value is only available from the source system for the replication session, and is not supported for Nas Server replication sessions.
+	// Progress of the current replication operation. This value is only available from the source system for the replication session, and is not supported for Nas Server replication sessions. 
 	ProgressPercentage *int32 `json:"progress_percentage,omitempty"`
-	// Estimated completion time of the current replication operation. This is not supported for Nas Server replication sessions.
+	// Estimated completion time of the current replication operation. This is not supported for Nas Server replication sessions. 
 	EstimatedCompletionTimestamp *time.Time `json:"estimated_completion_timestamp,omitempty"`
-	// Associated replication rule instance if created by policy engine.
+	// Associated replication rule instance if created by policy engine. 
 	ReplicationRuleId *string `json:"replication_rule_id,omitempty"`
 	// Elapsed time of the last synchronization operation in milliseconds.  This is not supported for Nas Server replication sessions. For metro type replication sessions, this property is updated only during asynchronous copy phases.  Was added in version 2.0.0.0.
 	LastSyncDuration *int32 `json:"last_sync_duration,omitempty"`
@@ -46,12 +48,12 @@ type ReplicationSessionInstance struct {
 	// Indicates whether a test failover is in progress on the destination system of this replication session. This is not supported for Nas Server replication sessions.  Was added in version 2.0.0.0.
 	FailoverTestInProgress *bool `json:"failover_test_in_progress,omitempty"`
 	// Error code for the asynchronous copy phase failure.  Was added in version 3.0.0.0.
-	ErrorCode           *string                  `json:"error_code,omitempty"`
+	ErrorCode *string `json:"error_code,omitempty"`
 	DataConnectionState *DataConnectionStateEnum `json:"data_connection_state,omitempty"`
 	// Parent Replication session identifier. This is only applicable for replication sessions of type file system.  Was added in version 3.0.0.0.
-	ParentReplicationSessionId *string                           `json:"parent_replication_session_id,omitempty"`
-	LocalResourceState         *ReplicationResourceStateEnum     `json:"local_resource_state,omitempty"`
-	WitnessDetails             *ReplicationSessionWitnessDetails `json:"witness_details,omitempty"`
+	ParentReplicationSessionId *string `json:"parent_replication_session_id,omitempty"`
+	LocalResourceState *ReplicationResourceStateEnum `json:"local_resource_state,omitempty"`
+	WitnessDetails *ReplicationSessionWitnessDetails `json:"witness_details,omitempty"`
 	// Localized message string corresponding to state
 	StateL10n *string `json:"state_l10n,omitempty"`
 	// Localized message string corresponding to role
@@ -65,12 +67,14 @@ type ReplicationSessionInstance struct {
 	// Localized message string corresponding to data_connection_state Was added in version 3.0.0.0.
 	DataConnectionStateL10n *string `json:"data_connection_state_l10n,omitempty"`
 	// Localized message string corresponding to local_resource_state Was added in version 3.0.0.0.
-	LocalResourceStateL10n *string                   `json:"local_resource_state_l10n,omitempty"`
-	RemoteSystem           *RemoteSystemInstance     `json:"remote_system,omitempty"`
-	MigrationSession       *MigrationSessionInstance `json:"migration_session,omitempty"`
-	ReplicationRule        *ReplicationRuleInstance  `json:"replication_rule,omitempty"`
+	LocalResourceStateL10n *string `json:"local_resource_state_l10n,omitempty"`
+	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
+	MigrationSession *MigrationSessionInstance `json:"migration_session,omitempty"`
+	ReplicationRule *ReplicationRuleInstance `json:"replication_rule,omitempty"`
 	// List of the volumes that are associated with this replication_session.
 	Volumes []VolumeInstance `json:"volumes,omitempty"`
 	// List of the volume_groups that are associated with this replication_session.
 	VolumeGroups []VolumeGroupInstance `json:"volume_groups,omitempty"`
 }
+
+

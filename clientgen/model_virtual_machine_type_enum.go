@@ -10,12 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
-// VirtualMachineTypeEnum Type of VM: * Primary - A base VM. * Template - A VM template. * Snapshot - A snapshot of a VM.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// VirtualMachineTypeEnum Type of VM: * Primary - A base VM. * Template - A VM template. * Snapshot - A snapshot of a VM. 
 type VirtualMachineTypeEnum string
 
 // List of VirtualMachineTypeEnum
 const (
-	VIRTUALMACHINETYPEENUM_PRIMARY  VirtualMachineTypeEnum = "Primary"
+	VIRTUALMACHINETYPEENUM_PRIMARY VirtualMachineTypeEnum = "Primary"
 	VIRTUALMACHINETYPEENUM_TEMPLATE VirtualMachineTypeEnum = "Template"
 	VIRTUALMACHINETYPEENUM_SNAPSHOT VirtualMachineTypeEnum = "Snapshot"
 )
@@ -30,3 +35,4 @@ var AllowedVirtualMachineTypeEnumEnumValues = []VirtualMachineTypeEnum{
 func (v *VirtualMachineTypeEnum) Value() string {
 	return string(*v)
 }
+

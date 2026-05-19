@@ -10,13 +10,20 @@ API version: 4.1.0.0
 
 package clientgen
 
-// ReplicationElementPair Replication session element pair which maps the local storage element to the remote storage element.
+import (
+	"encoding/json"
+)
+
+
+// ReplicationElementPair Replication session element pair which maps the local storage element to the remote storage element. 
 type ReplicationElementPair struct {
-	// Unique identifier of a local storage element.
+	// Unique identifier of a local storage element. 
 	LocalStorageElementId string `json:"local_storage_element_id"`
-	// Unique identifier of a remote storage element.
-	RemoteStorageElementId string                  `json:"remote_storage_element_id"`
-	StorageElementType     *StorageElementTypeEnum `json:"storage_element_type,omitempty"`
-	// Unique identifier of the internal snap used for replicating data.
+	// Unique identifier of a remote storage element. 
+	RemoteStorageElementId string `json:"remote_storage_element_id"`
+	StorageElementType *StorageElementTypeEnum `json:"storage_element_type,omitempty"`
+	// Unique identifier of the internal snap used for replicating data. 
 	ReplicationShadowId *string `json:"replication_shadow_id,omitempty"`
 }
+
+

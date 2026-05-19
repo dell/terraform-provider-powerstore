@@ -10,6 +10,11 @@ API version: 4.1.0.0
 
 package clientgen
 
+import (
+	"encoding/json"
+)
+
+
 // IpPortInstance  Values was added in 3.5.0.0: fsn.name. This resource type has queriable associations from ip_port, fsn, bond, eth_port, veth_port, ip_pool_address, file_interface
 type IpPortInstance struct {
 	// Unique identifier of the IP port.
@@ -24,11 +29,11 @@ type IpPortInstance struct {
 	CurrentUsages []IpPortUsageEnum `json:"current_usages,omitempty"`
 	// Unique identifier of the FSN on top of which the IP port is configured. If the IP port is configured on top of an Ethernet frontend-port or a bond, this attribute should be empty.  Was added in version 3.5.0.0.
 	FsnId *string `json:"fsn_id,omitempty"`
-	// Unique identifier of the bond on top of which the IP port is configured. If the IP port is configured on top of an Ethernet front-end port or an FSN, this attribute should be empty.
+	// Unique identifier of the bond on top of which the IP port is configured. If the IP port is configured on top of an Ethernet front-end port or an FSN, this attribute should be empty. 
 	BondId *string `json:"bond_id,omitempty"`
-	// Unique identifier of the physical Ethernet front-end port on top of which the IP port is configured. This attribute can be set when the IP port is used by a Unified appliance. It should be empty if the IP port is used by a Unified+ appliance or if the IP port is configured on top of a bond or an FSN on a Unified appliance.
+	// Unique identifier of the physical Ethernet front-end port on top of which the IP port is configured. This attribute can be set when the IP port is used by a Unified appliance. It should be empty if the IP port is used by a Unified+ appliance or if the IP port is configured on top of a bond or an FSN on a Unified appliance. 
 	EthPortId *string `json:"eth_port_id,omitempty"`
-	// Unique identifier of the virtual Ethernet front-end port on top of which the IP port is configured. This attribute can be set when the IP port is used by a Unified+ appliance. For a Unified appliance, the value of veth_port_id should be empty.
+	// Unique identifier of the virtual Ethernet front-end port on top of which the IP port is configured. This attribute can be set when the IP port is used by a Unified+ appliance. For a Unified appliance, the value of veth_port_id should be empty. 
 	VethPortId *string `json:"veth_port_id,omitempty"`
 	// Localized message array corresponding to available_usages
 	AvailableUsagesL10n []string `json:"available_usages_l10n,omitempty"`
@@ -36,11 +41,13 @@ type IpPortInstance struct {
 	CurrentUsagesL10n []string `json:"current_usages_l10n,omitempty"`
 	// This is the inverse of the resource type ip_pool_address association.
 	IpPoolAddresses []IpPoolAddressInstance `json:"ip_pool_addresses,omitempty"`
-	Partner         *IpPortInstance         `json:"partner,omitempty"`
-	Fsn             *FsnInstance            `json:"fsn,omitempty"`
-	Bond            *BondInstance           `json:"bond,omitempty"`
-	EthPort         *EthPortInstance        `json:"eth_port,omitempty"`
-	VethPort        *VethPortInstance       `json:"veth_port,omitempty"`
+	Partner *IpPortInstance `json:"partner,omitempty"`
+	Fsn *FsnInstance `json:"fsn,omitempty"`
+	Bond *BondInstance `json:"bond,omitempty"`
+	EthPort *EthPortInstance `json:"eth_port,omitempty"`
+	VethPort *VethPortInstance `json:"veth_port,omitempty"`
 	// This is the inverse of the resource type file_interface association.
 	FileInterfaces []FileInterfaceInstance `json:"file_interfaces,omitempty"`
 }
+
+
