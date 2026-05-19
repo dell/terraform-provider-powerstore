@@ -23,6 +23,6 @@ limitations under the License.
 # 3. Empty mode: Empty the entire recycle bin
 
 # Example: Set recycle bin expiration duration to 7 days
-resource "powerstore_recycle_bin" "config" {
+resource "powerstore_recycle_bin_config" "example" {
   expiration_duration = 7
 }
