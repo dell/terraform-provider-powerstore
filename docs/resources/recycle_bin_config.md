@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-title: "powerstore_recycle_bin resource"
-linkTitle: "powerstore_recycle_bin"
-page_title: "powerstore_recycle_bin Resource - powerstore"
+title: "powerstore_recycle_bin_config resource"
+linkTitle: "powerstore_recycle_bin_config"
+page_title: "powerstore_recycle_bin_config Resource - powerstore"
 subcategory: ""
 description: |-
   This resource is used to manage the PowerStore recycle bin configuration. It supports declaring the recycle bin retention period (expiration_duration), reading the current configuration, detecting and correcting configuration drift, and importing existing configuration into Terraform state.
   Note: Running terraform destroy on this resource only removes it from Terraform state. The recycle bin configuration is a singleton on the PowerStore array and cannot be deleted.
 ---
 
-# powerstore_recycle_bin (Resource)
+# powerstore_recycle_bin_config (Resource)
 
 This resource is used to manage the PowerStore recycle bin configuration. It supports declaring the recycle bin retention period (`expiration_duration`), reading the current configuration, detecting and correcting configuration drift, and importing existing configuration into Terraform state.
 
@@ -57,7 +57,7 @@ limitations under the License.
 # 3. Empty mode: Empty the entire recycle bin
 
 # Example: Set recycle bin expiration duration to 7 days
-resource "powerstore_recycle_bin" "example" {
+resource "powerstore_recycle_bin_config" "example" {
   expiration_duration = 7
 }
 ```
@@ -98,9 +98,9 @@ Import is supported using the following syntax:
 # Step 1 - To import recycle bin config, use id "0" (the config ID is always 0)
 # Step 2 - Add empty resource block in tf file
 # eg.
-# resource "powerstore_recycle_bin" "resource_block_name" {
+# resource "powerstore_recycle_bin_config" "resource_block_name" {
 #   expiration_duration = 7
 # }
-# Step 3 - Execute the command: terraform import "powerstore_recycle_bin.resource_block_name" "0"
+# Step 3 - Execute the command: terraform import "powerstore_recycle_bin_config.resource_block_name" "0"
 # Step 4 - After successful execution of the command, check the state file
 ```

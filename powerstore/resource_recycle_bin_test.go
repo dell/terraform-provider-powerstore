@@ -44,8 +44,8 @@ func TestAccRecycleBinConfig_Create(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + RecycleBinConfigParams7Days,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_recycle_bin.test", "id", "0"),
-					resource.TestCheckResourceAttr("powerstore_recycle_bin.test", "expiration_duration", "7"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "id", "0"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "expiration_duration", "7"),
 				),
 			},
 		},
@@ -65,13 +65,13 @@ func TestAccRecycleBinConfig_Update(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + RecycleBinConfigParams7Days,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_recycle_bin.test", "expiration_duration", "7"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "expiration_duration", "7"),
 				),
 			},
 			{
 				Config: ProviderConfigForTesting + RecycleBinConfigParams14Days,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_recycle_bin.test", "expiration_duration", "14"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "expiration_duration", "14"),
 				),
 			},
 		},
@@ -91,7 +91,7 @@ func TestAccRecycleBinConfig_ZeroDays(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + RecycleBinConfigParams0Days,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_recycle_bin.test", "expiration_duration", "0"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "expiration_duration", "0"),
 				),
 			},
 		},
@@ -129,12 +129,12 @@ func TestAccRecycleBinConfig_ImportSuccess(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + RecycleBinConfigParams7Days,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_recycle_bin.test", "expiration_duration", "7"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "expiration_duration", "7"),
 				),
 			},
 			{
 				Config:            ProviderConfigForTesting + RecycleBinConfigParams7Days,
-				ResourceName:      "powerstore_recycle_bin.test",
+				ResourceName:      "powerstore_recycle_bin_config.test",
 				ImportState:       true,
 				ExpectError:       nil,
 				ImportStateVerify: false,
@@ -148,25 +148,25 @@ func TestAccRecycleBinConfig_ImportSuccess(t *testing.T) {
 }
 
 var RecycleBinConfigParams7Days = `
-resource "powerstore_recycle_bin" "test" {
+resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 7
 }
 `
 
 var RecycleBinConfigParams14Days = `
-resource "powerstore_recycle_bin" "test" {
+resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 14
 }
 `
 
 var RecycleBinConfigParams0Days = `
-resource "powerstore_recycle_bin" "test" {
+resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 0
 }
 `
 
 var RecycleBinConfigParamsInvalidDuration = `
-resource "powerstore_recycle_bin" "test" {
+resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 31
 }
 `

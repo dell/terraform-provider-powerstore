@@ -18,8 +18,8 @@
 # Step 1 - To import recycle bin config, use id "0" (the config ID is always 0)
 # Step 2 - Add empty resource block in tf file
 # eg.
-# resource "powerstore_recycle_bin" "resource_block_name" {
+# resource "powerstore_recycle_bin_config" "resource_block_name" {
 #   expiration_duration = 7
 # }
-# Step 3 - Execute the command: terraform import "powerstore_recycle_bin.resource_block_name" "0"
+# Step 3 - Execute the command: terraform import "powerstore_recycle_bin_config.resource_block_name" "0"
 # Step 4 - After successful execution of the command, check the state file

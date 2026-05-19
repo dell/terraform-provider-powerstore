@@ -21,5 +21,7 @@ RequiredAPIs = [
     "/login_session",
     "/recycle_bin",
     "/recycle_bin/{id}",
+    "/recycle_bin/{id}/recover",
+    "/recycle_bin/empty",
     "/recycle_bin_config/{id}",
 ]

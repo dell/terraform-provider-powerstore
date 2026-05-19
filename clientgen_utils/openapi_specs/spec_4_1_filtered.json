@@ -1165,6 +1165,85 @@
 				"operationId": "delete_recycle_bin_by_id"
 			}
 		},
+		"/recycle_bin/{id}/recover": {
+			"post": {
+				"summary": "Recover",
+				"description": "Recover one storage object from the recycle bin.\nWas added in version 3.5.0.0.",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the instance to recover. name:{name} can be used instead of {id}.",
+						"required": true,
+						"type": "string",
+						"x-ref": "recycle_bin"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/recycle_bin_recover"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "recycle_bin_recover"
+			}
+		},
+		"/recycle_bin/empty": {
+			"post": {
+				"summary": "Empty",
+				"description": "Empty the recycle bin by permanently deleting all storage objects it contains.\nWas added in version 3.5.0.0.",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin"
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_recycle_bin_by_id"
+			}
+		},
 		"/recycle_bin_config/{id}": {
 			"get": {
 				"description": "Query a specific recycle bin configuration instance.\nWas added in version 3.5.0.0.",
@@ -12707,6 +12786,11 @@
 					"format": "int32"
 				}
 			}
+		},
+		"recycle_bin_recover": {
+			"description": "This body parameter definition is a work around until MDT-357441 is fixed to allow bulk/POST with no arguments.\nWas added in version 3.5.0.0.",
+			"x-added": "3.5.0.0",
+			"properties": {}
 		},
 		"remote_snapshot_session_instance": {
 			"type": "object",

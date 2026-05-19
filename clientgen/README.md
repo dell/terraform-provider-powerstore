@@ -81,6 +81,8 @@ Class | Method | HTTP request | Description
 *RecycleBinApi* | [**DeleteRecycleBinById**](docs/RecycleBinApi.md#deleterecyclebinbyid) | **Delete** /recycle_bin/{id} | Delete
 *RecycleBinApi* | [**GetAllRecycleBins**](docs/RecycleBinApi.md#getallrecyclebins) | **Get** /recycle_bin | Collection Query
 *RecycleBinApi* | [**GetRecycleBinById**](docs/RecycleBinApi.md#getrecyclebinbyid) | **Get** /recycle_bin/{id} | Instance Query
+*RecycleBinApi* | [**PostRecycleBinById**](docs/RecycleBinApi.md#postrecyclebinbyid) | **Post** /recycle_bin/empty | Empty
+*RecycleBinApi* | [**RecycleBinRecover**](docs/RecycleBinApi.md#recyclebinrecover) | **Post** /recycle_bin/{id}/recover | Recover
 *RecycleBinConfigApi* | [**GetRecycleBinConfigById**](docs/RecycleBinConfigApi.md#getrecyclebinconfigbyid) | **Get** /recycle_bin_config/{id} | Instance Query
 *RecycleBinConfigApi* | [**PatchRecycleBinConfigById**](docs/RecycleBinConfigApi.md#patchrecyclebinconfigbyid) | **Patch** /recycle_bin_config/{id} | Modify
 *VolumeGroupApi* | [**DeleteVolumeGroupById**](docs/VolumeGroupApi.md#deletevolumegroupbyid) | **Delete** /volume_group/{id} | Delete
