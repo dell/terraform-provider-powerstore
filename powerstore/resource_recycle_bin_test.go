@@ -23,9 +23,11 @@ import (
 	"regexp"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/models"
 	"testing"
 
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
@@ -147,6 +149,27 @@ func TestAccRecycleBinConfig_ImportSuccess(t *testing.T) {
 	})
 }
 
+// Test empty recycle bin mode
+func TestAccRecycleBinConfig_Empty(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RecycleBinConfigParamsEmpty,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "id", "empty"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "empty_recycle_bin", "true"),
+				),
+			},
+		},
+	})
+}
+
 var RecycleBinConfigParams7Days = `
 resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 7
@@ -168,6 +191,12 @@ resource "powerstore_recycle_bin_config" "test" {
 var RecycleBinConfigParamsInvalidDuration = `
 resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 31
+}
+`
+
+var RecycleBinConfigParamsEmpty = `
+resource "powerstore_recycle_bin_config" "test" {
+	empty_recycle_bin = true
 }
 `
 
@@ -255,4 +284,24 @@ func TestResourceRecycleBin_Schema(t *testing.T) {
 
 	assert.False(t, resp.Diagnostics.HasError())
 	assert.NotNil(t, resp.Schema)
+}
+
+// Test resolveRecycleBinItem without resource_id or resource_name
+func TestResolveRecycleBinItem_WithoutIdentifier(t *testing.T) {
+	r := &resourceRecycleBin{}
+	c := &client.Client{GenClient: &clientgen.APIClient{}}
+	req := fwresource.ConfigureRequest{
+		ProviderData: c,
+	}
+	resp := &fwresource.ConfigureResponse{}
+	r.Configure(context.Background(), req, resp)
+
+	ctx := context.Background()
+	plan := models.RecycleBinConfigResource{
+		Action: types.StringValue("recover"),
+	}
+
+	_, err := r.resolveRecycleBinItem(ctx, plan)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "either resource_id or resource_name must be specified")
 }

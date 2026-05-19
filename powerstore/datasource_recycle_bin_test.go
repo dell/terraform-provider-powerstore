@@ -271,3 +271,33 @@ func TestMapRecycleBinItemsToState_NilFields(t *testing.T) {
 	assert.Equal(t, "", state[0].ID.ValueString())
 	assert.Equal(t, "", state[0].Name.ValueString())
 }
+
+// Test mapRecycleBinItemsToState with multiple items
+func TestMapRecycleBinItemsToState_MultipleItems(t *testing.T) {
+	id1 := "test-id-1"
+	name1 := "test-volume-1"
+	resourceType1 := clientgen.RECYCLEBINRESOURCETYPEENUM_VOLUME
+	id2 := "test-id-2"
+	name2 := "test-volume-2"
+	resourceType2 := clientgen.RECYCLEBINRESOURCETYPEENUM_VOLUME_GROUP
+
+	items := []clientgen.RecycleBinInstance{
+		{
+			Id:           &id1,
+			Name:         &name1,
+			ResourceType: &resourceType1,
+		},
+		{
+			Id:           &id2,
+			Name:         &name2,
+			ResourceType: &resourceType2,
+		},
+	}
+
+	state := mapRecycleBinItemsToState(items)
+	assert.Len(t, state, 2)
+	assert.Equal(t, "test-id-1", state[0].ID.ValueString())
+	assert.Equal(t, "test-volume-1", state[0].Name.ValueString())
+	assert.Equal(t, "test-id-2", state[1].ID.ValueString())
+	assert.Equal(t, "test-volume-2", state[1].Name.ValueString())
+}
