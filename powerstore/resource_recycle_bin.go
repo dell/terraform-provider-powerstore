@@ -199,7 +199,7 @@ func (r *resourceRecycleBin) resolveRecycleBinItem(ctx context.Context, plan mod
 		}
 
 		if len(matches) == 0 {
-			return "", fmt.Errorf("Recycle bin item not found with name '%s'", name)
+			return "", fmt.Errorf("recycle bin item not found with name '%s'", name)
 		}
 		if len(matches) > 1 {
 			return "", fmt.Errorf("multiple recycle bin items found with name '%s', specify resource_type to narrow", name)
