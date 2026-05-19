@@ -110,7 +110,7 @@ func (r *resourceRecycleBin) Configure(ctx context.Context, req resource.Configu
 func (r *resourceRecycleBin) getRecycleBinConfig(ctx context.Context, id string) (*clientgen.RecycleBinConfigInstance, error) {
 	queries := make(url.Values)
 	queries.Set("select", "id,expiration_duration")
-	result, _, err := r.client.RecycleBinApi.GetRecycleBinConfigById(ctx, id).Queries(queries).Execute()
+	result, _, err := r.client.RecycleBinConfigApi.GetRecycleBinConfigById(ctx, id).Queries(queries).Execute()
 	return result, err
 }
 
@@ -126,7 +126,7 @@ func (r *resourceRecycleBin) Create(ctx context.Context, req resource.CreateRequ
 	configID := "0"
 	duration := plan.ExpirationDuration.ValueInt32()
 
-	_, err := r.client.RecycleBinApi.PatchRecycleBinConfigById(ctx, configID).Body(clientgen.RecycleBinConfigModify{
+	_, err := r.client.RecycleBinConfigApi.PatchRecycleBinConfigById(ctx, configID).Body(clientgen.RecycleBinConfigModify{
 		ExpirationDuration: &duration,
 	}).Execute()
 	if err != nil {
@@ -188,7 +188,7 @@ func (r *resourceRecycleBin) Update(ctx context.Context, req resource.UpdateRequ
 	configID := "0"
 	duration := plan.ExpirationDuration.ValueInt32()
 
-	_, err := r.client.RecycleBinApi.PatchRecycleBinConfigById(ctx, configID).Body(clientgen.RecycleBinConfigModify{
+	_, err := r.client.RecycleBinConfigApi.PatchRecycleBinConfigById(ctx, configID).Body(clientgen.RecycleBinConfigModify{
 		ExpirationDuration: &duration,
 	}).Execute()
 	if err != nil {

@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"time"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -158,13 +159,13 @@ func (d *recycleBinDataSource) Configure(_ context.Context, req datasource.Confi
 
 // getRecycleBinItems fetches all recycle bin items
 func (d *recycleBinDataSource) getRecycleBinItems(ctx context.Context) ([]clientgen.RecycleBinInstance, error) {
-	result, _, err := d.client.RecycleBinApi.GetAllRecycleBinItems(ctx).Execute()
+	result, _, err := d.client.RecycleBinApi.GetAllRecycleBins(ctx).Execute()
 	return result, err
 }
 
 // getRecycleBinItem fetches a specific recycle bin item by ID
 func (d *recycleBinDataSource) getRecycleBinItem(ctx context.Context, id string) (*clientgen.RecycleBinInstance, error) {
-	result, _, err := d.client.RecycleBinApi.GetRecycleBinItemById(ctx, id).Execute()
+	result, _, err := d.client.RecycleBinApi.GetRecycleBinById(ctx, id).Execute()
 	return result, err
 }
 
@@ -174,7 +175,7 @@ func (d *recycleBinDataSource) getRecycleBinItemsByFilter(ctx context.Context, f
 	for k, v := range filters {
 		queries.Set(k, v)
 	}
-	result, _, err := d.client.RecycleBinApi.GetAllRecycleBinItems(ctx).Queries(queries).Execute()
+	result, _, err := d.client.RecycleBinApi.GetAllRecycleBins(ctx).Queries(queries).Execute()
 	return result, err
 }
 
@@ -237,7 +238,7 @@ func mapRecycleBinItemsToState(items []clientgen.RecycleBinInstance) []models.Re
 			model.Name = types.StringValue(*item.Name)
 		}
 		if item.ResourceType != nil {
-			model.ResourceType = types.StringValue(*item.ResourceType)
+			model.ResourceType = types.StringValue(string(*item.ResourceType))
 		}
 		if item.LogicalProvisioned != nil {
 			model.LogicalProvisioned = types.Int64Value(*item.LogicalProvisioned)
@@ -249,10 +250,10 @@ func mapRecycleBinItemsToState(items []clientgen.RecycleBinInstance) []models.Re
 			model.ApplianceID = types.StringValue(*item.ApplianceId)
 		}
 		if item.DeletionTimestamp != nil {
-			model.DeletionTimestamp = types.StringValue(*item.DeletionTimestamp)
+			model.DeletionTimestamp = types.StringValue(item.DeletionTimestamp.Format(time.RFC3339))
 		}
 		if item.ExpirationTimestamp != nil {
-			model.ExpirationTimestamp = types.StringValue(*item.ExpirationTimestamp)
+			model.ExpirationTimestamp = types.StringValue(item.ExpirationTimestamp.Format(time.RFC3339))
 		}
 		if item.ResourceTypeL10n != nil {
 			model.ResourceTypeL10N = types.StringValue(*item.ResourceTypeL10n)
