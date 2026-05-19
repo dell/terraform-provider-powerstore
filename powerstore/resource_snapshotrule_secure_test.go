@@ -23,6 +23,8 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test U-26: Create secure snapshot rule
@@ -38,7 +40,7 @@ func TestAccSnapshotRule_CreateSecure(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + SecureSnapshotRuleParams,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "name", "tf_secure_snapshotrule"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "name", "ZZZ_AT_tf_secure_snapshotrule"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "is_secure", "true"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "interval", "Four_Hours"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "desired_retention", "24"),
@@ -61,7 +63,7 @@ func TestAccSnapshotRule_CreateNonSecure(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + NonSecureSnapshotRuleParams,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_nonsecure", "name", "tf_nonsecure_snapshotrule"),
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_nonsecure", "name", "ZZZ_AT_tf_nonsecure_snapshotrule"),
 					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_nonsecure", "is_secure", "false"),
 				),
 			},
@@ -119,11 +121,97 @@ func TestAccSnapshotRule_RejectUnsecure(t *testing.T) {
 	})
 }
 
+// Test U-30: Import secure snapshot rule
+func TestAccSnapshotRule_ImportSecure(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + SecureSnapshotRuleParams,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "is_secure", "true"),
+				),
+			},
+			{
+				Config:       ProviderConfigForTesting + SecureSnapshotRuleParams,
+				ResourceName: "powerstore_snapshotrule.test_secure",
+				ImportState:  true,
+				ExpectError:  nil,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "ZZZ_AT_tf_secure_snapshotrule", s[0].Attributes["name"])
+					assert.Equal(t, "true", s[0].Attributes["is_secure"])
+					return nil
+				},
+			},
+		},
+	})
+}
+
+// Test I-09: Idempotent re-apply of secure snapshot rule
+func TestAccSnapshotRule_SecureIdempotent(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + SecureSnapshotRuleParams,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "is_secure", "true"),
+				),
+			},
+			// Re-apply same config - should produce no changes
+			{
+				Config: ProviderConfigForTesting + SecureSnapshotRuleParams,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_secure", "is_secure", "true"),
+				),
+			},
+		},
+	})
+}
+
+// Test E-10: Explicit is_secure=false for snapshot rule
+func TestAccSnapshotRule_ExplicitFalse(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + `
+resource "powerstore_snapshotrule" "test_explicit_false" {
+  name              = "ZZZ_AT_tf_explicit_false_rule"
+  interval          = "Four_Hours"
+  desired_retention = 24
+  is_secure         = false
+  delete_snaps      = true
+}
+`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_snapshotrule.test_explicit_false", "is_secure", "false"),
+				),
+			},
+		},
+	})
+}
+
 // --- HCL Test Configs ---
 
 var SecureSnapshotRuleParams = `
 resource "powerstore_snapshotrule" "test_secure" {
-  name              = "tf_secure_snapshotrule"
+  name              = "ZZZ_AT_tf_secure_snapshotrule"
   interval          = "Four_Hours"
   desired_retention = 24
   is_secure         = true
@@ -133,7 +221,7 @@ resource "powerstore_snapshotrule" "test_secure" {
 
 var NonSecureSnapshotRuleParams = `
 resource "powerstore_snapshotrule" "test_nonsecure" {
-  name              = "tf_nonsecure_snapshotrule"
+  name              = "ZZZ_AT_tf_nonsecure_snapshotrule"
   interval          = "Four_Hours"
   desired_retention = 24
   delete_snaps      = true
@@ -142,7 +230,7 @@ resource "powerstore_snapshotrule" "test_nonsecure" {
 
 var SnapshotRuleParamsUpdateToSecure = `
 resource "powerstore_snapshotrule" "test_nonsecure" {
-  name              = "tf_nonsecure_snapshotrule"
+  name              = "ZZZ_AT_tf_nonsecure_snapshotrule"
   interval          = "Four_Hours"
   desired_retention = 24
   is_secure         = true
@@ -152,7 +240,7 @@ resource "powerstore_snapshotrule" "test_nonsecure" {
 
 var SnapshotRuleParamsRevertSecure = `
 resource "powerstore_snapshotrule" "test_secure" {
-  name              = "tf_secure_snapshotrule"
+  name              = "ZZZ_AT_tf_secure_snapshotrule"
   interval          = "Four_Hours"
   desired_retention = 24
   is_secure         = false

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/models"
 
@@ -402,6 +403,16 @@ func (r *resourceVolumeSnapshot) Delete(ctx context.Context, req resource.Delete
 	_, err := r.client.PStoreClient.DeleteSnapshot(context.Background(), nil, snapshotID)
 
 	if err != nil {
+		errMsg := strings.ToLower(err.Error())
+		// Match various secure snapshot retention error patterns from the API
+		isSecureRetentionErr := strings.Contains(errMsg, "secure") &&
+			(strings.Contains(errMsg, "cannot") || strings.Contains(errMsg, "can not")) ||
+			strings.Contains(errMsg, "retention")
+		if isSecureRetentionErr {
+			log.Printf("[WARN] Cannot delete secure snapshot %s (retention period active). Removing from state; it will auto-expire. Error: %v", snapshotID, err)
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Error deleting snapshot",
 			"Could not delete snapshotID "+snapshotID+": "+err.Error(),

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -331,6 +332,16 @@ func (r *resourceFileSystemSnapshot) Delete(ctx context.Context, req resource.De
 	_, err := r.client.PStoreClient.DeleteFsSnapshot(context.Background(), snapshotID)
 
 	if err != nil {
+		errMsg := strings.ToLower(err.Error())
+		// Match various secure snapshot retention error patterns from the API
+		isSecureRetentionErr := strings.Contains(errMsg, "secure") &&
+			(strings.Contains(errMsg, "cannot") || strings.Contains(errMsg, "can not")) ||
+			strings.Contains(errMsg, "retention")
+		if isSecureRetentionErr {
+			log.Printf("[WARN] Cannot delete secure FS snapshot %s (retention period active). Removing from state; it will auto-expire. Error: %v", snapshotID, err)
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Error deleting snapshot",
 			"Could not delete snapshotID "+snapshotID+": "+err.Error(),
