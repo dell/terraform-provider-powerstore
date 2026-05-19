@@ -21,6 +21,7 @@ import (
 	"context"
 	"os"
 	"regexp"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
@@ -170,6 +171,90 @@ func TestAccRecycleBinConfig_Empty(t *testing.T) {
 	})
 }
 
+// Test item action mode - recover by resource_id (mock server only)
+func TestAccRecycleBinConfig_RecoverByID(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	// Skip on real server (no pre-populated recycle bin)
+	endpoint := os.Getenv("POWERSTORE_ENDPOINT")
+	if endpoint != "" && !strings.Contains(endpoint, "localhost") && !strings.Contains(endpoint, "127.0.0.1") {
+		t.Skip("Skipping on real server - requires pre-populated recycle bin")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RecycleBinConfigParamsRecoverByID,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "id", "tfacc_recycle_bin_item_id"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "resource_id", "tfacc_recycle_bin_item_id"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "action", "recover"),
+				),
+			},
+		},
+	})
+}
+
+// Test item action mode - delete by resource_id (mock server only)
+func TestAccRecycleBinConfig_DeleteByID(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	// Skip on real server (no pre-populated recycle bin)
+	endpoint := os.Getenv("POWERSTORE_ENDPOINT")
+	if endpoint != "" && !strings.Contains(endpoint, "localhost") && !strings.Contains(endpoint, "127.0.0.1") {
+		t.Skip("Skipping on real server - requires pre-populated recycle bin")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RecycleBinConfigParamsDeleteByID,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "id", "tfacc_recycle_bin_item_1"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "resource_id", "tfacc_recycle_bin_item_1"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "action", "delete"),
+				),
+			},
+		},
+	})
+}
+
+// Test item action mode - recover by resource_name (mock server only)
+func TestAccRecycleBinConfig_RecoverByName(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	// Skip on real server (no pre-populated recycle bin)
+	endpoint := os.Getenv("POWERSTORE_ENDPOINT")
+	if endpoint != "" && !strings.Contains(endpoint, "localhost") && !strings.Contains(endpoint, "127.0.0.1") {
+		t.Skip("Skipping on real server - requires pre-populated recycle bin")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RecycleBinConfigParamsRecoverByName,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "resource_name", "test_volume"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "resource_type", "volume"),
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "action", "recover"),
+				),
+			},
+		},
+	})
+}
+
 var RecycleBinConfigParams7Days = `
 resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 7
@@ -197,6 +282,28 @@ resource "powerstore_recycle_bin_config" "test" {
 var RecycleBinConfigParamsEmpty = `
 resource "powerstore_recycle_bin_config" "test" {
 	empty_recycle_bin = true
+}
+`
+
+var RecycleBinConfigParamsRecoverByID = `
+resource "powerstore_recycle_bin_config" "test" {
+	resource_id = "tfacc_recycle_bin_item_id"
+	action      = "recover"
+}
+`
+
+var RecycleBinConfigParamsDeleteByID = `
+resource "powerstore_recycle_bin_config" "test" {
+	resource_id = "tfacc_recycle_bin_item_1"
+	action      = "delete"
+}
+`
+
+var RecycleBinConfigParamsRecoverByName = `
+resource "powerstore_recycle_bin_config" "test" {
+	resource_name = "test_volume"
+	resource_type = "volume"
+	action        = "recover"
 }
 `
 
