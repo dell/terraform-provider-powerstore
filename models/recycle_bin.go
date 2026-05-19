@@ -19,7 +19,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// RecycleBinConfigResource - Terraform state model for recycle_bin_config resource
+// RecycleBinConfigResource - Terraform state model for recycle_bin resource
 type RecycleBinConfigResource struct {
 	ID                 types.String `tfsdk:"id"`
 	ExpirationDuration types.Int32  `tfsdk:"expiration_duration"`
