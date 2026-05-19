@@ -185,9 +185,6 @@ func (d *recycleBinDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	if state.ID.ValueString() != "" {
 		item, getErr := d.getRecycleBinItem(ctx, state.ID.ValueString())

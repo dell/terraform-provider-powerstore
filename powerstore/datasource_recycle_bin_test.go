@@ -18,11 +18,16 @@ limitations under the License.
 package powerstore
 
 import (
+	"context"
 	"os"
 	"regexp"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"testing"
 
+	fwdatasource "github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test to Fetch RecycleBin items
@@ -125,3 +130,77 @@ data "powerstore_recycle_bin" "test" {
 	filter_expression = "resource_type=eq.volume"
 }
 `
+
+// Unit tests for Configure method
+func TestRecycleBinDataSource_Configure_InvalidType(t *testing.T) {
+	d := &recycleBinDataSource{}
+	req := fwdatasource.ConfigureRequest{
+		ProviderData: "invalid_type",
+	}
+	resp := &fwdatasource.ConfigureResponse{}
+
+	d.Configure(context.Background(), req, resp)
+
+	assert.True(t, resp.Diagnostics.HasError())
+	assert.NotEmpty(t, resp.Diagnostics.Errors()[0].Summary)
+}
+
+func TestRecycleBinDataSource_Configure_Nil(t *testing.T) {
+	d := &recycleBinDataSource{}
+	req := fwdatasource.ConfigureRequest{
+		ProviderData: nil,
+	}
+	resp := &fwdatasource.ConfigureResponse{}
+
+	d.Configure(context.Background(), req, resp)
+
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.Nil(t, d.client)
+}
+
+func TestRecycleBinDataSource_Configure_Success(t *testing.T) {
+	d := &recycleBinDataSource{}
+	c := &client.Client{GenClient: &clientgen.APIClient{}}
+	req := fwdatasource.ConfigureRequest{
+		ProviderData: c,
+	}
+	resp := &fwdatasource.ConfigureResponse{}
+
+	d.Configure(context.Background(), req, resp)
+
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.NotNil(t, d.client)
+}
+
+// Test mapRecycleBinItemsToState helper function
+func TestMapRecycleBinItemsToState(t *testing.T) {
+	id := "test-id"
+	name := "test-volume"
+	resourceType := "volume"
+	logicalProvisioned := int64(1024)
+	logicalUsed := int64(512)
+	applianceID := "appliance-123"
+
+	items := []clientgen.RecycleBinInstance{
+		{
+			Id:                 &id,
+			Name:               &name,
+			ResourceType:       &resourceType,
+			LogicalProvisioned: &logicalProvisioned,
+			LogicalUsed:        &logicalUsed,
+			ApplianceId:        &applianceID,
+		},
+	}
+
+	state := mapRecycleBinItemsToState(items)
+	assert.Len(t, state, 1)
+	assert.Equal(t, "test-id", state[0].ID.ValueString())
+	assert.Equal(t, "test-volume", state[0].Name.ValueString())
+	assert.Equal(t, "volume", state[0].ResourceType.ValueString())
+}
+
+func TestMapRecycleBinItemsToState_Empty(t *testing.T) {
+	items := []clientgen.RecycleBinInstance{}
+	state := mapRecycleBinItemsToState(items)
+	assert.Len(t, state, 0)
+}

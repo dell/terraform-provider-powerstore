@@ -121,9 +121,6 @@ func (r *resourceRecycleBin) Create(ctx context.Context, req resource.CreateRequ
 	var plan models.RecycleBinConfigResource
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Started Creating Recycle Bin Config")
 	configID := "0"
@@ -160,9 +157,6 @@ func (r *resourceRecycleBin) Read(ctx context.Context, req resource.ReadRequest,
 	var state models.RecycleBinConfigResource
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	configID := state.ID.ValueString()
 	if configID == "" {
@@ -189,9 +183,6 @@ func (r *resourceRecycleBin) Update(ctx context.Context, req resource.UpdateRequ
 	var plan models.RecycleBinConfigResource
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
 	log.Printf("Started Update Recycle Bin Config")
 	configID := "0"

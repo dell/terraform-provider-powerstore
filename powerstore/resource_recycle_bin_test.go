@@ -18,10 +18,14 @@ limitations under the License.
 package powerstore
 
 import (
+	"context"
 	"os"
 	"regexp"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"testing"
 
+	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
@@ -166,3 +170,66 @@ resource "powerstore_recycle_bin_config" "test" {
 	expiration_duration = 31
 }
 `
+
+// Unit tests for Configure method
+func TestResourceRecycleBin_Configure_InvalidType(t *testing.T) {
+	r := &resourceRecycleBin{}
+	req := fwresource.ConfigureRequest{
+		ProviderData: "invalid_type",
+	}
+	resp := &fwresource.ConfigureResponse{}
+
+	r.Configure(context.Background(), req, resp)
+
+	assert.True(t, resp.Diagnostics.HasError())
+	assert.NotEmpty(t, resp.Diagnostics.Errors()[0].Summary)
+}
+
+func TestResourceRecycleBin_Configure_Nil(t *testing.T) {
+	r := &resourceRecycleBin{}
+	req := fwresource.ConfigureRequest{
+		ProviderData: nil,
+	}
+	resp := &fwresource.ConfigureResponse{}
+
+	r.Configure(context.Background(), req, resp)
+
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.Nil(t, r.client)
+}
+
+func TestResourceRecycleBin_Configure_Success(t *testing.T) {
+	r := &resourceRecycleBin{}
+	c := &client.Client{GenClient: &clientgen.APIClient{}}
+	req := fwresource.ConfigureRequest{
+		ProviderData: c,
+	}
+	resp := &fwresource.ConfigureResponse{}
+
+	r.Configure(context.Background(), req, resp)
+
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.NotNil(t, r.client)
+}
+
+// Test recycleBinConfigToState helper function
+func TestRecycleBinConfigToState(t *testing.T) {
+	duration := int32(7)
+	id := "0"
+	cfg := &clientgen.RecycleBinConfigInstance{
+		Id:                 &id,
+		ExpirationDuration: &duration,
+	}
+
+	state := recycleBinConfigToState(cfg)
+	assert.Equal(t, "0", state.ID.ValueString())
+	assert.Equal(t, int32(7), state.ExpirationDuration.ValueInt32())
+}
+
+func TestRecycleBinConfigToState_Nil(t *testing.T) {
+	cfg := &clientgen.RecycleBinConfigInstance{}
+
+	state := recycleBinConfigToState(cfg)
+	assert.Equal(t, "", state.ID.ValueString())
+	assert.Equal(t, int32(0), state.ExpirationDuration.ValueInt32())
+}
