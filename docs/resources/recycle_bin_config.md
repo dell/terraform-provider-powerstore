@@ -19,15 +19,20 @@ linkTitle: "powerstore_recycle_bin_config"
 page_title: "powerstore_recycle_bin_config Resource - powerstore"
 subcategory: ""
 description: |-
-  This resource is used to manage the PowerStore recycle bin configuration. It supports declaring the recycle bin retention period (expiration_duration), reading the current configuration, detecting and correcting configuration drift, and importing existing configuration into Terraform state.
-  Note: Running terraform destroy on this resource only removes it from Terraform state. The recycle bin configuration is a singleton on the PowerStore array and cannot be deleted.
+  This resource is used to manage the PowerStore recycle bin. It supports three modes of operation:
+  Config mode: Set expiration_duration (0–30 days) to configure the retention policy. Item action mode: Specify resource_id or resource_name with action (recover or delete) to recover or permanently delete items. Empty mode: Set empty_recycle_bin = true to permanently delete all items from the recycle bin.
+  Note: Running terraform destroy on this resource only removes it from Terraform state.
 ---
 
 # powerstore_recycle_bin_config (Resource)
 
-This resource is used to manage the PowerStore recycle bin configuration. It supports declaring the recycle bin retention period (`expiration_duration`), reading the current configuration, detecting and correcting configuration drift, and importing existing configuration into Terraform state.
+This resource is used to manage the PowerStore recycle bin. It supports three modes of operation:
 
-**Note:** Running `terraform destroy` on this resource only removes it from Terraform state. The recycle bin configuration is a singleton on the PowerStore array and cannot be deleted.
+1. **Config mode**: Set `expiration_duration` (0–30 days) to configure the retention policy.
+2. **Item action mode**: Specify `resource_id` or `resource_name` with `action` (`recover` or `delete`) to recover or permanently delete items.
+3. **Empty mode**: Set `empty_recycle_bin = true` to permanently delete all items from the recycle bin.
+
+**Note:** Running `terraform destroy` on this resource only removes it from Terraform state.
 
 ## Example Usage
 
@@ -67,11 +72,16 @@ resource "powerstore_recycle_bin_config" "example" {
 
 ### Optional
 
-- `expiration_duration` (Number) Duration in days for items to remain in the recycle bin before automatic purging. Valid range is `0` to `30`. A value of `0` indicates items expire immediately.
+- `action` (String) The action to perform on the recycle bin item. Valid values: `recover`, `delete`.
+- `empty_recycle_bin` (Boolean) When set to `true`, empties the entire recycle bin by permanently deleting all items.
+- `expiration_duration` (Number) Duration in days for items to remain in the recycle bin before automatic purging. Valid range is `0` to `30`.
+- `resource_id` (String) The unique identifier of the recycle bin item to recover or delete.
+- `resource_name` (String) The name of the deleted resource in the recycle bin.
+- `resource_type` (String) The type of resource to filter when using `resource_name`. Valid values: `volume`, `volume_group`.
 
 ### Read-Only
 
-- `id` (String) The unique identifier of the recycle bin configuration (always `0`).
+- `id` (String) The unique identifier of the resource.
 
 ## Import
 
