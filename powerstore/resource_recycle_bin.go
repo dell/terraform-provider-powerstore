@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -104,9 +105,12 @@ func (r *resourceRecycleBin) Configure(ctx context.Context, req resource.Configu
 
 // ---- Helper methods ----
 
-// getRecycleBinConfig fetches the recycle bin configuration from the array
+// getRecycleBinConfig fetches the recycle bin configuration from the array.
+// The select param is required so the real PowerStore API returns expiration_duration.
 func (r *resourceRecycleBin) getRecycleBinConfig(ctx context.Context, id string) (*clientgen.RecycleBinConfigInstance, error) {
-	result, _, err := r.client.RecycleBinApi.GetRecycleBinConfigById(ctx, id).Execute()
+	queries := make(url.Values)
+	queries.Set("select", "id,expiration_duration")
+	result, _, err := r.client.RecycleBinApi.GetRecycleBinConfigById(ctx, id).Queries(queries).Execute()
 	return result, err
 }
 

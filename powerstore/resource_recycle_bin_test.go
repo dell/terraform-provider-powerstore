@@ -74,6 +74,26 @@ func TestAccRecycleBinConfig_Update(t *testing.T) {
 	})
 }
 
+// Test with expiration_duration = 0 (boundary value)
+func TestAccRecycleBinConfig_ZeroDays(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RecycleBinConfigParams0Days,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_recycle_bin_config.test", "expiration_duration", "0"),
+				),
+			},
+		},
+	})
+}
+
 // Test with invalid values (out of range)
 func TestAccRecycleBinConfig_InvalidValues(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
