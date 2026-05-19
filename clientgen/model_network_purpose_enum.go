@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NetworkPurposeEnum Network purpose.  * ISCSI - Network provides iSCSI connectivity to storage.  * NVMe_TCP - Network provides NVME over Fabric connectivity to storage using TCP.  * File_Mobility - Network provides NAS File Replication and Import control connection.  * External_Replication - Network provides both iSCSI and iBasic replication connectivity.  Was added in version 2.0.0.0. Values was added in 2.1.0.0: NVMe_TCP. Values was added in 3.0.0.0: File_Mobility. Values was added in 4.0.0.0: External_Replication.
 type NetworkPurposeEnum string
 
 // List of NetworkPurposeEnum
 const (
-	NETWORKPURPOSEENUM_ISCSI NetworkPurposeEnum = "ISCSI"
-	NETWORKPURPOSEENUM_NVME_TCP NetworkPurposeEnum = "NVMe_TCP"
-	NETWORKPURPOSEENUM_FILE_MOBILITY NetworkPurposeEnum = "File_Mobility"
+	NETWORKPURPOSEENUM_ISCSI                NetworkPurposeEnum = "ISCSI"
+	NETWORKPURPOSEENUM_NVME_TCP             NetworkPurposeEnum = "NVMe_TCP"
+	NETWORKPURPOSEENUM_FILE_MOBILITY        NetworkPurposeEnum = "File_Mobility"
 	NETWORKPURPOSEENUM_EXTERNAL_REPLICATION NetworkPurposeEnum = "External_Replication"
 )
 
@@ -37,4 +32,3 @@ var AllowedNetworkPurposeEnumEnumValues = []NetworkPurposeEnum{
 func (v *NetworkPurposeEnum) Value() string {
 	return string(*v)
 }
-

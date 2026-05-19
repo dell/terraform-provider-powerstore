@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ApplianceStorageClassEnum Describes the class of storage used by the appliance. Possible values include: * TLC_Based_Flash - The appliance uses triple-level cell (TLC) data storage, which means each NAND flash memory cell contains three bits of data. * QLC_Based_Flash - The appliance uses quad-level cell (QLC) data storage, which means each NAND flash memory cell contains four bits of data.   Was added in version 4.0.0.0.
 type ApplianceStorageClassEnum string
 
@@ -33,4 +28,3 @@ var AllowedApplianceStorageClassEnumEnumValues = []ApplianceStorageClassEnum{
 func (v *ApplianceStorageClassEnum) Value() string {
 	return string(*v)
 }
-

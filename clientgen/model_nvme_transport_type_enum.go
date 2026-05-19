@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // NvmeTransportTypeEnum Transport type of the NVMe Initiator. * TCP - NVMe/TCP * FC - NVMe/Fibre Channel  Was added in version 2.1.0.0.
 type NvmeTransportTypeEnum string
 
 // List of NvmeTransportTypeEnum
 const (
 	NVMETRANSPORTTYPEENUM_TCP NvmeTransportTypeEnum = "TCP"
-	NVMETRANSPORTTYPEENUM_FC NvmeTransportTypeEnum = "FC"
+	NVMETRANSPORTTYPEENUM_FC  NvmeTransportTypeEnum = "FC"
 )
 
 // All allowed values of NvmeTransportTypeEnum enum
@@ -33,4 +28,3 @@ var AllowedNvmeTransportTypeEnumEnumValues = []NvmeTransportTypeEnum{
 func (v *NvmeTransportTypeEnum) Value() string {
 	return string(*v)
 }
-

@@ -10,14 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
-// ErrorResponse Error response for an operation. Contains an array of localized messages. 
+// ErrorResponse Error response for an operation. Contains an array of localized messages.
 type ErrorResponse struct {
 	Messages []ErrorMessage `json:"messages,omitempty"`
 }
-
-

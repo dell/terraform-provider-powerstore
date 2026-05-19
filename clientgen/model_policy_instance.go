@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // PolicyInstance Properties of a policy. Values was added in 3.0.0.0: is_replica, is_read_only. This resource type has queriable associations from file_io_limit_rule, virtual_volume, virtual_machine, volume, volume_group, nas_server, file_system, performance_rule, snapshot_rule, replication_rule, replication_group
 type PolicyInstance struct {
 	// Unique identifier of the policy.
@@ -22,14 +17,14 @@ type PolicyInstance struct {
 	// Policy name.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// Policy description.
-	Description *string `json:"description,omitempty"`
-	Type *PolicyTypeEnum `json:"type,omitempty"`
-	ManagedBy *PolicyManagedByEnum `json:"managed_by,omitempty"`
+	Description *string              `json:"description,omitempty"`
+	Type        *PolicyTypeEnum      `json:"type,omitempty"`
+	ManagedBy   *PolicyManagedByEnum `json:"managed_by,omitempty"`
 	// Unique identifier of the managing entity based on the value of the managed_by property, as shown below:   * User - Empty   * Metro - Unique identifier of the remote system where the policy was assigned.   * Replication - Unique identifier of the source remote system.   * VMware_vSphere - Unique identifier of the owning VMware vSphere/vCenter.  Was added in version 3.0.0.0.
 	ManagedById *string `json:"managed_by_id,omitempty"`
 	// Indicates whether this policy can be modified.  Was added in version 3.0.0.0.
 	IsReadOnly *bool `json:"is_read_only,omitempty"`
-	// Indicates if this is a replica of a policy on a remote system that is the source of a replication session replicating a resource to the local system. A policy of this type is restricted from many operations. 
+	// Indicates if this is a replica of a policy on a remote system that is the source of a replication session replicating a resource to the local system. A policy of this type is restricted from many operations.
 	IsReplica *bool `json:"is_replica,omitempty"`
 	// Unique identifier of a file_io_limit_rule. This attribute is only used for the File_Performance Policy type. Was added in version 4.1.0.0.
 	FileIoLimitRuleId *string `json:"file_io_limit_rule_id,omitempty"`
@@ -38,8 +33,8 @@ type PolicyInstance struct {
 	// Localized message string corresponding to managed_by Was added in version 3.0.0.0.
 	ManagedByL10n *string `json:"managed_by_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	VirtualVolumes []VirtualVolumeInstance `json:"virtual_volumes,omitempty"`
-	IoLimitRule *IoLimitRuleInstance `json:"io_limit_rule,omitempty"`
+	VirtualVolumes  []VirtualVolumeInstance  `json:"virtual_volumes,omitempty"`
+	IoLimitRule     *IoLimitRuleInstance     `json:"io_limit_rule,omitempty"`
 	FileIoLimitRule *FileIoLimitRuleInstance `json:"file_io_limit_rule,omitempty"`
 	// This is the inverse of the resource type virtual_machine association.
 	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
@@ -68,5 +63,3 @@ type PolicyInstance struct {
 	// List of the replication_groups that are associated with this policy.
 	ReplicationGroups []ReplicationGroupInstance `json:"replication_groups,omitempty"`
 }
-
-

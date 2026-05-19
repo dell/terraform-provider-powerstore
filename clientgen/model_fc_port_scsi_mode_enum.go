@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FcPortScsiModeEnum SCSI mode of the port. Possible values are: * Dual - The port is in dual mode as both initiator and target. * Target- The port is only target.  Was added in version 3.0.0.0.
 type FcPortScsiModeEnum string
 
 // List of FcPortScsiModeEnum
 const (
-	FCPORTSCSIMODEENUM_DUAL FcPortScsiModeEnum = "Dual"
+	FCPORTSCSIMODEENUM_DUAL   FcPortScsiModeEnum = "Dual"
 	FCPORTSCSIMODEENUM_TARGET FcPortScsiModeEnum = "Target"
 )
 
@@ -33,4 +28,3 @@ var AllowedFcPortScsiModeEnumEnumValues = []FcPortScsiModeEnum{
 func (v *FcPortScsiModeEnum) Value() string {
 	return string(*v)
 }
-

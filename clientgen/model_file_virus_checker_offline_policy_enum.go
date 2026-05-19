@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileVirusCheckerOfflinePolicyEnum Describes the behavior when all checkers are offline: * Allow_Access - SMB clients will continue to have access during the virus checker outage. When at least one virus checker server becomes available then they will be used. * Stop_SMB_Access - SMB clients will lose access until at least one virus checker server becomes available. * Disable_Virus_Checker - This virus checker will be disabled (is_enabled set to false). It must be reenabled manually after restoring access to the virus checker servers.  Was added in version 4.0.0.0.
 type FileVirusCheckerOfflinePolicyEnum string
 
 // List of FileVirusCheckerOfflinePolicyEnum
 const (
-	FILEVIRUSCHECKEROFFLINEPOLICYENUM_ALLOW_ACCESS FileVirusCheckerOfflinePolicyEnum = "Allow_Access"
-	FILEVIRUSCHECKEROFFLINEPOLICYENUM_STOP_SMB_ACCESS FileVirusCheckerOfflinePolicyEnum = "Stop_SMB_Access"
+	FILEVIRUSCHECKEROFFLINEPOLICYENUM_ALLOW_ACCESS          FileVirusCheckerOfflinePolicyEnum = "Allow_Access"
+	FILEVIRUSCHECKEROFFLINEPOLICYENUM_STOP_SMB_ACCESS       FileVirusCheckerOfflinePolicyEnum = "Stop_SMB_Access"
 	FILEVIRUSCHECKEROFFLINEPOLICYENUM_DISABLE_VIRUS_CHECKER FileVirusCheckerOfflinePolicyEnum = "Disable_Virus_Checker"
 )
 
@@ -35,4 +30,3 @@ var AllowedFileVirusCheckerOfflinePolicyEnumEnumValues = []FileVirusCheckerOffli
 func (v *FileVirusCheckerOfflinePolicyEnum) Value() string {
 	return string(*v)
 }
-

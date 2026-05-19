@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // FileTreeQuotaInstance Properties of a file tree quota. Values was added in 2.0.0.0: grace_period. This resource type has queriable associations from file_system, file_user_quota
 type FileTreeQuotaInstance struct {
 	// Unique identifier of the tree quota.
@@ -25,24 +20,22 @@ type FileTreeQuotaInstance struct {
 	Path *string `json:"path,omitempty"`
 	// Description of the tree quota.
 	Description *string `json:"description,omitempty"`
-	// Whether user quota are enabled on this tree quota. The tree quota itself is enforced regardless of this parameter. 
-	IsUserQuotasEnforced *bool `json:"is_user_quotas_enforced,omitempty"`
-	State *FileQuotaStateEnum `json:"state,omitempty"`
+	// Whether user quota are enabled on this tree quota. The tree quota itself is enforced regardless of this parameter.
+	IsUserQuotasEnforced *bool               `json:"is_user_quotas_enforced,omitempty"`
+	State                *FileQuotaStateEnum `json:"state,omitempty"`
 	// Hard limit of the tree quota, in bytes. No hard limit when set to 0. This value can be used to compute amount of space that is consumed without limiting the space.
 	HardLimit *int64 `json:"hard_limit,omitempty"`
 	// Soft limit of the tree quota, in bytes. No soft limit when set to 0.
 	SoftLimit *int64 `json:"soft_limit,omitempty"`
-	// Remaining grace period, in seconds, after the soft limit is exceeded: * 0 - Grace period has already expired * -1 - No grace period in-progress, or infinite grace period set The grace period of user quotas is set in the file system quota config. 
+	// Remaining grace period, in seconds, after the soft limit is exceeded: * 0 - Grace period has already expired * -1 - No grace period in-progress, or infinite grace period set The grace period of user quotas is set in the file system quota config.
 	RemainingGracePeriod *int64 `json:"remaining_grace_period,omitempty"`
 	// Size already used on the tree quota, in bytes.
 	SizeUsed *int64 `json:"size_used,omitempty"`
 	// Grace period of soft limit (seconds). This will override the default grace period set at filesystem level.  * -1: Infinite grace period (Windows policy).  *  0: Use default grace period of 1 week (default).  * Positive: Grace period after which the soft limit is treated as a hard limit (seconds).  Was added in version 2.0.0.0.
 	GracePeriod *int32 `json:"grace_period,omitempty"`
 	// Localized message string corresponding to state
-	StateL10n *string `json:"state_l10n,omitempty"`
+	StateL10n  *string             `json:"state_l10n,omitempty"`
 	FileSystem *FileSystemInstance `json:"file_system,omitempty"`
 	// This is the inverse of the resource type file_user_quota association.
 	FileUserTreeQuotas []FileUserQuotaInstance `json:"file_user_tree_quotas,omitempty"`
 }
-
-

@@ -10,24 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // HostInitiatorInstance Properties of a host initiator.
 type HostInitiatorInstance struct {
 	// IQN name aka address for iSCSI or WWN name for FC (SCSI) or NQN name for all NVMe-oF port types.
-	PortName *string `json:"port_name,omitempty"`
+	PortName *string                    `json:"port_name,omitempty"`
 	PortType *InitiatorProtocolTypeEnum `json:"port_type,omitempty"`
-	// Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is single authentication. 
+	// Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is single authentication.
 	ChapSingleUsername *string `json:"chap_single_username,omitempty"`
-	// Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is mutual authentication. 
+	// Username for CHAP authentication. This value must be 1 to 64 UTF-8 characters. CHAP username is required when the cluster CHAP mode is mutual authentication.
 	ChapMutualUsername *string `json:"chap_mutual_username,omitempty"`
 	// Array of active login sessions between an initiator and a target port.
 	ActiveSessions []ActiveSessionInstance `json:"active_sessions,omitempty"`
 	// Localized message string corresponding to port_type Was deprecated in version 3.0.0.0.
 	PortTypeL10n *string `json:"port_type_l10n,omitempty"`
 }
-
-

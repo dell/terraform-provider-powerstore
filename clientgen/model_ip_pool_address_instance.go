@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // IpPoolAddressInstance Properties of the IP pool address. This resource type has queriable associations from network, ip_port, appliance, node, nvme_discovered_cdc
 type IpPoolAddressInstance struct {
 	// Unique identifier of the IP address.
@@ -37,10 +32,8 @@ type IpPoolAddressInstance struct {
 	PurposesL10n []string `json:"purposes_l10n,omitempty"`
 	// This is the inverse of the resource type nvme_discovered_cdc association.
 	NvmeDiscoveredCdcs []NvmeDiscoveredCdcInstance `json:"nvme_discovered_cdcs,omitempty"`
-	Network *NetworkInstance `json:"network,omitempty"`
-	IpPort *IpPortInstance `json:"ip_port,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
-	Node *NodeInstance `json:"node,omitempty"`
+	Network            *NetworkInstance            `json:"network,omitempty"`
+	IpPort             *IpPortInstance             `json:"ip_port,omitempty"`
+	Appliance          *ApplianceInstance          `json:"appliance,omitempty"`
+	Node               *NodeInstance               `json:"node,omitempty"`
 }
-
-

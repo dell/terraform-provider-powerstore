@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // PortStaleStateEnum Stale state of the port. Current states are:  * Not_Stale - Not stale.  * Disconnected - The IO_Module hardware handling this port has a Disconnected lifecycle state and therefore is not updated.  Was added in version 2.0.0.0.
 type PortStaleStateEnum string
 
 // List of PortStaleStateEnum
 const (
-	PORTSTALESTATEENUM_NOT_STALE PortStaleStateEnum = "Not_Stale"
+	PORTSTALESTATEENUM_NOT_STALE    PortStaleStateEnum = "Not_Stale"
 	PORTSTALESTATEENUM_DISCONNECTED PortStaleStateEnum = "Disconnected"
 )
 
@@ -33,4 +28,3 @@ var AllowedPortStaleStateEnumEnumValues = []PortStaleStateEnum{
 func (v *PortStaleStateEnum) Value() string {
 	return string(*v)
 }
-

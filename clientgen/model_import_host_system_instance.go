@@ -11,27 +11,25 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // ImportHostSystemInstance Details about an import host system. This resource type has queriable association from host
 type ImportHostSystemInstance struct {
 	// Unique identifier of the import host system.
 	Id *string `json:"id,omitempty"`
 	// Hostname or IPv4 address of the import host system.
-	AgentAddress *string `json:"agent_address,omitempty"`
-	AgentType *HostAgentTypeEnum `json:"agent_type,omitempty"`
+	AgentAddress *string            `json:"agent_address,omitempty"`
+	AgentType    *HostAgentTypeEnum `json:"agent_type,omitempty"`
 	// TCP port on the import host system.
 	AgentPort *int32 `json:"agent_port,omitempty"`
 	// Version of the import host system.
 	AgentVersion *string `json:"agent_version,omitempty"`
 	// API version of the import host system.
-	AgentApiVersion *string `json:"agent_api_version,omitempty"`
-	OsType *HAOSTypeEnum `json:"os_type,omitempty"`
+	AgentApiVersion *string       `json:"agent_api_version,omitempty"`
+	OsType          *HAOSTypeEnum `json:"os_type,omitempty"`
 	// Operating system version of the import host system.
-	OsVersion *string `json:"os_version,omitempty"`
+	OsVersion   *string              `json:"os_version,omitempty"`
 	AgentStatus *HostAgentStatusEnum `json:"agent_status,omitempty"`
 	// Username for the import host system.
 	UserName *string `json:"user_name,omitempty"`
@@ -46,5 +44,3 @@ type ImportHostSystemInstance struct {
 	// This is the inverse of the resource type host association.
 	Hosts []HostInstance `json:"hosts,omitempty"`
 }
-
-

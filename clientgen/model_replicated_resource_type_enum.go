@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ReplicatedResourceTypeEnum Storage resource types eligible for replication protection: * volume          - Replication session created on a volume. * volume_group    - Replication session created on a volume group. * replication_group - Replication session created on a replication group. * nas_server        - Replication session created on a NAS server. * file_system       - Replication session created on a File system.  Values was added in 3.0.0.0: replication_group, nas_server. Values was added in 3.6.0.0: file_system.
 type ReplicatedResourceTypeEnum string
 
 // List of ReplicatedResourceTypeEnum
 const (
-	REPLICATEDRESOURCETYPEENUM_FILE_SYSTEM ReplicatedResourceTypeEnum = "file_system"
-	REPLICATEDRESOURCETYPEENUM_NAS_SERVER ReplicatedResourceTypeEnum = "nas_server"
+	REPLICATEDRESOURCETYPEENUM_FILE_SYSTEM       ReplicatedResourceTypeEnum = "file_system"
+	REPLICATEDRESOURCETYPEENUM_NAS_SERVER        ReplicatedResourceTypeEnum = "nas_server"
 	REPLICATEDRESOURCETYPEENUM_REPLICATION_GROUP ReplicatedResourceTypeEnum = "replication_group"
-	REPLICATEDRESOURCETYPEENUM_VOLUME ReplicatedResourceTypeEnum = "volume"
-	REPLICATEDRESOURCETYPEENUM_VOLUME_GROUP ReplicatedResourceTypeEnum = "volume_group"
+	REPLICATEDRESOURCETYPEENUM_VOLUME            ReplicatedResourceTypeEnum = "volume"
+	REPLICATEDRESOURCETYPEENUM_VOLUME_GROUP      ReplicatedResourceTypeEnum = "volume_group"
 )
 
 // All allowed values of ReplicatedResourceTypeEnum enum
@@ -39,4 +34,3 @@ var AllowedReplicatedResourceTypeEnumEnumValues = []ReplicatedResourceTypeEnum{
 func (v *ReplicatedResourceTypeEnum) Value() string {
 	return string(*v)
 }
-

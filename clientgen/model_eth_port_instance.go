@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // EthPortInstance Ethernet front-end port configuration for all cluster nodes. Values was added in 3.0.0.0: is_in_use, permanent_mac_address. This resource type has queriable associations from appliance, hardware, bond, fsn, eth_port, ip_port
 type EthPortInstance struct {
 	// Ethernet port instance identifier.
@@ -33,24 +28,24 @@ type EthPortInstance struct {
 	MacAddress *string `json:"mac_address,omitempty"`
 	// Ethernet port permanent MAC address assigned at the moment of the manufacture. Was added in version 3.0.0.0.
 	PermanentMacAddress *string `json:"permanent_mac_address,omitempty"`
-	// Indicates whether the Ethernet port's link is up. Values are: * true - Link is up. * false - Link is down. 
+	// Indicates whether the Ethernet port's link is up. Values are: * true - Link is up. * false - Link is down.
 	IsLinkUp *bool `json:"is_link_up,omitempty"`
 	// Indicates whether the port is in use. Values are: * true - Is in use. * false - Is not in use.  Was added in version 3.0.0.0.
 	IsInUse *bool `json:"is_in_use,omitempty"`
 	// The list of supported transmission speeds for Ethernet port.
 	SupportedSpeeds []EthPortSpeedEnum `json:"supported_speeds,omitempty"`
-	CurrentSpeed *EthPortSpeedEnum `json:"current_speed,omitempty"`
-	RequestedSpeed *EthPortSpeedEnum `json:"requested_speed,omitempty"`
-	// The Maximum transmission unit (MTU) packet size that the Ethernet port can transmit. The fabric MTU can be set to any value in the range [1500-9000]. The network MTU can be set to any value in the range [1280-9000]. The network MTU must be less than or equal to the current fabric MTU. 
+	CurrentSpeed    *EthPortSpeedEnum  `json:"current_speed,omitempty"`
+	RequestedSpeed  *EthPortSpeedEnum  `json:"requested_speed,omitempty"`
+	// The Maximum transmission unit (MTU) packet size that the Ethernet port can transmit. The fabric MTU can be set to any value in the range [1500-9000]. The network MTU can be set to any value in the range [1280-9000]. The network MTU must be less than or equal to the current fabric MTU.
 	CurrentMtu *int32 `json:"current_mtu,omitempty"`
-	// Unique identifier of the hardware instance of type 'SFP' (Small Form-factor Pluggable) inserted into the port. 
+	// Unique identifier of the hardware instance of type 'SFP' (Small Form-factor Pluggable) inserted into the port.
 	SfpId *string `json:"sfp_id,omitempty"`
 	// Unique identifier of the hardware instance of type 'IO_Module' handling the port. Was deprecated in version 2.0.0.0.
 	IoModuleId *string `json:"io_module_id,omitempty"`
 	// Unique identifier of the parent hardware instance handling the port. Was added in version 2.0.0.0.
 	HardwareParentId *string `json:"hardware_parent_id,omitempty"`
 	// The index of the Ethernet port in IO module.
-	PortIndex *int32 `json:"port_index,omitempty"`
+	PortIndex         *int32                          `json:"port_index,omitempty"`
 	PortConnectorType *FrontEndPortConnectionTypeEnum `json:"port_connector_type,omitempty"`
 	// Unique identifier of the partner port instance.
 	PartnerId *string `json:"partner_id,omitempty"`
@@ -63,9 +58,9 @@ type EthPortInstance struct {
 	// Unique identifier of the virtual switch port associated with the hypervisor port.
 	HypervisorPortId *int32 `json:"hypervisor_port_id,omitempty"`
 	// Unique identifier of the virtual switch associated with the hypervisor port.
-	HypervisorVswitchId *string `json:"hypervisor_vswitch_id,omitempty"`
-	L2DiscoveryDetails *L2DiscoveryDetailsInstance `json:"l2_discovery_details,omitempty"`
-	StaleState *PortStaleStateEnum `json:"stale_state,omitempty"`
+	HypervisorVswitchId *string                     `json:"hypervisor_vswitch_id,omitempty"`
+	L2DiscoveryDetails  *L2DiscoveryDetailsInstance `json:"l2_discovery_details,omitempty"`
+	StaleState          *PortStaleStateEnum         `json:"stale_state,omitempty"`
 	// Localized message array corresponding to supported_speeds
 	SupportedSpeedsL10n []string `json:"supported_speeds_l10n,omitempty"`
 	// Localized message string corresponding to current_speed
@@ -77,15 +72,13 @@ type EthPortInstance struct {
 	// Localized message string corresponding to stale_state Was added in version 2.0.0.0.
 	StaleStateL10n *string `json:"stale_state_l10n,omitempty"`
 	// This is the inverse of the resource type ip_port association.
-	IpPorts []IpPortInstance `json:"ip_ports,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
-	Node *HardwareInstance `json:"node,omitempty"`
-	Bond *BondInstance `json:"bond,omitempty"`
-	Fsn *FsnInstance `json:"fsn,omitempty"`
-	Sfp *HardwareInstance `json:"sfp,omitempty"`
-	IoModule *HardwareInstance `json:"io_module,omitempty"`
-	HardwareParent *HardwareInstance `json:"hardware_parent,omitempty"`
-	Partner *EthPortInstance `json:"partner,omitempty"`
+	IpPorts        []IpPortInstance   `json:"ip_ports,omitempty"`
+	Appliance      *ApplianceInstance `json:"appliance,omitempty"`
+	Node           *HardwareInstance  `json:"node,omitempty"`
+	Bond           *BondInstance      `json:"bond,omitempty"`
+	Fsn            *FsnInstance       `json:"fsn,omitempty"`
+	Sfp            *HardwareInstance  `json:"sfp,omitempty"`
+	IoModule       *HardwareInstance  `json:"io_module,omitempty"`
+	HardwareParent *HardwareInstance  `json:"hardware_parent,omitempty"`
+	Partner        *EthPortInstance   `json:"partner,omitempty"`
 }
-
-

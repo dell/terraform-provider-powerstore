@@ -10,12 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// IpVersionTypeEnum IP protocol version. Values are: * IPv4 * IPv6 
+// IpVersionTypeEnum IP protocol version. Values are: * IPv4 * IPv6
 type IpVersionTypeEnum string
 
 // List of IpVersionTypeEnum
@@ -33,4 +28,3 @@ var AllowedIpVersionTypeEnumEnumValues = []IpVersionTypeEnum{
 func (v *IpVersionTypeEnum) Value() string {
 	return string(*v)
 }
-

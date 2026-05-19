@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareDriveTypeEnum Type of drive. Available on the Drive hardware type. Current types are:  * Unknown  * SAS_SSD - SAS-connected SSD in an Expansion Enclosure.  * NVMe_SCM - NVME-Connected Storage Class Memory.  * NVMe_NVRAM - NVME-Connected Non-volatile RAM.  * NVMe_SSD - NVME-Connected TLC SSD.  * NVMe_Virtual  - NVME-Connected Virtual drive.  * NVMe_SSD_QLC - NVME-Connected QLC SSD. 
+// HardwareDriveTypeEnum Type of drive. Available on the Drive hardware type. Current types are:  * Unknown  * SAS_SSD - SAS-connected SSD in an Expansion Enclosure.  * NVMe_SCM - NVME-Connected Storage Class Memory.  * NVMe_NVRAM - NVME-Connected Non-volatile RAM.  * NVMe_SSD - NVME-Connected TLC SSD.  * NVMe_Virtual  - NVME-Connected Virtual drive.  * NVMe_SSD_QLC - NVME-Connected QLC SSD.
 type HardwareDriveTypeEnum string
 
 // List of HardwareDriveTypeEnum
 const (
-	HARDWAREDRIVETYPEENUM_UNKNOWN HardwareDriveTypeEnum = "Unknown"
-	HARDWAREDRIVETYPEENUM_SAS_SSD HardwareDriveTypeEnum = "SAS_SSD"
-	HARDWAREDRIVETYPEENUM_NVME_SCM HardwareDriveTypeEnum = "NVMe_SCM"
-	HARDWAREDRIVETYPEENUM_NVME_NVRAM HardwareDriveTypeEnum = "NVMe_NVRAM"
-	HARDWAREDRIVETYPEENUM_NVME_SSD HardwareDriveTypeEnum = "NVMe_SSD"
+	HARDWAREDRIVETYPEENUM_UNKNOWN      HardwareDriveTypeEnum = "Unknown"
+	HARDWAREDRIVETYPEENUM_SAS_SSD      HardwareDriveTypeEnum = "SAS_SSD"
+	HARDWAREDRIVETYPEENUM_NVME_SCM     HardwareDriveTypeEnum = "NVMe_SCM"
+	HARDWAREDRIVETYPEENUM_NVME_NVRAM   HardwareDriveTypeEnum = "NVMe_NVRAM"
+	HARDWAREDRIVETYPEENUM_NVME_SSD     HardwareDriveTypeEnum = "NVMe_SSD"
 	HARDWAREDRIVETYPEENUM_NVME_VIRTUAL HardwareDriveTypeEnum = "NVMe_Virtual"
 	HARDWAREDRIVETYPEENUM_NVME_SSD_QLC HardwareDriveTypeEnum = "NVMe_SSD_QLC"
 )
@@ -43,4 +38,3 @@ var AllowedHardwareDriveTypeEnumEnumValues = []HardwareDriveTypeEnum{
 func (v *HardwareDriveTypeEnum) Value() string {
 	return string(*v)
 }
-

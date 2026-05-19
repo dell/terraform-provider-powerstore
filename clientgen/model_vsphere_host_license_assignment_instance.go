@@ -11,10 +11,8 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // VsphereHostLicenseAssignmentInstance Internal ESXi host license assignment information. Was added in version 3.0.0.0. This resource type has queriable association from vsphere_host
 type VsphereHostLicenseAssignmentInstance struct {
@@ -29,8 +27,6 @@ type VsphereHostLicenseAssignmentInstance struct {
 	// License type.
 	EditionKey *string `json:"edition_key,omitempty"`
 	// License expiration date.
-	ExpirationDate *time.Time `json:"expiration_date,omitempty"`
-	VsphereHost *VsphereHostInstance `json:"vsphere_host,omitempty"`
+	ExpirationDate *time.Time           `json:"expiration_date,omitempty"`
+	VsphereHost    *VsphereHostInstance `json:"vsphere_host,omitempty"`
 }
-
-

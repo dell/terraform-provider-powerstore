@@ -11,10 +11,8 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // FileSystemInstance Properties of a file system. This resource type has queriable associations from nas_server, policy, file_tree_quota, file_user_quota, nfs_export, smb_share
 type FileSystemInstance struct {
@@ -27,41 +25,41 @@ type FileSystemInstance struct {
 	// Unique identifier of the NAS Server on which the file system is mounted.
 	NasServerId *string `json:"nas_server_id,omitempty"`
 	// Unique identifier of the object of the parent of this file system (only applies to clones and snapshots). If the parent of a clone has been deleted the object_id will contain the null GUID 00000000-0000-0000-0000-000000000000.
-	ParentId *string `json:"parent_id,omitempty"`
+	ParentId       *string             `json:"parent_id,omitempty"`
 	FilesystemType *FileSystemTypeEnum `json:"filesystem_type,omitempty"`
-	// Size, in bytes, presented to the host or end user. Value is always rounded up to next MB. 
+	// Size, in bytes, presented to the host or end user. Value is always rounded up to next MB.
 	SizeTotal *int64 `json:"size_total,omitempty"`
-	// Size used, in bytes, for the data and metadata of the file system. Value is always rounded up to next MB. 
-	SizeUsed *int64 `json:"size_used,omitempty"`
+	// Size used, in bytes, for the data and metadata of the file system. Value is always rounded up to next MB.
+	SizeUsed   *int64                    `json:"size_used,omitempty"`
 	ConfigType *FileSystemConfigTypeEnum `json:"config_type,omitempty"`
 	// Unique identifier of the protection policy applied to the file system.
 	ProtectionPolicyId *string `json:"protection_policy_id,omitempty"`
 	// Unique identifier of the File_Performance type policy applied to the file_system. If empty and there is no performance policy set for the parent nas_server, then no performance policy is governing the file_system.  Was added in version 4.1.0.0.
-	PerformancePolicyId *string `json:"performance_policy_id,omitempty"`
-	AccessPolicy *FileSystemAccessPolicyEnum `json:"access_policy,omitempty"`
-	LockingPolicy *FileSystemLockingPolicyEnum `json:"locking_policy,omitempty"`
-	FolderRenamePolicy *FileSystemFolderRenamePolicyEnum `json:"folder_rename_policy,omitempty"`
-	// Indicates whether the synchronous writes option is enabled on the file system. Values are: * true - Synchronous writes option is enabled on the file system. * false - Synchronous writes option is disabled on the file system. 
+	PerformancePolicyId *string                           `json:"performance_policy_id,omitempty"`
+	AccessPolicy        *FileSystemAccessPolicyEnum       `json:"access_policy,omitempty"`
+	LockingPolicy       *FileSystemLockingPolicyEnum      `json:"locking_policy,omitempty"`
+	FolderRenamePolicy  *FileSystemFolderRenamePolicyEnum `json:"folder_rename_policy,omitempty"`
+	// Indicates whether the synchronous writes option is enabled on the file system. Values are: * true - Synchronous writes option is enabled on the file system. * false - Synchronous writes option is disabled on the file system.
 	IsSmbSyncWritesEnabled *bool `json:"is_smb_sync_writes_enabled,omitempty"`
-	// Indicates whether opportunistic file locking is enabled on the file system. Values are: * true - Opportunistic file locking is enabled on the file system. * false - Opportunistic file locking is disabled on the file system. 
+	// Indicates whether opportunistic file locking is enabled on the file system. Values are: * true - Opportunistic file locking is enabled on the file system. * false - Opportunistic file locking is disabled on the file system.
 	IsSmbOpLocksEnabled *bool `json:"is_smb_op_locks_enabled,omitempty"`
-	// Indicates whether notifications of changes to a directory file structure are enabled. * true - Change directory notifications are disabled. * false - Change directory notifications are enabled. 
+	// Indicates whether notifications of changes to a directory file structure are enabled. * true - Change directory notifications are disabled. * false - Change directory notifications are enabled.
 	IsSmbNoNotifyEnabled *bool `json:"is_smb_no_notify_enabled,omitempty"`
-	// Indicates whether file access notifications are enabled on the file system. Values are: * true - File access notifications are enabled on the file system. * false - File access notifications are disabled on the file system. 
+	// Indicates whether file access notifications are enabled on the file system. Values are: * true - File access notifications are enabled on the file system. * false - File access notifications are disabled on the file system.
 	IsSmbNotifyOnAccessEnabled *bool `json:"is_smb_notify_on_access_enabled,omitempty"`
-	// Indicates whether file writes notifications are enabled on the file system. Values are: * true - File writes notification are enabled on the file system. * false - File writes notifications are disabled on the file system. 
+	// Indicates whether file writes notifications are enabled on the file system. Values are: * true - File writes notification are enabled on the file system. * false - File writes notifications are disabled on the file system.
 	IsSmbNotifyOnWriteEnabled *bool `json:"is_smb_notify_on_write_enabled,omitempty"`
 	// Lowest directory level to which the enabled notifications apply, if any.
 	SmbNotifyOnChangeDirDepth *int32 `json:"smb_notify_on_change_dir_depth,omitempty"`
-	// Indicates whether asynchronous MTIME is enabled on the file system. Values are: * true - Asynchronous MTIME is enabled on the file system. * false - Asynchronous MTIME is disabled on the file system. 
+	// Indicates whether asynchronous MTIME is enabled on the file system. Values are: * true - Asynchronous MTIME is enabled on the file system. * false - Asynchronous MTIME is disabled on the file system.
 	IsAsyncMTimeEnabled *bool `json:"is_async_MTime_enabled,omitempty"`
-	// Indicates whether quota is enabled. Values are: * true - Start tracking usages for all users on a file system or a quota tree, and user quota limits will be enforced. * false - Stop tracking usages for all users on a file system or a quota tree, and user quota limits will not be enforced. 
+	// Indicates whether quota is enabled. Values are: * true - Start tracking usages for all users on a file system or a quota tree, and user quota limits will be enforced. * false - Stop tracking usages for all users on a file system or a quota tree, and user quota limits will not be enforced.
 	IsQuotaEnabled *bool `json:"is_quota_enabled,omitempty"`
-	// Grace period of soft limit (seconds):  * -1: Infinite grace period (Windows policy).  *  0: Use default grace period of 1 week (default).  * Positive: Grace period after which the soft limit is treated as a hard limit (seconds). 
+	// Grace period of soft limit (seconds):  * -1: Infinite grace period (Windows policy).  *  0: Use default grace period of 1 week (default).  * Positive: Grace period after which the soft limit is treated as a hard limit (seconds).
 	GracePeriod *int32 `json:"grace_period,omitempty"`
-	// Default hard limit of user quotas and tree quotas (bytes). (0 means 'No limitation'. This value can be used to compute the amount of space consumed without limiting the space). 
+	// Default hard limit of user quotas and tree quotas (bytes). (0 means 'No limitation'. This value can be used to compute the amount of space consumed without limiting the space).
 	DefaultHardLimit *int64 `json:"default_hard_limit,omitempty"`
-	// Default soft limit of user quotas and tree quotas (bytes). (0 means 'No limitation') 
+	// Default soft limit of user quotas and tree quotas (bytes). (0 means 'No limitation')
 	DefaultSoftLimit *int64 `json:"default_soft_limit,omitempty"`
 	// Time, in seconds, when the snapshot was created.
 	CreationTimestamp *time.Time `json:"creation_timestamp,omitempty"`
@@ -71,13 +69,13 @@ type FileSystemInstance struct {
 	LastRefreshTimestamp *time.Time `json:"last_refresh_timestamp,omitempty"`
 	// If not mounted, and was previously mounted, the time (in seconds) of last mount. If never mounted, the value will be zero.
 	LastWritableTimestamp *time.Time `json:"last_writable_timestamp,omitempty"`
-	// Indicates whether the snapshot may have changed since it was created. Values are: * true - Snapshot is or was shared with read/write access. * false - Snapshot was never shared. 
-	IsModified *bool `json:"is_modified,omitempty"`
-	AccessType *FileSystemSnapshotAccessTypeEnum `json:"access_type,omitempty"`
-	CreatorType *FileSystemSnapshotCreatorTypeEnum `json:"creator_type,omitempty"`
-	FileEventsPublishingMode *FileEventsPublishingModeEnum `json:"file_events_publishing_mode,omitempty"`
-	FlrAttributes *FlrInstance `json:"flr_attributes,omitempty"`
-	HostIoSize *FileSystemHostIoSizeEnum `json:"host_io_size,omitempty"`
+	// Indicates whether the snapshot may have changed since it was created. Values are: * true - Snapshot is or was shared with read/write access. * false - Snapshot was never shared.
+	IsModified               *bool                              `json:"is_modified,omitempty"`
+	AccessType               *FileSystemSnapshotAccessTypeEnum  `json:"access_type,omitempty"`
+	CreatorType              *FileSystemSnapshotCreatorTypeEnum `json:"creator_type,omitempty"`
+	FileEventsPublishingMode *FileEventsPublishingModeEnum      `json:"file_events_publishing_mode,omitempty"`
+	FlrAttributes            *FlrInstance                       `json:"flr_attributes,omitempty"`
+	HostIoSize               *FileSystemHostIoSizeEnum          `json:"host_io_size,omitempty"`
 	// Indicates whether a snapshot type filesystem is secure: * true - The snapshot is read-only and cannot be deleted until it has expired.   The expiration time of secure snapshot cannot be reduced and cannot be set to infinite.   The value of is_secure cannot be changed from true to false. * false - A normal snapshot.  Was added in version 4.1.0.0.
 	IsSecure *bool `json:"is_secure,omitempty"`
 	// Localized message string corresponding to filesystem_type
@@ -97,10 +95,10 @@ type FileSystemInstance struct {
 	// Localized message string corresponding to file_events_publishing_mode Was added in version 3.0.0.0.
 	FileEventsPublishingModeL10n *string `json:"file_events_publishing_mode_l10n,omitempty"`
 	// Localized message string corresponding to host_io_size Was added in version 3.0.0.0.
-	HostIoSizeL10n *string `json:"host_io_size_l10n,omitempty"`
-	NasServer *NasServerInstance `json:"nas_server,omitempty"`
-	ProtectionPolicy *PolicyInstance `json:"protection_policy,omitempty"`
-	PerformancePolicy *PolicyInstance `json:"performance_policy,omitempty"`
+	HostIoSizeL10n    *string            `json:"host_io_size_l10n,omitempty"`
+	NasServer         *NasServerInstance `json:"nas_server,omitempty"`
+	ProtectionPolicy  *PolicyInstance    `json:"protection_policy,omitempty"`
+	PerformancePolicy *PolicyInstance    `json:"performance_policy,omitempty"`
 	// This is the inverse of the resource type file_tree_quota association.
 	FileTreeQuotas []FileTreeQuotaInstance `json:"file_tree_quotas,omitempty"`
 	// This is the inverse of the resource type file_user_quota association.
@@ -110,5 +108,3 @@ type FileSystemInstance struct {
 	// This is the inverse of the resource type smb_share association.
 	SmbShares []SmbShareInstance `json:"smb_shares,omitempty"`
 }
-
-

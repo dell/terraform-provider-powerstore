@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // SoftwareInstalledBuildFlavorEnum A specific config, determined at build time.  Valid values are:  * Retail - An optimized compiler option.  Was added in version 2.0.0.0.
 type SoftwareInstalledBuildFlavorEnum string
 
@@ -31,4 +26,3 @@ var AllowedSoftwareInstalledBuildFlavorEnumEnumValues = []SoftwareInstalledBuild
 func (v *SoftwareInstalledBuildFlavorEnum) Value() string {
 	return string(*v)
 }
-

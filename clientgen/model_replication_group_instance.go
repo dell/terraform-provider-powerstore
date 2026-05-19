@@ -11,10 +11,8 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // ReplicationGroupInstance Properties of a Replication Group. Was added in version 3.0.0.0. This resource type has queriable associations from storage_container, replication_group, virtual_volume, virtual_machine, policy
 type ReplicationGroupInstance struct {
@@ -25,7 +23,7 @@ type ReplicationGroupInstance struct {
 	// Name of the Replication Group.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// Description of the Replication Group.
-	Description *string `json:"description,omitempty"`
+	Description *string                 `json:"description,omitempty"`
 	CreatorType *StorageCreatorTypeEnum `json:"creator_type,omitempty"`
 	// Timestamp when given replication group was created.
 	CreationTimestamp *time.Time `json:"creation_timestamp,omitempty"`
@@ -38,12 +36,12 @@ type ReplicationGroupInstance struct {
 	// Localized message string corresponding to creator_type Was added in version 3.0.0.0.
 	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	VirtualVolumes []VirtualVolumeInstance `json:"virtual_volumes,omitempty"`
+	VirtualVolumes   []VirtualVolumeInstance   `json:"virtual_volumes,omitempty"`
 	StorageContainer *StorageContainerInstance `json:"storage_container,omitempty"`
-	Parent *ReplicationGroupInstance `json:"parent,omitempty"`
+	Parent           *ReplicationGroupInstance `json:"parent,omitempty"`
 	// This is the inverse of the resource type replication_group association.
 	ChildReplicationGroups []ReplicationGroupInstance `json:"child_replication_groups,omitempty"`
-	Source *ReplicationGroupInstance `json:"source,omitempty"`
+	Source                 *ReplicationGroupInstance  `json:"source,omitempty"`
 	// This is the inverse of the resource type replication_group association.
 	TargetReplicationGroups []ReplicationGroupInstance `json:"target_replication_groups,omitempty"`
 	// This is the inverse of the resource type virtual_machine association.
@@ -51,5 +49,3 @@ type ReplicationGroupInstance struct {
 	// List of the policies that are associated with this replication_group.
 	Policies []PolicyInstance `json:"policies,omitempty"`
 }
-
-

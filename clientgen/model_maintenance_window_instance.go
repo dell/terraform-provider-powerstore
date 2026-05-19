@@ -11,10 +11,8 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // MaintenanceWindowInstance This resource type has queriable association from appliance
 type MaintenanceWindowInstance struct {
@@ -25,8 +23,6 @@ type MaintenanceWindowInstance struct {
 	// Whether the maintenance window is active.
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// Time when the maintenance window will close (or did close).
-	EndTime *time.Time `json:"end_time,omitempty"`
+	EndTime   *time.Time         `json:"end_time,omitempty"`
 	Appliance *ApplianceInstance `json:"appliance,omitempty"`
 }
-
-

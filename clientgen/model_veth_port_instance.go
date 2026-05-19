@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // VethPortInstance Properties of a virtual Ethernet port. Values was added in 2.0.0.0: partner_id. This resource type has queriable associations from veth_port, appliance, node, ip_port
 type VethPortInstance struct {
 	// Unique identifier of the virtual Ethernet port instance.
@@ -29,25 +24,23 @@ type VethPortInstance struct {
 	Name *string `json:"name,omitempty"`
 	// Virtual Ethernet port MAC address.
 	MacAddress *string `json:"mac_address,omitempty"`
-	// Indicates whether the virtual Ethernet port's link is up. Values are: * true - Link is up. * false - Link is down. 
+	// Indicates whether the virtual Ethernet port's link is up. Values are: * true - Link is up. * false - Link is down.
 	IsLinkUp *bool `json:"is_link_up,omitempty"`
 	// Virtual Ethernet port transmission speed, in bits/sec (bps).
 	CurrentSpeed *int64 `json:"current_speed,omitempty"`
 	// Maximum Transmission Unit (MTU) packet size that the virtual Ethernet port can transmit.
 	CurrentMtu *int32 `json:"current_mtu,omitempty"`
-	// Name of the virtual switch that holds the virtual Ethernet port. Only applies to PowerStoreX deployments. 
+	// Name of the virtual switch that holds the virtual Ethernet port. Only applies to PowerStoreX deployments.
 	VswitchName *string `json:"vswitch_name,omitempty"`
-	// Name of the virtual switch port group to which the virtual Ethernet port is assigned. Only applies to PowerStoreX deployments. 
+	// Name of the virtual switch port group to which the virtual Ethernet port is assigned. Only applies to PowerStoreX deployments.
 	VswitchPortGroupName *string `json:"vswitch_port_group_name,omitempty"`
-	// Unique identifier of the virtual switch port associated with the virtual Ethernet port. Only applies to PowerStoreX deployments. 
+	// Unique identifier of the virtual switch port associated with the virtual Ethernet port. Only applies to PowerStoreX deployments.
 	VswitchPortId *int32 `json:"vswitch_port_id,omitempty"`
 	// Name of the virtual switch port associated with the virtual Ethernet port. Only applies to PowerStoreX deployments.   This property supports case-insensitive filtering.
 	VswitchPortName *string `json:"vswitch_port_name,omitempty"`
 	// This is the inverse of the resource type ip_port association.
-	IpPorts []IpPortInstance `json:"ip_ports,omitempty"`
-	Partner *VethPortInstance `json:"partner,omitempty"`
+	IpPorts   []IpPortInstance   `json:"ip_ports,omitempty"`
+	Partner   *VethPortInstance  `json:"partner,omitempty"`
 	Appliance *ApplianceInstance `json:"appliance,omitempty"`
-	Node *NodeInstance `json:"node,omitempty"`
+	Node      *NodeInstance      `json:"node,omitempty"`
 }
-
-

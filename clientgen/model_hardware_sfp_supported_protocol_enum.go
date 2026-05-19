@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareSFPSupportedProtocolEnum Supported protocol. Available on the SFP hardware type. Current protocols are:  * Unknown - This SFP has unknown protocol support.  * FC - This SFP supports Fibre Channel.  * Ethernet - This SFP supports Ethernet.  * FC_Ethernet - This SFP supports Fibre Channel or Ethernet.  * SAS - This SFP supports SAS for connections to Expansion Enclosures. 
+// HardwareSFPSupportedProtocolEnum Supported protocol. Available on the SFP hardware type. Current protocols are:  * Unknown - This SFP has unknown protocol support.  * FC - This SFP supports Fibre Channel.  * Ethernet - This SFP supports Ethernet.  * FC_Ethernet - This SFP supports Fibre Channel or Ethernet.  * SAS - This SFP supports SAS for connections to Expansion Enclosures.
 type HardwareSFPSupportedProtocolEnum string
 
 // List of HardwareSFPSupportedProtocolEnum
 const (
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_UNKNOWN HardwareSFPSupportedProtocolEnum = "Unknown"
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_FC HardwareSFPSupportedProtocolEnum = "FC"
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_ETHERNET HardwareSFPSupportedProtocolEnum = "Ethernet"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_UNKNOWN     HardwareSFPSupportedProtocolEnum = "Unknown"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_FC          HardwareSFPSupportedProtocolEnum = "FC"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_ETHERNET    HardwareSFPSupportedProtocolEnum = "Ethernet"
 	HARDWARESFPSUPPORTEDPROTOCOLENUM_FC_ETHERNET HardwareSFPSupportedProtocolEnum = "FC_Ethernet"
-	HARDWARESFPSUPPORTEDPROTOCOLENUM_SAS HardwareSFPSupportedProtocolEnum = "SAS"
+	HARDWARESFPSUPPORTEDPROTOCOLENUM_SAS         HardwareSFPSupportedProtocolEnum = "SAS"
 )
 
 // All allowed values of HardwareSFPSupportedProtocolEnum enum
@@ -39,4 +34,3 @@ var AllowedHardwareSFPSupportedProtocolEnumEnumValues = []HardwareSFPSupportedPr
 func (v *HardwareSFPSupportedProtocolEnum) Value() string {
 	return string(*v)
 }
-

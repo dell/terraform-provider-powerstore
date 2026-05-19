@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // StorageContainerDestinationInstance A storage container destination defines replication destination for a local storage container on a remote system. New replication groups will use destination storage containers to create their vVol replicas.  Was added in version 3.0.0.0. This resource type has queriable associations from storage_container, remote_system
 type StorageContainerDestinationInstance struct {
 	// The unique id of the storage container destination.
@@ -24,9 +19,7 @@ type StorageContainerDestinationInstance struct {
 	// The unique id of the remote system.
 	RemoteSystemId *string `json:"remote_system_id,omitempty"`
 	// The unique id of the destination storage container on the remote system.
-	RemoteStorageContainerId *string `json:"remote_storage_container_id,omitempty"`
-	StorageContainer *StorageContainerInstance `json:"storage_container,omitempty"`
-	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
+	RemoteStorageContainerId *string                   `json:"remote_storage_container_id,omitempty"`
+	StorageContainer         *StorageContainerInstance `json:"storage_container,omitempty"`
+	RemoteSystem             *RemoteSystemInstance     `json:"remote_system,omitempty"`
 }
-
-

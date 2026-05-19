@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // ValidUpgradeInstance Additional hardware details that are specific to each hardware component upgrade. Was added in version 3.6.0.0.
 type ValidUpgradeInstance struct {
 	ModelName *HardwareModelTypeEnum `json:"model_name,omitempty"`
@@ -29,5 +24,3 @@ type ValidUpgradeInstance struct {
 	// Localized message string corresponding to model_name Was added in version 3.6.0.0.
 	ModelNameL10n *string `json:"model_name_l10n,omitempty"`
 }
-
-

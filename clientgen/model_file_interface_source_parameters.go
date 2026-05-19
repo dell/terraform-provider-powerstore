@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // FileInterfaceSourceParameters Information about the corresponding source NAS server's File Interface settings. Only populated when is_destination_override_enabled flag is set to true. Was added in version 3.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 type FileInterfaceSourceParameters struct {
 	// IP address of the network interface. IPv4 and IPv6 are supported.
@@ -28,5 +23,3 @@ type FileInterfaceSourceParameters struct {
 	// Unique identifier of the IP Port that is associated with the file interfacesinterface. Was added in version 3.0.0.0.
 	IpPortId *string `json:"ip_port_id,omitempty"`
 }
-
-

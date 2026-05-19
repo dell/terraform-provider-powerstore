@@ -10,22 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // ReplicationSessionWitnessDetails Witness configuration and state details associated with the replication session.  Was added in version 3.6.0.0.  Filtering on the fields of this embedded resource is not supported.
 type ReplicationSessionWitnessDetails struct {
-	// Unique identifier of a witness service. 
+	// Unique identifier of a witness service.
 	WitnessId *string `json:"witness_id,omitempty"`
-	// Witness service UUID generated as part of installation. This ID is exposed by the witness service itself. 
+	// Witness service UUID generated as part of installation. This ID is exposed by the witness service itself.
 	WitnessUuid *string `json:"witness_uuid,omitempty"`
-	// User-provided name for the witness service that is reachable at the provided address. Used as a personal reminder. 
-	WitnessName *string `json:"witness_name,omitempty"`
-	State *ReplicationSessionWitnessStateEnum `json:"state,omitempty"`
+	// User-provided name for the witness service that is reachable at the provided address. Used as a personal reminder.
+	WitnessName *string                             `json:"witness_name,omitempty"`
+	State       *ReplicationSessionWitnessStateEnum `json:"state,omitempty"`
 	// Localized message string corresponding to state Was added in version 3.6.0.0.
 	StateL10n *string `json:"state_l10n,omitempty"`
 }
-
-

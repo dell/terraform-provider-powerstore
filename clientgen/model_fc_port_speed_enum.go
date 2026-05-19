@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FcPortSpeedEnum Possible Fibre Channel port speeds. For the current_speed attribute, these values show the current transmission speed on the port. For the requested_speed attribute, these values show the transmission speed set by the user. A requested speed of Auto means that the current speed value will be automatically detected. If this file is updated, also update FrontEndPortSpeedEnum.yaml * Auto - the speed value is automatically detected * 4_Gbps - 4 Gigabits per second * 8_Gbps - 8 Gigabits per second * 16_Gbps - 16 Gigabits per second * 32_Gbps - 32 Gigabits per second 
+// FcPortSpeedEnum Possible Fibre Channel port speeds. For the current_speed attribute, these values show the current transmission speed on the port. For the requested_speed attribute, these values show the transmission speed set by the user. A requested speed of Auto means that the current speed value will be automatically detected. If this file is updated, also update FrontEndPortSpeedEnum.yaml * Auto - the speed value is automatically detected * 4_Gbps - 4 Gigabits per second * 8_Gbps - 8 Gigabits per second * 16_Gbps - 16 Gigabits per second * 32_Gbps - 32 Gigabits per second
 type FcPortSpeedEnum string
 
 // List of FcPortSpeedEnum
 const (
-	FCPORTSPEEDENUM_AUTO FcPortSpeedEnum = "Auto"
-	FCPORTSPEEDENUM__4_GBPS FcPortSpeedEnum = "4_Gbps"
-	FCPORTSPEEDENUM__8_GBPS FcPortSpeedEnum = "8_Gbps"
+	FCPORTSPEEDENUM_AUTO     FcPortSpeedEnum = "Auto"
+	FCPORTSPEEDENUM__4_GBPS  FcPortSpeedEnum = "4_Gbps"
+	FCPORTSPEEDENUM__8_GBPS  FcPortSpeedEnum = "8_Gbps"
 	FCPORTSPEEDENUM__16_GBPS FcPortSpeedEnum = "16_Gbps"
 	FCPORTSPEEDENUM__32_GBPS FcPortSpeedEnum = "32_Gbps"
 )
@@ -39,4 +34,3 @@ var AllowedFcPortSpeedEnumEnumValues = []FcPortSpeedEnum{
 func (v *FcPortSpeedEnum) Value() string {
 	return string(*v)
 }
-

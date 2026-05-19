@@ -18,14 +18,13 @@ import (
 	"net/url"
 )
 
-
 // LoginSessionApiService LoginSessionApi service
 type LoginSessionApiService service
 
 type ApiGetAllLoginSessionsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *LoginSessionApiService
-	queries url.Values
+	queries    url.Values
 }
 
 func (r ApiGetAllLoginSessionsRequest) Queries(in url.Values) ApiGetAllLoginSessionsRequest {
@@ -40,27 +39,28 @@ func (r ApiGetAllLoginSessionsRequest) Execute() ([]LoginSessionInstance, *http.
 /*
 GetAllLoginSessions Collection Query
 
-Obtain the login session for the current user. 
+Obtain the login session for the current user.
 This resource type collection query does not support filtering, sorting or pagination.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetAllLoginSessionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAllLoginSessionsRequest
 */
 func (a *LoginSessionApiService) GetAllLoginSessions(ctx context.Context) ApiGetAllLoginSessionsRequest {
 	return ApiGetAllLoginSessionsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []LoginSessionInstance
+//
+//	@return []LoginSessionInstance
 func (a *LoginSessionApiService) GetAllLoginSessionsExecute(r ApiGetAllLoginSessionsRequest) ([]LoginSessionInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []LoginSessionInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []LoginSessionInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "LoginSessionApiService.GetAllLoginSessions")

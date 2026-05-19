@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // DatastoreInstance Properties of a datastore. Was added in version 3.0.0.0. This resource type has queriable associations from vcenter, storage_container, nfs_export, virtual_machine, volume, vsphere_host
 type DatastoreInstance struct {
 	// Unique identifier of the datastore instance.
@@ -22,7 +17,7 @@ type DatastoreInstance struct {
 	// UUID instance of the datastore in vCenter.
 	InstanceUuid *string `json:"instance_uuid,omitempty"`
 	// User-assigned name of the datastore in vCenter.  This property supports case-insensitive filtering.
-	Name *string `json:"name,omitempty"`
+	Name *string            `json:"name,omitempty"`
 	Type *DatastoreTypeEnum `json:"type,omitempty"`
 	// Unique identifier of the datastore in vCenter.
 	VsphereObjectId *string `json:"vsphere_object_id,omitempty"`
@@ -33,10 +28,10 @@ type DatastoreInstance struct {
 	// Unique identifier of a backing nfs_export instance (for NFS type only).
 	NfsExportId *string `json:"nfs_export_id,omitempty"`
 	// Localized message string corresponding to type Was added in version 3.0.0.0.
-	TypeL10n *string `json:"type_l10n,omitempty"`
-	Vcenter *VcenterInstance `json:"vcenter,omitempty"`
+	TypeL10n         *string                   `json:"type_l10n,omitempty"`
+	Vcenter          *VcenterInstance          `json:"vcenter,omitempty"`
 	StorageContainer *StorageContainerInstance `json:"storage_container,omitempty"`
-	NfsExport *NfsExportInstance `json:"nfs_export,omitempty"`
+	NfsExport        *NfsExportInstance        `json:"nfs_export,omitempty"`
 	// List of the virtual_machines that are associated with this datastore.
 	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
 	// List of the volumes that are associated with this datastore.
@@ -44,5 +39,3 @@ type DatastoreInstance struct {
 	// List of the vsphere_hosts that are associated with this datastore.
 	VsphereHosts []VsphereHostInstance `json:"vsphere_hosts,omitempty"`
 }
-
-

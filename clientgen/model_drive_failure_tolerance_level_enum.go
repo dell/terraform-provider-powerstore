@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DriveFailureToleranceLevelEnum Possible drive failure tolerance levels. * Single - A single drive failure can be tolerated without data loss. * Double - Two drive failures can be tolerated without data loss. * None - No drive failure can be tolerated without data loss (VSA-only).  Was added in version 2.0.0.0. Values was added in 3.0.0.0: None.
 type DriveFailureToleranceLevelEnum string
 
@@ -22,7 +17,7 @@ type DriveFailureToleranceLevelEnum string
 const (
 	DRIVEFAILURETOLERANCELEVELENUM_SINGLE DriveFailureToleranceLevelEnum = "Single"
 	DRIVEFAILURETOLERANCELEVELENUM_DOUBLE DriveFailureToleranceLevelEnum = "Double"
-	DRIVEFAILURETOLERANCELEVELENUM_NONE DriveFailureToleranceLevelEnum = "None"
+	DRIVEFAILURETOLERANCELEVELENUM_NONE   DriveFailureToleranceLevelEnum = "None"
 )
 
 // All allowed values of DriveFailureToleranceLevelEnum enum
@@ -35,4 +30,3 @@ var AllowedDriveFailureToleranceLevelEnumEnumValues = []DriveFailureToleranceLev
 func (v *DriveFailureToleranceLevelEnum) Value() string {
 	return string(*v)
 }
-

@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // FileInterfaceInstance This resource type has queriable associations from nas_server, ip_port, file_interface_route
 type FileInterfaceInstance struct {
 	// Unique identifier of the file interface.
@@ -30,23 +25,21 @@ type FileInterfaceInstance struct {
 	// Virtual Local Area Network (VLAN) identifier for the interface. The interface uses the identifier to accept packets that have matching VLAN tags.
 	VlanId *int32 `json:"vlan_id,omitempty"`
 	// Name of the network interface.  This property supports case-insensitive filtering.
-	Name *string `json:"name,omitempty"`
+	Name *string                `json:"name,omitempty"`
 	Role *FileInterfaceRoleEnum `json:"role,omitempty"`
 	// Indicates whether the network interface is disabled.
 	IsDisabled *bool `json:"is_disabled,omitempty"`
 	// Used in replication context when the user wants to override the settings on the destination. Was added in version 3.0.0.0.
 	IsDestinationOverrideEnabled *bool `json:"is_destination_override_enabled,omitempty"`
 	// Unique Identifier of the IP Port that is associated with the file interface. Was added in version 3.0.0.0.
-	IpPortId *string `json:"ip_port_id,omitempty"`
+	IpPortId         *string                        `json:"ip_port_id,omitempty"`
 	SourceParameters *FileInterfaceSourceParameters `json:"source_parameters,omitempty"`
 	// True when the associated nas_server has been created as a clone with the is_dr_test option set to true. Disaster Recovery Testing provides following functionalities   1. The ability to create a DR Test (DRT) enabled nas_server by cloning a replicated nas_server on destination PowerStore.   2. The ability to create the necessary isolated networking environment on the destination PowerStore.   3. With isolated network, DRT-enabled nas_server can operate with same IP address(es) as the the production      nas_server on the source PowerStore.   4. DRT-enabled nas_servers can run without IP address conflicts even if failover/failback of the replication occurs.   5. If isolated network is configured, do not configure production nas_servers with isolated network interfaces      on destination PowerStore.  Was added in version 3.6.0.0.
 	IsDrTest *bool `json:"is_dr_test,omitempty"`
 	// Localized message string corresponding to role
-	RoleL10n *string `json:"role_l10n,omitempty"`
+	RoleL10n  *string            `json:"role_l10n,omitempty"`
 	NasServer *NasServerInstance `json:"nas_server,omitempty"`
-	IpPort *IpPortInstance `json:"ip_port,omitempty"`
+	IpPort    *IpPortInstance    `json:"ip_port,omitempty"`
 	// This is the inverse of the resource type file_interface_route association.
 	FileInterfaceRoutes []FileInterfaceRouteInstance `json:"file_interface_routes,omitempty"`
 }
-
-

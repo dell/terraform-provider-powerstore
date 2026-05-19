@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HostAgentStatusEnum Status of the import host system. Valid values are:  * Unknown - Agent status is unknown.  * Running - Agent is up and running.  * Conflict_Detected - Agent detected that there are multiple MPIOs installed on the host and Destination Powerstore MPIO is not able to claim destination device as some other MPIO has already claimed it.  * Version_Unsupported - Agent detected that the OS or any other dependent component does not satisfy the version as expected by the it. 
+// HostAgentStatusEnum Status of the import host system. Valid values are:  * Unknown - Agent status is unknown.  * Running - Agent is up and running.  * Conflict_Detected - Agent detected that there are multiple MPIOs installed on the host and Destination Powerstore MPIO is not able to claim destination device as some other MPIO has already claimed it.  * Version_Unsupported - Agent detected that the OS or any other dependent component does not satisfy the version as expected by the it.
 type HostAgentStatusEnum string
 
 // List of HostAgentStatusEnum
 const (
-	HOSTAGENTSTATUSENUM_UNKNOWN HostAgentStatusEnum = "Unknown"
-	HOSTAGENTSTATUSENUM_RUNNING HostAgentStatusEnum = "Running"
-	HOSTAGENTSTATUSENUM_CONFLICT_DETECTED HostAgentStatusEnum = "Conflict_Detected"
+	HOSTAGENTSTATUSENUM_UNKNOWN             HostAgentStatusEnum = "Unknown"
+	HOSTAGENTSTATUSENUM_RUNNING             HostAgentStatusEnum = "Running"
+	HOSTAGENTSTATUSENUM_CONFLICT_DETECTED   HostAgentStatusEnum = "Conflict_Detected"
 	HOSTAGENTSTATUSENUM_VERSION_UNSUPPORTED HostAgentStatusEnum = "Version_Unsupported"
 )
 
@@ -37,4 +32,3 @@ var AllowedHostAgentStatusEnumEnumValues = []HostAgentStatusEnum{
 func (v *HostAgentStatusEnum) Value() string {
 	return string(*v)
 }
-

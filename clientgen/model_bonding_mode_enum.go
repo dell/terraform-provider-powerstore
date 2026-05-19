@@ -10,12 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// BondingModeEnum Bonding mode:   * LACP - Uses an IEEE 802.3ad dynamic link aggregation policy. Aggregation groups share     the same speed and duplex settings. This mode transmits and receives network traffic on     all interfaces in the active aggregator. 
+// BondingModeEnum Bonding mode:   * LACP - Uses an IEEE 802.3ad dynamic link aggregation policy. Aggregation groups share     the same speed and duplex settings. This mode transmits and receives network traffic on     all interfaces in the active aggregator.
 type BondingModeEnum string
 
 // List of BondingModeEnum
@@ -31,4 +26,3 @@ var AllowedBondingModeEnumEnumValues = []BondingModeEnum{
 func (v *BondingModeEnum) Value() string {
 	return string(*v)
 }
-

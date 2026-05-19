@@ -10,25 +10,18 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // PowerstoreNetworkInfo PowerStore storage network information as is from the local or remote PowerStore cluster.  Was added in version 4.0.0.0.
 type PowerstoreNetworkInfo struct {
-	// Unique identifier of the network. 
+	// Unique identifier of the network.
 	Id *string `json:"id,omitempty"`
 	// User-defined name of the network.   This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
-	// VLAN identifier 
+	// VLAN identifier
 	VlanId *int32 `json:"vlan_id,omitempty"`
-	// Network gateway in IPv4 or IPv6 format, corresponding to the network's IP version. 
+	// Network gateway in IPv4 or IPv6 format, corresponding to the network's IP version.
 	Gateway *string `json:"gateway,omitempty"`
-	// Maximum Transmission Unit (MTU) packet size set on network interfaces, in bytes. 
+	// Maximum Transmission Unit (MTU) packet size set on network interfaces, in bytes.
 	Mtu *int32 `json:"mtu,omitempty"`
-	// Network prefix length, used for both IPv4 and IPv6. 
+	// Network prefix length, used for both IPv4 and IPv6.
 	PrefixLength *int32 `json:"prefix_length,omitempty"`
 }
-
-

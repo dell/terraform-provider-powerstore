@@ -11,30 +11,26 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // RecycleBinInstance Properties of a storage object available while in the recycle bin. Was added in version 3.5.0.0.
 type RecycleBinInstance struct {
 	// Unique identifier for the recycle bin instance.
 	Id *string `json:"id,omitempty"`
 	// The name of the object.  This property supports case-insensitive filtering.
-	Name *string `json:"name,omitempty"`
+	Name         *string                     `json:"name,omitempty"`
 	ResourceType *RecycleBinResourceTypeEnum `json:"resource_type,omitempty"`
-	// Provisioned size of the object in bytes. Volume groups will show total provisioned space for all volumes in the volume group. 
+	// Provisioned size of the object in bytes. Volume groups will show total provisioned space for all volumes in the volume group.
 	LogicalProvisioned *int64 `json:"logical_provisioned,omitempty"`
-	// Logical space used by the object in bytes. Volume groups will show the total logical space used for all volumes in the volume group. 
+	// Logical space used by the object in bytes. Volume groups will show the total logical space used for all volumes in the volume group.
 	LogicalUsed *int64 `json:"logical_used,omitempty"`
 	// The appliance where this resource is located.
 	ApplianceId *string `json:"appliance_id,omitempty"`
 	// Time when the object was moved to the recycle bin.
 	DeletionTimestamp *time.Time `json:"deletion_timestamp,omitempty"`
-	// Time when the object will be auto-purged. Expired object are deleted by the aging service that runs periodically in the background. 
+	// Time when the object will be auto-purged. Expired object are deleted by the aging service that runs periodically in the background.
 	ExpirationTimestamp *time.Time `json:"expiration_timestamp,omitempty"`
 	// Localized message string corresponding to resource_type Was added in version 3.5.0.0.
 	ResourceTypeL10n *string `json:"resource_type_l10n,omitempty"`
 }
-
-

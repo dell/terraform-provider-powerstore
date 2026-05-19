@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSnapshotStateEnum State of the remote_snapshot:  * Protected - Transfer of remote_snapshot to remote has completed.  * Deleting - The remote_snapshot is being deleted.  Was added in version 3.5.0.0.
 type RemoteSnapshotStateEnum string
 
 // List of RemoteSnapshotStateEnum
 const (
 	REMOTESNAPSHOTSTATEENUM_PROTECTED RemoteSnapshotStateEnum = "Protected"
-	REMOTESNAPSHOTSTATEENUM_DELETING RemoteSnapshotStateEnum = "Deleting"
+	REMOTESNAPSHOTSTATEENUM_DELETING  RemoteSnapshotStateEnum = "Deleting"
 )
 
 // All allowed values of RemoteSnapshotStateEnum enum
@@ -33,4 +28,3 @@ var AllowedRemoteSnapshotStateEnumEnumValues = []RemoteSnapshotStateEnum{
 func (v *RemoteSnapshotStateEnum) Value() string {
 	return string(*v)
 }
-

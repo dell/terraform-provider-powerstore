@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // VolumeTypeEnum Type of volume.  * Primary - A base object.  * Clone - A read-write object that shares storage with the object from which it is sourced.  * Snapshot - A read-only object created from a volume or clone.  * Proxy - A proxy object that is used for remote snapshot access.  Values was added in 3.5.0.0: Proxy.
 type VolumeTypeEnum string
 
 // List of VolumeTypeEnum
 const (
-	VOLUMETYPEENUM_PRIMARY VolumeTypeEnum = "Primary"
-	VOLUMETYPEENUM_CLONE VolumeTypeEnum = "Clone"
+	VOLUMETYPEENUM_PRIMARY  VolumeTypeEnum = "Primary"
+	VOLUMETYPEENUM_CLONE    VolumeTypeEnum = "Clone"
 	VOLUMETYPEENUM_SNAPSHOT VolumeTypeEnum = "Snapshot"
-	VOLUMETYPEENUM_PROXY VolumeTypeEnum = "Proxy"
+	VOLUMETYPEENUM_PROXY    VolumeTypeEnum = "Proxy"
 )
 
 // All allowed values of VolumeTypeEnum enum
@@ -37,4 +32,3 @@ var AllowedVolumeTypeEnumEnumValues = []VolumeTypeEnum{
 func (v *VolumeTypeEnum) Value() string {
 	return string(*v)
 }
-

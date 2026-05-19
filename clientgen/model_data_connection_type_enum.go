@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // DataConnectionTypeEnum Possible data connection type: * iSCSI     - iSCSI data connection type. Used only for non-PowerStore systems. * TCP       - TCP data connection type. Used only for Powerstore systems. * FC        - Fiber channel data connection type. Used only for non-PowerStore systems. * DD_Boost  - DD Boost data connection type. Used only for PowerProtect DD Systems.  Applicable only to non-PowerStore remote system for Create.  Was added in version 3.0.0.0. Values was added in 3.5.0.0: DD_Boost.
 type DataConnectionTypeEnum string
 
 // List of DataConnectionTypeEnum
 const (
-	DATACONNECTIONTYPEENUM_I_SCSI DataConnectionTypeEnum = "iSCSI"
-	DATACONNECTIONTYPEENUM_TCP DataConnectionTypeEnum = "TCP"
-	DATACONNECTIONTYPEENUM_FC DataConnectionTypeEnum = "FC"
+	DATACONNECTIONTYPEENUM_I_SCSI   DataConnectionTypeEnum = "iSCSI"
+	DATACONNECTIONTYPEENUM_TCP      DataConnectionTypeEnum = "TCP"
+	DATACONNECTIONTYPEENUM_FC       DataConnectionTypeEnum = "FC"
 	DATACONNECTIONTYPEENUM_DD_BOOST DataConnectionTypeEnum = "DD_Boost"
 )
 
@@ -37,4 +32,3 @@ var AllowedDataConnectionTypeEnumEnumValues = []DataConnectionTypeEnum{
 func (v *DataConnectionTypeEnum) Value() string {
 	return string(*v)
 }
-

@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // InitiatorProtocolTypeEnum Protocol type of the host initiator.  * iSCSI - An iSCSI host initiator.  * FC - A Fibre Channel host initiator.  * NVMe -  A NVMe host initiator. Single type for all NVMe Fabrics types (NVMe/FC, NVMe/TCP, NVMe/RoCEv2).  * NVMe_vVol - A vVol specific NVMe host initiator.  Values was added in 2.0.0.0: NVMe. Values was added in 3.0.0.0: NVMe_vVol.
 type InitiatorProtocolTypeEnum string
 
 // List of InitiatorProtocolTypeEnum
 const (
-	INITIATORPROTOCOLTYPEENUM_I_SCSI InitiatorProtocolTypeEnum = "iSCSI"
-	INITIATORPROTOCOLTYPEENUM_FC InitiatorProtocolTypeEnum = "FC"
-	INITIATORPROTOCOLTYPEENUM_NVME InitiatorProtocolTypeEnum = "NVMe"
+	INITIATORPROTOCOLTYPEENUM_I_SCSI     InitiatorProtocolTypeEnum = "iSCSI"
+	INITIATORPROTOCOLTYPEENUM_FC         InitiatorProtocolTypeEnum = "FC"
+	INITIATORPROTOCOLTYPEENUM_NVME       InitiatorProtocolTypeEnum = "NVMe"
 	INITIATORPROTOCOLTYPEENUM_NVME_V_VOL InitiatorProtocolTypeEnum = "NVMe_vVol"
 )
 
@@ -37,4 +32,3 @@ var AllowedInitiatorProtocolTypeEnumEnumValues = []InitiatorProtocolTypeEnum{
 func (v *InitiatorProtocolTypeEnum) Value() string {
 	return string(*v)
 }
-

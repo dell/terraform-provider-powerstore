@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // HardwareModelTypeEnum Desired model to which the appliance should be upgraded.  * 1200T  * 3200T  * 5200T  * 9200T  Was added in version 3.6.0.0.
 type HardwareModelTypeEnum string
 
@@ -37,4 +32,3 @@ var AllowedHardwareModelTypeEnumEnumValues = []HardwareModelTypeEnum{
 func (v *HardwareModelTypeEnum) Value() string {
 	return string(*v)
 }
-

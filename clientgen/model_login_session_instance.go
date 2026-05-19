@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // LoginSessionInstance struct for LoginSessionInstance
 type LoginSessionInstance struct {
 	// Unique identifier of the login session.
@@ -30,5 +25,3 @@ type LoginSessionInstance struct {
 	// Indicates whether the logged-in user is predefined.
 	IsBuiltInUser *bool `json:"is_built_in_user,omitempty"`
 }
-
-

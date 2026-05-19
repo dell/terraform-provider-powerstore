@@ -10,21 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // FileIoLimitRuleInstance Properties of a file_io_limit_rule instance. Was added in version 4.1.0.0. This resource type has queriable association from policy
 type FileIoLimitRuleInstance struct {
 	// Unique identifier of the file_io_limit_rule.
 	Id *string `json:"id,omitempty"`
 	// Name of the file_io_limit_rule.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
-	// Maximum allowable bandwidth in MB/second for the file_system or nas_server resource. When applied to a nas_server, all the file_systems of the nas_server share the maximum bandwidth. 
+	// Maximum allowable bandwidth in MB/second for the file_system or nas_server resource. When applied to a nas_server, all the file_systems of the nas_server share the maximum bandwidth.
 	MaxBw *int32 `json:"max_bw,omitempty"`
 	// This is the inverse of the resource type policy association.
 	Policies []PolicyInstance `json:"policies,omitempty"`
 }
-
-

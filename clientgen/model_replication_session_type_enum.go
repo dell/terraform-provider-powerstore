@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ReplicationSessionTypeEnum Type of the replication session: * Asynchronous               - Data is copied asynchronously to the destination resource. * Metro_Active_Active        - Data is copied synchronously in both directions. Both local and remote resource are available for production IO. * Synchronous       - Data is copied synchronously to destination resource.  Was added in version 3.0.0.0.
 type ReplicationSessionTypeEnum string
 
 // List of ReplicationSessionTypeEnum
 const (
-	REPLICATIONSESSIONTYPEENUM_ASYNCHRONOUS ReplicationSessionTypeEnum = "Asynchronous"
+	REPLICATIONSESSIONTYPEENUM_ASYNCHRONOUS        ReplicationSessionTypeEnum = "Asynchronous"
 	REPLICATIONSESSIONTYPEENUM_METRO_ACTIVE_ACTIVE ReplicationSessionTypeEnum = "Metro_Active_Active"
-	REPLICATIONSESSIONTYPEENUM_SYNCHRONOUS ReplicationSessionTypeEnum = "Synchronous"
+	REPLICATIONSESSIONTYPEENUM_SYNCHRONOUS         ReplicationSessionTypeEnum = "Synchronous"
 )
 
 // All allowed values of ReplicationSessionTypeEnum enum
@@ -35,4 +30,3 @@ var AllowedReplicationSessionTypeEnumEnumValues = []ReplicationSessionTypeEnum{
 func (v *ReplicationSessionTypeEnum) Value() string {
 	return string(*v)
 }
-

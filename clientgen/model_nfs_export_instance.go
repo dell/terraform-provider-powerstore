@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // NfsExportInstance This resource type has queriable associations from file_system, datastore
 type NfsExportInstance struct {
 	// Unique id of the NFS Export.
@@ -23,12 +18,12 @@ type NfsExportInstance struct {
 	FileSystemId *string `json:"file_system_id,omitempty"`
 	// NFS Export name.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
-	// Local path to a location within the file system. With NFS, each export must have a unique local path. By default, the system exports the root of the file system (top-most directory) at the time the file system is created. This path specifies the unique location of the file system on the storage system. Before you can create additional exports within an NFS shared folder, you must create directories within it from a Linux/Unix host that is connected to the file system. After a directory has been created from a mounted host, you can create a corresponding export and set access permissions accordingly. 
+	// Local path to a location within the file system. With NFS, each export must have a unique local path. By default, the system exports the root of the file system (top-most directory) at the time the file system is created. This path specifies the unique location of the file system on the storage system. Before you can create additional exports within an NFS shared folder, you must create directories within it from a Linux/Unix host that is connected to the file system. After a directory has been created from a mounted host, you can create a corresponding export and set access permissions accordingly.
 	Path *string `json:"path,omitempty"`
 	// NFS Export description.
-	Description *string `json:"description,omitempty"`
+	Description   *string                     `json:"description,omitempty"`
 	DefaultAccess *NFSExportDefaultAccessEnum `json:"default_access,omitempty"`
-	MinSecurity *NFSExportMinSecurityEnum `json:"min_security,omitempty"`
+	MinSecurity   *NFSExportMinSecurityEnum   `json:"min_security,omitempty"`
 	// (*Applies to NFS shares of VMware NFS storage resources.*) Default owner of the NFS Export associated with the datastore. Required if secure NFS enabled. For NFSv3 or NFSv4 without Kerberos, the default owner is root.
 	NfsOwnerUsername *string `json:"nfs_owner_username,omitempty"`
 	// Hosts with no access to the NFS export or its snapshots. Hosts can be entered by Hostname, IP addresses (IPv4, IPv6, IPv4/PrefixLength, IPv6/PrefixLenght, or IPv4/subnetmask), or Netgroups prefixed with @.
@@ -50,10 +45,8 @@ type NfsExportInstance struct {
 	// Localized message string corresponding to default_access
 	DefaultAccessL10n *string `json:"default_access_l10n,omitempty"`
 	// Localized message string corresponding to min_security
-	MinSecurityL10n *string `json:"min_security_l10n,omitempty"`
-	FileSystem *FileSystemInstance `json:"file_system,omitempty"`
+	MinSecurityL10n *string             `json:"min_security_l10n,omitempty"`
+	FileSystem      *FileSystemInstance `json:"file_system,omitempty"`
 	// This is the inverse of the resource type datastore association.
 	Datastores []DatastoreInstance `json:"datastores,omitempty"`
 }
-
-

@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileSystemFLRModeEnum The FLR type of the file system.  * None - Non-FLR file system  * Enterprise - FLR-E file system.  * Compliance - FLR-C file system.  Was added in version 3.0.0.0.
 type FileSystemFLRModeEnum string
 
 // List of FileSystemFLRModeEnum
 const (
-	FILESYSTEMFLRMODEENUM_NONE FileSystemFLRModeEnum = "None"
+	FILESYSTEMFLRMODEENUM_NONE       FileSystemFLRModeEnum = "None"
 	FILESYSTEMFLRMODEENUM_ENTERPRISE FileSystemFLRModeEnum = "Enterprise"
 	FILESYSTEMFLRMODEENUM_COMPLIANCE FileSystemFLRModeEnum = "Compliance"
 )
@@ -35,4 +30,3 @@ var AllowedFileSystemFLRModeEnumEnumValues = []FileSystemFLRModeEnum{
 func (v *FileSystemFLRModeEnum) Value() string {
 	return string(*v)
 }
-

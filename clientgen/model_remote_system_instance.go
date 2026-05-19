@@ -10,52 +10,47 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // RemoteSystemInstance A remote system.  This resource type has queriable associations from snapshot_rule, replication_rule, import_session, storage_container_destination, replication_session, remote_snapshot_session, remote_snapshot, import_universal_volume, import_universal_consistency_group
 type RemoteSystemInstance struct {
-	// Unique identifier of the remote system instance. 
+	// Unique identifier of the remote system instance.
 	Id *string `json:"id,omitempty"`
 	// User-specified name of the remote system instance.   This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
-	// User-specified description of the remote system instance. 
+	// User-specified description of the remote system instance.
 	Description *string `json:"description,omitempty"`
-	// Serial number of the remote system instance. 
+	// Serial number of the remote system instance.
 	SerialNumber *string `json:"serial_number,omitempty"`
 	// Version of the remote system.  Was added in version 2.0.0.0.
 	Version *string `json:"version,omitempty"`
-	// Management address of the remote system instance. IPv4 and FQDN is supported for non-PowerStore remote systems. IPv4, IPv6 and FQDN are supported for PowerStore remote systems. 
+	// Management address of the remote system instance. IPv4 and FQDN is supported for non-PowerStore remote systems. IPv4, IPv6 and FQDN are supported for PowerStore remote systems.
 	ManagementAddress *string `json:"management_address,omitempty"`
 	// Management port of PowerMax/VMAX remote system.  Was added in version 3.0.0.0.
-	ManagementPort *int32 `json:"management_port,omitempty"`
-	Type *RemoteSystemTypeEnum `json:"type,omitempty"`
-	// Username used to access the non-PowerStore remote systems. 
-	UserName *string `json:"user_name,omitempty"`
-	State *RemoteSystemStateEnum `json:"state,omitempty"`
-	DataConnectionType *DataConnectionTypeEnum `json:"data_connection_type,omitempty"`
+	ManagementPort *int32                `json:"management_port,omitempty"`
+	Type           *RemoteSystemTypeEnum `json:"type,omitempty"`
+	// Username used to access the non-PowerStore remote systems.
+	UserName            *string                  `json:"user_name,omitempty"`
+	State               *RemoteSystemStateEnum   `json:"state,omitempty"`
+	DataConnectionType  *DataConnectionTypeEnum  `json:"data_connection_type,omitempty"`
 	DataConnectionState *DataConnectionStateEnum `json:"data_connection_state,omitempty"`
-	// iSCSI target addresses for the data connection to the remote system. 
+	// iSCSI target addresses for the data connection to the remote system.
 	IscsiAddresses []string `json:"iscsi_addresses,omitempty"`
 	// FC target WWN discovered by Powerstore for the data connection to the remote system.  Was added in version 3.0.0.0.
-	FcTargetWwns []string `json:"fc_target_wwns,omitempty"`
-	DiscoveryChapMode *RemoteSystemChapModeEnum `json:"discovery_chap_mode,omitempty"`
-	SessionChapMode *RemoteSystemChapModeEnum `json:"session_chap_mode,omitempty"`
-	DataNetworkLatency *RemoteSystemLatencyEnum `json:"data_network_latency,omitempty"`
+	FcTargetWwns       []string                  `json:"fc_target_wwns,omitempty"`
+	DiscoveryChapMode  *RemoteSystemChapModeEnum `json:"discovery_chap_mode,omitempty"`
+	SessionChapMode    *RemoteSystemChapModeEnum `json:"session_chap_mode,omitempty"`
+	DataNetworkLatency *RemoteSystemLatencyEnum  `json:"data_network_latency,omitempty"`
 	// List of data connections from each appliance in the local cluster to target address.   Filtering on the fields of this embedded resource is not supported.
 	DataConnections []DataConnectionInstance `json:"data_connections,omitempty"`
 	// List of remote protection capabilities.  Was added in version 3.0.0.0.
 	Capabilities []RemoteProtectionCapabilityEnum `json:"capabilities,omitempty"`
 	// A public IPv4 or IPv6 address of a file remote system instance. File mobility network cluster IP address for PowerStore. Control station address for VNX2.  Was added in version 3.0.0.0.
-	FileConnectionAddress *string `json:"file_connection_address,omitempty"`
-	FileConnectionState *RemoteSystemFileConnectionStateEnum `json:"file_connection_state,omitempty"`
+	FileConnectionAddress *string                              `json:"file_connection_address,omitempty"`
+	FileConnectionState   *RemoteSystemFileConnectionStateEnum `json:"file_connection_state,omitempty"`
 	// User-specified VNX NAS administrator username. nasadmin account is preferred for file import.  Was added in version 3.0.0.0.
-	VnxFileUsername *string `json:"vnx_file_username,omitempty"`
+	VnxFileUsername        *string                         `json:"vnx_file_username,omitempty"`
 	PpddStorageUnitDetails *PpddStorageUnitDetailsInstance `json:"ppdd_storage_unit_details,omitempty"`
 	// Details of all the appliances of the remote PowerStore system.  Was added in version 3.0.0.0.  Filtering on the fields of this embedded resource is not supported.
-	ApplianceDetails []RemoteApplianceDetails `json:"appliance_details,omitempty"`
+	ApplianceDetails []RemoteApplianceDetails  `json:"appliance_details,omitempty"`
 	UnityFileDetails *UnityFileDetailsInstance `json:"unity_file_details,omitempty"`
 	// List of data network group with local and remote storage networks for replication data transfer.  Was added in version 4.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 	PowerstoreDataNetworkConfiguration []PowerstoreDataNetworkGroup `json:"powerstore_data_network_configuration,omitempty"`
@@ -96,5 +91,3 @@ type RemoteSystemInstance struct {
 	// This is the inverse of the resource type import_universal_consistency_group association.
 	ImportUniversalConsistencyGroup []ImportUniversalConsistencyGroupInstance `json:"import_universal_consistency_group,omitempty"`
 }
-
-

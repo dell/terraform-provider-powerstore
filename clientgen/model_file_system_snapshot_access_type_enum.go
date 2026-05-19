@@ -10,12 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileSystemSnapshotAccessTypeEnum Indicates whether the snapshot directory or protocol access is granted to the file system snapshot. * Snapshot- Snapshot access is via the .snapshot folder in the file system. * Protocol - Protocol access is via normal file shares. Protocol access is not provided by default - the NFS and/or SMB share must be created explicitly for the snapshot. 
+// FileSystemSnapshotAccessTypeEnum Indicates whether the snapshot directory or protocol access is granted to the file system snapshot. * Snapshot- Snapshot access is via the .snapshot folder in the file system. * Protocol - Protocol access is via normal file shares. Protocol access is not provided by default - the NFS and/or SMB share must be created explicitly for the snapshot.
 type FileSystemSnapshotAccessTypeEnum string
 
 // List of FileSystemSnapshotAccessTypeEnum
@@ -33,4 +28,3 @@ var AllowedFileSystemSnapshotAccessTypeEnumEnumValues = []FileSystemSnapshotAcce
 func (v *FileSystemSnapshotAccessTypeEnum) Value() string {
 	return string(*v)
 }
-

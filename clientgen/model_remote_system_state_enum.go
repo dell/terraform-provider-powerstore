@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSystemStateEnum Possible remote system states:  * OK                             - Normal conditions.  * Update_Needed                  - Verify and update needed to handle network configuration changes on the systems.  * Management_Connection_Lost     - Management connection to the remote peer is lost.  * Partial_Delete                 - Remote System is partially deleted. Either the data connections from the PowerStore to remote system is not destroyed completely or the file capability of remote system has been deleted but the block deletion has failed.  Values was added in 3.0.0.0: Partial_Delete.
 type RemoteSystemStateEnum string
 
 // List of RemoteSystemStateEnum
 const (
-	REMOTESYSTEMSTATEENUM_OK RemoteSystemStateEnum = "OK"
-	REMOTESYSTEMSTATEENUM_UPDATE_NEEDED RemoteSystemStateEnum = "Update_Needed"
+	REMOTESYSTEMSTATEENUM_OK                         RemoteSystemStateEnum = "OK"
+	REMOTESYSTEMSTATEENUM_UPDATE_NEEDED              RemoteSystemStateEnum = "Update_Needed"
 	REMOTESYSTEMSTATEENUM_MANAGEMENT_CONNECTION_LOST RemoteSystemStateEnum = "Management_Connection_Lost"
-	REMOTESYSTEMSTATEENUM_PARTIAL_DELETE RemoteSystemStateEnum = "Partial_Delete"
+	REMOTESYSTEMSTATEENUM_PARTIAL_DELETE             RemoteSystemStateEnum = "Partial_Delete"
 )
 
 // All allowed values of RemoteSystemStateEnum enum
@@ -37,4 +32,3 @@ var AllowedRemoteSystemStateEnumEnumValues = []RemoteSystemStateEnum{
 func (v *RemoteSystemStateEnum) Value() string {
 	return string(*v)
 }
-

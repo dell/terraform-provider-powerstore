@@ -10,12 +10,7 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileDNSTransportEnum Transport used when connecting to the DNS Server: * UDP - DNS uses the UDP protocol (default) * TCP - DNS uses the TCP protocol 
+// FileDNSTransportEnum Transport used when connecting to the DNS Server: * UDP - DNS uses the UDP protocol (default) * TCP - DNS uses the TCP protocol
 type FileDNSTransportEnum string
 
 // List of FileDNSTransportEnum
@@ -33,4 +28,3 @@ var AllowedFileDNSTransportEnumEnumValues = []FileDNSTransportEnum{
 func (v *FileDNSTransportEnum) Value() string {
 	return string(*v)
 }
-

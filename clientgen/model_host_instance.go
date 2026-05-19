@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // HostInstance Properties of a host. This resource type has queriable associations from host_group, import_host_system, initiator, host_volume_mapping, host_virtual_volume_mapping, vsphere_host
 type HostInstance struct {
 	// Unique identifier of the host.
@@ -22,14 +17,14 @@ type HostInstance struct {
 	// The host name.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
 	// A description for the host.
-	Description *string `json:"description,omitempty"`
-	Type *HostTypeEnum `json:"type,omitempty"`
-	OsType *OSTypeEnum `json:"os_type,omitempty"`
+	Description *string       `json:"description,omitempty"`
+	Type        *HostTypeEnum `json:"type,omitempty"`
+	OsType      *OSTypeEnum   `json:"os_type,omitempty"`
 	// Associated host group, if host is part of host group.
 	HostGroupId *string `json:"host_group_id,omitempty"`
 	// Unique Identifier of the Host Agent System.
-	ImportHostSystemId *string `json:"import_host_system_id,omitempty"`
-	HostConnectivity *HostConnectivityEnum `json:"host_connectivity,omitempty"`
+	ImportHostSystemId *string               `json:"import_host_system_id,omitempty"`
+	HostConnectivity   *HostConnectivityEnum `json:"host_connectivity,omitempty"`
 	//  Was deprecated in version 3.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 	HostInitiators []HostInitiatorInstance `json:"host_initiators,omitempty"`
 	// Localized message string corresponding to type Was added in version 2.0.0.0.
@@ -39,8 +34,8 @@ type HostInstance struct {
 	// Localized message string corresponding to host_connectivity Was added in version 3.0.0.0.
 	HostConnectivityL10n *string `json:"host_connectivity_l10n,omitempty"`
 	// This is the inverse of the resource type initiator association.
-	Initiators []InitiatorInstance `json:"initiators,omitempty"`
-	HostGroup *HostGroupInstance `json:"host_group,omitempty"`
+	Initiators       []InitiatorInstance       `json:"initiators,omitempty"`
+	HostGroup        *HostGroupInstance        `json:"host_group,omitempty"`
 	ImportHostSystem *ImportHostSystemInstance `json:"import_host_system,omitempty"`
 	// This is the inverse of the resource type host_volume_mapping association.
 	MappedHosts []HostVolumeMappingInstance `json:"mapped_hosts,omitempty"`
@@ -49,5 +44,3 @@ type HostInstance struct {
 	// List of the vsphere_hosts that are associated with this host.
 	VsphereHosts []VsphereHostInstance `json:"vsphere_hosts,omitempty"`
 }
-
-

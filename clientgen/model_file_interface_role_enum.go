@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileInterfaceRoleEnum Values are: * Production - This type of network interface is used for all file protocols and services of a NAS server. This type of interface is inactive while a NAS server is in destination mode. * Backup - This type of network interface is used only for NDMP/NFS backup or disaster recovery testing. This type of interface is always active in all NAS server modes. * System - This type of interface are reserved for system traffic such as for NAS server migration, they can't be used for the production traffic. System type is not supported during create interface.  Values was added in 3.0.0.0: System.
 type FileInterfaceRoleEnum string
 
 // List of FileInterfaceRoleEnum
 const (
 	FILEINTERFACEROLEENUM_PRODUCTION FileInterfaceRoleEnum = "Production"
-	FILEINTERFACEROLEENUM_BACKUP FileInterfaceRoleEnum = "Backup"
-	FILEINTERFACEROLEENUM_SYSTEM FileInterfaceRoleEnum = "System"
+	FILEINTERFACEROLEENUM_BACKUP     FileInterfaceRoleEnum = "Backup"
+	FILEINTERFACEROLEENUM_SYSTEM     FileInterfaceRoleEnum = "System"
 )
 
 // All allowed values of FileInterfaceRoleEnum enum
@@ -35,4 +30,3 @@ var AllowedFileInterfaceRoleEnumEnumValues = []FileInterfaceRoleEnum{
 func (v *FileInterfaceRoleEnum) Value() string {
 	return string(*v)
 }
-

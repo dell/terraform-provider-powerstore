@@ -11,10 +11,8 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // FileVirusCheckerInstance This resource type has queriable association from nas_server
 type FileVirusCheckerInstance struct {
@@ -22,7 +20,7 @@ type FileVirusCheckerInstance struct {
 	Id *string `json:"id,omitempty"`
 	// NAS server that is configured with these anti-virus settings.
 	NasServerId *string `json:"nas_server_id,omitempty"`
-	// Indicates whether the anti-virus service is enabled on this NAS server. Value are: - true - Anti-virus service is enabled. Each file created or modified by an SMB client is scanned by the third-party anti-virus servers. If a virus is detected, the access to the file system is denied. If third-party anti-virus servers are not available, according the policy, the access to the file systems is denied to prevent potential viruses propagation. - false - Anti-virus service is disabled. File systems of the NAS servers are available for access without virus checking 
+	// Indicates whether the anti-virus service is enabled on this NAS server. Value are: - true - Anti-virus service is enabled. Each file created or modified by an SMB client is scanned by the third-party anti-virus servers. If a virus is detected, the access to the file system is denied. If third-party anti-virus servers are not available, according the policy, the access to the file systems is denied to prevent potential viruses propagation. - false - Anti-virus service is disabled. File systems of the NAS servers are available for access without virus checking
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// Indicates whether a virus checker configuration file has been uploaded.
 	IsConfigFileUploaded *bool `json:"is_config_file_uploaded,omitempty"`
@@ -37,7 +35,7 @@ type FileVirusCheckerInstance struct {
 	// Files that are larger than this size won''t be sent to the virus checker. 0 means no limit. Was added in version 4.0.0.0.
 	MaxFileSize *int64 `json:"max_file_size,omitempty"`
 	// Time, in seconds at which frequency the system will verify that the virus checkers are online. Was added in version 4.0.0.0.
-	SurveyTime *int32 `json:"survey_time,omitempty"`
+	SurveyTime    *int32                             `json:"survey_time,omitempty"`
 	OfflinePolicy *FileVirusCheckerOfflinePolicyEnum `json:"offline_policy,omitempty"`
 	// Send an event and block FS I/O when the number of requests waiting for checker is reaching this value. Was added in version 4.0.0.0.
 	HighWatermark *int32 `json:"high_watermark,omitempty"`
@@ -54,8 +52,6 @@ type FileVirusCheckerInstance struct {
 	// To enable scan on first read the reference time must be set. When the last access time of a file is earlier than the reference time, on access the file is sent to the Virus checker before the access is granted to the client.  Was added in version 4.0.0.0.
 	ReferenceTime *time.Time `json:"reference_time,omitempty"`
 	// Localized message string corresponding to offline_policy Was added in version 4.0.0.0.
-	OfflinePolicyL10n *string `json:"offline_policy_l10n,omitempty"`
-	NasServer *NasServerInstance `json:"nas_server,omitempty"`
+	OfflinePolicyL10n *string            `json:"offline_policy_l10n,omitempty"`
+	NasServer         *NasServerInstance `json:"nas_server,omitempty"`
 }
-
-

@@ -11,22 +11,18 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
 
-
-// LocationHistoryInstance Storage resource location history. All entries are kept indefinitely and are removed when the resource object is deleted. 
+// LocationHistoryInstance Storage resource location history. All entries are kept indefinitely and are removed when the resource object is deleted.
 type LocationHistoryInstance struct {
-	// Unique identifier of the appliance from which the volume was relocated. 
+	// Unique identifier of the appliance from which the volume was relocated.
 	FromApplianceId *string `json:"from_appliance_id,omitempty"`
 	// Unique identifier of the appliance to which the volume was relocated.
-	ToApplianceId *string `json:"to_appliance_id,omitempty"`
-	Reason *LocationHistoryReasonEnum `json:"reason,omitempty"`
+	ToApplianceId *string                    `json:"to_appliance_id,omitempty"`
+	Reason        *LocationHistoryReasonEnum `json:"reason,omitempty"`
 	// Time when the storage resource location changed.
 	MigratedOn *time.Time `json:"migrated_on,omitempty"`
 	// Localized message string corresponding to reason
 	ReasonL10n *string `json:"reason_l10n,omitempty"`
 }
-
-

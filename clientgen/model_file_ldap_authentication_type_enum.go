@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileLDAPAuthenticationTypeEnum Authentication type for the LDAP server. * Anonymous - Anonymous authentication means no authentication occurs and the NAS Server uses an anonymous login to access the LDAP-based directory server. * Simple - Simple authentication means the NAS Server must provide a bind distinguished name and password to access the LDAP-based directory server. * Kerberos - Kerberos authentication means the NAS Server uses a KDC to confirm the identity when accessing the Active Directory. 
+// FileLDAPAuthenticationTypeEnum Authentication type for the LDAP server. * Anonymous - Anonymous authentication means no authentication occurs and the NAS Server uses an anonymous login to access the LDAP-based directory server. * Simple - Simple authentication means the NAS Server must provide a bind distinguished name and password to access the LDAP-based directory server. * Kerberos - Kerberos authentication means the NAS Server uses a KDC to confirm the identity when accessing the Active Directory.
 type FileLDAPAuthenticationTypeEnum string
 
 // List of FileLDAPAuthenticationTypeEnum
 const (
 	FILELDAPAUTHENTICATIONTYPEENUM_ANONYMOUS FileLDAPAuthenticationTypeEnum = "Anonymous"
-	FILELDAPAUTHENTICATIONTYPEENUM_SIMPLE FileLDAPAuthenticationTypeEnum = "Simple"
-	FILELDAPAUTHENTICATIONTYPEENUM_KERBEROS FileLDAPAuthenticationTypeEnum = "Kerberos"
+	FILELDAPAUTHENTICATIONTYPEENUM_SIMPLE    FileLDAPAuthenticationTypeEnum = "Simple"
+	FILELDAPAUTHENTICATIONTYPEENUM_KERBEROS  FileLDAPAuthenticationTypeEnum = "Kerberos"
 )
 
 // All allowed values of FileLDAPAuthenticationTypeEnum enum
@@ -35,4 +30,3 @@ var AllowedFileLDAPAuthenticationTypeEnumEnumValues = []FileLDAPAuthenticationTy
 func (v *FileLDAPAuthenticationTypeEnum) Value() string {
 	return string(*v)
 }
-

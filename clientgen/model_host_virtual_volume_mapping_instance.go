@@ -10,24 +10,17 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // HostVirtualVolumeMappingInstance Virtual volume mapping details. This resource type has queriable associations from host, host_group, virtual_volume
 type HostVirtualVolumeMappingInstance struct {
 	// Unique identifier of a mapping between a host and a virtual volume.
 	Id *string `json:"id,omitempty"`
-	// Unique identifier of a host attached to a virtual volume. The host_id and host_group_id cannot both be set. 
+	// Unique identifier of a host attached to a virtual volume. The host_id and host_group_id cannot both be set.
 	HostId *string `json:"host_id,omitempty"`
-	// Unique identifier of a host group attached to a virtual volume. The host_id and host_group_id cannot both be set. 
+	// Unique identifier of a host group attached to a virtual volume. The host_id and host_group_id cannot both be set.
 	HostGroupId *string `json:"host_group_id,omitempty"`
 	// Unique identifier of the virtual volume to which the host is attached.
-	VirtualVolumeId *string `json:"virtual_volume_id,omitempty"`
-	Host *HostInstance `json:"host,omitempty"`
-	HostGroup *HostGroupInstance `json:"host_group,omitempty"`
-	VirtualVolume *VirtualVolumeInstance `json:"virtual_volume,omitempty"`
+	VirtualVolumeId *string                `json:"virtual_volume_id,omitempty"`
+	Host            *HostInstance          `json:"host,omitempty"`
+	HostGroup       *HostGroupInstance     `json:"host_group,omitempty"`
+	VirtualVolume   *VirtualVolumeInstance `json:"virtual_volume,omitempty"`
 }
-
-

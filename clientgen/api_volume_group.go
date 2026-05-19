@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // VolumeGroupApiService VolumeGroupApi service
 type VolumeGroupApiService service
 
 type ApiDeleteVolumeGroupByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
-	body *VolumeGroupDelete
+	id         string
+	body       *VolumeGroupDelete
 }
 
 func (r ApiDeleteVolumeGroupByIdRequest) Body(body VolumeGroupDelete) ApiDeleteVolumeGroupByIdRequest {
@@ -53,25 +52,24 @@ sets will also be deleted.
 * When a snapshot set is deleted, all of its constituent snapshots will
 also be deleted.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiDeleteVolumeGroupByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiDeleteVolumeGroupByIdRequest
 */
 func (a *VolumeGroupApiService) DeleteVolumeGroupById(ctx context.Context, id string) ApiDeleteVolumeGroupByIdRequest {
 	return ApiDeleteVolumeGroupByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGroupByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.DeleteVolumeGroupById")
@@ -134,8 +132,8 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -145,8 +143,8 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -156,8 +154,8 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -166,9 +164,9 @@ func (a *VolumeGroupApiService) DeleteVolumeGroupByIdExecute(r ApiDeleteVolumeGr
 }
 
 type ApiGetAllVolumeGroupsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	queries url.Values
+	queries    url.Values
 }
 
 func (r ApiGetAllVolumeGroupsRequest) Queries(in url.Values) ApiGetAllVolumeGroupsRequest {
@@ -185,25 +183,25 @@ GetAllVolumeGroups Collection Query
 
 Query volume groups, including snapshot sets and clones of volume groups.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetAllVolumeGroupsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAllVolumeGroupsRequest
 */
 func (a *VolumeGroupApiService) GetAllVolumeGroups(ctx context.Context) ApiGetAllVolumeGroupsRequest {
 	return ApiGetAllVolumeGroupsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []VolumeGroupInstance
+//
+//	@return []VolumeGroupInstance
 func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroupsRequest) ([]VolumeGroupInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []VolumeGroupInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []VolumeGroupInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.GetAllVolumeGroups")
@@ -272,10 +270,10 @@ func (a *VolumeGroupApiService) GetAllVolumeGroupsExecute(r ApiGetAllVolumeGroup
 }
 
 type ApiGetVolumeGroupByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	queries url.Values
-	id string
+	queries    url.Values
+	id         string
 }
 
 func (r ApiGetVolumeGroupByIdRequest) Queries(in url.Values) ApiGetVolumeGroupByIdRequest {
@@ -292,26 +290,27 @@ GetVolumeGroupById Instance Query
 
 Query a specific volume group, snapshot set, or clone.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiGetVolumeGroupByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiGetVolumeGroupByIdRequest
 */
 func (a *VolumeGroupApiService) GetVolumeGroupById(ctx context.Context, id string) ApiGetVolumeGroupByIdRequest {
 	return ApiGetVolumeGroupByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
-//  @return VolumeGroupInstance
+//
+//	@return VolumeGroupInstance
 func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByIdRequest) (*VolumeGroupInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *VolumeGroupInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *VolumeGroupInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.GetVolumeGroupById")
@@ -372,8 +371,8 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -391,10 +390,10 @@ func (a *VolumeGroupApiService) GetVolumeGroupByIdExecute(r ApiGetVolumeGroupByI
 }
 
 type ApiPatchVolumeGroupByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
-	body *VolumeGroupModify
+	id         string
+	body       *VolumeGroupModify
 }
 
 func (r ApiPatchVolumeGroupByIdRequest) Body(body VolumeGroupModify) ApiPatchVolumeGroupByIdRequest {
@@ -411,24 +410,24 @@ PatchVolumeGroupById Modify
 
 Modify a volume group, snapshot set, or clone.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiPatchVolumeGroupByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiPatchVolumeGroupByIdRequest
 */
 func (a *VolumeGroupApiService) PatchVolumeGroupById(ctx context.Context, id string) ApiPatchVolumeGroupByIdRequest {
 	return ApiPatchVolumeGroupByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGroupByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPatch
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.PatchVolumeGroupById")
@@ -494,8 +493,8 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -505,8 +504,8 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -516,8 +515,8 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -526,9 +525,9 @@ func (a *VolumeGroupApiService) PatchVolumeGroupByIdExecute(r ApiPatchVolumeGrou
 }
 
 type ApiPostAllVolumeGroupsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	body *VolumeGroupCreate
+	body       *VolumeGroupCreate
 }
 
 func (r ApiPostAllVolumeGroupsRequest) Body(body VolumeGroupCreate) ApiPostAllVolumeGroupsRequest {
@@ -546,25 +545,25 @@ PostAllVolumeGroups Create
 Create a new volume group. The resulting volume group will
 have a type of Primary.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiPostAllVolumeGroupsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiPostAllVolumeGroupsRequest
 */
 func (a *VolumeGroupApiService) PostAllVolumeGroups(ctx context.Context) ApiPostAllVolumeGroupsRequest {
 	return ApiPostAllVolumeGroupsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateResponse
+//
+//	@return CreateResponse
 func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGroupsRequest) (*CreateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.PostAllVolumeGroups")
@@ -629,8 +628,8 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -640,8 +639,8 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -659,10 +658,10 @@ func (a *VolumeGroupApiService) PostAllVolumeGroupsExecute(r ApiPostAllVolumeGro
 }
 
 type ApiVolumeGroupAddMembersRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
-	body *VolumeGroupAddMembers
+	id         string
+	body       *VolumeGroupAddMembers
 }
 
 func (r ApiVolumeGroupAddMembersRequest) Body(body VolumeGroupAddMembers) ApiVolumeGroupAddMembersRequest {
@@ -684,25 +683,24 @@ This cannot be used to add members to a snapshot set. Members cannot be
 added to a volume group that is acting as the destination in a
 replication session.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiVolumeGroupAddMembersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiVolumeGroupAddMembersRequest
 */
 func (a *VolumeGroupApiService) VolumeGroupAddMembers(ctx context.Context, id string) ApiVolumeGroupAddMembersRequest {
 	return ApiVolumeGroupAddMembersRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *VolumeGroupApiService) VolumeGroupAddMembersExecute(r ApiVolumeGroupAddMembersRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.VolumeGroupAddMembers")
@@ -768,8 +766,8 @@ func (a *VolumeGroupApiService) VolumeGroupAddMembersExecute(r ApiVolumeGroupAdd
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -779,8 +777,8 @@ func (a *VolumeGroupApiService) VolumeGroupAddMembersExecute(r ApiVolumeGroupAdd
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -790,8 +788,8 @@ func (a *VolumeGroupApiService) VolumeGroupAddMembersExecute(r ApiVolumeGroupAdd
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -800,10 +798,10 @@ func (a *VolumeGroupApiService) VolumeGroupAddMembersExecute(r ApiVolumeGroupAdd
 }
 
 type ApiVolumeGroupRemoveMembersRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *VolumeGroupApiService
-	id string
-	body *VolumeGroupRemoveMembers
+	id         string
+	body       *VolumeGroupRemoveMembers
 }
 
 func (r ApiVolumeGroupRemoveMembersRequest) Body(body VolumeGroupRemoveMembers) ApiVolumeGroupRemoveMembersRequest {
@@ -824,25 +822,24 @@ This cannot be used to remove members from a snapshot set. Members
 cannot be removed from a volume group that is a acting as the
 destination in a replication session.
 
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
- @return ApiVolumeGroupRemoveMembersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiVolumeGroupRemoveMembersRequest
 */
 func (a *VolumeGroupApiService) VolumeGroupRemoveMembers(ctx context.Context, id string) ApiVolumeGroupRemoveMembersRequest {
 	return ApiVolumeGroupRemoveMembersRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *VolumeGroupApiService) VolumeGroupRemoveMembersExecute(r ApiVolumeGroupRemoveMembersRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.VolumeGroupRemoveMembers")
@@ -908,8 +905,8 @@ func (a *VolumeGroupApiService) VolumeGroupRemoveMembersExecute(r ApiVolumeGroup
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -919,8 +916,8 @@ func (a *VolumeGroupApiService) VolumeGroupRemoveMembersExecute(r ApiVolumeGroup
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -930,8 +927,8 @@ func (a *VolumeGroupApiService) VolumeGroupRemoveMembersExecute(r ApiVolumeGroup
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

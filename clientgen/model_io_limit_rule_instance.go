@@ -10,28 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // IoLimitRuleInstance Properties of an I/O limit rule The I/O limit rule allows users to specify I/O bandwidth limits. If both IOP and bandwidth limits are set, both are enforced.  Was added in version 4.0.0.0. This resource type has queriable association from policy
 type IoLimitRuleInstance struct {
 	// Unique identifier of the I/O limit rule.
 	Id *string `json:"id,omitempty"`
 	// Name of the I/O limit rule.  This property supports case-insensitive filtering.
-	Name *string `json:"name,omitempty"`
+	Name *string                 `json:"name,omitempty"`
 	Type *BandwidthLimitTypeEnum `json:"type,omitempty"`
-	// Maximum I/O operations in either I/O operations per second (IOPS) or I/O operations per second per GB. The specification of the type attribute determines which measurement is used. If type is set to absolute, max_iops is specified in IOPS. If type is set to density, max_iops is specified in IOPS per GB. If both max_iops and max_bw are specified, the system will limit I/O if either value is exceeded. 
+	// Maximum I/O operations in either I/O operations per second (IOPS) or I/O operations per second per GB. The specification of the type attribute determines which measurement is used. If type is set to absolute, max_iops is specified in IOPS. If type is set to density, max_iops is specified in IOPS per GB. If both max_iops and max_bw are specified, the system will limit I/O if either value is exceeded.
 	MaxIops *int32 `json:"max_iops,omitempty"`
-	// Maximum I/O bandwidth measured in either Kilobytes per second or kilobtyes per second / per GB. The specification of the type attribute determines which measurement is used. If type is set to absolute, max_bw is specified in Kilobytes per second. If type is set to density, max_bw is specified in Kilobytes per second / per GB. If both max_iops and max_bw are specified, the system will limit I/O if either value is exceeded. 
+	// Maximum I/O bandwidth measured in either Kilobytes per second or kilobtyes per second / per GB. The specification of the type attribute determines which measurement is used. If type is set to absolute, max_bw is specified in Kilobytes per second. If type is set to density, max_bw is specified in Kilobytes per second / per GB. If both max_iops and max_bw are specified, the system will limit I/O if either value is exceeded.
 	MaxBw *int32 `json:"max_bw,omitempty"`
-	// Percentage indicating by how much the limit may be exceeded. If I/O normally runs below the specified limit, then the volume or volume group will accumulate burst credits that can be used to exceed the limit for a short period (a few seconds, but will not exceed the burst limit). This burst percentage applies to both max_iops and max_bw and is independent of the type setting. 
+	// Percentage indicating by how much the limit may be exceeded. If I/O normally runs below the specified limit, then the volume or volume group will accumulate burst credits that can be used to exceed the limit for a short period (a few seconds, but will not exceed the burst limit). This burst percentage applies to both max_iops and max_bw and is independent of the type setting.
 	BurstPercentage *int32 `json:"burst_percentage,omitempty"`
 	// Localized message string corresponding to type Was added in version 4.0.0.0.
 	TypeL10n *string `json:"type_l10n,omitempty"`
 	// This is the inverse of the resource type policy association.
 	Policies []PolicyInstance `json:"policies,omitempty"`
 }
-
-

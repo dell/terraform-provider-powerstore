@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileSystemConfigTypeEnum Indicates the file system type. * General - General purpose use case file system. * VMware - Vmware datastore purpose use case file system.  Was added in version 3.0.0.0.
 type FileSystemConfigTypeEnum string
 
@@ -33,4 +28,3 @@ var AllowedFileSystemConfigTypeEnumEnumValues = []FileSystemConfigTypeEnum{
 func (v *FileSystemConfigTypeEnum) Value() string {
 	return string(*v)
 }
-

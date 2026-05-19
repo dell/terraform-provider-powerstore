@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// LocationHistoryReasonEnum Reason for storage resource relocation.  * Initial - Initial placement.  * Manual - Manual migration operation initiated by user.  * Recommended - Storage system recommended migration. 
+// LocationHistoryReasonEnum Reason for storage resource relocation.  * Initial - Initial placement.  * Manual - Manual migration operation initiated by user.  * Recommended - Storage system recommended migration.
 type LocationHistoryReasonEnum string
 
 // List of LocationHistoryReasonEnum
 const (
-	LOCATIONHISTORYREASONENUM_INITIAL LocationHistoryReasonEnum = "Initial"
-	LOCATIONHISTORYREASONENUM_MANUAL LocationHistoryReasonEnum = "Manual"
+	LOCATIONHISTORYREASONENUM_INITIAL     LocationHistoryReasonEnum = "Initial"
+	LOCATIONHISTORYREASONENUM_MANUAL      LocationHistoryReasonEnum = "Manual"
 	LOCATIONHISTORYREASONENUM_RECOMMENDED LocationHistoryReasonEnum = "Recommended"
 )
 
@@ -35,4 +30,3 @@ var AllowedLocationHistoryReasonEnumEnumValues = []LocationHistoryReasonEnum{
 func (v *LocationHistoryReasonEnum) Value() string {
 	return string(*v)
 }
-

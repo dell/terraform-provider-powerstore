@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// NASServerCurrentUnixDirectoryServiceEnum Define the Unix directory service used for looking up identity information for Unix such as UIDs, GIDs, net groups, and so on. Values are: * None * NIS * LDAP * Local_Files * Local_Then_NIS * Local_Then_LDAP 
+// NASServerCurrentUnixDirectoryServiceEnum Define the Unix directory service used for looking up identity information for Unix such as UIDs, GIDs, net groups, and so on. Values are: * None * NIS * LDAP * Local_Files * Local_Then_NIS * Local_Then_LDAP
 type NASServerCurrentUnixDirectoryServiceEnum string
 
 // List of NASServerCurrentUnixDirectoryServiceEnum
 const (
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NONE NASServerCurrentUnixDirectoryServiceEnum = "None"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NIS NASServerCurrentUnixDirectoryServiceEnum = "NIS"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LDAP NASServerCurrentUnixDirectoryServiceEnum = "LDAP"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_FILES NASServerCurrentUnixDirectoryServiceEnum = "Local_Files"
-	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_THEN_NIS NASServerCurrentUnixDirectoryServiceEnum = "Local_Then_NIS"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NONE            NASServerCurrentUnixDirectoryServiceEnum = "None"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_NIS             NASServerCurrentUnixDirectoryServiceEnum = "NIS"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LDAP            NASServerCurrentUnixDirectoryServiceEnum = "LDAP"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_FILES     NASServerCurrentUnixDirectoryServiceEnum = "Local_Files"
+	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_THEN_NIS  NASServerCurrentUnixDirectoryServiceEnum = "Local_Then_NIS"
 	NASSERVERCURRENTUNIXDIRECTORYSERVICEENUM_LOCAL_THEN_LDAP NASServerCurrentUnixDirectoryServiceEnum = "Local_Then_LDAP"
 )
 
@@ -41,4 +36,3 @@ var AllowedNASServerCurrentUnixDirectoryServiceEnumEnumValues = []NASServerCurre
 func (v *NASServerCurrentUnixDirectoryServiceEnum) Value() string {
 	return string(*v)
 }
-

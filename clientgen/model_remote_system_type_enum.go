@@ -10,26 +10,21 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // RemoteSystemTypeEnum Remote system connection type between the local system and the following remote systems: * PowerStore               - PowerStore system * Unity                    - Unity import system * VNX                      - VNX import system * PS_Equallogic            - PS EqualLogic import system * Storage_Center           - Storage Center import system * XtremIO                  - XtremIO import system * NetApp                   - NetApp import system * PowerMax_VMAX            - PowerMax or VMAX import system * PowerProtect_DD          - PowerProtect DD * Universal                - Universal  Values was added in 3.0.0.0: NetApp, PowerMax_VMAX. Values was added in 3.5.0.0: PowerProtect_DD. Values was added in 4.0.0.0: Universal.
 type RemoteSystemTypeEnum string
 
 // List of RemoteSystemTypeEnum
 const (
-	REMOTESYSTEMTYPEENUM_POWER_STORE RemoteSystemTypeEnum = "PowerStore"
-	REMOTESYSTEMTYPEENUM_UNITY RemoteSystemTypeEnum = "Unity"
-	REMOTESYSTEMTYPEENUM_VNX RemoteSystemTypeEnum = "VNX"
-	REMOTESYSTEMTYPEENUM_PS_EQUALLOGIC RemoteSystemTypeEnum = "PS_Equallogic"
-	REMOTESYSTEMTYPEENUM_STORAGE_CENTER RemoteSystemTypeEnum = "Storage_Center"
-	REMOTESYSTEMTYPEENUM_XTREM_IO RemoteSystemTypeEnum = "XtremIO"
-	REMOTESYSTEMTYPEENUM_NET_APP RemoteSystemTypeEnum = "NetApp"
+	REMOTESYSTEMTYPEENUM_POWER_STORE      RemoteSystemTypeEnum = "PowerStore"
+	REMOTESYSTEMTYPEENUM_UNITY            RemoteSystemTypeEnum = "Unity"
+	REMOTESYSTEMTYPEENUM_VNX              RemoteSystemTypeEnum = "VNX"
+	REMOTESYSTEMTYPEENUM_PS_EQUALLOGIC    RemoteSystemTypeEnum = "PS_Equallogic"
+	REMOTESYSTEMTYPEENUM_STORAGE_CENTER   RemoteSystemTypeEnum = "Storage_Center"
+	REMOTESYSTEMTYPEENUM_XTREM_IO         RemoteSystemTypeEnum = "XtremIO"
+	REMOTESYSTEMTYPEENUM_NET_APP          RemoteSystemTypeEnum = "NetApp"
 	REMOTESYSTEMTYPEENUM_POWER_PROTECT_DD RemoteSystemTypeEnum = "PowerProtect_DD"
-	REMOTESYSTEMTYPEENUM_POWER_MAX_VMAX RemoteSystemTypeEnum = "PowerMax_VMAX"
-	REMOTESYSTEMTYPEENUM_UNIVERSAL RemoteSystemTypeEnum = "Universal"
+	REMOTESYSTEMTYPEENUM_POWER_MAX_VMAX   RemoteSystemTypeEnum = "PowerMax_VMAX"
+	REMOTESYSTEMTYPEENUM_UNIVERSAL        RemoteSystemTypeEnum = "Universal"
 )
 
 // All allowed values of RemoteSystemTypeEnum enum
@@ -49,4 +44,3 @@ var AllowedRemoteSystemTypeEnumEnumValues = []RemoteSystemTypeEnum{
 func (v *RemoteSystemTypeEnum) Value() string {
 	return string(*v)
 }
-

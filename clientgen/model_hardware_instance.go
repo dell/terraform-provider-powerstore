@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // HardwareInstance Hardware component information. This resource type has queriable associations from hardware, appliance, fc_port, sas_port, eth_port, eth_be_port
 type HardwareInstance struct {
 	// The unique id of the component.
 	Id *string `json:"id,omitempty"`
 	// The name of the component.  This property supports case-insensitive filtering.
-	Name *string `json:"name,omitempty"`
-	Type *HardwareTypeEnum `json:"type,omitempty"`
+	Name           *string                     `json:"name,omitempty"`
+	Type           *HardwareTypeEnum           `json:"type,omitempty"`
 	LifecycleState *HardwareLifecycleStateEnum `json:"lifecycle_state,omitempty"`
-	// The id of the component's parent, or null if this component is at the top of the parent hierarchy. 
+	// The id of the component's parent, or null if this component is at the top of the parent hierarchy.
 	ParentId *string `json:"parent_id,omitempty"`
 	// The id of the component's associated appliance.
 	ApplianceId *string `json:"appliance_id,omitempty"`
@@ -32,14 +27,14 @@ type HardwareInstance struct {
 	// The part number of the component.
 	PartNumber *string `json:"part_number,omitempty"`
 	// The serial number of the component.
-	SerialNumber *string `json:"serial_number,omitempty"`
+	SerialNumber   *string                     `json:"serial_number,omitempty"`
 	StatusLedState *HardwareStatusLEDStateEnum `json:"status_led_state,omitempty"`
 	// Indicator of whether a component is location marked or not.
 	IsMarked *bool `json:"is_marked,omitempty"`
 	// Information describing what this hardware component can be upgraded to. If there are no valid upgrades available for this component, an empty list is returned.  Was added in version 3.6.0.0.  Filtering on the fields of this embedded resource is not supported.
-	ValidUpgrades []ValidUpgradeInstance `json:"valid_upgrades,omitempty"`
-	ExtraDetails *HardwareExtraDetailsInstance `json:"extra_details,omitempty"`
-	StaleState *HardwareStaleStateEnum `json:"stale_state,omitempty"`
+	ValidUpgrades []ValidUpgradeInstance        `json:"valid_upgrades,omitempty"`
+	ExtraDetails  *HardwareExtraDetailsInstance `json:"extra_details,omitempty"`
+	StaleState    *HardwareStaleStateEnum       `json:"stale_state,omitempty"`
 	// Localized message string corresponding to type
 	TypeL10n *string `json:"type_l10n,omitempty"`
 	// Localized message string corresponding to lifecycle_state
@@ -78,10 +73,8 @@ type HardwareInstance struct {
 	SfpEthBePorts []EthBePortInstance `json:"sfp_eth_be_ports,omitempty"`
 	// This is the inverse of the resource type eth_be_port association.
 	HardwareParentEthBePorts []EthBePortInstance `json:"hardware_parent_eth_be_ports,omitempty"`
-	Parent *HardwareInstance `json:"parent,omitempty"`
+	Parent                   *HardwareInstance   `json:"parent,omitempty"`
 	// This is the inverse of the resource type hardware association.
-	Children []HardwareInstance `json:"children,omitempty"`
+	Children  []HardwareInstance `json:"children,omitempty"`
 	Appliance *ApplianceInstance `json:"appliance,omitempty"`
 }
-
-

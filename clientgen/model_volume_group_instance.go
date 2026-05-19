@@ -11,10 +11,8 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // VolumeGroupInstance Information about a volume group. This resource type has queriable associations from policy, migration_session, remote_snapshot_session, remote_snapshot, volume, replication_session
 type VolumeGroupInstance struct {
@@ -26,34 +24,34 @@ type VolumeGroupInstance struct {
 	Description *string `json:"description,omitempty"`
 	// The time at which the volume group was created.
 	CreationTimestamp *time.Time `json:"creation_timestamp,omitempty"`
-	// This is a derived field that is set internally. It enables/disables the following functionality:  * Whether a protection_policy can be applied to the group.  * Whether manual snapshots can be taken.  * Whether clones of the group can be created. 
+	// This is a derived field that is set internally. It enables/disables the following functionality:  * Whether a protection_policy can be applied to the group.  * Whether manual snapshots can be taken.  * Whether clones of the group can be created.
 	IsProtectable *bool `json:"is_protectable,omitempty"`
-	// Unique identifier of the protection policy assigned to the volume group. This attribute is only applicable to primary and clone volume groups. 
+	// Unique identifier of the protection policy assigned to the volume group. This attribute is only applicable to primary and clone volume groups.
 	ProtectionPolicyId *string `json:"protection_policy_id,omitempty"`
 	// Unique identifier of the optional performance policy assigned to this volume group. Was added in version 4.0.0.0.
 	QosPerformancePolicyId *string `json:"qos_performance_policy_id,omitempty"`
-	// Unique identifier of the migration session assigned to the volume group when it is part of a migration activity. 
+	// Unique identifier of the migration session assigned to the volume group when it is part of a migration activity.
 	MigrationSessionId *string `json:"migration_session_id,omitempty"`
-	// For a primary or a clone volume group, this property determines whether snapshot sets of the group will be write order consistent.   For a snapshot set, this property indicates whether the snapshot set is write-order consistent. 
-	IsWriteOrderConsistent *bool `json:"is_write_order_consistent,omitempty"`
-	PlacementRule *VGPlacementRule `json:"placement_rule,omitempty"`
-	Type *VolumeTypeEnum `json:"type,omitempty"`
-	// Indicates whether this volume group is a replication destination. A replication destination will be created by the system when a replication session is created. When there is an active replication session, all the user operations are restricted including modification, deletion, host operation, snapshot, clone, etc. After the replication session is deleted, the replication destination will remain as it is until the end user changes it to be a non-replication destination. After the change, it becomes a primary volume group. If the end user keeps it as a replication destination, when the replication session is recreated, the replication destination could potentially be reused in the new session to avoid a time-consuming full sync. This property is only valid for primary and clone volume groups. 
+	// For a primary or a clone volume group, this property determines whether snapshot sets of the group will be write order consistent.   For a snapshot set, this property indicates whether the snapshot set is write-order consistent.
+	IsWriteOrderConsistent *bool            `json:"is_write_order_consistent,omitempty"`
+	PlacementRule          *VGPlacementRule `json:"placement_rule,omitempty"`
+	Type                   *VolumeTypeEnum  `json:"type,omitempty"`
+	// Indicates whether this volume group is a replication destination. A replication destination will be created by the system when a replication session is created. When there is an active replication session, all the user operations are restricted including modification, deletion, host operation, snapshot, clone, etc. After the replication session is deleted, the replication destination will remain as it is until the end user changes it to be a non-replication destination. After the change, it becomes a primary volume group. If the end user keeps it as a replication destination, when the replication session is recreated, the replication destination could potentially be reused in the new session to avoid a time-consuming full sync. This property is only valid for primary and clone volume groups.
 	IsReplicationDestination *bool `json:"is_replication_destination,omitempty"`
 	// Unique identifier of the replication session assigned to the volume group if it has been configured as a metro volume group between two PowerStore clusters. The volume group can only be modified, refreshed, or restored when the metro_replication_session is in the paused state.  Was added in version 4.0.0.0.
 	MetroReplicationSessionId *string `json:"metro_replication_session_id,omitempty"`
 	// This field is true when the volume group is visible from a host perspective. This will always be true UNLESS a metro session is associated with the volume group and that session has made this instance unavailable.  Was added in version 4.0.0.0.
-	IsHostAccessAvailable *bool `json:"is_host_access_available,omitempty"`
-	ProtectionData *ProtectionDataInstance `json:"protection_data,omitempty"`
+	IsHostAccessAvailable *bool                   `json:"is_host_access_available,omitempty"`
+	ProtectionData        *ProtectionDataInstance `json:"protection_data,omitempty"`
 	// Indicates whether the volume group is being imported.
 	IsImporting *bool `json:"is_importing,omitempty"`
 	// A list of locations. The list of locations includes the move to the current appliance.   Filtering on the fields of this embedded resource is not supported.
 	LocationHistory []LocationHistoryInstance `json:"location_history,omitempty"`
 	// Localized message string corresponding to type
-	TypeL10n *string `json:"type_l10n,omitempty"`
-	ProtectionPolicy *PolicyInstance `json:"protection_policy,omitempty"`
-	QosPerformancePolicy *PolicyInstance `json:"qos_performance_policy,omitempty"`
-	MigrationSession *MigrationSessionInstance `json:"migration_session,omitempty"`
+	TypeL10n             *string                   `json:"type_l10n,omitempty"`
+	ProtectionPolicy     *PolicyInstance           `json:"protection_policy,omitempty"`
+	QosPerformancePolicy *PolicyInstance           `json:"qos_performance_policy,omitempty"`
+	MigrationSession     *MigrationSessionInstance `json:"migration_session,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
 	RemoteSnapshotSessions []RemoteSnapshotSessionInstance `json:"remote_snapshot_sessions,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
@@ -65,5 +63,3 @@ type VolumeGroupInstance struct {
 	// List of the replication_sessions that are associated with this volume_group.
 	ReplicationSessions []ReplicationSessionInstance `json:"replication_sessions,omitempty"`
 }
-
-

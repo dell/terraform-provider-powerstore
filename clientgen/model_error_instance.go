@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // ErrorInstance Filtering on the fields of this embedded resource is not supported.
 type ErrorInstance struct {
 	// Hexadecimal error code for an import error.
@@ -24,5 +19,3 @@ type ErrorInstance struct {
 	// Arguments (if applicable) for the error message.
 	Arguments []string `json:"arguments,omitempty"`
 }
-
-

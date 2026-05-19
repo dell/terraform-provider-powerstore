@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // FileNdmpInstance Properties of the file NDMP. This resource type has queriable association from nas_server
 type FileNdmpInstance struct {
 	// Unique identifier of the NDMP service object.
@@ -22,8 +17,6 @@ type FileNdmpInstance struct {
 	// Unique identifier of the NAS server to be configured with these NDMP settings.
 	NasServerId *string `json:"nas_server_id,omitempty"`
 	// User name for accessing the NDMP service.
-	UserName *string `json:"user_name,omitempty"`
+	UserName  *string            `json:"user_name,omitempty"`
 	NasServer *NasServerInstance `json:"nas_server,omitempty"`
 }
-
-

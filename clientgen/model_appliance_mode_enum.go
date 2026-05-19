@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ApplianceModeEnum The storage access modes that are supported by the appliance.   * Unified - Both block and file storage are supported.   * Block - Only block storage is supported. Changing the mode will reboot the appliance.  Was added in version 4.0.0.0.
 type ApplianceModeEnum string
 
 // List of ApplianceModeEnum
 const (
 	APPLIANCEMODEENUM_UNIFIED ApplianceModeEnum = "Unified"
-	APPLIANCEMODEENUM_BLOCK ApplianceModeEnum = "Block"
+	APPLIANCEMODEENUM_BLOCK   ApplianceModeEnum = "Block"
 )
 
 // All allowed values of ApplianceModeEnum enum
@@ -33,4 +28,3 @@ var AllowedApplianceModeEnumEnumValues = []ApplianceModeEnum{
 func (v *ApplianceModeEnum) Value() string {
 	return string(*v)
 }
-

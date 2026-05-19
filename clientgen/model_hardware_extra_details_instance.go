@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // HardwareExtraDetailsInstance Additional hardware details that are specific to each hardware type.  Filtering on the fields of this embedded resource is not supported.
 type HardwareExtraDetailsInstance struct {
 	// CPU model name. Available on Node hardware type.
@@ -34,22 +29,22 @@ type HardwareExtraDetailsInstance struct {
 	// rpm_reading. Was added in version 2.0.0.0.
 	RpmReading *string `json:"rpm_reading,omitempty"`
 	// Firmware version of the hardware. Available on the Drive hardware type.
-	FirmwareVersion *string `json:"firmware_version,omitempty"`
-	Mode *HardwareSFPModeEnum `json:"mode,omitempty"`
-	SupportedSpeeds []HardwareSFPSpeedEnum `json:"supported_speeds,omitempty"`
+	FirmwareVersion   *string                           `json:"firmware_version,omitempty"`
+	Mode              *HardwareSFPModeEnum              `json:"mode,omitempty"`
+	SupportedSpeeds   []HardwareSFPSpeedEnum            `json:"supported_speeds,omitempty"`
 	SupportedProtocol *HardwareSFPSupportedProtocolEnum `json:"supported_protocol,omitempty"`
-	ConnectorType *HardwareSFPConnectorTypeEnum `json:"connector_type,omitempty"`
-	DriveType *HardwareDriveTypeEnum `json:"drive_type,omitempty"`
+	ConnectorType     *HardwareSFPConnectorTypeEnum     `json:"connector_type,omitempty"`
+	DriveType         *HardwareDriveTypeEnum            `json:"drive_type,omitempty"`
 	// Size of the drive in bytes. Available on the Drive hardware type.
-	Size *int64 `json:"size,omitempty"`
+	Size             *int64                             `json:"size,omitempty"`
 	EncryptionStatus *HardwareDriveEncryptionStatusEnum `json:"encryption_status,omitempty"`
-	FipsStatus *HardwareDriveFIPSStatusEnum `json:"fips_status,omitempty"`
+	FipsStatus       *HardwareDriveFIPSStatusEnum       `json:"fips_status,omitempty"`
 	// Dell service tag of the hardware. Available on the Base_Enclosure and Expansion_Enclosure hardware types.
 	DellServiceTag *string `json:"dell_service_tag,omitempty"`
 	// Express service code of the hardware. Available on the Base_Enclosure and Expansion_Enclosure hardware types.
-	ExpressServiceCode *string `json:"express_service_code,omitempty"`
+	ExpressServiceCode        *string                                `json:"express_service_code,omitempty"`
 	EnclosureModelDescription *HardwareEnclosureModelDescriptionEnum `json:"enclosure_model_description,omitempty"`
-	StorageClass *ApplianceStorageClassEnum `json:"storage_class,omitempty"`
+	StorageClass              *ApplianceStorageClassEnum             `json:"storage_class,omitempty"`
 	// Localized message string corresponding to mode
 	ModeL10n *string `json:"mode_l10n,omitempty"`
 	// Localized message array corresponding to supported_speeds
@@ -69,5 +64,3 @@ type HardwareExtraDetailsInstance struct {
 	// Localized message string corresponding to storage_class Was added in version 4.0.0.0.
 	StorageClassL10n *string `json:"storage_class_l10n,omitempty"`
 }
-
-

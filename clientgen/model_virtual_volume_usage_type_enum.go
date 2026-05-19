@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// VirtualVolumeUsageTypeEnum VMware's usage of the vVol. Values are: * Config * Data * Swap * Memory * Other 
+// VirtualVolumeUsageTypeEnum VMware's usage of the vVol. Values are: * Config * Data * Swap * Memory * Other
 type VirtualVolumeUsageTypeEnum string
 
 // List of VirtualVolumeUsageTypeEnum
 const (
 	VIRTUALVOLUMEUSAGETYPEENUM_CONFIG VirtualVolumeUsageTypeEnum = "Config"
-	VIRTUALVOLUMEUSAGETYPEENUM_DATA VirtualVolumeUsageTypeEnum = "Data"
-	VIRTUALVOLUMEUSAGETYPEENUM_SWAP VirtualVolumeUsageTypeEnum = "Swap"
+	VIRTUALVOLUMEUSAGETYPEENUM_DATA   VirtualVolumeUsageTypeEnum = "Data"
+	VIRTUALVOLUMEUSAGETYPEENUM_SWAP   VirtualVolumeUsageTypeEnum = "Swap"
 	VIRTUALVOLUMEUSAGETYPEENUM_MEMORY VirtualVolumeUsageTypeEnum = "Memory"
-	VIRTUALVOLUMEUSAGETYPEENUM_OTHER VirtualVolumeUsageTypeEnum = "Other"
+	VIRTUALVOLUMEUSAGETYPEENUM_OTHER  VirtualVolumeUsageTypeEnum = "Other"
 )
 
 // All allowed values of VirtualVolumeUsageTypeEnum enum
@@ -39,4 +34,3 @@ var AllowedVirtualVolumeUsageTypeEnumEnumValues = []VirtualVolumeUsageTypeEnum{
 func (v *VirtualVolumeUsageTypeEnum) Value() string {
 	return string(*v)
 }
-

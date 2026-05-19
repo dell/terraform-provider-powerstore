@@ -19,14 +19,13 @@ import (
 	"strings"
 )
 
-
 // RecycleBinApiService RecycleBinApi service
 type RecycleBinApiService service
 
 type ApiDeleteRecycleBinByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RecycleBinApiService
-	id string
+	id         string
 }
 
 func (r ApiDeleteRecycleBinByIdRequest) Execute() (*http.Response, error) {
@@ -39,24 +38,24 @@ DeleteRecycleBinById Delete
 Permanently delete a storage object in the recycle bin.
 Was added in version 3.5.0.0.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the storage object to delete. name:{name} can be used instead of {id}.
- @return ApiDeleteRecycleBinByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the storage object to delete. name:{name} can be used instead of {id}.
+	@return ApiDeleteRecycleBinByIdRequest
 */
 func (a *RecycleBinApiService) DeleteRecycleBinById(ctx context.Context, id string) ApiDeleteRecycleBinByIdRequest {
 	return ApiDeleteRecycleBinByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *RecycleBinApiService) DeleteRecycleBinByIdExecute(r ApiDeleteRecycleBinByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinApiService.DeleteRecycleBinById")
@@ -117,8 +116,8 @@ func (a *RecycleBinApiService) DeleteRecycleBinByIdExecute(r ApiDeleteRecycleBin
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -128,8 +127,8 @@ func (a *RecycleBinApiService) DeleteRecycleBinByIdExecute(r ApiDeleteRecycleBin
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -139,8 +138,8 @@ func (a *RecycleBinApiService) DeleteRecycleBinByIdExecute(r ApiDeleteRecycleBin
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -149,9 +148,9 @@ func (a *RecycleBinApiService) DeleteRecycleBinByIdExecute(r ApiDeleteRecycleBin
 }
 
 type ApiGetAllRecycleBinsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RecycleBinApiService
-	queries url.Values
+	queries    url.Values
 }
 
 func (r ApiGetAllRecycleBinsRequest) Queries(in url.Values) ApiGetAllRecycleBinsRequest {
@@ -169,24 +168,25 @@ GetAllRecycleBins Collection Query
 Query to get the objects that are currently in the recycle bin.
 Was added in version 3.5.0.0.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetAllRecycleBinsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAllRecycleBinsRequest
 */
 func (a *RecycleBinApiService) GetAllRecycleBins(ctx context.Context) ApiGetAllRecycleBinsRequest {
 	return ApiGetAllRecycleBinsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return []RecycleBinInstance
+//
+//	@return []RecycleBinInstance
 func (a *RecycleBinApiService) GetAllRecycleBinsExecute(r ApiGetAllRecycleBinsRequest) ([]RecycleBinInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []RecycleBinInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue []RecycleBinInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinApiService.GetAllRecycleBins")
@@ -255,10 +255,10 @@ func (a *RecycleBinApiService) GetAllRecycleBinsExecute(r ApiGetAllRecycleBinsRe
 }
 
 type ApiGetRecycleBinByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RecycleBinApiService
-	queries url.Values
-	id string
+	queries    url.Values
+	id         string
 }
 
 func (r ApiGetRecycleBinByIdRequest) Queries(in url.Values) ApiGetRecycleBinByIdRequest {
@@ -276,26 +276,27 @@ GetRecycleBinById Instance Query
 Query a specific recycle bin instance.
 Was added in version 3.5.0.0.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the instance to retrieve. name:{name} can be used instead of {id}.
- @return ApiGetRecycleBinByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the instance to retrieve. name:{name} can be used instead of {id}.
+	@return ApiGetRecycleBinByIdRequest
 */
 func (a *RecycleBinApiService) GetRecycleBinById(ctx context.Context, id string) ApiGetRecycleBinByIdRequest {
 	return ApiGetRecycleBinByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
-//  @return RecycleBinInstance
+//
+//	@return RecycleBinInstance
 func (a *RecycleBinApiService) GetRecycleBinByIdExecute(r ApiGetRecycleBinByIdRequest) (*RecycleBinInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *RecycleBinInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *RecycleBinInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinApiService.GetRecycleBinById")
@@ -356,8 +357,8 @@ func (a *RecycleBinApiService) GetRecycleBinByIdExecute(r ApiGetRecycleBinByIdRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -375,7 +376,7 @@ func (a *RecycleBinApiService) GetRecycleBinByIdExecute(r ApiGetRecycleBinByIdRe
 }
 
 type ApiPostRecycleBinByIdRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RecycleBinApiService
 }
 
@@ -389,22 +390,22 @@ PostRecycleBinById Empty
 Empty the recycle bin by permanently deleting all storage objects it contains.
 Was added in version 3.5.0.0.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiPostRecycleBinByIdRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiPostRecycleBinByIdRequest
 */
 func (a *RecycleBinApiService) PostRecycleBinById(ctx context.Context) ApiPostRecycleBinByIdRequest {
 	return ApiPostRecycleBinByIdRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
 func (a *RecycleBinApiService) PostRecycleBinByIdExecute(r ApiPostRecycleBinByIdRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinApiService.PostRecycleBinById")
@@ -464,8 +465,8 @@ func (a *RecycleBinApiService) PostRecycleBinByIdExecute(r ApiPostRecycleBinById
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -475,8 +476,8 @@ func (a *RecycleBinApiService) PostRecycleBinByIdExecute(r ApiPostRecycleBinById
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -485,10 +486,10 @@ func (a *RecycleBinApiService) PostRecycleBinByIdExecute(r ApiPostRecycleBinById
 }
 
 type ApiRecycleBinRecoverRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RecycleBinApiService
-	id string
-	body *map[string]interface{}
+	id         string
+	body       *map[string]interface{}
 }
 
 func (r ApiRecycleBinRecoverRequest) Body(body map[string]interface{}) ApiRecycleBinRecoverRequest {
@@ -506,24 +507,24 @@ RecycleBinRecover Recover
 Recover one storage object from the recycle bin.
 Was added in version 3.5.0.0.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param id Unique identifier of the instance to recover. name:{name} can be used instead of {id}.
- @return ApiRecycleBinRecoverRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the instance to recover. name:{name} can be used instead of {id}.
+	@return ApiRecycleBinRecoverRequest
 */
 func (a *RecycleBinApiService) RecycleBinRecover(ctx context.Context, id string) ApiRecycleBinRecoverRequest {
 	return ApiRecycleBinRecoverRequest{
 		ApiService: a,
-		ctx: ctx,
-		id: id,
+		ctx:        ctx,
+		id:         id,
 	}
 }
 
 // Execute executes the request
 func (a *RecycleBinApiService) RecycleBinRecoverExecute(r ApiRecycleBinRecoverRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPost
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecycleBinApiService.RecycleBinRecover")
@@ -586,8 +587,8 @@ func (a *RecycleBinApiService) RecycleBinRecoverExecute(r ApiRecycleBinRecoverRe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
@@ -597,8 +598,8 @@ func (a *RecycleBinApiService) RecycleBinRecoverExecute(r ApiRecycleBinRecoverRe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
@@ -608,8 +609,8 @@ func (a *RecycleBinApiService) RecycleBinRecoverExecute(r ApiRecycleBinRecoverRe
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

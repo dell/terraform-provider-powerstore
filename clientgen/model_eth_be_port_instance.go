@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // EthBePortInstance Properties of a Ethernet Backend port. Was added in version 3.0.0.0. This resource type has queriable associations from appliance, hardware, eth_be_port
 type EthBePortInstance struct {
 	// Unique identifier of the Ethernet Backend port.
@@ -27,23 +22,23 @@ type EthBePortInstance struct {
 	NodeId *string `json:"node_id,omitempty"`
 	// The MAC address of the Ethernet Backend port.
 	MacAddress *string `json:"mac_address,omitempty"`
-	// Indicates whether the Ethernet Backend port's link is up. Values are: * true - Link is up. * false - Link is down. 
-	IsLinkUp *bool `json:"is_link_up,omitempty"`
-	Speed *EthBEPortSpeedEnum `json:"speed,omitempty"`
-	// Unique identifier of the hardware instance of type 'SFP' (Small Form-factor Pluggable) inserted into the port. 
+	// Indicates whether the Ethernet Backend port's link is up. Values are: * true - Link is up. * false - Link is down.
+	IsLinkUp *bool               `json:"is_link_up,omitempty"`
+	Speed    *EthBEPortSpeedEnum `json:"speed,omitempty"`
+	// Unique identifier of the hardware instance of type 'SFP' (Small Form-factor Pluggable) inserted into the port.
 	SfpId *string `json:"sfp_id,omitempty"`
 	// Index of the Ethernet Backend port in IO module.
-	PortIndex *int32 `json:"port_index,omitempty"`
+	PortIndex         *int32                          `json:"port_index,omitempty"`
 	PortConnectorType *FrontEndPortConnectionTypeEnum `json:"port_connector_type,omitempty"`
 	// Unique identifier of the parent hardware instance handling the port.
 	HardwareParentId *string `json:"hardware_parent_id,omitempty"`
-	// Unique identifier of the backend ethernet port which is expected to be connected to this one. 
+	// Unique identifier of the backend ethernet port which is expected to be connected to this one.
 	ExpectedPeerId *string `json:"expected_peer_id,omitempty"`
-	// Unique identifier of the backend ethernet port which is actually connected to this one. 
+	// Unique identifier of the backend ethernet port which is actually connected to this one.
 	ActualPeerId *string `json:"actual_peer_id,omitempty"`
-	// Supported Protocols over Ethernet port. currently only NVMe is supported. 
-	Protocols []EthBEPortProtocolEnum `json:"protocols,omitempty"`
-	StaleState *PortStaleStateEnum `json:"stale_state,omitempty"`
+	// Supported Protocols over Ethernet port. currently only NVMe is supported.
+	Protocols  []EthBEPortProtocolEnum `json:"protocols,omitempty"`
+	StaleState *PortStaleStateEnum     `json:"stale_state,omitempty"`
 	// Localized message string corresponding to speed Was added in version 3.0.0.0.
 	SpeedL10n *string `json:"speed_l10n,omitempty"`
 	// Localized message string corresponding to port_connector_type Was added in version 3.0.0.0.
@@ -51,13 +46,11 @@ type EthBePortInstance struct {
 	// Localized message array corresponding to protocols Was added in version 3.0.0.0.
 	ProtocolsL10n []string `json:"protocols_l10n,omitempty"`
 	// Localized message string corresponding to stale_state Was added in version 3.0.0.0.
-	StaleStateL10n *string `json:"stale_state_l10n,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
-	Node *HardwareInstance `json:"node,omitempty"`
-	Sfp *HardwareInstance `json:"sfp,omitempty"`
-	HardwareParent *HardwareInstance `json:"hardware_parent,omitempty"`
-	ExpectedPeer *EthBePortInstance `json:"expected_peer,omitempty"`
-	ActualPeer *EthBePortInstance `json:"actual_peer,omitempty"`
+	StaleStateL10n *string            `json:"stale_state_l10n,omitempty"`
+	Appliance      *ApplianceInstance `json:"appliance,omitempty"`
+	Node           *HardwareInstance  `json:"node,omitempty"`
+	Sfp            *HardwareInstance  `json:"sfp,omitempty"`
+	HardwareParent *HardwareInstance  `json:"hardware_parent,omitempty"`
+	ExpectedPeer   *EthBePortInstance `json:"expected_peer,omitempty"`
+	ActualPeer     *EthBePortInstance `json:"actual_peer,omitempty"`
 }
-
-

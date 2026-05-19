@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // SoftwareInstalledBuildTypeEnum Type of the build. Valid values are: * Hotfix - A build containing 1 or more specific fixes. Generally limited in availability to a few customers. * Beta - Pre-production build, used for evaluation purposes. * Release - A build for General Availability (GA).   Was added in version 2.0.0.0.
 type SoftwareInstalledBuildTypeEnum string
 
 // List of SoftwareInstalledBuildTypeEnum
 const (
-	SOFTWAREINSTALLEDBUILDTYPEENUM_BETA SoftwareInstalledBuildTypeEnum = "Beta"
-	SOFTWAREINSTALLEDBUILDTYPEENUM_HOTFIX SoftwareInstalledBuildTypeEnum = "Hotfix"
+	SOFTWAREINSTALLEDBUILDTYPEENUM_BETA    SoftwareInstalledBuildTypeEnum = "Beta"
+	SOFTWAREINSTALLEDBUILDTYPEENUM_HOTFIX  SoftwareInstalledBuildTypeEnum = "Hotfix"
 	SOFTWAREINSTALLEDBUILDTYPEENUM_RELEASE SoftwareInstalledBuildTypeEnum = "Release"
 )
 
@@ -35,4 +30,3 @@ var AllowedSoftwareInstalledBuildTypeEnumEnumValues = []SoftwareInstalledBuildTy
 func (v *SoftwareInstalledBuildTypeEnum) Value() string {
 	return string(*v)
 }
-

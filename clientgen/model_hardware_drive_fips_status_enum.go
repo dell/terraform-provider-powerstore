@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareDriveFIPSStatusEnum FIPS compliance level. Available on the Drive hardware type. Current compliance levels are:  * FIPS_Compliance_None -  Drive has no FIPS compliance.  * FIPS_Compliance_Level_1 - Drive has FIPS 140-2 compliance.  * FIPS_Compliance_Level_2 - Drive submitted for FIPS 140-3 compliance. Check Simple Support Matrix for details.  * FIPS_Compliance_Invalid - Drive has invalid FIPS compliance. 
+// HardwareDriveFIPSStatusEnum FIPS compliance level. Available on the Drive hardware type. Current compliance levels are:  * FIPS_Compliance_None -  Drive has no FIPS compliance.  * FIPS_Compliance_Level_1 - Drive has FIPS 140-2 compliance.  * FIPS_Compliance_Level_2 - Drive submitted for FIPS 140-3 compliance. Check Simple Support Matrix for details.  * FIPS_Compliance_Invalid - Drive has invalid FIPS compliance.
 type HardwareDriveFIPSStatusEnum string
 
 // List of HardwareDriveFIPSStatusEnum
 const (
-	HARDWAREDRIVEFIPSSTATUSENUM_NONE HardwareDriveFIPSStatusEnum = "FIPS_Compliance_None"
+	HARDWAREDRIVEFIPSSTATUSENUM_NONE    HardwareDriveFIPSStatusEnum = "FIPS_Compliance_None"
 	HARDWAREDRIVEFIPSSTATUSENUM_LEVEL_1 HardwareDriveFIPSStatusEnum = "FIPS_Compliance_Level_1"
 	HARDWAREDRIVEFIPSSTATUSENUM_LEVEL_2 HardwareDriveFIPSStatusEnum = "FIPS_Compliance_Level_2"
 	HARDWAREDRIVEFIPSSTATUSENUM_INVALID HardwareDriveFIPSStatusEnum = "FIPS_Compliance_Invalid"
@@ -37,4 +32,3 @@ var AllowedHardwareDriveFIPSStatusEnumEnumValues = []HardwareDriveFIPSStatusEnum
 func (v *HardwareDriveFIPSStatusEnum) Value() string {
 	return string(*v)
 }
-

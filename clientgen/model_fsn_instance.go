@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // FsnInstance Properties of a fail-safe network (FSN). Was added in version 3.5.0.0. This resource type has queriable associations from fsn, appliance, ip_port, bond, eth_port
 type FsnInstance struct {
 	// Unique identifier of the fail-safe network, or null if the FSN is not in a link group.
@@ -25,9 +20,9 @@ type FsnInstance struct {
 	ApplianceId *string `json:"appliance_id,omitempty"`
 	// Fail-safe network name.  This property supports case-insensitive filtering.
 	Name *string `json:"name,omitempty"`
-	// Indicates whether the fail-safe network's link is up. Values are: * true - Link is up. * false - Link is down. 
-	IsLinkUp *bool `json:"is_link_up,omitempty"`
-	Status *FSNStatusEnum `json:"status,omitempty"`
+	// Indicates whether the fail-safe network's link is up. Values are: * true - Link is up. * false - Link is down.
+	IsLinkUp *bool          `json:"is_link_up,omitempty"`
+	Status   *FSNStatusEnum `json:"status,omitempty"`
 	// Maximum Transmission Unit (MTU) packet size of the bond, in bytes.
 	Mtu *int32 `json:"mtu,omitempty"`
 	// The unique identifier of the Ethernet port or bond to be used and is not abandoned unless it fails.
@@ -41,11 +36,9 @@ type FsnInstance struct {
 	// This is the inverse of the resource type ip_port association.
 	IpPorts []IpPortInstance `json:"ip_ports,omitempty"`
 	// This is the inverse of the resource type bond association.
-	Bonds []BondInstance `json:"bonds,omitempty"`
-	Partner *FsnInstance `json:"partner,omitempty"`
+	Bonds     []BondInstance     `json:"bonds,omitempty"`
+	Partner   *FsnInstance       `json:"partner,omitempty"`
 	Appliance *ApplianceInstance `json:"appliance,omitempty"`
 	// This is the inverse of the resource type eth_port association.
 	EthPorts []EthPortInstance `json:"eth_ports,omitempty"`
 }
-
-

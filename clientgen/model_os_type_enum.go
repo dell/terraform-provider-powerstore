@@ -10,21 +10,16 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// OSTypeEnum Operating system of the host. Values are: * Windows * Linux * ESXi * AIX * HP-UX * Solaris 
+// OSTypeEnum Operating system of the host. Values are: * Windows * Linux * ESXi * AIX * HP-UX * Solaris
 type OSTypeEnum string
 
 // List of OSTypeEnum
 const (
 	OSTYPEENUM_WINDOWS OSTypeEnum = "Windows"
-	OSTYPEENUM_LINUX OSTypeEnum = "Linux"
-	OSTYPEENUM_ESXI OSTypeEnum = "ESXi"
-	OSTYPEENUM_AIX OSTypeEnum = "AIX"
-	OSTYPEENUM_HP_UX OSTypeEnum = "HP-UX"
+	OSTYPEENUM_LINUX   OSTypeEnum = "Linux"
+	OSTYPEENUM_ESXI    OSTypeEnum = "ESXi"
+	OSTYPEENUM_AIX     OSTypeEnum = "AIX"
+	OSTYPEENUM_HP_UX   OSTypeEnum = "HP-UX"
 	OSTYPEENUM_SOLARIS OSTypeEnum = "Solaris"
 )
 
@@ -41,4 +36,3 @@ var AllowedOSTypeEnumEnumValues = []OSTypeEnum{
 func (v *OSTypeEnum) Value() string {
 	return string(*v)
 }
-

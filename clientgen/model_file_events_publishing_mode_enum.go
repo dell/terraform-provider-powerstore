@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // FileEventsPublishingModeEnum State of the event notification services for all file systems of the NAS server. * None - File event notifications are disabled for this file system. * SMB_Only - SMB notifications are enabled for this file system. * NFS_Only - NFS notifications are enabled for this file system. * All - SMB and NFS notifications are enabled for this file system.  Was added in version 3.0.0.0.
 type FileEventsPublishingModeEnum string
 
 // List of FileEventsPublishingModeEnum
 const (
-	FILEEVENTSPUBLISHINGMODEENUM_NONE FileEventsPublishingModeEnum = "None"
+	FILEEVENTSPUBLISHINGMODEENUM_NONE     FileEventsPublishingModeEnum = "None"
 	FILEEVENTSPUBLISHINGMODEENUM_SMB_ONLY FileEventsPublishingModeEnum = "SMB_Only"
 	FILEEVENTSPUBLISHINGMODEENUM_NFS_ONLY FileEventsPublishingModeEnum = "NFS_Only"
-	FILEEVENTSPUBLISHINGMODEENUM_ALL FileEventsPublishingModeEnum = "All"
+	FILEEVENTSPUBLISHINGMODEENUM_ALL      FileEventsPublishingModeEnum = "All"
 )
 
 // All allowed values of FileEventsPublishingModeEnum enum
@@ -37,4 +32,3 @@ var AllowedFileEventsPublishingModeEnumEnumValues = []FileEventsPublishingModeEn
 func (v *FileEventsPublishingModeEnum) Value() string {
 	return string(*v)
 }
-

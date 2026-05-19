@@ -10,20 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// VirtualMachineStatusEnum General health status of the VM in vCenter. Not applicable to VM snapshots. * Green - VM is operating normally. * Yellow - VM is operating normally, but there are potential issues. * Red - VM is experiencing issues and is not operating normally. * Gray - Status of the VM cannot be determined. 
+// VirtualMachineStatusEnum General health status of the VM in vCenter. Not applicable to VM snapshots. * Green - VM is operating normally. * Yellow - VM is operating normally, but there are potential issues. * Red - VM is experiencing issues and is not operating normally. * Gray - Status of the VM cannot be determined.
 type VirtualMachineStatusEnum string
 
 // List of VirtualMachineStatusEnum
 const (
-	VIRTUALMACHINESTATUSENUM_GREEN VirtualMachineStatusEnum = "Green"
+	VIRTUALMACHINESTATUSENUM_GREEN  VirtualMachineStatusEnum = "Green"
 	VIRTUALMACHINESTATUSENUM_YELLOW VirtualMachineStatusEnum = "Yellow"
-	VIRTUALMACHINESTATUSENUM_RED VirtualMachineStatusEnum = "Red"
-	VIRTUALMACHINESTATUSENUM_GRAY VirtualMachineStatusEnum = "Gray"
+	VIRTUALMACHINESTATUSENUM_RED    VirtualMachineStatusEnum = "Red"
+	VIRTUALMACHINESTATUSENUM_GRAY   VirtualMachineStatusEnum = "Gray"
 )
 
 // All allowed values of VirtualMachineStatusEnum enum
@@ -37,4 +32,3 @@ var AllowedVirtualMachineStatusEnumEnumValues = []VirtualMachineStatusEnum{
 func (v *VirtualMachineStatusEnum) Value() string {
 	return string(*v)
 }
-

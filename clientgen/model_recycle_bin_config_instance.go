@@ -10,11 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // RecycleBinConfigInstance Configuration settings for recycle bin. Was added in version 3.5.0.0.
 type RecycleBinConfigInstance struct {
 	// Unique identifier for recycle bin configuration settings (always \"0\").
@@ -22,5 +17,3 @@ type RecycleBinConfigInstance struct {
 	// Duration in days for items to live in the recycle bin. A duration of zero indicates items will expire immediately.
 	ExpirationDuration *int32 `json:"expiration_duration,omitempty"`
 }
-
-

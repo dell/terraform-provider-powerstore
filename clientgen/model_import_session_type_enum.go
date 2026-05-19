@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // ImportSessionTypeEnum The type of the import session.  Values are: * Non_Disruptive - This type of import session requires an Import Host Agent to be running on any host accessing the import source resources. There is no host application downtime. * Agentless - This type of import session does not require an Import Host Agent to be running on any host accessing the source resources of import. Host application downtime is required to reconfigure the host application to use the destination resource before starting the data copy operation.  Was added in version 1.0.2.
 type ImportSessionTypeEnum string
 
 // List of ImportSessionTypeEnum
 const (
 	IMPORTSESSIONTYPEENUM_NON_DISRUPTIVE ImportSessionTypeEnum = "Non_Disruptive"
-	IMPORTSESSIONTYPEENUM_AGENTLESS ImportSessionTypeEnum = "Agentless"
+	IMPORTSESSIONTYPEENUM_AGENTLESS      ImportSessionTypeEnum = "Agentless"
 )
 
 // All allowed values of ImportSessionTypeEnum enum
@@ -33,4 +28,3 @@ var AllowedImportSessionTypeEnumEnumValues = []ImportSessionTypeEnum{
 func (v *ImportSessionTypeEnum) Value() string {
 	return string(*v)
 }
-

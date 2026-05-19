@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileLDAPProtocolEnum Indicates whether the LDAP protocol uses SSL for secure network communication. SSL encrypts data over the network and provides message and server authentication. * LDAP - LDAP protocol without SSL. * LDAPS - (Default) LDAP protocol with SSL. When you enable LDAPS, make sure to specify the appropriate LDAPS port (usually port 636) and to upload an LDAPS trust certificate to the LDAP server. 
+// FileLDAPProtocolEnum Indicates whether the LDAP protocol uses SSL for secure network communication. SSL encrypts data over the network and provides message and server authentication. * LDAP - LDAP protocol without SSL. * LDAPS - (Default) LDAP protocol with SSL. When you enable LDAPS, make sure to specify the appropriate LDAPS port (usually port 636) and to upload an LDAPS trust certificate to the LDAP server.
 type FileLDAPProtocolEnum string
 
 // List of FileLDAPProtocolEnum
 const (
-	FILELDAPPROTOCOLENUM_LDAP FileLDAPProtocolEnum = "LDAP"
+	FILELDAPPROTOCOLENUM_LDAP  FileLDAPProtocolEnum = "LDAP"
 	FILELDAPPROTOCOLENUM_LDAPS FileLDAPProtocolEnum = "LDAPS"
 )
 
@@ -33,4 +28,3 @@ var AllowedFileLDAPProtocolEnumEnumValues = []FileLDAPProtocolEnum{
 func (v *FileLDAPProtocolEnum) Value() string {
 	return string(*v)
 }
-

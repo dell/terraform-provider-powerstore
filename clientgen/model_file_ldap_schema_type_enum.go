@@ -10,19 +10,14 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileLDAPSchemaTypeEnum LDAP server schema type. * RFC2307 - OpenLDAP/iPlanet schema. * Microsoft - Microsoft Identity Management for UNIX (IDMU/SFU) schema. * Unknown - Unknown protocol. 
+// FileLDAPSchemaTypeEnum LDAP server schema type. * RFC2307 - OpenLDAP/iPlanet schema. * Microsoft - Microsoft Identity Management for UNIX (IDMU/SFU) schema. * Unknown - Unknown protocol.
 type FileLDAPSchemaTypeEnum string
 
 // List of FileLDAPSchemaTypeEnum
 const (
-	FILELDAPSCHEMATYPEENUM_RFC2307 FileLDAPSchemaTypeEnum = "RFC2307"
+	FILELDAPSCHEMATYPEENUM_RFC2307   FileLDAPSchemaTypeEnum = "RFC2307"
 	FILELDAPSCHEMATYPEENUM_MICROSOFT FileLDAPSchemaTypeEnum = "Microsoft"
-	FILELDAPSCHEMATYPEENUM_UNKNOWN FileLDAPSchemaTypeEnum = "Unknown"
+	FILELDAPSCHEMATYPEENUM_UNKNOWN   FileLDAPSchemaTypeEnum = "Unknown"
 )
 
 // All allowed values of FileLDAPSchemaTypeEnum enum
@@ -35,4 +30,3 @@ var AllowedFileLDAPSchemaTypeEnumEnumValues = []FileLDAPSchemaTypeEnum{
 func (v *FileLDAPSchemaTypeEnum) Value() string {
 	return string(*v)
 }
-

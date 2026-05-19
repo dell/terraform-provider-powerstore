@@ -10,18 +10,13 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// SasPortSpeedEnum SAS port transmission speed. * 3_Gbps- 3 Gigabits per second * 6_Gbps- 6 Gigabits per second * 12_Gbps- 12 Gigabits per second 
+// SasPortSpeedEnum SAS port transmission speed. * 3_Gbps- 3 Gigabits per second * 6_Gbps- 6 Gigabits per second * 12_Gbps- 12 Gigabits per second
 type SasPortSpeedEnum string
 
 // List of SasPortSpeedEnum
 const (
-	SASPORTSPEEDENUM__3_GBPS SasPortSpeedEnum = "3_Gbps"
-	SASPORTSPEEDENUM__6_GBPS SasPortSpeedEnum = "6_Gbps"
+	SASPORTSPEEDENUM__3_GBPS  SasPortSpeedEnum = "3_Gbps"
+	SASPORTSPEEDENUM__6_GBPS  SasPortSpeedEnum = "6_Gbps"
 	SASPORTSPEEDENUM__12_GBPS SasPortSpeedEnum = "12_Gbps"
 )
 
@@ -35,4 +30,3 @@ var AllowedSasPortSpeedEnumEnumValues = []SasPortSpeedEnum{
 func (v *SasPortSpeedEnum) Value() string {
 	return string(*v)
 }
-

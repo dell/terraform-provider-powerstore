@@ -10,24 +10,19 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HardwareDriveEncryptionStatusEnum Indicates whether the drive is currently encrypted or not.  Available on the Drive hardware type. Current statuses are:  * Not_Supported - Drive does not support encryption.  * Supported_Unlocked - Drive supports encryption but is not configured.  * Supported_Locked - Drive supports encryption and is locked.  * Supported_Locked_Cluster_PIN - Drive supports encryption and is configured.  * Supported_Locked_Out - Drive supports encryption and is locked out.  * Supported_Locked_Foreign - Drive supports encryption and is locked with an unknown PIN.  * Supported_Processing - Drive supports encryption and is being processed.  * Disabled - Drive encryption is disabled. 
+// HardwareDriveEncryptionStatusEnum Indicates whether the drive is currently encrypted or not.  Available on the Drive hardware type. Current statuses are:  * Not_Supported - Drive does not support encryption.  * Supported_Unlocked - Drive supports encryption but is not configured.  * Supported_Locked - Drive supports encryption and is locked.  * Supported_Locked_Cluster_PIN - Drive supports encryption and is configured.  * Supported_Locked_Out - Drive supports encryption and is locked out.  * Supported_Locked_Foreign - Drive supports encryption and is locked with an unknown PIN.  * Supported_Processing - Drive supports encryption and is being processed.  * Disabled - Drive encryption is disabled.
 type HardwareDriveEncryptionStatusEnum string
 
 // List of HardwareDriveEncryptionStatusEnum
 const (
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_NOT_SUPPORTED HardwareDriveEncryptionStatusEnum = "Not_Supported"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_UNLOCKED HardwareDriveEncryptionStatusEnum = "Supported_Unlocked"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED HardwareDriveEncryptionStatusEnum = "Supported_Locked"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_NOT_SUPPORTED                HardwareDriveEncryptionStatusEnum = "Not_Supported"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_UNLOCKED           HardwareDriveEncryptionStatusEnum = "Supported_Unlocked"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED             HardwareDriveEncryptionStatusEnum = "Supported_Locked"
 	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_CLUSTER_PIN HardwareDriveEncryptionStatusEnum = "Supported_Locked_Cluster_PIN"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_OUT HardwareDriveEncryptionStatusEnum = "Supported_Locked_Out"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_FOREIGN HardwareDriveEncryptionStatusEnum = "Supported_Locked_Foreign"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_PROCESSING HardwareDriveEncryptionStatusEnum = "Supported_Processing"
-	HARDWAREDRIVEENCRYPTIONSTATUSENUM_DISABLED HardwareDriveEncryptionStatusEnum = "Disabled"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_OUT         HardwareDriveEncryptionStatusEnum = "Supported_Locked_Out"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_LOCKED_FOREIGN     HardwareDriveEncryptionStatusEnum = "Supported_Locked_Foreign"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_SUPPORTED_PROCESSING         HardwareDriveEncryptionStatusEnum = "Supported_Processing"
+	HARDWAREDRIVEENCRYPTIONSTATUSENUM_DISABLED                     HardwareDriveEncryptionStatusEnum = "Disabled"
 )
 
 // All allowed values of HardwareDriveEncryptionStatusEnum enum
@@ -45,4 +40,3 @@ var AllowedHardwareDriveEncryptionStatusEnumEnumValues = []HardwareDriveEncrypti
 func (v *HardwareDriveEncryptionStatusEnum) Value() string {
 	return string(*v)
 }
-

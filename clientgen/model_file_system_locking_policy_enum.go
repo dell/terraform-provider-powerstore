@@ -10,17 +10,12 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// FileSystemLockingPolicyEnum File system locking policies. These policy choices control whether the NFSv4 range locks are honored. Because NFSv3 is advisory by design, this policy specifies that the NFSv4 locking feature behaves like NFSv3 (advisory mode), for backward compatiblity with applications expecting an advisory locking scheme.    * Advisory - No lock checking for NFS and honor SMB lock range only for SMB.  * Mandatory - Honor SMB and NFS lock range. 
+// FileSystemLockingPolicyEnum File system locking policies. These policy choices control whether the NFSv4 range locks are honored. Because NFSv3 is advisory by design, this policy specifies that the NFSv4 locking feature behaves like NFSv3 (advisory mode), for backward compatiblity with applications expecting an advisory locking scheme.    * Advisory - No lock checking for NFS and honor SMB lock range only for SMB.  * Mandatory - Honor SMB and NFS lock range.
 type FileSystemLockingPolicyEnum string
 
 // List of FileSystemLockingPolicyEnum
 const (
-	FILESYSTEMLOCKINGPOLICYENUM_ADVISORY FileSystemLockingPolicyEnum = "Advisory"
+	FILESYSTEMLOCKINGPOLICYENUM_ADVISORY  FileSystemLockingPolicyEnum = "Advisory"
 	FILESYSTEMLOCKINGPOLICYENUM_MANDATORY FileSystemLockingPolicyEnum = "Mandatory"
 )
 
@@ -33,4 +28,3 @@ var AllowedFileSystemLockingPolicyEnumEnumValues = []FileSystemLockingPolicyEnum
 func (v *FileSystemLockingPolicyEnum) Value() string {
 	return string(*v)
 }
-

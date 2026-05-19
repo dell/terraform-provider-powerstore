@@ -10,22 +10,15 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"encoding/json"
-)
-
-
 // ErrorMessage Error message for an operation.
 type ErrorMessage struct {
 	// Hexadecimal error code of the message.
-	Code *string `json:"code,omitempty"`
+	Code     *string              `json:"code,omitempty"`
 	Severity *MessageSeverityEnum `json:"severity,omitempty"`
-	// The message description in the specified locale with arguments substituted. 
+	// The message description in the specified locale with arguments substituted.
 	MessageL10n *string `json:"message_l10n,omitempty"`
 	// Arguments (if applicable) for the error message.
 	Arguments []string `json:"arguments,omitempty"`
 	// Localized message string corresponding to severity
 	SeverityL10n *string `json:"severity_l10n,omitempty"`
 }
-
-

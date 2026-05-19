@@ -11,25 +11,23 @@ API version: 4.1.0.0
 package clientgen
 
 import (
-	"encoding/json"
 	"time"
 )
-
 
 // MigrationSessionInstance A migration session. This resource type has queriable associations from virtual_volume, volume, volume_group, replication_session
 type MigrationSessionInstance struct {
 	// Unique identifier of the migration session instance.
 	Id *string `json:"id,omitempty"`
 	// User-specified friendly name of the migration session instance.  This property supports case-insensitive filtering.
-	Name *string `json:"name,omitempty"`
+	Name         *string                    `json:"name,omitempty"`
 	ResourceType *MigrationResourceTypeEnum `json:"resource_type,omitempty"`
 	// Unique identifier of the source appliance instance.
 	SourceApplianceId *string `json:"source_appliance_id,omitempty"`
-	// Family identifier designating the storage resource or resources being migrated. For volume or virtual_volume migrations, the family is moved together because they share data among the primary object, snapshots, and clones. For volume_group migration, the family of each volume in the group is moved because it is a grouping of volumes. 
+	// Family identifier designating the storage resource or resources being migrated. For volume or virtual_volume migrations, the family is moved together because they share data among the primary object, snapshots, and clones. For volume_group migration, the family of each volume in the group is moved because it is a grouping of volumes.
 	FamilyId *string `json:"family_id,omitempty"`
 	// Unique identifier of the destination appliance instance.
-	DestinationApplianceId *string `json:"destination_appliance_id,omitempty"`
-	State *MigrationSessionStateEnum `json:"state,omitempty"`
+	DestinationApplianceId *string                    `json:"destination_appliance_id,omitempty"`
+	State                  *MigrationSessionStateEnum `json:"state,omitempty"`
 	// Time when the migration session was created.
 	CreatedTimestamp *time.Time `json:"created_timestamp,omitempty"`
 	// Time of the last successful sync operation.
@@ -53,5 +51,3 @@ type MigrationSessionInstance struct {
 	// This is the inverse of the resource type replication_session association.
 	ReplicationSessions []ReplicationSessionInstance `json:"replication_sessions,omitempty"`
 }
-
-
