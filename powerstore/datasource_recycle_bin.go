@@ -20,11 +20,12 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
 
-	"github.com/dell/gopowerstore/api"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -44,7 +45,7 @@ func newRecycleBinDataSource() datasource.DataSource {
 }
 
 type recycleBinDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 func (d *recycleBinDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -152,61 +153,34 @@ func (d *recycleBinDataSource) Configure(_ context.Context, req datasource.Confi
 		)
 		return
 	}
-	d.client = c
+	d.client = c.GenClient
 }
 
-// getRecycleBinItems fetches all recycle bin items using APIClient
-func (d *recycleBinDataSource) getRecycleBinItems(ctx context.Context) ([]map[string]interface{}, error) {
-	var result []map[string]interface{}
-	qp := d.client.PStoreClient.APIClient().QueryParams()
-	_, err := d.client.PStoreClient.APIClient().Query(
-		ctx,
-		api.RequestConfig{
-			Method:      "GET",
-			Endpoint:    "recycle_bin",
-			QueryParams: qp,
-		},
-		&result)
+// getRecycleBinItems fetches all recycle bin items
+func (d *recycleBinDataSource) getRecycleBinItems(ctx context.Context) ([]clientgen.RecycleBinInstance, error) {
+	result, _, err := d.client.RecycleBinApi.GetAllRecycleBinItems(ctx).Execute()
 	return result, err
 }
 
-// getRecycleBinItem fetches a specific recycle bin item by ID using APIClient
-func (d *recycleBinDataSource) getRecycleBinItem(ctx context.Context, id string) (map[string]interface{}, error) {
-	var result map[string]interface{}
-	qp := d.client.PStoreClient.APIClient().QueryParams()
-	_, err := d.client.PStoreClient.APIClient().Query(
-		ctx,
-		api.RequestConfig{
-			Method:      "GET",
-			Endpoint:    "recycle_bin",
-			ID:          id,
-			QueryParams: qp,
-		},
-		&result)
+// getRecycleBinItem fetches a specific recycle bin item by ID
+func (d *recycleBinDataSource) getRecycleBinItem(ctx context.Context, id string) (*clientgen.RecycleBinInstance, error) {
+	result, _, err := d.client.RecycleBinApi.GetRecycleBinItemById(ctx, id).Execute()
 	return result, err
 }
 
-// getRecycleBinItemsByFilter fetches recycle bin items with filters using APIClient
-func (d *recycleBinDataSource) getRecycleBinItemsByFilter(ctx context.Context, filters map[string]string) ([]map[string]interface{}, error) {
-	var result []map[string]interface{}
-	qp := d.client.PStoreClient.APIClient().QueryParams()
+// getRecycleBinItemsByFilter fetches recycle bin items with query filters
+func (d *recycleBinDataSource) getRecycleBinItemsByFilter(ctx context.Context, filters map[string]string) ([]clientgen.RecycleBinInstance, error) {
+	queries := make(url.Values)
 	for k, v := range filters {
-		qp.RawArg(k, v)
+		queries.Set(k, v)
 	}
-	_, err := d.client.PStoreClient.APIClient().Query(
-		ctx,
-		api.RequestConfig{
-			Method:      "GET",
-			Endpoint:    "recycle_bin",
-			QueryParams: qp,
-		},
-		&result)
+	result, _, err := d.client.RecycleBinApi.GetAllRecycleBinItems(ctx).Queries(queries).Execute()
 	return result, err
 }
 
 func (d *recycleBinDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state models.RecycleBinDataSourceModel
-	var items []map[string]interface{}
+	var items []clientgen.RecycleBinInstance
 	var err error
 
 	diags := req.Config.Get(ctx, &state)
@@ -216,7 +190,6 @@ func (d *recycleBinDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	if state.ID.ValueString() != "" {
-		// Get a specific item by ID
 		item, getErr := d.getRecycleBinItem(ctx, state.ID.ValueString())
 		if getErr != nil {
 			resp.Diagnostics.AddError(
@@ -225,7 +198,9 @@ func (d *recycleBinDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			)
 			return
 		}
-		items = append(items, item)
+		if item != nil {
+			items = append(items, *item)
+		}
 	} else if state.Filters.ValueString() != "" {
 		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
 		items, err = d.getRecycleBinItemsByFilter(ctx, filterMap)
@@ -253,36 +228,37 @@ func (d *recycleBinDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	resp.Diagnostics.Append(diags...)
 }
 
-// mapRecycleBinItemsToState converts client items to Terraform state models.
-func mapRecycleBinItemsToState(items []map[string]interface{}) []models.RecycleBinItemModel {
+// mapRecycleBinItemsToState converts clientgen RecycleBinInstance items to Terraform state models.
+func mapRecycleBinItemsToState(items []clientgen.RecycleBinInstance) []models.RecycleBinItemModel {
 	var result []models.RecycleBinItemModel
 	for _, item := range items {
-		model := models.RecycleBinItemModel{
-			ID: types.StringValue(item["id"].(string)),
+		model := models.RecycleBinItemModel{}
+		if item.Id != nil {
+			model.ID = types.StringValue(*item.Id)
 		}
-		if val, ok := item["name"].(string); ok {
-			model.Name = types.StringValue(val)
+		if item.Name != nil {
+			model.Name = types.StringValue(*item.Name)
 		}
-		if val, ok := item["resource_type"].(string); ok {
-			model.ResourceType = types.StringValue(val)
+		if item.ResourceType != nil {
+			model.ResourceType = types.StringValue(*item.ResourceType)
 		}
-		if val, ok := item["logical_provisioned"].(float64); ok {
-			model.LogicalProvisioned = types.Int64Value(int64(val))
+		if item.LogicalProvisioned != nil {
+			model.LogicalProvisioned = types.Int64Value(*item.LogicalProvisioned)
 		}
-		if val, ok := item["logical_used"].(float64); ok {
-			model.LogicalUsed = types.Int64Value(int64(val))
+		if item.LogicalUsed != nil {
+			model.LogicalUsed = types.Int64Value(*item.LogicalUsed)
 		}
-		if val, ok := item["appliance_id"].(string); ok {
-			model.ApplianceID = types.StringValue(val)
+		if item.ApplianceId != nil {
+			model.ApplianceID = types.StringValue(*item.ApplianceId)
 		}
-		if val, ok := item["deletion_timestamp"].(string); ok {
-			model.DeletionTimestamp = types.StringValue(val)
+		if item.DeletionTimestamp != nil {
+			model.DeletionTimestamp = types.StringValue(*item.DeletionTimestamp)
 		}
-		if val, ok := item["expiration_timestamp"].(string); ok {
-			model.ExpirationTimestamp = types.StringValue(val)
+		if item.ExpirationTimestamp != nil {
+			model.ExpirationTimestamp = types.StringValue(*item.ExpirationTimestamp)
 		}
-		if val, ok := item["resource_type_l10n"].(string); ok {
-			model.ResourceTypeL10N = types.StringValue(val)
+		if item.ResourceTypeL10n != nil {
+			model.ResourceTypeL10N = types.StringValue(*item.ResourceTypeL10n)
 		}
 		result = append(result, model)
 	}

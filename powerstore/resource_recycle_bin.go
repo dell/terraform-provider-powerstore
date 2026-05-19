@@ -23,9 +23,9 @@ import (
 	"log"
 
 	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
 
-	"github.com/dell/gopowerstore/api"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -42,7 +42,7 @@ func newRecycleBinResource() resource.Resource {
 }
 
 type resourceRecycleBin struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata defines resource interface Metadata method
@@ -99,25 +99,14 @@ func (r *resourceRecycleBin) Configure(ctx context.Context, req resource.Configu
 		return
 	}
 
-	r.client = c
+	r.client = c.GenClient
 }
 
 // ---- Helper methods ----
 
 // getRecycleBinConfig fetches the recycle bin configuration from the array
-func (r *resourceRecycleBin) getRecycleBinConfig(ctx context.Context, id string) (map[string]interface{}, error) {
-	var result map[string]interface{}
-	qp := r.client.PStoreClient.APIClient().QueryParams()
-	qp.Select("id", "expiration_duration")
-	_, err := r.client.PStoreClient.APIClient().Query(
-		ctx,
-		api.RequestConfig{
-			Method:      "GET",
-			Endpoint:    "recycle_bin_config",
-			ID:          id,
-			QueryParams: qp,
-		},
-		&result)
+func (r *resourceRecycleBin) getRecycleBinConfig(ctx context.Context, id string) (*clientgen.RecycleBinConfigInstance, error) {
+	result, _, err := r.client.RecycleBinApi.GetRecycleBinConfigById(ctx, id).Execute()
 	return result, err
 }
 
@@ -134,19 +123,11 @@ func (r *resourceRecycleBin) Create(ctx context.Context, req resource.CreateRequ
 
 	log.Printf("Started Creating Recycle Bin Config")
 	configID := "0"
+	duration := plan.ExpirationDuration.ValueInt32()
 
-	payload := map[string]interface{}{
-		"expiration_duration": plan.ExpirationDuration.ValueInt32(),
-	}
-	_, err := r.client.PStoreClient.APIClient().Query(
-		ctx,
-		api.RequestConfig{
-			Method:   "PATCH",
-			Endpoint: "recycle_bin_config",
-			ID:       configID,
-			Body:     payload,
-		},
-		nil)
+	_, err := r.client.RecycleBinApi.PatchRecycleBinConfigById(ctx, configID).Body(clientgen.RecycleBinConfigModify{
+		ExpirationDuration: &duration,
+	}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating recycle bin config",
@@ -164,13 +145,7 @@ func (r *resourceRecycleBin) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	state := models.RecycleBinConfigResource{
-		ID: types.StringValue(getRes["id"].(string)),
-	}
-	if val, ok := getRes["expiration_duration"].(float64); ok {
-		state.ExpirationDuration = types.Int32Value(int32(val))
-	}
-
+	state := recycleBinConfigToState(getRes)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	log.Printf("Successfully done with Create Recycle Bin Config")
@@ -199,12 +174,8 @@ func (r *resourceRecycleBin) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	state.ID = types.StringValue(getRes["id"].(string))
-	if val, ok := getRes["expiration_duration"].(float64); ok {
-		state.ExpirationDuration = types.Int32Value(int32(val))
-	}
-
-	diags = resp.State.Set(ctx, &state)
+	newState := recycleBinConfigToState(getRes)
+	diags = resp.State.Set(ctx, &newState)
 	resp.Diagnostics.Append(diags...)
 	log.Printf("Done with Read Recycle Bin Config")
 }
@@ -220,19 +191,11 @@ func (r *resourceRecycleBin) Update(ctx context.Context, req resource.UpdateRequ
 
 	log.Printf("Started Update Recycle Bin Config")
 	configID := "0"
+	duration := plan.ExpirationDuration.ValueInt32()
 
-	payload := map[string]interface{}{
-		"expiration_duration": plan.ExpirationDuration.ValueInt32(),
-	}
-	_, err := r.client.PStoreClient.APIClient().Query(
-		ctx,
-		api.RequestConfig{
-			Method:   "PATCH",
-			Endpoint: "recycle_bin_config",
-			ID:       configID,
-			Body:     payload,
-		},
-		nil)
+	_, err := r.client.RecycleBinApi.PatchRecycleBinConfigById(ctx, configID).Body(clientgen.RecycleBinConfigModify{
+		ExpirationDuration: &duration,
+	}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating recycle bin config",
@@ -250,13 +213,7 @@ func (r *resourceRecycleBin) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	state := models.RecycleBinConfigResource{
-		ID: types.StringValue(getRes["id"].(string)),
-	}
-	if val, ok := getRes["expiration_duration"].(float64); ok {
-		state.ExpirationDuration = types.Int32Value(int32(val))
-	}
-
+	state := recycleBinConfigToState(getRes)
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	log.Printf("Successfully done with Update Recycle Bin Config")
@@ -267,6 +224,18 @@ func (r *resourceRecycleBin) Delete(ctx context.Context, req resource.DeleteRequ
 	log.Printf("Recycle Bin Config Delete called — removing from Terraform state only")
 	// The recycle bin configuration is a singleton on the array and cannot be deleted.
 	// Removing from Terraform state is all we do.
+}
+
+// recycleBinConfigToState converts a RecycleBinConfigInstance to the Terraform state model
+func recycleBinConfigToState(cfg *clientgen.RecycleBinConfigInstance) models.RecycleBinConfigResource {
+	state := models.RecycleBinConfigResource{}
+	if cfg.Id != nil {
+		state.ID = types.StringValue(*cfg.Id)
+	}
+	if cfg.ExpirationDuration != nil {
+		state.ExpirationDuration = types.Int32Value(*cfg.ExpirationDuration)
+	}
+	return state
 }
 
 // ImportState defines resource interface ImportState method

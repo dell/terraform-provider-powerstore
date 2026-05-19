@@ -18,5 +18,8 @@ RequiredAPIs = [
     "/volume_group/{id}",
     "/volume_group/{id}/add_members",
     "/volume_group/{id}/remove_members",
-    "/login_session"
+    "/login_session",
+    "/recycle_bin",
+    "/recycle_bin/{id}",
+    "/recycle_bin_config/{id}",
 ]

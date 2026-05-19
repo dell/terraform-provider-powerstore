@@ -1054,6 +1054,200 @@
 				},
 				"operationId": "volume_group_remove_members"
 			}
+		},
+		"/recycle_bin": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Query to get the objects that are currently in the recycle bin.\nWas added in version 3.5.0.0.",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/recycle_bin_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of recycle bin instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/recycle_bin_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_recycle_bins",
+				"x-flexible-query": "true"
+			}
+		},
+		"/recycle_bin/{id}": {
+			"get": {
+				"summary": "Instance Query",
+				"description": "Query a specific recycle bin instance.\nWas added in version 3.5.0.0.",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the instance to retrieve. name:{name} can be used instead of {id}.",
+						"required": true,
+						"type": "string",
+						"x-ref": "recycle_bin"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/recycle_bin_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_recycle_bin_by_id",
+				"x-flexible-query": "true"
+			},
+			"delete": {
+				"summary": "Delete",
+				"description": "Permanently delete a storage object in the recycle bin.\nWas added in version 3.5.0.0.",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the storage object to delete. name:{name} can be used instead of {id}.",
+						"required": true,
+						"type": "string",
+						"x-ref": "recycle_bin"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_recycle_bin_by_id"
+			}
+		},
+		"/recycle_bin_config/{id}": {
+			"get": {
+				"description": "Query a specific recycle bin configuration instance.\nWas added in version 3.5.0.0.",
+				"summary": "Instance Query",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin_config"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the instance to retrieve (always = \"0\")",
+						"in": "path",
+						"type": "string",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/recycle_bin_config_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_recycle_bin_config_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"description": "Modify recycle bin configuration settings.\nWas added in version 3.5.0.0.",
+				"summary": "Modify",
+				"x-added": "3.5.0.0",
+				"tags": [
+					"recycle_bin_config"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the instance to modify (always = \"0\")",
+						"in": "path",
+						"type": "string",
+						"required": true
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/recycle_bin_config_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_recycle_bin_config_by_id"
+			}
 		}
 	},
 	"definitions": {
@@ -12407,6 +12601,111 @@
 				"Offline": "Offline",
 				"Online": "Online",
 				"Unavailable": "Unavailable"
+			}
+		},
+		"recycle_bin_instance": {
+			"description": "Properties of a storage object available while in the recycle bin.\nWas added in version 3.5.0.0.",
+			"x-added": "3.5.0.0",
+			"x-select_cli": [
+				"id",
+				"name"
+			],
+			"properties": {
+				"id": {
+					"description": "Unique identifier for the recycle bin instance.",
+					"type": "string"
+				},
+				"name": {
+					"description": "The name of the object. \nThis property supports case-insensitive filtering.",
+					"type": "string",
+					"maxLength": 128,
+					"x-case-insensitive": true
+				},
+				"resource_type": {
+					"$ref": "#/definitions/RecycleBinResourceTypeEnum"
+				},
+				"logical_provisioned": {
+					"description": "Provisioned size of the object in bytes. Volume groups will show total provisioned space for all volumes in the volume group.\n",
+					"type": "integer",
+					"format": "int64",
+					"x-units": "bytes",
+					"minimum": 0,
+					"maximum": 9223372036854775807
+				},
+				"logical_used": {
+					"description": "Logical space used by the object in bytes. Volume groups will show the total logical space used for all volumes in the volume group.\n",
+					"type": "integer",
+					"format": "int64",
+					"x-units": "bytes",
+					"minimum": 0,
+					"maximum": 9223372036854775807
+				},
+				"appliance_id": {
+					"description": "The appliance where this resource is located.",
+					"type": "string"
+				},
+				"deletion_timestamp": {
+					"description": "Time when the object was moved to the recycle bin.",
+					"type": "string",
+					"format": "date-time"
+				},
+				"expiration_timestamp": {
+					"description": "Time when the object will be auto-purged. Expired object are deleted by the aging service that runs\nperiodically in the background.\n",
+					"type": "string",
+					"format": "date-time"
+				},
+				"resource_type_l10n": {
+					"type": "string",
+					"description": "Localized message string corresponding to resource_type\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"RecycleBinResourceTypeEnum": {
+			"description": "Type of storage object.\n* volume - A volume type storage object.\n* volume_group - A volume_group type storage object.\n\nWas added in version 3.5.0.0.",
+			"type": "string",
+			"x-added": "3.5.0.0",
+			"enum": [
+				"volume",
+				"volume_group"
+			],
+			"x-display_enum_text": {
+				"volume": "volume",
+				"volume_group": "volume group"
+			}
+		},
+		"recycle_bin_config_instance": {
+			"description": "Configuration settings for recycle bin.\nWas added in version 3.5.0.0.",
+			"x-added": "3.5.0.0",
+			"x-select_cli": [
+				"id",
+				"expiration_duration"
+			],
+			"properties": {
+				"id": {
+					"description": "Unique identifier for recycle bin configuration settings (always \"0\").",
+					"type": "string"
+				},
+				"expiration_duration": {
+					"description": "Duration in days for items to live in the recycle bin. A duration of zero indicates items will expire immediately.",
+					"type": "integer",
+					"minimum": 0,
+					"maximum": 30,
+					"format": "int32"
+				}
+			}
+		},
+		"recycle_bin_config_modify": {
+			"description": "Set configuration settings for recycle bin.\nWas added in version 3.5.0.0.",
+			"x-added": "3.5.0.0",
+			"properties": {
+				"expiration_duration": {
+					"description": "Duration in days for items to live in the recycle bin. A duration of zero indicates items will expire immediately.",
+					"type": "integer",
+					"minimum": 0,
+					"maximum": 30,
+					"format": "int32"
+				}
 			}
 		},
 		"remote_snapshot_session_instance": {
