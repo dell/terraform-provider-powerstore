@@ -176,7 +176,7 @@ func TestRecycleBinDataSource_Configure_Success(t *testing.T) {
 func TestMapRecycleBinItemsToState(t *testing.T) {
 	id := "test-id"
 	name := "test-volume"
-	resourceType := "volume"
+	resourceType := clientgen.RECYCLEBINRESOURCETYPEENUM_VOLUME
 	logicalProvisioned := int64(1024)
 	logicalUsed := int64(512)
 	applianceID := "appliance-123"
