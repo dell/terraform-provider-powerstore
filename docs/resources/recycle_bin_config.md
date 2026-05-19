@@ -20,7 +20,7 @@ page_title: "powerstore_recycle_bin_config Resource - powerstore"
 subcategory: ""
 description: |-
   This resource is used to manage the PowerStore recycle bin. It supports three modes of operation:
-  Config mode: Set expiration_duration (0–30 days) to configure the retention policy. Item action mode: Specify resource_id or resource_name with action (recover or delete) to recover or permanently delete items. Empty mode: Set empty_recycle_bin = true to permanently delete all items from the recycle bin.
+  Config mode: Set expiration_duration (0–30 days) to configure the retention policy.Item action mode: Specify resource_id or resource_name with action (recover or delete) to recover or permanently delete items.Empty mode: Set empty_recycle_bin = true to permanently delete all items from the recycle bin.
   Note: Running terraform destroy on this resource only removes it from Terraform state.
 ---
 
