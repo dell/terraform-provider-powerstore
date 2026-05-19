@@ -29,4 +29,7 @@ provider "powerstore" {
   endpoint = var.endpoint
   insecure = true
   timeout  = var.timeout
+
+  ## WARNING: insecure = true is for lab/test environments only.
+  ## For production, use secure TLS with valid certificates and set insecure = false.
 }

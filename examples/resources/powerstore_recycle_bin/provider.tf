@@ -38,4 +38,7 @@ provider "powerstore" {
   # POWERSTORE_ENDPOINT="https://yourhost.host.com/api/rest"
   # POWERSTORE_INSECURE="false"
   # POWERSTORE_TIMEOUT="120"
+
+  ## WARNING: insecure = true is for lab/test environments only.
+  ## For production, use secure TLS with valid certificates and set insecure = false.
 }

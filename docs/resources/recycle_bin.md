@@ -24,6 +24,7 @@ description: |-
   - Configuration mode: Set expiration_duration to configure the retention policy.
   - Item action mode: Set resource_id (or resource_name) to recover or permanently delete a specific item. Use action to specify recover (default) or delete.
   - Empty mode: Set empty_recycle_bin = true to permanently delete all items from the recycle bin.
+  Important: Running terraform destroy on this resource only removes it from Terraform state. It does not delete the recycle bin configuration or items from the PowerStore array. For config mode, the configuration persists on the array. For item/empty modes, the action was already performed during terraform apply.
 ---
 
 # powerstore_recycle_bin (Resource)
@@ -34,6 +35,8 @@ This resource is used to manage the PowerStore recycle bin. It supports configur
 - **Configuration mode**: Set `expiration_duration` to configure the retention policy.
 - **Item action mode**: Set `resource_id` (or `resource_name`) to recover or permanently delete a specific item. Use `action` to specify `recover` (default) or `delete`.
 - **Empty mode**: Set `empty_recycle_bin = true` to permanently delete all items from the recycle bin.
+
+**Important:** Running `terraform destroy` on this resource only removes it from Terraform state. It does not delete the recycle bin configuration or items from the PowerStore array. For config mode, the configuration persists on the array. For item/empty modes, the action was already performed during `terraform apply`.
 
 ## Example Usage
 
