@@ -1,9 +1,13 @@
 README.md
 api_login_session.go
+api_recycle_bin.go
+api_recycle_bin_config.go
 api_volume_group.go
 client.go
 configuration.go
 docs/LoginSessionApi.md
+docs/RecycleBinApi.md
+docs/RecycleBinConfigApi.md
 docs/VolumeGroupApi.md
 model_active_session_instance.go
 model_app_type_enum.go
@@ -160,6 +164,10 @@ model_powerstore_data_network_group.go
 model_powerstore_network_info.go
 model_ppdd_storage_unit_details_instance.go
 model_protection_data_instance.go
+model_recycle_bin_config_instance.go
+model_recycle_bin_config_modify.go
+model_recycle_bin_instance.go
+model_recycle_bin_resource_type_enum.go
 model_remote_appliance_details.go
 model_remote_member_details_instance.go
 model_remote_protection_capability_enum.go

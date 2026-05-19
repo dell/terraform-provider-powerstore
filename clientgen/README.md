@@ -78,6 +78,11 @@ All URIs are relative to */api/rest*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *LoginSessionApi* | [**GetAllLoginSessions**](docs/LoginSessionApi.md#getallloginsessions) | **Get** /login_session | Collection Query
+*RecycleBinApi* | [**DeleteRecycleBinById**](docs/RecycleBinApi.md#deleterecyclebinbyid) | **Delete** /recycle_bin/{id} | Delete
+*RecycleBinApi* | [**GetAllRecycleBins**](docs/RecycleBinApi.md#getallrecyclebins) | **Get** /recycle_bin | Collection Query
+*RecycleBinApi* | [**GetRecycleBinById**](docs/RecycleBinApi.md#getrecyclebinbyid) | **Get** /recycle_bin/{id} | Instance Query
+*RecycleBinConfigApi* | [**GetRecycleBinConfigById**](docs/RecycleBinConfigApi.md#getrecyclebinconfigbyid) | **Get** /recycle_bin_config/{id} | Instance Query
+*RecycleBinConfigApi* | [**PatchRecycleBinConfigById**](docs/RecycleBinConfigApi.md#patchrecyclebinconfigbyid) | **Patch** /recycle_bin_config/{id} | Modify
 *VolumeGroupApi* | [**DeleteVolumeGroupById**](docs/VolumeGroupApi.md#deletevolumegroupbyid) | **Delete** /volume_group/{id} | Delete
 *VolumeGroupApi* | [**GetAllVolumeGroups**](docs/VolumeGroupApi.md#getallvolumegroups) | **Get** /volume_group | Collection Query
 *VolumeGroupApi* | [**GetVolumeGroupById**](docs/VolumeGroupApi.md#getvolumegroupbyid) | **Get** /volume_group/{id} | Instance Query
@@ -245,6 +250,10 @@ Class | Method | HTTP request | Description
  - [PpddStorageUnitDetailsInstance](docs/PpddStorageUnitDetailsInstance.md)
  - [ProtectionDataInstance](docs/ProtectionDataInstance.md)
  - [RPOEnum](docs/RPOEnum.md)
+ - [RecycleBinConfigInstance](docs/RecycleBinConfigInstance.md)
+ - [RecycleBinConfigModify](docs/RecycleBinConfigModify.md)
+ - [RecycleBinInstance](docs/RecycleBinInstance.md)
+ - [RecycleBinResourceTypeEnum](docs/RecycleBinResourceTypeEnum.md)
  - [RemoteApplianceDetails](docs/RemoteApplianceDetails.md)
  - [RemoteMemberDetailsInstance](docs/RemoteMemberDetailsInstance.md)
  - [RemoteProtectionCapabilityEnum](docs/RemoteProtectionCapabilityEnum.md)

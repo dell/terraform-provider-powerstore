@@ -233,3 +233,26 @@ func TestRecycleBinConfigToState_Nil(t *testing.T) {
 	assert.Equal(t, "", state.ID.ValueString())
 	assert.Equal(t, int32(0), state.ExpirationDuration.ValueInt32())
 }
+
+// Test Metadata method
+func TestResourceRecycleBin_Metadata(t *testing.T) {
+	r := &resourceRecycleBin{}
+	req := fwresource.MetadataRequest{}
+	resp := &fwresource.MetadataResponse{}
+
+	r.Metadata(context.Background(), req, resp)
+
+	assert.NotNil(t, resp.TypeName)
+}
+
+// Test Schema method
+func TestResourceRecycleBin_Schema(t *testing.T) {
+	r := &resourceRecycleBin{}
+	req := fwresource.SchemaRequest{}
+	resp := &fwresource.SchemaResponse{}
+
+	r.Schema(context.Background(), req, resp)
+
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.NotNil(t, resp.Schema)
+}

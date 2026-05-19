@@ -24,6 +24,7 @@ import (
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"testing"
+	"time"
 
 	fwdatasource "github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -203,4 +204,70 @@ func TestMapRecycleBinItemsToState_Empty(t *testing.T) {
 	items := []clientgen.RecycleBinInstance{}
 	state := mapRecycleBinItemsToState(items)
 	assert.Len(t, state, 0)
+}
+
+// Test Metadata method
+func TestRecycleBinDataSource_Metadata(t *testing.T) {
+	d := &recycleBinDataSource{}
+	req := fwdatasource.MetadataRequest{}
+	resp := &fwdatasource.MetadataResponse{}
+
+	d.Metadata(context.Background(), req, resp)
+
+	assert.NotNil(t, resp.TypeName)
+}
+
+// Test Schema method
+func TestRecycleBinDataSource_Schema(t *testing.T) {
+	d := &recycleBinDataSource{}
+	req := fwdatasource.SchemaRequest{}
+	resp := &fwdatasource.SchemaResponse{}
+
+	d.Schema(context.Background(), req, resp)
+
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.NotNil(t, resp.Schema)
+}
+
+// Test mapRecycleBinItemsToState with timestamps
+func TestMapRecycleBinItemsToState_WithTimestamps(t *testing.T) {
+	id := "test-id"
+	name := "test-volume"
+	resourceType := clientgen.RECYCLEBINRESOURCETYPEENUM_VOLUME
+	logicalProvisioned := int64(1024)
+	logicalUsed := int64(512)
+	applianceID := "appliance-123"
+	deletionTime := time.Now()
+	expirationTime := time.Now().Add(24 * time.Hour)
+
+	items := []clientgen.RecycleBinInstance{
+		{
+			Id:                  &id,
+			Name:                &name,
+			ResourceType:        &resourceType,
+			LogicalProvisioned:  &logicalProvisioned,
+			LogicalUsed:         &logicalUsed,
+			ApplianceId:         &applianceID,
+			DeletionTimestamp:   &deletionTime,
+			ExpirationTimestamp: &expirationTime,
+		},
+	}
+
+	state := mapRecycleBinItemsToState(items)
+	assert.Len(t, state, 1)
+	assert.Equal(t, "test-id", state[0].ID.ValueString())
+	assert.NotEmpty(t, state[0].DeletionTimestamp.ValueString())
+	assert.NotEmpty(t, state[0].ExpirationTimestamp.ValueString())
+}
+
+// Test mapRecycleBinItemsToState with nil fields
+func TestMapRecycleBinItemsToState_NilFields(t *testing.T) {
+	items := []clientgen.RecycleBinInstance{
+		{},
+	}
+
+	state := mapRecycleBinItemsToState(items)
+	assert.Len(t, state, 1)
+	assert.Equal(t, "", state[0].ID.ValueString())
+	assert.Equal(t, "", state[0].Name.ValueString())
 }
