@@ -176,4 +176,19 @@ const (
 
 	//VolumeGroupIDNameUpdateErrorMsg specifies error details while updating volume group details
 	VolumeGroupIDNameUpdateErrorMsg = "Volume group Name or Volume group ID cannot be updated"
+
+	//CreateRBCDetailErrorMsg specifies error details occured while creating recycle bin config
+	CreateRBCDetailErrorMsg = "Could not set recycle bin configuration"
+
+	//ReadRBCDetailErrorMsg specifies error details occured while reading recycle bin config
+	ReadRBCDetailErrorMsg = "Could not read recycle bin configuration"
+
+	//UpdateRBCDetailErrorMsg specifies error details occured while updating recycle bin config
+	UpdateRBCDetailErrorMsg = "Could not update recycle bin configuration"
+
+	//ReadRBDetailErrorMsg specifies error details occured while reading recycle bin items
+	ReadRBDetailErrorMsg = "Unable to Read PowerStore Recycle Bin"
+
+	//ReadRBItemDetailErrorMsg specifies error details occured while reading a specific recycle bin item
+	ReadRBItemDetailErrorMsg = "Unable to Read PowerStore Recycle Bin Item"
 )
