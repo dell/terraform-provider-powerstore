@@ -14,9 +14,14 @@
 # limitations under the License.
 
 RequiredAPIs = [
-    '/volume_group', 
+    '/volume_group',
     "/volume_group/{id}",
     "/volume_group/{id}/add_members",
     "/volume_group/{id}/remove_members",
-    "/login_session"
+    "/login_session",
+    "/recycle_bin",
+    "/recycle_bin/{id}",
+    "/recycle_bin/{id}/recover",
+    "/recycle_bin/empty",
+    "/recycle_bin_config/{id}",
 ]
