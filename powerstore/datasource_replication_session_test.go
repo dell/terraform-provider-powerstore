@@ -87,14 +87,14 @@ func TestMapReplicationSessionsToState_Empty(t *testing.T) {
 func TestMapReplicationSessionsToState_NilFields(t *testing.T) {
 	sessions := []clientgen.ReplicationSessionInstance{
 		{
-			Id:                nil,
-			State:             nil,
-			Role:              nil,
-			ResourceType:      nil,
-			DataTransferState: nil,
-			Type:              nil,
-			ProgressPercentage: nil,
-			LastSyncDuration:  nil,
+			Id:                     nil,
+			State:                  nil,
+			Role:                   nil,
+			ResourceType:           nil,
+			DataTransferState:      nil,
+			Type:                   nil,
+			ProgressPercentage:     nil,
+			LastSyncDuration:       nil,
 			FailoverTestInProgress: nil,
 		},
 	}
