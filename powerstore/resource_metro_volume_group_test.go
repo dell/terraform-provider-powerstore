@@ -19,6 +19,7 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -210,21 +211,12 @@ func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
-	var config string
-	if remoteSystemPassword != "" {
-		// Real array test - create infrastructure
-		config = ProviderConfigForTesting + MetroVolumeGroupParamsCreateReal
-	} else {
-		// Mock server test
-		config = ProviderConfigForTesting + MetroVolumeGroupParamsCreateMock
-	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: config,
+				Config: ProviderConfigForTesting + fmt.Sprintf(MetroVolumeGroupParamsCreate, remoteSystemID),
 			},
 		},
 	})
@@ -250,28 +242,9 @@ resource "powerstore_metro_volume_group" "test" {
 }
 `
 
-var MetroVolumeGroupParamsCreateMock = `
+var MetroVolumeGroupParamsCreate = `
 resource "powerstore_metro_volume_group" "test" {
   volume_group_id  = "f64ad207-06eb-4098-b907-2a204cfb5ce9"
-  remote_system_id = "cd41130c-a751-4b39-bde1-b76f246c27b6"
-}
-`
-
-var MetroVolumeGroupParamsCreateReal = `
-resource "powerstore_volume_group" "test" {
-  name = "tf-acc-metro-test-vg"
-}
-
-resource "powerstore_remote_system" "test" {
-  name               = "tf-acc-metro-remote"
-  management_address = "` + remoteSystemAddress + `"
-  remote_type        = "PowerStore"
-  password           = "` + remoteSystemPassword + `"
-  force              = true
-}
-
-resource "powerstore_metro_volume_group" "test" {
-  volume_group_id  = powerstore_volume_group.test.id
-  remote_system_id = powerstore_remote_system.test.id
+  remote_system_id = "%s"
 }
 `
