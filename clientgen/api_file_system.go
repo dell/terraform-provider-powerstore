@@ -19,49 +19,30 @@ import (
 	"strings"
 )
 
-// VolumeApiService VolumeApi service
-type VolumeApiService service
+// FileSystemApiService FileSystemApi service
+type FileSystemApiService service
 
-type ApiDeleteVolumeByIdRequest struct {
+type ApiDeleteFileSystemByIdRequest struct {
 	ctx        context.Context
-	ApiService *VolumeApiService
+	ApiService *FileSystemApiService
 	id         string
-	body       *VolumeDelete
 }
 
-// Delete a volume. Was added in version 3.5.0.0.
-func (r ApiDeleteVolumeByIdRequest) Body(body VolumeDelete) ApiDeleteVolumeByIdRequest {
-	r.body = &body
-	return r
-}
-
-func (r ApiDeleteVolumeByIdRequest) Execute() (*http.Response, error) {
-	return r.ApiService.DeleteVolumeByIdExecute(r)
+func (r ApiDeleteFileSystemByIdRequest) Execute() (*http.Response, error) {
+	return r.ApiService.DeleteFileSystemByIdExecute(r)
 }
 
 /*
-DeleteVolumeById Delete
+DeleteFileSystemById Delete
 
-Delete a volume.
-
-For a metro volume, first end the metro configuration and then delete the local volume.
-
-* A volume which is attached to a host or host group or is a member of a volume group cannot be deleted.
-
-* A volume which has protection policies attached to it cannot be deleted.
-
-* A volume which has snapshots that are part of a snapset cannot be deleted.
-
-* Clones of a deleted production volume or a clone are not deleted.
-
-* Snapshots of the volume are deleted along with the volume being deleted.
+Delete a file system.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of the volume to delete. name:{name} can be used instead of {id}.
-	@return ApiDeleteVolumeByIdRequest
+	@param id Unique identifier of the file system. name:{name} can be used instead of {id}.
+	@return ApiDeleteFileSystemByIdRequest
 */
-func (a *VolumeApiService) DeleteVolumeById(ctx context.Context, id string) ApiDeleteVolumeByIdRequest {
-	return ApiDeleteVolumeByIdRequest{
+func (a *FileSystemApiService) DeleteFileSystemById(ctx context.Context, id string) ApiDeleteFileSystemByIdRequest {
+	return ApiDeleteFileSystemByIdRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -69,19 +50,19 @@ func (a *VolumeApiService) DeleteVolumeById(ctx context.Context, id string) ApiD
 }
 
 // Execute executes the request
-func (a *VolumeApiService) DeleteVolumeByIdExecute(r ApiDeleteVolumeByIdRequest) (*http.Response, error) {
+func (a *FileSystemApiService) DeleteFileSystemByIdExecute(r ApiDeleteFileSystemByIdRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod = http.MethodDelete
 		localVarPostBody   interface{}
 		formFiles          []formFile
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.DeleteVolumeById")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FileSystemApiService.DeleteFileSystemById")
 	if err != nil {
 		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/volume/{id}"
+	localVarPath := localBasePath + "/file_system/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -89,7 +70,7 @@ func (a *VolumeApiService) DeleteVolumeByIdExecute(r ApiDeleteVolumeByIdRequest)
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -105,8 +86,6 @@ func (a *VolumeApiService) DeleteVolumeByIdExecute(r ApiDeleteVolumeByIdRequest)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err
@@ -167,31 +146,175 @@ func (a *VolumeApiService) DeleteVolumeByIdExecute(r ApiDeleteVolumeByIdRequest)
 	return localVarHTTPResponse, nil
 }
 
-type ApiGetAllVolumesRequest struct {
+type ApiFileSystemSnapshotRequest struct {
 	ctx        context.Context
-	ApiService *VolumeApiService
+	ApiService *FileSystemApiService
+	id         string
+	body       *FileSystemSnapshot
+}
+
+func (r ApiFileSystemSnapshotRequest) Body(body FileSystemSnapshot) ApiFileSystemSnapshotRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiFileSystemSnapshotRequest) Execute() (*FileSystemSnapshotResponse, *http.Response, error) {
+	return r.ApiService.FileSystemSnapshotExecute(r)
+}
+
+/*
+FileSystemSnapshot Snapshot
+
+Create a snapshot of a file system.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the file system. name:{name} can be used instead of {id}.
+	@return ApiFileSystemSnapshotRequest
+*/
+func (a *FileSystemApiService) FileSystemSnapshot(ctx context.Context, id string) ApiFileSystemSnapshotRequest {
+	return ApiFileSystemSnapshotRequest{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
+	}
+}
+
+// Execute executes the request
+//
+//	@return FileSystemSnapshotResponse
+func (a *FileSystemApiService) FileSystemSnapshotExecute(r ApiFileSystemSnapshotRequest) (*FileSystemSnapshotResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *FileSystemSnapshotResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FileSystemApiService.FileSystemSnapshot")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/file_system/{id}/snapshot"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetAllFileSystemsRequest struct {
+	ctx        context.Context
+	ApiService *FileSystemApiService
 	queries    url.Values
 }
 
-func (r ApiGetAllVolumesRequest) Queries(in url.Values) ApiGetAllVolumesRequest {
+func (r ApiGetAllFileSystemsRequest) Queries(in url.Values) ApiGetAllFileSystemsRequest {
 	r.queries = in
 	return r
 }
 
-func (r ApiGetAllVolumesRequest) Execute() ([]VolumeInstance, *http.Response, error) {
-	return r.ApiService.GetAllVolumesExecute(r)
+func (r ApiGetAllFileSystemsRequest) Execute() ([]FileSystemInstance, *http.Response, error) {
+	return r.ApiService.GetAllFileSystemsExecute(r)
 }
 
 /*
-GetAllVolumes Collection Query
+GetAllFileSystems Collection Query
 
-Query volumes that are provisioned on the appliance.
+Query file systems.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetAllVolumesRequest
+	@return ApiGetAllFileSystemsRequest
 */
-func (a *VolumeApiService) GetAllVolumes(ctx context.Context) ApiGetAllVolumesRequest {
-	return ApiGetAllVolumesRequest{
+func (a *FileSystemApiService) GetAllFileSystems(ctx context.Context) ApiGetAllFileSystemsRequest {
+	return ApiGetAllFileSystemsRequest{
 		ApiService: a,
 		ctx:        ctx,
 	}
@@ -199,21 +322,21 @@ func (a *VolumeApiService) GetAllVolumes(ctx context.Context) ApiGetAllVolumesRe
 
 // Execute executes the request
 //
-//	@return []VolumeInstance
-func (a *VolumeApiService) GetAllVolumesExecute(r ApiGetAllVolumesRequest) ([]VolumeInstance, *http.Response, error) {
+//	@return []FileSystemInstance
+func (a *FileSystemApiService) GetAllFileSystemsExecute(r ApiGetAllFileSystemsRequest) ([]FileSystemInstance, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue []VolumeInstance
+		localVarReturnValue []FileSystemInstance
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.GetAllVolumes")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FileSystemApiService.GetAllFileSystems")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/volume"
+	localVarPath := localBasePath + "/file_system"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := r.queries
@@ -273,33 +396,33 @@ func (a *VolumeApiService) GetAllVolumesExecute(r ApiGetAllVolumesRequest) ([]Vo
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetVolumeByIdRequest struct {
+type ApiGetFileSystemByIdRequest struct {
 	ctx        context.Context
-	ApiService *VolumeApiService
+	ApiService *FileSystemApiService
 	queries    url.Values
 	id         string
 }
 
-func (r ApiGetVolumeByIdRequest) Queries(in url.Values) ApiGetVolumeByIdRequest {
+func (r ApiGetFileSystemByIdRequest) Queries(in url.Values) ApiGetFileSystemByIdRequest {
 	r.queries = in
 	return r
 }
 
-func (r ApiGetVolumeByIdRequest) Execute() (*VolumeInstance, *http.Response, error) {
-	return r.ApiService.GetVolumeByIdExecute(r)
+func (r ApiGetFileSystemByIdRequest) Execute() (*FileSystemInstance, *http.Response, error) {
+	return r.ApiService.GetFileSystemByIdExecute(r)
 }
 
 /*
-GetVolumeById Instance Query
+GetFileSystemById Instance Query
 
-Query a specific volume instance.
+Query a specific file system.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of the volume to query. name:{name} can be used instead of {id}.
-	@return ApiGetVolumeByIdRequest
+	@param id Unique identifier of the file system. name:{name} can be used instead of {id}.
+	@return ApiGetFileSystemByIdRequest
 */
-func (a *VolumeApiService) GetVolumeById(ctx context.Context, id string) ApiGetVolumeByIdRequest {
-	return ApiGetVolumeByIdRequest{
+func (a *FileSystemApiService) GetFileSystemById(ctx context.Context, id string) ApiGetFileSystemByIdRequest {
+	return ApiGetFileSystemByIdRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -308,21 +431,21 @@ func (a *VolumeApiService) GetVolumeById(ctx context.Context, id string) ApiGetV
 
 // Execute executes the request
 //
-//	@return VolumeInstance
-func (a *VolumeApiService) GetVolumeByIdExecute(r ApiGetVolumeByIdRequest) (*VolumeInstance, *http.Response, error) {
+//	@return FileSystemInstance
+func (a *FileSystemApiService) GetFileSystemByIdExecute(r ApiGetFileSystemByIdRequest) (*FileSystemInstance, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *VolumeInstance
+		localVarReturnValue *FileSystemInstance
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.GetVolumeById")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FileSystemApiService.GetFileSystemById")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/volume/{id}"
+	localVarPath := localBasePath + "/file_system/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -393,38 +516,33 @@ func (a *VolumeApiService) GetVolumeByIdExecute(r ApiGetVolumeByIdRequest) (*Vol
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiPatchVolumeByIdRequest struct {
+type ApiPatchFileSystemByIdRequest struct {
 	ctx        context.Context
-	ApiService *VolumeApiService
+	ApiService *FileSystemApiService
 	id         string
-	body       *VolumeModify
+	body       *FileSystemModify
 }
 
-func (r ApiPatchVolumeByIdRequest) Body(body VolumeModify) ApiPatchVolumeByIdRequest {
+func (r ApiPatchFileSystemByIdRequest) Body(body FileSystemModify) ApiPatchFileSystemByIdRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiPatchVolumeByIdRequest) Execute() (*http.Response, error) {
-	return r.ApiService.PatchVolumeByIdExecute(r)
+func (r ApiPatchFileSystemByIdRequest) Execute() (*http.Response, error) {
+	return r.ApiService.PatchFileSystemByIdExecute(r)
 }
 
 /*
-PatchVolumeById Modify
+PatchFileSystemById Modify
 
-Modify the parameters of a volume.
-
-For metro volumes, name and performance_policy can only be modified from the preferred side when the metro replication session is paused.
-
-Volume size of metro volumes can only be modified if the metro replication session is fractured or paused.
-The QoS performance policy is not replicated for metro volumes.
+Modify a file system.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of the volume to modify. name:{name} can be used instead of {id}.
-	@return ApiPatchVolumeByIdRequest
+	@param id Unique identifier of the file system. name:{name} can be used instead of {id}.
+	@return ApiPatchFileSystemByIdRequest
 */
-func (a *VolumeApiService) PatchVolumeById(ctx context.Context, id string) ApiPatchVolumeByIdRequest {
-	return ApiPatchVolumeByIdRequest{
+func (a *FileSystemApiService) PatchFileSystemById(ctx context.Context, id string) ApiPatchFileSystemByIdRequest {
+	return ApiPatchFileSystemByIdRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -432,19 +550,19 @@ func (a *VolumeApiService) PatchVolumeById(ctx context.Context, id string) ApiPa
 }
 
 // Execute executes the request
-func (a *VolumeApiService) PatchVolumeByIdExecute(r ApiPatchVolumeByIdRequest) (*http.Response, error) {
+func (a *FileSystemApiService) PatchFileSystemByIdExecute(r ApiPatchFileSystemByIdRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod = http.MethodPatch
 		localVarPostBody   interface{}
 		formFiles          []formFile
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.PatchVolumeById")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FileSystemApiService.PatchFileSystemById")
 	if err != nil {
 		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/volume/{id}"
+	localVarPath := localBasePath + "/file_system/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -533,31 +651,31 @@ func (a *VolumeApiService) PatchVolumeByIdExecute(r ApiPatchVolumeByIdRequest) (
 	return localVarHTTPResponse, nil
 }
 
-type ApiPostAllVolumesRequest struct {
+type ApiPostAllFileSystemsRequest struct {
 	ctx        context.Context
-	ApiService *VolumeApiService
-	body       *VolumeCreate
+	ApiService *FileSystemApiService
+	body       *FileSystemCreate
 }
 
-func (r ApiPostAllVolumesRequest) Body(body VolumeCreate) ApiPostAllVolumesRequest {
+func (r ApiPostAllFileSystemsRequest) Body(body FileSystemCreate) ApiPostAllFileSystemsRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiPostAllVolumesRequest) Execute() (*CreateResponse, *http.Response, error) {
-	return r.ApiService.PostAllVolumesExecute(r)
+func (r ApiPostAllFileSystemsRequest) Execute() (*CreateResponse, *http.Response, error) {
+	return r.ApiService.PostAllFileSystemsExecute(r)
 }
 
 /*
-PostAllVolumes Create
+PostAllFileSystems Create
 
-Create a volume on the appliance.
+Create a file system.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiPostAllVolumesRequest
+	@return ApiPostAllFileSystemsRequest
 */
-func (a *VolumeApiService) PostAllVolumes(ctx context.Context) ApiPostAllVolumesRequest {
-	return ApiPostAllVolumesRequest{
+func (a *FileSystemApiService) PostAllFileSystems(ctx context.Context) ApiPostAllFileSystemsRequest {
+	return ApiPostAllFileSystemsRequest{
 		ApiService: a,
 		ctx:        ctx,
 	}
@@ -566,7 +684,7 @@ func (a *VolumeApiService) PostAllVolumes(ctx context.Context) ApiPostAllVolumes
 // Execute executes the request
 //
 //	@return CreateResponse
-func (a *VolumeApiService) PostAllVolumesExecute(r ApiPostAllVolumesRequest) (*CreateResponse, *http.Response, error) {
+func (a *FileSystemApiService) PostAllFileSystemsExecute(r ApiPostAllFileSystemsRequest) (*CreateResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -574,12 +692,12 @@ func (a *VolumeApiService) PostAllVolumesExecute(r ApiPostAllVolumesRequest) (*C
 		localVarReturnValue *CreateResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.PostAllVolumes")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FileSystemApiService.PostAllFileSystems")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/volume"
+	localVarPath := localBasePath + "/file_system"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -630,435 +748,6 @@ func (a *VolumeApiService) PostAllVolumesExecute(r ApiPostAllVolumesRequest) (*C
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiVolumeConfigureMetroRequest struct {
-	ctx        context.Context
-	ApiService *VolumeApiService
-	id         string
-	body       *VolumeConfigureMetro
-}
-
-func (r ApiVolumeConfigureMetroRequest) Body(body VolumeConfigureMetro) ApiVolumeConfigureMetroRequest {
-	r.body = &body
-	return r
-}
-
-func (r ApiVolumeConfigureMetroRequest) Execute() (*VolumeConfigureMetroResponse, *http.Response, error) {
-	return r.ApiService.VolumeConfigureMetroExecute(r)
-}
-
-/*
-VolumeConfigureMetro Configure Metro
-
-Configure a metro volume so it exists in two PowerStore clusters.
-
-Was added in version 3.0.0.0.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of volume to configure. name:{name} can be used instead of {id}.
-	@return ApiVolumeConfigureMetroRequest
-*/
-func (a *VolumeApiService) VolumeConfigureMetro(ctx context.Context, id string) ApiVolumeConfigureMetroRequest {
-	return ApiVolumeConfigureMetroRequest{
-		ApiService: a,
-		ctx:        ctx,
-		id:         id,
-	}
-}
-
-// Execute executes the request
-//
-//	@return VolumeConfigureMetroResponse
-func (a *VolumeApiService) VolumeConfigureMetroExecute(r ApiVolumeConfigureMetroRequest) (*VolumeConfigureMetroResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *VolumeConfigureMetroResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.VolumeConfigureMetro")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/volume/{id}/configure_metro"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return localVarReturnValue, nil, reportError("body is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.body
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiVolumeEndMetroRequest struct {
-	ctx        context.Context
-	ApiService *VolumeApiService
-	id         string
-	body       *VolumeEndMetro
-}
-
-func (r ApiVolumeEndMetroRequest) Body(body VolumeEndMetro) ApiVolumeEndMetroRequest {
-	r.body = &body
-	return r
-}
-
-func (r ApiVolumeEndMetroRequest) Execute() (*http.Response, error) {
-	return r.ApiService.VolumeEndMetroExecute(r)
-}
-
-/*
-VolumeEndMetro End Metro Configuration
-
-End a metro configuration from a volume and keep both copies.
-The local copy will retain its SCSI Identity while the remote volume will get a new SCSI Identity.
-
-Was added in version 3.0.0.0.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of volume for which to end the metro configuration. name:{name} can be used instead of {id}.
-	@return ApiVolumeEndMetroRequest
-*/
-func (a *VolumeApiService) VolumeEndMetro(ctx context.Context, id string) ApiVolumeEndMetroRequest {
-	return ApiVolumeEndMetroRequest{
-		ApiService: a,
-		ctx:        ctx,
-		id:         id,
-	}
-}
-
-// Execute executes the request
-func (a *VolumeApiService) VolumeEndMetroExecute(r ApiVolumeEndMetroRequest) (*http.Response, error) {
-	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.VolumeEndMetro")
-	if err != nil {
-		return nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/volume/{id}/end_metro"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.body
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
-		return localVarHTTPResponse, newErr
-	}
-
-	return localVarHTTPResponse, nil
-}
-
-type ApiVolumeSnapshotRequest struct {
-	ctx        context.Context
-	ApiService *VolumeApiService
-	id         string
-	body       *VolumeSnapshot
-}
-
-func (r ApiVolumeSnapshotRequest) Body(body VolumeSnapshot) ApiVolumeSnapshotRequest {
-	r.body = &body
-	return r
-}
-
-func (r ApiVolumeSnapshotRequest) Execute() (*VolumeSnapshotResponse, *http.Response, error) {
-	return r.ApiService.VolumeSnapshotExecute(r)
-}
-
-/*
-VolumeSnapshot Snapshot
-
-Create a snapshot of a volume or a clone.
-A snapshot is a point-in-time copy of a volume or clone.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id Unique identifier of the volume or clone that is the source of the snapshot. name:{name} can be used instead of {id}.
-	@return ApiVolumeSnapshotRequest
-*/
-func (a *VolumeApiService) VolumeSnapshot(ctx context.Context, id string) ApiVolumeSnapshotRequest {
-	return ApiVolumeSnapshotRequest{
-		ApiService: a,
-		ctx:        ctx,
-		id:         id,
-	}
-}
-
-// Execute executes the request
-//
-//	@return VolumeSnapshotResponse
-func (a *VolumeApiService) VolumeSnapshotExecute(r ApiVolumeSnapshotRequest) (*VolumeSnapshotResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *VolumeSnapshotResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeApiService.VolumeSnapshot")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/volume/{id}/snapshot"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.body
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {

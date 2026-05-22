@@ -14,10 +14,20 @@
 # limitations under the License.
 
 RequiredAPIs = [
+    '/volume',
+    '/volume/{id}',
+    '/volume/{id}/snapshot',
     '/volume_group',
     "/volume_group/{id}",
     "/volume_group/{id}/add_members",
     "/volume_group/{id}/remove_members",
+    "/volume_group/{id}/snapshot",
+    '/cluster',
+    '/file_system',
+    '/file_system/{id}',
+    '/file_system/{id}/snapshot',
+    '/snapshot_rule',
+    '/snapshot_rule/{id}',
     "/login_session",
     "/recycle_bin",
     "/recycle_bin/{id}",
