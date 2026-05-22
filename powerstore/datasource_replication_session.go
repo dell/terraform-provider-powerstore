@@ -219,16 +219,16 @@ func mapReplicationSessionsToState(sessions []clientgen.ReplicationSessionInstan
 	result := make([]models.ReplicationSessionItemModel, len(sessions))
 	for i, s := range sessions {
 		item := models.ReplicationSessionItemModel{
-			ID:               helper.TfString(s.Id),
-			LocalResourceID:  helper.TfString(s.LocalResourceId),
-			RemoteResourceID: helper.TfString(s.RemoteResourceId),
-			RemoteSystemID:   helper.TfString(s.RemoteSystemId),
-			ReplicationRuleID: helper.TfString(s.ReplicationRuleId),
-			StateL10n:        helper.TfString(s.StateL10n),
-			RoleL10n:         helper.TfString(s.RoleL10n),
-			ResourceTypeL10n: helper.TfString(s.ResourceTypeL10n),
-			TypeL10n:         helper.TfString(s.TypeL10n),
-			LastSyncTimestamp: helper.TfStringFromPTime(s.LastSyncTimestamp),
+			ID:                     helper.TfString(s.Id),
+			LocalResourceID:        helper.TfString(s.LocalResourceId),
+			RemoteResourceID:       helper.TfString(s.RemoteResourceId),
+			RemoteSystemID:         helper.TfString(s.RemoteSystemId),
+			ReplicationRuleID:      helper.TfString(s.ReplicationRuleId),
+			StateL10n:              helper.TfString(s.StateL10n),
+			RoleL10n:               helper.TfString(s.RoleL10n),
+			ResourceTypeL10n:       helper.TfString(s.ResourceTypeL10n),
+			TypeL10n:               helper.TfString(s.TypeL10n),
+			LastSyncTimestamp:      helper.TfStringFromPTime(s.LastSyncTimestamp),
 			FailoverTestInProgress: helper.TfBool(s.FailoverTestInProgress),
 		}
 
