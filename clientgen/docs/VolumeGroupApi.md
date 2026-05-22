@@ -10,6 +10,8 @@ Method | HTTP request | Description
 [**PatchVolumeGroupById**](VolumeGroupApi.md#PatchVolumeGroupById) | **Patch** /volume_group/{id} | Modify
 [**PostAllVolumeGroups**](VolumeGroupApi.md#PostAllVolumeGroups) | **Post** /volume_group | Create
 [**VolumeGroupAddMembers**](VolumeGroupApi.md#VolumeGroupAddMembers) | **Post** /volume_group/{id}/add_members | Add Members
+[**VolumeGroupConfigureMetro**](VolumeGroupApi.md#VolumeGroupConfigureMetro) | **Post** /volume_group/{id}/configure_metro | Configure Metro
+[**VolumeGroupEndMetro**](VolumeGroupApi.md#VolumeGroupEndMetro) | **Post** /volume_group/{id}/end_metro | End Metro Configuration
 [**VolumeGroupRemoveMembers**](VolumeGroupApi.md#VolumeGroupRemoveMembers) | **Post** /volume_group/{id}/remove_members | Remove Members
 
 
@@ -402,6 +404,148 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **body** | [**VolumeGroupAddMembers**](VolumeGroupAddMembers.md) |  | 
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## VolumeGroupConfigureMetro
+
+> VolumeGroupConfigureMetroResponse VolumeGroupConfigureMetro(ctx, id).Body(body).Execute()
+
+Configure Metro
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID/clientgen"
+)
+
+func main() {
+    id := "id_example" // string | Unique identifier of volume group to configure. name:{name} can be used instead of {id}.
+    body := *openapiclient.NewVolumeGroupConfigureMetro("RemoteSystemId_example") // VolumeGroupConfigureMetro | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.VolumeGroupApi.VolumeGroupConfigureMetro(context.Background(), id).Body(body).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `VolumeGroupApi.VolumeGroupConfigureMetro``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `VolumeGroupConfigureMetro`: VolumeGroupConfigureMetroResponse
+    fmt.Fprintf(os.Stdout, "Response from `VolumeGroupApi.VolumeGroupConfigureMetro`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | Unique identifier of volume group to configure. name:{name} can be used instead of {id}. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiVolumeGroupConfigureMetroRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **body** | [**VolumeGroupConfigureMetro**](VolumeGroupConfigureMetro.md) |  | 
+
+### Return type
+
+[**VolumeGroupConfigureMetroResponse**](VolumeGroupConfigureMetroResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## VolumeGroupEndMetro
+
+> VolumeGroupEndMetro(ctx, id).Body(body).Execute()
+
+End Metro Configuration
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID/clientgen"
+)
+
+func main() {
+    id := "id_example" // string | Unique identifier of volume group for which to end the metro configuration. name:{name} can be used instead of {id}.
+    body := *openapiclient.NewVolumeGroupEndMetro() // VolumeGroupEndMetro |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    r, err := apiClient.VolumeGroupApi.VolumeGroupEndMetro(context.Background(), id).Body(body).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `VolumeGroupApi.VolumeGroupEndMetro``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | Unique identifier of volume group for which to end the metro configuration. name:{name} can be used instead of {id}. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiVolumeGroupEndMetroRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **body** | [**VolumeGroupEndMetro**](VolumeGroupEndMetro.md) |  | 
 
 ### Return type
 
