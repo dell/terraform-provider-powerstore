@@ -117,6 +117,7 @@ Read-Only:
 - `interval_l10n` (String) Localized message string corresponding to interval
 - `is_read_only` (Boolean) Indicates whether this snapshot rule can be modified.
 - `is_replica` (Boolean) Indicates whether this is a replica of a snapshot rule on a remote system.
+- `is_secure` (Boolean) Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.
 - `managed_by` (String) The entity that owns and manages the instance.
 - `managed_by_id` (String) The unique id of the managing entity.
 - `managed_by_l10n` (String) Localized message string corresponding to managed_by.
