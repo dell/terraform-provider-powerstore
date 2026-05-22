@@ -227,14 +227,19 @@ func TestAccMetroVolume_EmptyRemoteSystemID(t *testing.T) {
 	})
 }
 
-// Acceptance test: Create metro volume on mock server
+// Acceptance test: Create metro volume
 func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Only run on mock server
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
+
+	var config string
+	if remoteSystemPassword != "" {
+		// Real array test - create infrastructure
+		config = ProviderConfigForTesting + MetroVolumeParamsCreateReal
+	} else {
+		// Mock server test
+		config = ProviderConfigForTesting + MetroVolumeParamsCreateMock
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -242,7 +247,7 @@ func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + MetroVolumeParamsCreateMock,
+				Config: config,
 			},
 		},
 	})
@@ -279,5 +284,26 @@ var MetroVolumeParamsCreateMock = `
 resource "powerstore_metro_volume" "test" {
   volume_id        = "volume_post_id"
   remote_system_id = "cd41130c-a751-4b39-bde1-b76f246c27b6"
+}
+`
+
+var MetroVolumeParamsCreateReal = `
+resource "powerstore_volume" "test" {
+  name            = "tf-acc-metro-test-volume"
+  size            = 1
+  volume_group_id = "default"
+}
+
+resource "powerstore_remote_system" "test" {
+  name               = "tf-acc-metro-remote"
+  management_address = "` + remoteSystemAddress + `"
+  remote_type        = "PowerStore"
+  password           = "` + remoteSystemPassword + `"
+  force              = true
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.test.id
+  remote_system_id = powerstore_remote_system.test.id
 }
 `
