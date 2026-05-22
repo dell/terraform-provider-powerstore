@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 	"testing"
 
 	"terraform-provider-powerstore/client"
@@ -228,10 +229,14 @@ func TestAccMetroVolume_EmptyRemoteSystemID(t *testing.T) {
 	})
 }
 
-// Acceptance test: Create metro volume
+// Acceptance test: Create metro volume (mock only - requires primary volume not in replication)
 func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	// Only run on mock server - requires primary volume not in existing replication
+	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
+		t.Skip("This test only runs on the mock server - requires primary volume not in existing replication")
 	}
 
 	resource.Test(t, resource.TestCase{
