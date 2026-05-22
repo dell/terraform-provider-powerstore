@@ -38,6 +38,8 @@ var password = setDefault(os.Getenv("POWERSTORE_PASSWORD"), "test")
 var nasServerID = setDefault(os.Getenv("NAS_SERVER_ID"), "tfacc_nas_server_id")
 var nasServerName = setDefault(os.Getenv("NAS_SERVER_NAME"), "tfacc_nas")
 var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "db11abb3-789e-47f9-96b5-84b5374cbcd2")
+var remoteSystemAddress = setDefault(os.Getenv("REMOTE_SYSTEM_ADDRESS"), "")
+var remoteSystemPassword = setDefault(os.Getenv("REMOTE_SYSTEM_PASSWORD"), "")
 var FunctionMocker *mockey.Mocker
 
 var ProviderConfigForTesting = ``
