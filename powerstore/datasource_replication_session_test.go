@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"terraform-provider-powerstore/client"
@@ -202,6 +203,10 @@ func TestAccReplicationSessionDataSource_ReadAllMock(t *testing.T) {
 func TestAccReplicationSessionDataSource_ReadByIDMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	// Skip on real array if session doesn't exist
+	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
+		t.Skip("This test requires an existing replication session - skipping on real array")
 	}
 
 	resource.Test(t, resource.TestCase{
