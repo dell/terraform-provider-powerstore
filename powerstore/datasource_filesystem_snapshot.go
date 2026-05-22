@@ -20,17 +20,18 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 var (
@@ -45,7 +46,7 @@ func newFileSystemSnapshotDataSource() datasource.DataSource {
 
 // fileSystemSnapshotDataSource is the data source implementation
 type fileSystemSnapshotDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata returns the data source type name
@@ -123,35 +124,38 @@ func (d *fileSystemSnapshotDataSource) Configure(_ context.Context, req datasour
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	client := req.ProviderData.(*client.Client)
+	d.client = client.GenClient
 }
 
 // Read refreshes the Terraform state with the latest data
 func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state models.FileSysteSnapshotDataSource
-	var fileSystemSnapshots []gopowerstore.FileSystem
-	var fileSystemSnapshot gopowerstore.FileSystem
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	// Read the File System Snapshot based on the ID
-	if state.ID.ValueString() != "" {
-		fileSystemSnapshot, err = d.client.PStoreClient.GetFsSnapshot(context.Background(), state.ID.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Unable to Read PowerStore File System Snapshot by ID: "+state.ID.ValueString(),
-				err.Error(),
-			)
-			return
-		}
-		fileSystemSnapshots = append(fileSystemSnapshots, fileSystemSnapshot)
-	} else if state.Filters.ValueString() != "" {
-		// Read the File System Snapshot based on the filter expression
-		err = validateFileSystemFilter(state.Filters.ValueString())
+
+	// sel := "*,flr_attributes(*),nas_server(*),protection_policy(*)"
+	sel := "*"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	queries.Set("filesystem_type", fmt.Sprintf("eq.%s", clientgen.FILESYSTEMTYPEENUM_SNAPSHOT))
+
+	id := state.ID.ValueString()
+	if !state.Name.IsNull() {
+		queries.Set("name", "eq."+state.Name.ValueString())
+	}
+	if !state.FileSystemID.IsNull() {
+		queries.Set("parent_id", "eq."+state.FileSystemID.ValueString())
+	}
+	if !state.NasServerID.IsNull() {
+		queries.Set("nas_server_id", "eq."+state.NasServerID.ValueString())
+	}
+	if !state.Filters.IsNull() {
+		err := validateFileSystemFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("filter_expression"),
@@ -160,48 +164,92 @@ func (d *fileSystemSnapshotDataSource) Read(ctx context.Context, req datasource.
 			)
 			return
 		}
-		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
-		if filterMap["filesystem_type"] != "" {
-			filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumSnapshot)
-		}
-		fileSystemSnapshots, err = d.client.PStoreClient.GetFsByFilter(context.Background(), filterMap)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Unable to Read PowerStore File System Snapshots",
-				err.Error(),
-			)
-			return
-		}
-
-	} else {
-		// Read the File System Snapshot based on the name, parent_id and nas_server_id
-		filterMap := make(map[string]string)
-		filterMap["filesystem_type"] = fmt.Sprintf("eq.%s", gopowerstore.FileSystemTypeEnumSnapshot)
-		if state.Name.ValueString() != "" {
-			filterMap["name"] = fmt.Sprintf("eq.%s", state.Name.ValueString())
-		}
-		if state.FileSystemID.ValueString() != "" {
-			filterMap["parent_id"] = fmt.Sprintf("eq.%s", state.FileSystemID.ValueString())
-		}
-		if state.NasServerID.ValueString() != "" {
-			filterMap["nas_server_id"] = fmt.Sprintf("eq.%s", state.NasServerID.ValueString())
-		}
-		tflog.Debug(ctx, fmt.Sprintf("Filter Map: %v", filterMap))
-		fileSystemSnapshots, err = d.client.PStoreClient.GetFsByFilter(context.Background(), filterMap)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Unable to Read PowerStore File System Snapshots",
-				err.Error(),
-			)
-			return
-		}
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
 
-	state.FileSystemSnapshots = updateFileSystemState(fileSystemSnapshots)
+	dsreq := helper.DsReq[clientgen.FileSystemInstance, clientgen.ApiGetFileSystemByIdRequest, clientgen.ApiGetAllFileSystemsRequest]{
+		Instance:   d.client.FileSystemApi.GetFileSystemById,
+		Collection: d.client.FileSystemApi.GetAllFileSystems,
+	}
+
+	fileSystems, err := dsreq.Execute(ctx, queries, id)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Read PowerStore File System Snapshots",
+			err.Error(),
+		)
+		return
+	}
+
+	if state.Name.ValueString() != "" && len(fileSystems) == 0 {
+		resp.Diagnostics.AddError(
+			"Unable to Read PowerStore File System Snapshot",
+			"There is no filesystem snapshot with name "+state.Name.ValueString(),
+		)
+		return
+	}
+
+	state.FileSystemSnapshots = updateFileSystemSnapshotState(fileSystems)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+
+// updateFileSystemSnapshotState iterates over the filesystem snapshot list and update the state
+func updateFileSystemSnapshotState(fileSystems []clientgen.FileSystemInstance) []models.FileSystemDatasource {
+	return helper.SliceTransform(fileSystems, func(in clientgen.FileSystemInstance) models.FileSystemDatasource {
+		return models.FileSystemDatasource{
+			AccessPolicy:               helper.TfString(in.AccessPolicy),
+			AccessType:                 helper.TfString(in.AccessType),
+			ConfigType:                 helper.TfString(in.ConfigType),
+			Description:                helper.TfString(in.Description),
+			ExpirationTimestamp:        helper.TfStringFromPTime(in.ExpirationTimestamp),
+			FilesystemType:             helper.TfString(in.FilesystemType),
+			FolderRenamePolicy:         helper.TfString(in.FolderRenamePolicy),
+			ID:                         helper.TfString(in.Id),
+			IsAsyncMTimeEnabled:        helper.TfBool(in.IsAsyncMTimeEnabled),
+			IsSmbNoNotifyEnabled:       helper.TfBool(in.IsSmbNoNotifyEnabled),
+			IsSmbNotifyOnAccessEnabled: helper.TfBool(in.IsSmbNotifyOnAccessEnabled),
+			IsSmbNotifyOnWriteEnabled:  helper.TfBool(in.IsSmbNotifyOnWriteEnabled),
+			IsSmbOpLocksEnabled:        helper.TfBool(in.IsSmbOpLocksEnabled),
+			IsSmbSyncWritesEnabled:     helper.TfBool(in.IsSmbSyncWritesEnabled),
+			LockingPolicy:              helper.TfString(in.LockingPolicy),
+			Name:                       helper.TfString(in.Name),
+			NasServerID:                helper.TfString(in.NasServerId),
+			ParentID:                   helper.TfString(in.ParentId),
+			ProtectionPolicyID:         helper.TfString(in.ProtectionPolicyId),
+			SizeTotal:                  helper.TfInt64(in.SizeTotal),
+			SizeUsed:                   helper.TfInt64(in.SizeUsed),
+			SmbNotifyOnChangeDirDepth:  helper.TfInt32(in.SmbNotifyOnChangeDirDepth),
+			IsQuotaEnabled:             helper.TfBool(in.IsQuotaEnabled),
+			GracePeriod:                helper.TfInt32(in.GracePeriod),
+			DefaultHardLimit:           helper.TfInt64(in.DefaultHardLimit),
+			DefaultSoftLimit:           helper.TfInt64(in.DefaultSoftLimit),
+			CreationTimestamp:          helper.TfStringFromPTime(in.CreationTimestamp),
+			LastRefreshTimestamp:       helper.TfStringFromPTime(in.LastRefreshTimestamp),
+			LastWritableTimestamp:      helper.TfStringFromPTime(in.LastWritableTimestamp),
+			IsModified:                 helper.TfBool(in.IsModified),
+			CreatorType:                helper.TfString(in.CreatorType),
+			FileEventsPublishingMode:   helper.TfString(in.FileEventsPublishingMode),
+			HostIOSize:                 helper.TfString(in.HostIoSize),
+			IsSecure:                   helper.TfBool(in.IsSecure),
+			FlrAttributes: helper.TfObject(in.FlrAttributes, func(in clientgen.FlrInstance) models.FLRAttributesDatasource {
+				return models.FLRAttributesDatasource{
+					DefaultRetention:     helper.TfString(in.DefaultRetention),
+					MaximumRetention:     helper.TfString(in.MaximumRetention),
+					MinimumRetention:     helper.TfString(in.MinimumRetention),
+					Mode:                 helper.TfString(in.Mode),
+					AutoLock:             helper.TfBool(in.AutoLock),
+					AutoDelete:           helper.TfBool(in.AutoDelete),
+					PolicyInterval:       helper.TfInt32(in.PolicyInterval),
+					HasProtectedFiles:    helper.TfBool(in.HasProtectedFiles),
+					ClockTime:            helper.TfStringFromPTime(in.ClockTime),
+					MaximumRetentionDate: helper.TfStringFromPTime(in.MaximumRetentionDate),
+				}
+			}),
+		}
+	})
 }

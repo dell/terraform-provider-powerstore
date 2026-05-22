@@ -31,6 +31,7 @@ type SnapshotRuleDataSource struct {
 	IsReplica        types.Bool   `tfsdk:"is_replica"`
 	NASAccessType    types.String `tfsdk:"nas_access_type"`
 	IsReadOnly       types.Bool   `tfsdk:"is_read_only"`
+	IsSecure         types.Bool   `tfsdk:"is_secure"`
 	ManagedBy        types.String `tfsdk:"managed_by"`
 	ManagedByID      types.String `tfsdk:"managed_by_id"`
 	IntervalL10N     types.String `tfsdk:"interval_l10n"`

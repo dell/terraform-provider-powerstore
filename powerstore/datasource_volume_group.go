@@ -333,6 +333,7 @@ func updateVolGroupState(volumeGroups []clientgen.VolumeGroupInstance) []models.
 					SourceID:            helper.TfString(in.SourceId),
 					CreatorType:         helper.TfString(in.CreatorType),
 					ExpirationTimestamp: helper.TfStringFromPTime(in.ExpirationTimestamp),
+					IsSecure:            helper.TfBool(in.IsSecure),
 				}
 			}),
 

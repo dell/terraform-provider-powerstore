@@ -64,6 +64,7 @@ type FileSystemDatasource struct {
 	CreatorType                types.String            `tfsdk:"creator_type"`
 	FileEventsPublishingMode   types.String            `tfsdk:"file_events_publishing_mode"`
 	HostIOSize                 types.String            `tfsdk:"host_io_size"`
+	IsSecure                   types.Bool              `tfsdk:"is_secure"`
 }
 
 // FLRAttributesDatasource represents flr attributes

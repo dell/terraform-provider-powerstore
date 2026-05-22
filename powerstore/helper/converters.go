@@ -48,6 +48,22 @@ func TfBool(in *bool) types.Bool {
 	return types.BoolValue(*in)
 }
 
+// TfInt32 - Converts *int32 to types.Int64, returns types.Int64Null if input is nil
+func TfInt32(in *int32) types.Int64 {
+	if in == nil {
+		return types.Int64Null()
+	}
+	return types.Int64Value(int64(*in))
+}
+
+// TfInt64 - Converts *int64 to types.Int64, returns types.Int64Null if input is nil
+func TfInt64(in *int64) types.Int64 {
+	if in == nil {
+		return types.Int64Null()
+	}
+	return types.Int64Value(*in)
+}
+
 // TfObject - Converts input using the transform transform function, returns empty output if input is nil
 func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	if in == nil {

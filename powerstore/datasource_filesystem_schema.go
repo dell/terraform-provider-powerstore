@@ -193,6 +193,11 @@ func FileSystemDatasourceSchema() map[string]schema.Attribute {
 			Description:         "Typical size of writes",
 			Computed:            true,
 		},
+		"is_secure": schema.BoolAttribute{
+			MarkdownDescription: "Indicates whether a snapshot type filesystem is secure",
+			Description:         "Indicates whether a snapshot type filesystem is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+			Computed:            true,
+		},
 	}
 }
 
