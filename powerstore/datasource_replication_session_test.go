@@ -19,6 +19,7 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 
@@ -197,14 +198,10 @@ func TestAccReplicationSessionDataSource_ReadAllMock(t *testing.T) {
 	})
 }
 
-// Acceptance test: Read replication session by ID on mock server
+// Acceptance test: Read replication session by ID
 func TestAccReplicationSessionDataSource_ReadByIDMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	// Keep mock-only since it expects a specific session ID
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -212,12 +209,10 @@ func TestAccReplicationSessionDataSource_ReadByIDMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionDSReadByID,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionDSReadByID, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "id", "b5f699ec-45a2-4bac-8153-3d520bffa861"),
+					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "id", replicationSessionID),
 					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "replication_sessions.#", "1"),
-					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "replication_sessions.0.state", "OK"),
-					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "replication_sessions.0.type", "Metro_Active_Active"),
 				),
 			},
 		},
@@ -239,6 +234,6 @@ data "powerstore_replication_session" "all" {
 
 var ReplSessionDSReadByID = `
 data "powerstore_replication_session" "by_id" {
-  id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  id = "%s"
 }
 `

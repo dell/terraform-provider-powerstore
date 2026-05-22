@@ -19,6 +19,7 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -110,7 +111,7 @@ func TestAccReplicationSessionAction_MissingAction(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + ReplSessionActionMissingAction,
+				Config:      ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionMissingAction, replicationSessionID),
 				ExpectError: regexp.MustCompile(`The argument "action" is required`),
 			},
 		},
@@ -128,7 +129,7 @@ func TestAccReplicationSessionAction_InvalidAction(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + ReplSessionActionInvalidAction,
+				Config:      ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionInvalidAction, replicationSessionID),
 				ExpectError: regexp.MustCompile(`value must be one of`),
 			},
 		},
@@ -153,13 +154,10 @@ func TestAccReplicationSessionAction_EmptySessionID(t *testing.T) {
 	})
 }
 
-// Acceptance test: Pause action on mock server
+// Acceptance test: Pause action
 func TestAccReplicationSessionAction_PauseOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -167,23 +165,20 @@ func TestAccReplicationSessionAction_PauseOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionActionPauseMock,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionPause, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test", "action", "pause"),
-					resource.TestCheckResourceAttr("powerstore_replication_session_action.test", "session_id", "b5f699ec-45a2-4bac-8153-3d520bffa861"),
+					resource.TestCheckResourceAttr("powerstore_replication_session_action.test", "session_id", replicationSessionID),
 				),
 			},
 		},
 	})
 }
 
-// Acceptance test: Sync action on mock server
+// Acceptance test: Sync action
 func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -191,7 +186,7 @@ func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionActionSyncMock,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionSync, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_sync", "action", "sync"),
 				),
@@ -200,13 +195,10 @@ func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 	})
 }
 
-// Acceptance test: Failover action on mock server
+// Acceptance test: Failover action
 func TestAccReplicationSessionAction_FailoverOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -214,7 +206,7 @@ func TestAccReplicationSessionAction_FailoverOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionActionFailoverMock,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionFailover, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_failover", "action", "failover"),
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_failover", "is_planned", "true"),
@@ -224,13 +216,10 @@ func TestAccReplicationSessionAction_FailoverOnMock(t *testing.T) {
 	})
 }
 
-// Acceptance test: Resume action on mock server
+// Acceptance test: Resume action
 func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -238,7 +227,7 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionActionResumeMock,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionResume, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_resume", "action", "resume"),
 				),
@@ -247,13 +236,10 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 	})
 }
 
-// Acceptance test: Reprotect action on mock server
+// Acceptance test: Reprotect action
 func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -261,7 +247,7 @@ func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionActionReprotectMock,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionReprotect, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_reprotect", "action", "reprotect"),
 				),
@@ -270,13 +256,10 @@ func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 	})
 }
 
-// Acceptance test: Start failover test on mock server
+// Acceptance test: Start failover test
 func TestAccReplicationSessionAction_StartFailoverTestOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest" {
-		t.Skip("This test only runs on the mock server")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -284,7 +267,7 @@ func TestAccReplicationSessionAction_StartFailoverTestOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + ReplSessionActionStartFailoverTestMock,
+				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionStartFailoverTest, replicationSessionID),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_start_ft", "action", "start_failover_test"),
 				),
@@ -311,13 +294,13 @@ resource "powerstore_replication_session_action" "test" {
 
 var ReplSessionActionMissingAction = `
 resource "powerstore_replication_session_action" "test" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
 }
 `
 
 var ReplSessionActionInvalidAction = `
 resource "powerstore_replication_session_action" "test" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "invalid_action"
 }
 `
@@ -329,46 +312,46 @@ resource "powerstore_replication_session_action" "test" {
 }
 `
 
-var ReplSessionActionPauseMock = `
+var ReplSessionActionPause = `
 resource "powerstore_replication_session_action" "test" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "pause"
 }
 `
 
-var ReplSessionActionSyncMock = `
+var ReplSessionActionSync = `
 resource "powerstore_replication_session_action" "test_sync" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "sync"
 }
 `
 
-var ReplSessionActionFailoverMock = `
+var ReplSessionActionFailover = `
 resource "powerstore_replication_session_action" "test_failover" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "failover"
   is_planned = true
   reverse    = false
 }
 `
 
-var ReplSessionActionResumeMock = `
+var ReplSessionActionResume = `
 resource "powerstore_replication_session_action" "test_resume" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "resume"
 }
 `
 
-var ReplSessionActionReprotectMock = `
+var ReplSessionActionReprotect = `
 resource "powerstore_replication_session_action" "test_reprotect" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "reprotect"
 }
 `
 
-var ReplSessionActionStartFailoverTestMock = `
+var ReplSessionActionStartFailoverTest = `
 resource "powerstore_replication_session_action" "test_start_ft" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
+  session_id = "%s"
   action     = "start_failover_test"
 }
 `
