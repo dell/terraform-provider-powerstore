@@ -229,14 +229,22 @@ func TestAccMetroVolume_EmptyRemoteSystemID(t *testing.T) {
 	})
 }
 
-// Acceptance test: Create metro volume (mock only - requires primary volume not in replication)
+// Acceptance test: Create metro volume
 func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Only run on mock server - requires primary volume not in existing replication
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test only runs on the mock server - requires primary volume not in existing replication")
+
+	var config string
+	var expectNonEmptyPlan bool
+	if strings.HasPrefix(endpoint, "http://localhost:3003") {
+		// Mock server test
+		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeParamsCreateMock, remoteSystemID)
+		expectNonEmptyPlan = false
+	} else {
+		// Real array test - create volume first
+		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeParamsCreateReal, remoteSystemID)
+		expectNonEmptyPlan = true // Allow non-empty plan due to state drift
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -244,7 +252,13 @@ func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + fmt.Sprintf(MetroVolumeParamsCreate, remoteSystemID),
+				Config:             config,
+				ExpectNonEmptyPlan: expectNonEmptyPlan,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "id"),
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "metro_replication_session_id"),
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "remote_system_id"),
+				),
 			},
 		},
 	})
@@ -277,9 +291,21 @@ resource "powerstore_metro_volume" "test" {
 }
 `
 
-var MetroVolumeParamsCreate = `
+var MetroVolumeParamsCreateMock = `
 resource "powerstore_metro_volume" "test" {
   volume_id        = "volume_post_id"
+  remote_system_id = "%s"
+}
+`
+
+var MetroVolumeParamsCreateReal = `
+resource "powerstore_volume" "test" {
+  name = "tf-acc-metro-test-volume-${replace(timestamp(), ":", "-")}"
+  size = 1
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.test.id
   remote_system_id = "%s"
 }
 `

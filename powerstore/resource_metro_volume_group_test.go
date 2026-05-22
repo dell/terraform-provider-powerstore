@@ -206,14 +206,22 @@ func TestAccMetroVolumeGroup_EmptyVolumeGroupID(t *testing.T) {
 	})
 }
 
-// Acceptance test: Create metro volume group (mock only - requires primary volume group not in replication)
+// Acceptance test: Create metro volume group
 func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Only run on mock server - requires primary volume group not in existing replication
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test only runs on the mock server - requires primary volume group not in existing replication")
+
+	var config string
+	var expectNonEmptyPlan bool
+	if strings.HasPrefix(endpoint, "http://localhost:3003") {
+		// Mock server test
+		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeGroupParamsCreateMock, remoteSystemID)
+		expectNonEmptyPlan = false
+	} else {
+		// Real array test - create volume group first
+		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeGroupParamsCreateReal, remoteSystemID)
+		expectNonEmptyPlan = true // Allow non-empty plan due to state drift
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -221,7 +229,13 @@ func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + fmt.Sprintf(MetroVolumeGroupParamsCreate, remoteSystemID),
+				Config:             config,
+				ExpectNonEmptyPlan: expectNonEmptyPlan,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "id"),
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "metro_replication_session_id"),
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "remote_system_id"),
+				),
 			},
 		},
 	})
@@ -247,9 +261,26 @@ resource "powerstore_metro_volume_group" "test" {
 }
 `
 
-var MetroVolumeGroupParamsCreate = `
+var MetroVolumeGroupParamsCreateMock = `
 resource "powerstore_metro_volume_group" "test" {
   volume_group_id  = "f64ad207-06eb-4098-b907-2a204cfb5ce9"
+  remote_system_id = "%s"
+}
+`
+
+var MetroVolumeGroupParamsCreateReal = `
+resource "powerstore_volume" "test" {
+  name = "tf-acc-metro-test-vg-vol-${replace(timestamp(), ":", "-")}"
+  size = 1
+}
+
+resource "powerstore_volumegroup" "test" {
+  name        = "tf-acc-metro-test-vg-${replace(timestamp(), ":", "-")}"
+  volume_ids  = [powerstore_volume.test.id]
+}
+
+resource "powerstore_metro_volume_group" "test" {
+  volume_group_id  = powerstore_volumegroup.test.id
   remote_system_id = "%s"
 }
 `
