@@ -32,6 +32,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -91,20 +92,32 @@ func (r *resourceIoLimitRule) Schema(ctx context.Context, req resource.SchemaReq
 
 			"max_iops": schema.Int32Attribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "Maximum I/O operations in either I/O operations per second (IOPS) or I/O operations per second per GB. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_ABSOLUTE) + ", max_iops is specified in IOPS. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_DENSITY) + ", max_iops is specified in IOPS per GB.",
 				MarkdownDescription: "Maximum I/O operations in either I/O operations per second (IOPS) or I/O operations per second per GB. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_ABSOLUTE) + ", max_iops is specified in IOPS. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_DENSITY) + ", max_iops is specified in IOPS per GB.",
+				PlanModifiers: []planmodifier.Int32{
+					int32planmodifier.UseStateForUnknown(),
+				},
 			},
 
 			"max_bw": schema.Int32Attribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "Maximum I/O bandwidth measured in either Kilobytes per second or Kilobytes per second / per GB. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_ABSOLUTE) + ", max_bw is specified in Kilobytes per second. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_DENSITY) + ", max_bw is specified in Kilobytes per second / per GB.",
 				MarkdownDescription: "Maximum I/O bandwidth measured in either Kilobytes per second or Kilobytes per second / per GB. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_ABSOLUTE) + ", max_bw is specified in Kilobytes per second. If type is set to " + string(clientgen.BANDWIDTHLIMITTYPEENUM_DENSITY) + ", max_bw is specified in Kilobytes per second / per GB.",
+				PlanModifiers: []planmodifier.Int32{
+					int32planmodifier.UseStateForUnknown(),
+				},
 			},
 
 			"burst_percentage": schema.Int32Attribute{
 				Optional:            true,
+				Computed:            true,
 				Description:         "Percentage indicating by how much the limit may be exceeded. If I/O normally runs below the specified limit, then the volume or volume group will accumulate burst credits that can be used to exceed the limit for a short period.",
 				MarkdownDescription: "Percentage indicating by how much the limit may be exceeded. If I/O normally runs below the specified limit, then the volume or volume group will accumulate burst credits that can be used to exceed the limit for a short period.",
+				PlanModifiers: []planmodifier.Int32{
+					int32planmodifier.UseStateForUnknown(),
+				},
 			},
 		},
 	}

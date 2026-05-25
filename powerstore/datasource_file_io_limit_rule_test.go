@@ -48,7 +48,7 @@ func TestAccFileIoLimitRuleDs_FetchAll(t *testing.T) {
 	})
 }
 
-func TestAccFileIoLimitRuleDs_FetchByName(t *testing.T) {
+func TestAccFileIoLimitRuleDs(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -60,35 +60,9 @@ func TestAccFileIoLimitRuleDs_FetchByName(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + FileIoLimitRuleResourceParams + FileIoLimitRuleDataSourceParamsName,
 			},
-		},
-	})
-}
-
-func TestAccFileIoLimitRuleDs_FetchByID(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + FileIoLimitRuleResourceParams + FileIoLimitRuleDataSourceParamsID,
 			},
-		},
-	})
-}
-
-func TestAccFileIoLimitRuleDs_FetchByFilter(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
 			{
 				Config: ProviderConfigForTesting + FileIoLimitRuleResourceParams + FileIoLimitRuleDataSourceParamsFilter,
 			},
