@@ -97,6 +97,13 @@ func (r *resourceMetroVolume) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
+			"is_replication_paused": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
+				Description:         "Whether the replication is paused. When set to true, replication is paused. When set to false, replication is resumed.",
+				MarkdownDescription: "Whether the replication is paused. When set to true, replication is paused. When set to false, replication is resumed.",
+			},
 			"delete_remote_volume": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
@@ -239,9 +246,8 @@ func (r *resourceMetroVolume) Read(ctx context.Context, req resource.ReadRequest
 	resp.Diagnostics.Append(diags...)
 }
 
-// Update - metro volume does not support in-place update; all mutable attrs trigger replacement
+// Update - supports pause/resume of metro replication
 func (r *resourceMetroVolume) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// delete_remote_volume and force are only used during destroy; update just refreshes state
 	var plan models.MetroVolumeResource
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
@@ -256,12 +262,39 @@ func (r *resourceMetroVolume) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	// Preserve computed fields from state
-	plan.ID = state.ID
-	plan.MetroReplicationSessionID = state.MetroReplicationSessionID
+	sessionID := state.ID.ValueString()
+
+	// Check if is_replication_paused changed
+	planPaused := plan.IsReplicationPaused.ValueBool()
+	statePaused := state.IsReplicationPaused.ValueBool()
+
+	if planPaused != statePaused {
+		log.Printf("Metro volume replication pause state changed: %v -> %v", statePaused, planPaused)
+
+		if planPaused {
+			// Pause replication
+			_, err := r.client.ReplicationSessionApi.ReplicationSessionPause(ctx, sessionID).Execute()
+			if err != nil {
+				resp.Diagnostics.AddError(
+					"Error pausing metro volume replication",
+					fmt.Sprintf("Could not pause replication session %s: %s", sessionID, err.Error()),
+				)
+				return
+			}
+		} else {
+			// Resume replication
+			_, err := r.client.ReplicationSessionApi.ReplicationSessionResume(ctx, sessionID).Execute()
+			if err != nil {
+				resp.Diagnostics.AddError(
+					"Error resuming metro volume replication",
+					fmt.Sprintf("Could not resume replication session %s: %s", sessionID, err.Error()),
+				)
+				return
+			}
+		}
+	}
 
 	// Refresh session state
-	sessionID := state.ID.ValueString()
 	session, err := r.getReplicationSession(ctx, sessionID)
 	if err != nil {
 		resp.Diagnostics.AddError(

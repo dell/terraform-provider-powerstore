@@ -87,7 +87,7 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 	}
 
 	httpclient := &http.Client{
-		Timeout: (time.Duration(60) * time.Second),
+		Timeout: (time.Duration(timeout) * time.Second),
 		Jar:     jar,
 	}
 	if insecure {

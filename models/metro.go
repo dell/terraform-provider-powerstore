@@ -25,6 +25,7 @@ type MetroVolumeResource struct {
 	VolumeID                  types.String `tfsdk:"volume_id"`
 	RemoteSystemID            types.String `tfsdk:"remote_system_id"`
 	RemoteApplianceID         types.String `tfsdk:"remote_appliance_id"`
+	IsReplicationPaused       types.Bool   `tfsdk:"is_replication_paused"`
 	DeleteRemoteVolume        types.Bool   `tfsdk:"delete_remote_volume"`
 	Force                     types.Bool   `tfsdk:"force"`
 	State                     types.String `tfsdk:"state"`
@@ -39,6 +40,7 @@ type MetroVolumeGroupResource struct {
 	VolumeGroupID             types.String `tfsdk:"volume_group_id"`
 	RemoteSystemID            types.String `tfsdk:"remote_system_id"`
 	RemoteApplianceID         types.String `tfsdk:"remote_appliance_id"`
+	IsReplicationPaused       types.Bool   `tfsdk:"is_replication_paused"`
 	DeleteRemoteVolumeGroup   types.Bool   `tfsdk:"delete_remote_volume_group"`
 	Force                     types.Bool   `tfsdk:"force"`
 	State                     types.String `tfsdk:"state"`

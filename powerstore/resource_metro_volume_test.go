@@ -28,6 +28,7 @@ import (
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
 
+	"github.com/bytedance/mockey"
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -55,6 +56,7 @@ func TestMetroVolumeResource_Schema(t *testing.T) {
 
 	// Check optional attributes
 	assert.True(t, resp.Schema.Attributes["remote_appliance_id"].IsOptional())
+	assert.True(t, resp.Schema.Attributes["is_replication_paused"].IsOptional())
 	assert.True(t, resp.Schema.Attributes["delete_remote_volume"].IsOptional())
 	assert.True(t, resp.Schema.Attributes["force"].IsOptional())
 }
@@ -246,6 +248,142 @@ func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "remote_system_id"),
 				),
 			},
+			// Import test
+			{
+				Config:            ProviderConfigForTesting + MetroVolumeParamsCreate,
+				ResourceName:      "powerstore_metro_volume.test",
+				ImportState:       true,
+				ImportStateVerify: false,
+			},
+			// Update test - pause replication
+			{
+				Config: ProviderConfigForTesting + MetroVolumeParamsCreatePaused,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_metro_volume.test", "is_replication_paused", "true"),
+				),
+			},
+			// Update test - resume replication
+			{
+				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_metro_volume.test", "is_replication_paused", "false"),
+				),
+			},
+		},
+	})
+}
+
+// Test mocked error paths for metro volume create
+func TestAccMetroVolume_CreateErrors(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	var mocker1, mocker2 *mockey.Mocker
+	defer func() {
+		if mocker1 != nil {
+			mocker1.UnPatch()
+		}
+		if mocker2 != nil {
+			mocker2.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Create error - configure metro API fails
+			{
+				PreConfig: func() {
+					mocker1 = mockey.Mock((*clientgen.VolumeApiService).VolumeConfigureMetroExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				ExpectError: regexp.MustCompile(`.*Error configuring metro volume.*`),
+			},
+			// Create error - empty session ID returned
+			{
+				PreConfig: func() {
+					mocker1.UnPatch()
+					mocker1 = mockey.Mock((*clientgen.VolumeApiService).VolumeConfigureMetroExecute).Return(&clientgen.VolumeConfigureMetroResponse{}, nil, nil).Build()
+				},
+				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				ExpectError: regexp.MustCompile(`.*no session ID was returned.*`),
+			},
+			// Create error - read session after create fails
+			{
+				PreConfig: func() {
+					mocker1.UnPatch()
+					sid := "mock-session-id"
+					mocker1 = mockey.Mock((*clientgen.VolumeApiService).VolumeConfigureMetroExecute).Return(&clientgen.VolumeConfigureMetroResponse{MetroReplicationSessionId: &sid}, nil, nil).Build()
+					mocker2 = mockey.Mock((*clientgen.ReplicationSessionApiService).GetReplicationSessionByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				ExpectError: regexp.MustCompile(`.*Error reading replication session after metro configuration.*`),
+			},
+		},
+	})
+}
+
+// Test mocked error paths for metro volume read, update, and delete
+func TestAccMetroVolume_ReadUpdateDeleteErrors(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	var mocker1 *mockey.Mocker
+	defer func() {
+		if mocker1 != nil {
+			mocker1.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Step 1: Create successfully
+			{
+				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "id"),
+				),
+			},
+			// Step 2: Read error on refresh
+			{
+				PreConfig: func() {
+					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).GetReplicationSessionByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				ExpectError: regexp.MustCompile(`.*Error reading metro volume replication session.*`),
+			},
+			// Step 3: Update (pause) error
+			{
+				PreConfig: func() {
+					mocker1.UnPatch()
+					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).ReplicationSessionPauseExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + MetroVolumeParamsCreatePaused,
+				ExpectError: regexp.MustCompile(`.*Error pausing metro volume replication.*`),
+			},
+			// Step 4: Delete error
+			{
+				PreConfig: func() {
+					mocker1.UnPatch()
+					mocker1 = mockey.Mock((*clientgen.VolumeApiService).VolumeEndMetroExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Destroy:     true,
+				ExpectError: regexp.MustCompile(`.*Error ending metro volume configuration.*`),
+			},
+			// Step 5: Cleanup - unpatch so destroy succeeds
+			{
+				PreConfig: func() {
+					mocker1.UnPatch()
+					mocker1 = nil
+				},
+				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+			},
 		},
 	})
 }
@@ -286,5 +424,18 @@ resource "powerstore_volume" "volume_create_test" {
 resource "powerstore_metro_volume" "test" {
   volume_id        = powerstore_volume.volume_create_test.id
   remote_system_id = "%s"
+}
+`, remoteSystemID)
+
+var MetroVolumeParamsCreatePaused = fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "test_acc_cvol"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id            = powerstore_volume.volume_create_test.id
+  remote_system_id     = "%s"
+  is_replication_paused = true
 }
 `, remoteSystemID)
