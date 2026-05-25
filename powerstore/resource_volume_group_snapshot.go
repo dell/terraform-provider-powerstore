@@ -21,13 +21,13 @@ import (
 	"context"
 	"log"
 	"net/url"
-	"regexp"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
 	"terraform-provider-powerstore/powerstore/helper"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework-timetypes/timetypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -101,12 +101,7 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 				Description:         "Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed",
 				MarkdownDescription: "Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed",
-				Validators: []validator.String{
-					stringvalidator.RegexMatches(
-						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
-						"Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
-					),
-				},
+				CustomType:          timetypes.RFC3339Type{},
 			},
 			"is_secure": schema.BoolAttribute{
 				Description:         "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
@@ -140,10 +135,6 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	name := plan.Name.ValueString()
-	description := plan.Description.ValueString()
-	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
-
 	volGroupID := plan.VolumeGroupID.ValueString()
 
 	// if volume group name is present instead of ID
@@ -169,22 +160,22 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 		plan.VolumeGroupID = types.StringValue(volGroupID)
 	}
 
-	// Create new volume group snapshot
-	vgSnapCreate := clientgen.VolumeGroupSnapshot{
-		Name: name,
-	}
-	if description != "" {
-		vgSnapCreate.Description = helper.StringPtr(description)
-	}
-	if expirationTimestamp != "" {
-		expTime, _ := time.Parse(time.RFC3339, expirationTimestamp)
-		vgSnapCreate.ExpirationTimestamp = &expTime
-	}
-	if !plan.IsSecure.IsNull() {
-		vgSnapCreate.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
+	var expirationTimestamp *time.Time
+	if !plan.ExpirationTimestamp.IsNull() {
+		expTime, _ := plan.ExpirationTimestamp.ValueRFC3339Time()
+		if !expTime.IsZero() {
+			expirationTimestamp = &expTime
+		}
 	}
 
-	snapCreateResponse, _, err := r.client.VolumeGroupApi.VolumeGroupSnapshot(ctx, volGroupID).Body(vgSnapCreate).Execute()
+	// Create new volume group snapshot
+	snapCreateResponse, _, err := r.client.VolumeGroupApi.VolumeGroupSnapshot(ctx, volGroupID).
+		Body(clientgen.VolumeGroupSnapshot{
+			Name:                plan.Name.ValueString(),
+			Description:         helper.ValueToPointer[string](plan.Description),
+			ExpirationTimestamp: expirationTimestamp,
+			IsSecure:            helper.ValueToPointer[bool](plan.IsSecure),
+		}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume group snapshot",
@@ -193,7 +184,7 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 	// Get volume group snapshot Details using ID retrieved above
-	snapshotResponse, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(ctx, *snapCreateResponse.Id).Execute()
+	snapshotResponse, err := r.ReadAPI(context.Background(), *snapCreateResponse.Id)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group snapshot after creation",
@@ -228,7 +219,7 @@ func (r *resourceVGSnapshot) Read(ctx context.Context, req resource.ReadRequest,
 	snapshotID := state.ID.ValueString()
 	// Get snapshot details from API and then update what is in state from what the API returns
 
-	snapshotResponse, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(ctx, snapshotID).Execute()
+	snapshotResponse, err := r.ReadAPI(context.Background(), snapshotID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading snapshot",
@@ -302,13 +293,25 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	volModify := r.planToServer(plan)
+	var expirationTimestamp *time.Time
+	if !plan.ExpirationTimestamp.IsNull() {
+		expTime, _ := plan.ExpirationTimestamp.ValueRFC3339Time()
+		if !expTime.IsZero() {
+			expirationTimestamp = &expTime
+		}
+	}
 
 	//Get volume group snapshot ID from state
 	volumeGroupSnapshotID := state.ID.ValueString()
 
 	//Update volume group snapshot by calling API
-	_, err := r.client.VolumeGroupApi.PatchVolumeGroupById(ctx, volumeGroupSnapshotID).Body(*volModify).Execute()
+	_, err := r.client.VolumeGroupApi.PatchVolumeGroupById(ctx, volumeGroupSnapshotID).
+		Body(clientgen.VolumeGroupModify{
+			Name:                helper.ValueToPointer[string](plan.Name),
+			Description:         helper.ValueToPointer[string](plan.Description),
+			ExpirationTimestamp: expirationTimestamp,
+			IsSecure:            helper.ValueToPointer[bool](plan.IsSecure),
+		}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating volume group snapshot resource",
@@ -318,7 +321,7 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	//Get Volume Snapshot details
-	getRes, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(ctx, volumeGroupSnapshotID).Execute()
+	getRes, err := r.ReadAPI(context.Background(), volumeGroupSnapshotID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group snapshot resource after update",
@@ -354,7 +357,7 @@ func (r *resourceVGSnapshot) Delete(ctx context.Context, req resource.DeleteRequ
 
 	var err error
 	// Delete volume group snapshot by calling API
-	_, err = r.client.VolumeGroupApi.DeleteVolumeGroupById(ctx, snapshotID).Execute()
+	_, err = r.client.VolumeGroupApi.DeleteVolumeGroupById(ctx, snapshotID).Body(clientgen.VolumeGroupDelete{}).Execute()
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -372,6 +375,14 @@ func (r *resourceVGSnapshot) ImportState(ctx context.Context, req resource.Impor
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
+func (r resourceVGSnapshot) ReadAPI(ctx context.Context, id string) (*clientgen.VolumeGroupInstance, error) {
+	sel := "id,name,description,protection_data"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	response, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(context.Background(), id).Queries(queries).Execute()
+	return response, err
+}
+
 // updateVGSnapshotState - method to update terraform state
 func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGroupSnapshot, response clientgen.VolumeGroupInstance) {
 
@@ -379,28 +390,11 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 	state.Name = helper.TfString(response.Name)
 	state.Description = helper.TfString(response.Description)
 	if response.ProtectionData != nil {
-		state.ExpirationTimestamp = helper.TfStringFromPTime(response.ProtectionData.ExpirationTimestamp)
+		state.ExpirationTimestamp = timetypes.NewRFC3339TimePointerValue(response.ProtectionData.ExpirationTimestamp)
 		state.VolumeGroupID = helper.TfString(response.ProtectionData.ParentId)
 		state.IsSecure = helper.TfBool(response.ProtectionData.IsSecure)
 	}
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
 	}
-}
-
-func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *clientgen.VolumeGroupModify {
-	volModify := &clientgen.VolumeGroupModify{
-		Name:        helper.StringPtr(plan.Name.ValueString()),
-		Description: helper.StringPtr(plan.Description.ValueString()),
-	}
-	if !plan.ExpirationTimestamp.IsNull() {
-		if plan.ExpirationTimestamp.ValueString() != "" {
-			expTime, _ := time.Parse(time.RFC3339, plan.ExpirationTimestamp.ValueString())
-			volModify.ExpirationTimestamp = &expTime
-		}
-	}
-	if !plan.IsSecure.IsNull() {
-		volModify.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
-	}
-	return volModify
 }
