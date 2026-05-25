@@ -77,6 +77,7 @@ resource "powerstore_metro_volume" "example" {
 
 - `delete_remote_volume` (Boolean) Whether to delete the remote volume when ending metro configuration. Default is false.
 - `force` (Boolean) Force end metro even if the remote side has errors. Not recommended unless the remote is known to be down.
+- `is_replication_paused` (Boolean) Whether the replication is paused. When set to true, replication is paused. When set to false, replication is resumed.
 - `remote_appliance_id` (String) Specific remote appliance to assign the volume. If not specified, the system chooses based on space, load, and connectivity.
 
 ### Read-Only
