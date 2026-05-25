@@ -20,6 +20,7 @@ package powerstore
 import (
 	"context"
 	"log"
+	"net/url"
 	"regexp"
 	"strings"
 	client "terraform-provider-powerstore/client"
@@ -352,13 +353,33 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	snapshotRuleCreate := r.planToServer(plan)
+	var daysOfWeek []clientgen.DaysOfWeekEnum
+	if len(plan.DaysOfWeek.Elements()) > 0 {
+		daysOfWeek = []clientgen.DaysOfWeekEnum{}
+		for _, d := range plan.DaysOfWeek.Elements() {
+			daysOfWeek = append(
+				daysOfWeek,
+				clientgen.DaysOfWeekEnum(strings.Trim(d.String(), "\"")),
+			)
+		}
+	}
 
 	log.Printf("Calling api to create snapshotrule")
 
 	// Create New SnapshotRule
 	// The function returns only ID of the newly created snapshot rule
-	createRes, _, err := r.client.SnapshotRuleApi.PostAllSnapshotRules(ctx).Body(*snapshotRuleCreate).Execute()
+	createRes, _, err := r.client.SnapshotRuleApi.PostAllSnapshotRules(ctx).
+		Body(clientgen.SnapshotRuleCreate{
+			Name:             plan.Name.ValueString(),
+			DesiredRetention: plan.DesiredRetention.ValueInt32(),
+			Interval:         helper.PointerStringEnum[clientgen.SnapRuleIntervalEnum](plan.Interval),
+			TimeOfDay:        helper.ValueToPointer[string](plan.TimeOfDay),
+			Timezone:         helper.PointerStringEnum[clientgen.TimeZoneEnum](plan.TimeZone),
+			NasAccessType:    helper.PointerStringEnum[clientgen.NASAccessTypeEnum](plan.NASAccessType),
+			IsReadOnly:       helper.ValueToPointer[bool](plan.IsReadOnly),
+			IsSecure:         helper.ValueToPointer[bool](plan.IsSecure),
+			DaysOfWeek:       daysOfWeek,
+		}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating snapshot rule",
@@ -370,7 +391,7 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 	log.Printf("Calling api to get snapshotrule created info")
 
 	// Get SnapshotRule Details using ID retrieved above
-	getRes, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(ctx, *createRes.Id).Execute()
+	getRes, err := r.ReadAPI(context.Background(), *createRes.Id)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting snapshot rule after creation",
@@ -402,7 +423,7 @@ func (r *resourceSnapshotRule) Read(ctx context.Context, req resource.ReadReques
 
 	// Get snapshot details from API and then update what is in state from what the API returns
 	id := state.ID.ValueString()
-	response, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(ctx, id).Execute()
+	response, err := r.ReadAPI(context.Background(), id)
 
 	// todo distnguish whether error is for resource presence, in case resource is not present
 	// we should inform it like resource should be created
@@ -449,13 +470,32 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	snapshotRuleUpdate := r.planToServerUpdate(plan)
+	var daysOfWeek []clientgen.DaysOfWeekEnum
+	if len(plan.DaysOfWeek.Elements()) > 0 {
+		daysOfWeek = []clientgen.DaysOfWeekEnum{}
+		for _, d := range plan.DaysOfWeek.Elements() {
+			daysOfWeek = append(
+				daysOfWeek,
+				clientgen.DaysOfWeekEnum(strings.Trim(d.String(), "\"")),
+			)
+		}
+	}
 
 	// Get snapshotRule ID from state
 	snapshotRuleID := state.ID.ValueString()
 
 	// Update snapshotRule by calling API
-	_, err := r.client.SnapshotRuleApi.PatchSnapshotRuleById(ctx, snapshotRuleID).Body(*snapshotRuleUpdate).Execute()
+	_, err := r.client.SnapshotRuleApi.PatchSnapshotRuleById(ctx, snapshotRuleID).
+		Body(clientgen.SnapshotRuleModify{
+			Name:             helper.ValueToPointer[string](plan.Name),
+			Interval:         helper.PointerStringEnum[clientgen.SnapRuleIntervalEnum](plan.Interval),
+			TimeOfDay:        helper.ValueToPointer[string](plan.TimeOfDay),
+			Timezone:         helper.PointerStringEnum[clientgen.TimeZoneEnum](plan.TimeZone),
+			NasAccessType:    helper.PointerStringEnum[clientgen.NASAccessTypeEnum](plan.NASAccessType),
+			IsSecure:         helper.ValueToPointer[bool](plan.IsSecure),
+			DesiredRetention: helper.ValueToPointer[int32](plan.DesiredRetention),
+			DaysOfWeek:       daysOfWeek,
+		}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating snapshotRule",
@@ -465,7 +505,7 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	// Get SnapshotRule Details
-	getRes, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(ctx, snapshotRuleID).Execute()
+	getRes, err := r.ReadAPI(context.Background(), snapshotRuleID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting snapshot rule after update",
@@ -485,6 +525,14 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 	log.Printf("Successfully done with Update")
 }
 
+func (r *resourceSnapshotRule) ReadAPI(ctx context.Context, id string) (*clientgen.SnapshotRuleInstance, error) {
+	sel := "id,name,remote_system_id,interval,time_of_day,timezone,days_of_week,desired_retention,is_replica,nas_access_type,is_read_only,managed_by,managed_by_id,is_secure"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	response, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(context.Background(), id).Queries(queries).Execute()
+	return response, err
+}
+
 // Delete - deletes snapshotRule
 func (r *resourceSnapshotRule) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
@@ -500,10 +548,8 @@ func (r *resourceSnapshotRule) Delete(ctx context.Context, req resource.DeleteRe
 	// Get snapshot rule ID from state
 	snapshotRuleID := state.ID.ValueString()
 
-	deleteParams := clientgen.SnapshotRuleDelete{}
-
-	if !state.DeleteSnaps.IsUnknown() && !state.DeleteSnaps.IsNull() {
-		deleteParams.DeleteSnaps = helper.BoolPtr(state.DeleteSnaps.ValueBool())
+	deleteParams := clientgen.SnapshotRuleDelete{
+		DeleteSnaps: helper.ValueToPointer[bool](state.DeleteSnaps),
 	}
 
 	// Delete snapshotRule by calling API
@@ -599,87 +645,4 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 		// for future deleteion, if required
 		state.DeleteSnaps = plan.DeleteSnaps
 	}
-}
-
-func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *clientgen.SnapshotRuleCreate {
-
-	snapshotRuleCreate := &clientgen.SnapshotRuleCreate{
-		Name:             plan.Name.ValueString(),
-		DesiredRetention: plan.DesiredRetention.ValueInt32(),
-	}
-
-	if !plan.Interval.IsNull() && plan.Interval.ValueString() != "" {
-		intervalEnum := clientgen.SnapRuleIntervalEnum(plan.Interval.ValueString())
-		snapshotRuleCreate.Interval = &intervalEnum
-	}
-	if !plan.TimeOfDay.IsNull() && plan.TimeOfDay.ValueString() != "" {
-		snapshotRuleCreate.TimeOfDay = helper.StringPtr(plan.TimeOfDay.ValueString())
-	}
-	if !plan.TimeZone.IsNull() && plan.TimeZone.ValueString() != "" {
-		timezoneEnum := clientgen.TimeZoneEnum(plan.TimeZone.ValueString())
-		snapshotRuleCreate.Timezone = &timezoneEnum
-	}
-	if !plan.NASAccessType.IsNull() && plan.NASAccessType.ValueString() != "" {
-		nasAccessTypeEnum := clientgen.NASAccessTypeEnum(plan.NASAccessType.ValueString())
-		snapshotRuleCreate.NasAccessType = &nasAccessTypeEnum
-	}
-	if !plan.IsSecure.IsNull() {
-		snapshotRuleCreate.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
-	}
-
-	if len(plan.DaysOfWeek.Elements()) > 0 {
-		daysOfWeek := []clientgen.DaysOfWeekEnum{}
-		for _, d := range plan.DaysOfWeek.Elements() {
-			daysOfWeek = append(
-				daysOfWeek,
-				clientgen.DaysOfWeekEnum(strings.Trim(d.String(), "\"")),
-			)
-		}
-		snapshotRuleCreate.DaysOfWeek = daysOfWeek
-	}
-
-	return snapshotRuleCreate
-}
-
-func (r resourceSnapshotRule) planToServerUpdate(plan models.SnapshotRule) *clientgen.SnapshotRuleModify {
-
-	snapshotRuleModify := &clientgen.SnapshotRuleModify{}
-
-	if !plan.Name.IsNull() && plan.Name.ValueString() != "" {
-		snapshotRuleModify.Name = helper.StringPtr(plan.Name.ValueString())
-	}
-	if !plan.Interval.IsNull() && plan.Interval.ValueString() != "" {
-		intervalEnum := clientgen.SnapRuleIntervalEnum(plan.Interval.ValueString())
-		snapshotRuleModify.Interval = &intervalEnum
-	}
-	if !plan.TimeOfDay.IsNull() && plan.TimeOfDay.ValueString() != "" {
-		snapshotRuleModify.TimeOfDay = helper.StringPtr(plan.TimeOfDay.ValueString())
-	}
-	if !plan.TimeZone.IsNull() && plan.TimeZone.ValueString() != "" {
-		timezoneEnum := clientgen.TimeZoneEnum(plan.TimeZone.ValueString())
-		snapshotRuleModify.Timezone = &timezoneEnum
-	}
-	if !plan.NASAccessType.IsNull() && plan.NASAccessType.ValueString() != "" {
-		nasAccessTypeEnum := clientgen.NASAccessTypeEnum(plan.NASAccessType.ValueString())
-		snapshotRuleModify.NasAccessType = &nasAccessTypeEnum
-	}
-	if !plan.IsSecure.IsNull() {
-		snapshotRuleModify.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
-	}
-	if !plan.DesiredRetention.IsNull() {
-		snapshotRuleModify.DesiredRetention = helper.Int32Ptr(plan.DesiredRetention.ValueInt32())
-	}
-
-	if len(plan.DaysOfWeek.Elements()) > 0 {
-		daysOfWeek := []clientgen.DaysOfWeekEnum{}
-		for _, d := range plan.DaysOfWeek.Elements() {
-			daysOfWeek = append(
-				daysOfWeek,
-				clientgen.DaysOfWeekEnum(strings.Trim(d.String(), "\"")),
-			)
-		}
-		snapshotRuleModify.DaysOfWeek = daysOfWeek
-	}
-
-	return snapshotRuleModify
 }

@@ -29,7 +29,7 @@ import (
 )
 
 // Test to Create Snapshot Resource
-func TestAccFileSystemSnapshot(t *testing.T) {
+func TestAccFileSystemSnapshotRes(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}

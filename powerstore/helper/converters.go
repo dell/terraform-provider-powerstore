@@ -73,11 +73,15 @@ func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	return transform(*in)
 }
 
+// GoTypes defines the supported Go types for ValueToPointer
+type GoTypes interface {
+	~bool | ~string | ~int64 | ~int32
+}
+
 // ValueToPointer - Extracts Go value pointer from attr.Value
 // Returns nil if input is not known
-// Supported types: types.String, types.Bool
-// We can add more types in the future when required
-func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
+// Supported types: types.String, types.Bool, types.Int64, types.Int32
+func ValueToPointer[T GoTypes, VT attr.Value](in VT) *T {
 	if in.IsNull() || in.IsUnknown() {
 		return nil
 	}
@@ -87,11 +91,35 @@ func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
 		ret = inv.ValueString()
 	case types.Bool:
 		ret = inv.ValueBool()
+	case types.Int64:
+		ret = inv.ValueInt64()
+	case types.Int32:
+		ret = inv.ValueInt32()
 	}
 
 	switch retv := ret.(type) {
 	case T:
 		return &retv
+	}
+	return nil
+}
+
+// PointerStringEnum - Converts types.String to a pointer to a string-based enum type
+// Returns nil if input is null, unknown, or empty string
+// This is needed for custom enum types that are based on string (e.g., clientgen.NASAccessTypeEnum)
+func PointerStringEnum[T ~string, VT attr.Value](in VT) *T {
+	if in.IsNull() || in.IsUnknown() {
+		return nil
+	}
+	var strVal string
+	switch inv := any(in).(type) {
+	case types.String:
+		strVal = inv.ValueString()
+		if strVal == "" {
+			return nil
+		}
+		converted := T(strVal)
+		return &converted
 	}
 	return nil
 }

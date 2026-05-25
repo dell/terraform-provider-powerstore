@@ -28,7 +28,7 @@ import (
 )
 
 // Test to Create SnapShotRule
-func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
+func TestAccSnapshotRuleRs_CreateSnapShotRule(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -71,7 +71,7 @@ func TestAccSnapshotRule_CreateSnapShotRule(t *testing.T) {
 }
 
 // Test to update existing snapshotRule params
-func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
+func TestAccSnapshotRuleRs_UpdateSnapShotRule(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -109,7 +109,7 @@ func TestAccSnapshotRule_UpdateSnapShotRule(t *testing.T) {
 }
 
 // Test to Create SnapShotRule with invalid values, will result in error
-func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
+func TestAccSnapshotRuleRs_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -143,7 +143,7 @@ func TestAccSnapshotRule_CreateSnapShotRuleWithInvalidValues(t *testing.T) {
 }
 
 // Test to import resource but resulting in error
-func TestAccSnapshotRule_ImportFailure(t *testing.T) {
+func TestAccSnapshotRuleRs_ImportFailure(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -164,7 +164,7 @@ func TestAccSnapshotRule_ImportFailure(t *testing.T) {
 }
 
 // Test to import successfully
-func TestAccSnapshotRule_ImportSuccess(t *testing.T) {
+func TestAccSnapshotRuleRs_ImportSuccess(t *testing.T) {
 
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
