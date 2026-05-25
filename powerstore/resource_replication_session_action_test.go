@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 	"testing"
 
 	"terraform-provider-powerstore/client"
@@ -160,10 +159,6 @@ func TestAccReplicationSessionAction_PauseOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Skip on real array if session doesn't exist
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test requires an existing replication session - skipping on real array")
-	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -185,10 +180,6 @@ func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Skip on real array if session doesn't exist
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test requires an existing replication session - skipping on real array")
-	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -208,10 +199,6 @@ func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_FailoverOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	// Skip on real array if session doesn't exist
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test requires an existing replication session - skipping on real array")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -234,10 +221,6 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Skip on real array if session doesn't exist
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test requires an existing replication session - skipping on real array")
-	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -258,10 +241,6 @@ func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	// Skip on real array if session doesn't exist
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test requires an existing replication session - skipping on real array")
-	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -281,10 +260,6 @@ func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_StartFailoverTestOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	// Skip on real array if session doesn't exist
-	if !strings.HasPrefix(endpoint, "http://localhost:3003") {
-		t.Skip("This test requires an existing replication session - skipping on real array")
 	}
 
 	resource.Test(t, resource.TestCase{

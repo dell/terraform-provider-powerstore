@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 	"testing"
 
 	"terraform-provider-powerstore/client"
@@ -212,25 +211,12 @@ func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
-	var config string
-	var expectNonEmptyPlan bool
-	if strings.HasPrefix(endpoint, "http://localhost:3003") {
-		// Mock server test
-		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeGroupParamsCreateMock, remoteSystemID)
-		expectNonEmptyPlan = false
-	} else {
-		// Real array test - create volume group first
-		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeGroupParamsCreateReal, remoteSystemID)
-		expectNonEmptyPlan = true // Allow non-empty plan due to state drift
-	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:             config,
-				ExpectNonEmptyPlan: expectNonEmptyPlan,
+				Config: ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "id"),
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "metro_replication_session_id"),
@@ -261,26 +247,14 @@ resource "powerstore_metro_volume_group" "test" {
 }
 `
 
-var MetroVolumeGroupParamsCreateMock = `
-resource "powerstore_metro_volume_group" "test" {
-  volume_group_id  = "f64ad207-06eb-4098-b907-2a204cfb5ce9"
-  remote_system_id = "%s"
-}
-`
-
-var MetroVolumeGroupParamsCreateReal = `
-resource "powerstore_volume" "test" {
-  name = "tf-acc-metro-test-vg-vol-${replace(timestamp(), ":", "-")}"
-  size = 1
-}
-
+var MetroVolumeGroupParamsCreate = fmt.Sprintf(`
 resource "powerstore_volumegroup" "test" {
-  name        = "tf-acc-metro-test-vg-${replace(timestamp(), ":", "-")}"
-  volume_ids  = [powerstore_volume.test.id]
+  name        = "tf_volume_group_new"
+  description = "Creating Volume Group"
 }
 
 resource "powerstore_metro_volume_group" "test" {
   volume_group_id  = powerstore_volumegroup.test.id
   remote_system_id = "%s"
 }
-`
+`, remoteSystemID)
