@@ -19,8 +19,10 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/url"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
@@ -221,6 +223,24 @@ func (r *resourceVGSnapshot) Read(ctx context.Context, req resource.ReadRequest,
 
 	snapshotResponse, err := r.ReadAPI(context.Background(), snapshotID)
 	if err != nil {
+		// Check if it's a 404 error and snapshot has expiration timestamp
+		if strings.Contains(err.Error(), "404") && !state.ExpirationTimestamp.IsNull() {
+			clusterTime, clusterErr := helper.DetermineClusterTime(ctx, r.client)
+			if clusterErr == nil {
+				expTime, _ := state.ExpirationTimestamp.ValueRFC3339Time()
+				// Allow 1 minute buffer for API delays
+				if expTime.Add(time.Minute).Before(clusterTime) {
+					resp.Diagnostics.AddWarning(
+						"Volume group snapshot auto-deleted",
+						fmt.Sprintf("Volume group snapshot %s was automatically deleted after expiration at %s", snapshotID, expTime.Format(time.RFC3339)),
+					)
+					resp.State.RemoveResource(ctx)
+					return
+				}
+			}
+		}
+
+		// Fall through to standard error handling
 		resp.Diagnostics.AddError(
 			"Error reading snapshot",
 			"Could not read snapshotID with error "+snapshotID+": "+err.Error(),

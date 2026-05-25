@@ -19,8 +19,10 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/url"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
@@ -193,10 +195,7 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 
 	// If name of the snapshot is not present, the default name of the volume snapshot is the date and time when the snapshot is taken.
 	if name == "" {
-		sel := "system_time"
-		queries := make(url.Values)
-		queries.Set("select", sel)
-		clusterResponse, _, err := r.client.ClusterApi.GetAllClusters(ctx).Queries(queries).Execute()
+		clusterTime, err := helper.DetermineClusterTime(ctx, r.client)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error creating volume snapshot",
@@ -204,17 +203,7 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 			)
 			return
 		}
-		if len(clusterResponse) == 0 {
-			resp.Diagnostics.AddError(
-				"Error creating volume snapshot",
-				"Cluster not found",
-			)
-			return
-		}
-		clusterTime := clusterResponse[0].SystemTime
-		if clusterTime != nil {
-			name = clusterTime.Format("2006-01-02T15:04:05Z")
-		}
+		name = clusterTime.Format("2006-01-02T15:04:05Z")
 	}
 
 	var expirationTimestamp *time.Time
@@ -283,6 +272,24 @@ func (r *resourceVolumeSnapshot) Read(ctx context.Context, req resource.ReadRequ
 	// Get snapshot details from API and then update what is in state from what the API returns
 	snapshotResponse, err := r.ReadAPI(context.Background(), snapshotID)
 	if err != nil {
+		// Check if it's a 404 error and snapshot has expiration timestamp
+		if strings.Contains(err.Error(), "404") && !state.ExpirationTimestamp.IsNull() {
+			clusterTime, clusterErr := helper.DetermineClusterTime(ctx, r.client)
+			if clusterErr == nil {
+				expTime, _ := state.ExpirationTimestamp.ValueRFC3339Time()
+				// Allow 1 minute buffer for API delays
+				if expTime.Add(time.Minute).Before(clusterTime) {
+					resp.Diagnostics.AddWarning(
+						"Snapshot auto-deleted",
+						fmt.Sprintf("Snapshot %s was automatically deleted after expiration at %s", snapshotID, expTime.Format(time.RFC3339)),
+					)
+					resp.State.RemoveResource(ctx)
+					return
+				}
+			}
+		}
+
+		// Fall through to standard error handling
 		resp.Diagnostics.AddError(
 			"Error reading snapshot",
 			"Could not read snapshotID with error "+snapshotID+": "+err.Error(),
