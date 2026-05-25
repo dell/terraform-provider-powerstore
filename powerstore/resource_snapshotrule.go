@@ -19,14 +19,14 @@ package powerstore
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"regexp"
 	"strings"
 	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -45,7 +45,7 @@ func newSnapshotRuleResource() resource.Resource {
 }
 
 type resourceSnapshotRule struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata defines resource interface Metadata method
@@ -84,17 +84,17 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "The interval between snapshots taken by a snapshot rule.",
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
-						string(gopowerstore.SnapshotRuleIntervalEnumFiveMinutes),
-						string(gopowerstore.SnapshotRuleIntervalEnumFifteenMinutes),
-						string(gopowerstore.SnapshotRuleIntervalEnumThirtyMinutes),
-						string(gopowerstore.SnapshotRuleIntervalEnumOneHour),
-						string(gopowerstore.SnapshotRuleIntervalEnumTwoHours),
-						string(gopowerstore.SnapshotRuleIntervalEnumThreeHours),
-						string(gopowerstore.SnapshotRuleIntervalEnumFourHours),
-						string(gopowerstore.SnapshotRuleIntervalEnumSixHours),
-						string(gopowerstore.SnapshotRuleIntervalEnumEightHours),
-						string(gopowerstore.SnapshotRuleIntervalEnumTwelveHours),
-						string(gopowerstore.SnapshotRuleIntervalEnumOneDay),
+						"Five_Minutes",
+						"Fifteen_Minutes",
+						"Thirty_Minutes",
+						"One_Hour",
+						"Two_Hours",
+						"Three_Hours",
+						"Four_Hours",
+						"Six_Hours",
+						"Eight_Hours",
+						"Twelve_Hours",
+						"One_Day",
 					}...),
 
 					stringvalidator.ConflictsWith(path.Expressions{
@@ -129,118 +129,118 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.",
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
-						string(gopowerstore.TimeZoneEnumEtcGMTplus12),
-						string(gopowerstore.TimeZoneEnumUSSamoa),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus11),
-						string(gopowerstore.TimeZoneEnumAmericaAtka),
-						string(gopowerstore.TimeZoneEnumUSHawaii),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus10),
-						string(gopowerstore.TimeZoneEnumPacificMarquesas),
-						string(gopowerstore.TimeZoneEnumUSAlaska),
-						string(gopowerstore.TimeZoneEnumPacificGambier),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus9),
-						string(gopowerstore.TimeZoneEnumPST8PDT),
-						string(gopowerstore.TimeZoneEnumPacificPitcairn),
-						string(gopowerstore.TimeZoneEnumUSPacific),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus8),
-						string(gopowerstore.TimeZoneEnumMexicoBajaSur),
-						string(gopowerstore.TimeZoneEnumAmericaBoise),
-						string(gopowerstore.TimeZoneEnumAmericaPhoenix),
-						string(gopowerstore.TimeZoneEnumMST7MDT),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus7),
-						string(gopowerstore.TimeZoneEnumCST6CDT),
-						string(gopowerstore.TimeZoneEnumAmericaChicago),
-						string(gopowerstore.TimeZoneEnumCanadaSaskatchewan),
-						string(gopowerstore.TimeZoneEnumAmericaBahiaBanderas),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus6),
-						string(gopowerstore.TimeZoneEnumChileEasterIsland),
-						string(gopowerstore.TimeZoneEnumAmericaBogota),
-						string(gopowerstore.TimeZoneEnumAmericaNewYork),
-						string(gopowerstore.TimeZoneEnumEST5EDT),
-						string(gopowerstore.TimeZoneEnumAmericaHavana),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus5),
-						string(gopowerstore.TimeZoneEnumAmericaCaracas),
-						string(gopowerstore.TimeZoneEnumAmericaCuiaba),
-						string(gopowerstore.TimeZoneEnumAmericaSantoDomingo),
-						string(gopowerstore.TimeZoneEnumCanadaAtlantic),
-						string(gopowerstore.TimeZoneEnumAmericaAsuncion),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus4),
-						string(gopowerstore.TimeZoneEnumCanadaNewfoundland),
-						string(gopowerstore.TimeZoneEnumChileContinental),
-						string(gopowerstore.TimeZoneEnumBrazilEast),
-						string(gopowerstore.TimeZoneEnumAmericaGodthab),
-						string(gopowerstore.TimeZoneEnumAmericaMiquelon),
-						string(gopowerstore.TimeZoneEnumAmericaBuenosAires),
-						string(gopowerstore.TimeZoneEnumEtcMTPlus3),
-						string(gopowerstore.TimeZoneEnumAmericaNoronha),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus2),
-						string(gopowerstore.TimeZoneEnumAmericaScoresbysund),
-						string(gopowerstore.TimeZoneEnumAtlanticCapeVerde),
-						string(gopowerstore.TimeZoneEnumEtcGMTPlus1),
-						string(gopowerstore.TimeZoneEnumUTC),
-						string(gopowerstore.TimeZoneEnumEuropeLondon),
-						string(gopowerstore.TimeZoneEnumAfricaCasablanca),
-						string(gopowerstore.TimeZoneEnumAtlanticReykjavik),
-						string(gopowerstore.TimeZoneEnumAntarcticaTroll),
-						string(gopowerstore.TimeZoneEnumEuropeParis),
-						string(gopowerstore.TimeZoneEnumEuropeSarajevo),
-						string(gopowerstore.TimeZoneEnumEuropeBelgrade),
-						string(gopowerstore.TimeZoneEnumEuropeRome),
-						string(gopowerstore.TimeZoneEnumAfricaTunis),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus1),
-						string(gopowerstore.TimeZoneEnumAsiaGaza),
-						string(gopowerstore.TimeZoneEnumEuropeBucharest),
-						string(gopowerstore.TimeZoneEnumEuropeHelsinki),
-						string(gopowerstore.TimeZoneEnumAsiaBeirut),
-						string(gopowerstore.TimeZoneEnumAfricaHarare),
-						string(gopowerstore.TimeZoneEnumAsiaDamascus),
-						string(gopowerstore.TimeZoneEnumAsiaAmman),
-						string(gopowerstore.TimeZoneEnumEuropeTiraspol),
-						string(gopowerstore.TimeZoneEnumAsiaJerusalem),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus2),
-						string(gopowerstore.TimeZoneEnumAsiaBaghdad),
-						string(gopowerstore.TimeZoneEnumAfricaAsmera),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus3),
-						string(gopowerstore.TimeZoneEnumAsiaTehran),
-						string(gopowerstore.TimeZoneEnumAsiaBaku),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus4),
-						string(gopowerstore.TimeZoneEnumAsiaKabul),
-						string(gopowerstore.TimeZoneEnumAsiaKarachi),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus5),
-						string(gopowerstore.TimeZoneEnumAsiaKolkata),
-						string(gopowerstore.TimeZoneEnumAsiaKatmandu),
-						string(gopowerstore.TimeZoneEnumAsiaAlmaty),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus6),
-						string(gopowerstore.TimeZoneEnumAsiaRangoon),
-						string(gopowerstore.TimeZoneEnumAsiaHovd),
-						string(gopowerstore.TimeZoneEnumAsiaBangkok),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus7),
-						string(gopowerstore.TimeZoneEnumAsiaHongKong),
-						string(gopowerstore.TimeZoneEnumAsiaBrunei),
-						string(gopowerstore.TimeZoneEnumAsiaSingapore),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus8),
-						string(gopowerstore.TimeZoneEnumAsiaPyongyang),
-						string(gopowerstore.TimeZoneEnumAustraliaEucla),
-						string(gopowerstore.TimeZoneEnumAsiaSeoul),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus9),
-						string(gopowerstore.TimeZoneEnumAustraliaDarwin),
-						string(gopowerstore.TimeZoneEnumAustraliaAdelaide),
-						string(gopowerstore.TimeZoneEnumAustraliaSydney),
-						string(gopowerstore.TimeZoneEnumAustraliaBrisbane),
-						string(gopowerstore.TimeZoneEnumAsiaMagadan),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus10),
-						string(gopowerstore.TimeZoneEnumAustraliaLordHowe),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus11),
-						string(gopowerstore.TimeZoneEnumAsiaKamchatka),
-						string(gopowerstore.TimeZoneEnumPacificFiji),
-						string(gopowerstore.TimeZoneEnumAntarcticaSouthPole),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus12),
-						string(gopowerstore.TimeZoneEnumPacificChatham),
-						string(gopowerstore.TimeZoneEnumPacificTongatapu),
-						string(gopowerstore.TimeZoneEnumPacificApia),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus13),
-						string(gopowerstore.TimeZoneEnumPacificKiritimati),
-						string(gopowerstore.TimeZoneEnumEtcGMTMinus14),
+						"Etc__GMT_plus_12",
+						"US__Samoa",
+						"Etc__GMT_plus_11",
+						"America__Atka",
+						"US__Hawaii",
+						"Etc__GMT_plus_10",
+						"Pacific__Marquesas",
+						"US__Alaska",
+						"Pacific__Gambier",
+						"Etc__GMT_plus_9",
+						"PST8PDT",
+						"Pacific__Pitcairn",
+						"US__Pacific",
+						"Etc__GMT_plus_8",
+						"Mexico__BajaSur",
+						"America__Boise",
+						"America__Phoenix",
+						"MST7MDT",
+						"Etc__GMT_plus_7",
+						"CST6CDT",
+						"America__Chicago",
+						"Canada__Saskatchewan",
+						"America__Bahia_Banderas",
+						"Etc__GMT_plus_6",
+						"Chile__EasterIsland",
+						"America__Bogota",
+						"America__New_York",
+						"EST5EDT",
+						"America__Havana",
+						"Etc__GMT_plus_5",
+						"America__Caracas",
+						"America__Cuiaba",
+						"America__Santo_Domingo",
+						"Canada__Atlantic",
+						"America__Asuncion",
+						"Etc__GMT_plus_4",
+						"Canada__Newfoundland",
+						"Chile__Continental",
+						"Brazil__East",
+						"America__Godthab",
+						"America__Miquelon",
+						"America__Buenos_Aires",
+						"Etc__GMT_plus_3",
+						"America__Noronha",
+						"Etc__GMT_plus_2",
+						"America__Scoresbysund",
+						"Atlantic__Cape_Verde",
+						"Etc__GMT_plus_1",
+						"UTC",
+						"Europe__London",
+						"Africa__Casablanca",
+						"Atlantic__Reykjavik",
+						"Antarctica__Troll",
+						"Europe__Paris",
+						"Europe__Sarajevo",
+						"Europe__Belgrade",
+						"Europe__Rome",
+						"Africa__Tunis",
+						"Etc__GMT_minus_1",
+						"Asia__Gaza",
+						"Europe__Bucharest",
+						"Europe__Helsinki",
+						"Asia__Beirut",
+						"Africa__Harare",
+						"Asia__Damascus",
+						"Asia__Amman",
+						"Europe__Tiraspol",
+						"Asia__Jerusalem",
+						"Etc__GMT_minus_2",
+						"Asia__Baghdad",
+						"Africa__Asmera",
+						"Etc__GMT_minus_3",
+						"Asia__Tehran",
+						"Asia__Baku",
+						"Etc__GMT_minus_4",
+						"Asia__Kabul",
+						"Asia__Karachi",
+						"Etc__GMT_minus_5",
+						"Asia__Kolkata",
+						"Asia__Katmandu",
+						"Asia__Almaty",
+						"Etc__GMT_minus_6",
+						"Asia__Rangoon",
+						"Asia__Hovd",
+						"Asia__Bangkok",
+						"Etc__GMT_minus_7",
+						"Asia__Hong_Kong",
+						"Asia__Brunei",
+						"Asia__Singapore",
+						"Etc__GMT_minus_8",
+						"Asia__Pyongyang",
+						"Australia__Eucla",
+						"Asia__Seoul",
+						"Etc__GMT_minus_9",
+						"Australia__Darwin",
+						"Australia__Adelaide",
+						"Australia__Sydney",
+						"Australia__Brisbane",
+						"Asia__Magadan",
+						"Etc__GMT_minus_10",
+						"Australia__Lord_Howe",
+						"Etc__GMT_minus_11",
+						"Asia__Kamchatka",
+						"Pacific__Fiji",
+						"Antarctica__South_Pole",
+						"Etc__GMT_minus_12",
+						"Pacific__Chatham",
+						"Pacific__Tongatapu",
+						"Pacific__Apia",
+						"Etc__GMT_minus_13",
+						"Pacific__Kiritimati",
+						"Etc__GMT_minus_14",
 					}...),
 				},
 			},
@@ -254,13 +254,13 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.List{
 					listvalidator.ValueStringsAre(
 						stringvalidator.OneOf([]string{
-							string(gopowerstore.DaysOfWeekEnumMonday),
-							string(gopowerstore.DaysOfWeekEnumTuesday),
-							string(gopowerstore.DaysOfWeekEnumWednesday),
-							string(gopowerstore.DaysOfWeekEnumThursday),
-							string(gopowerstore.DaysOfWeekEnumFriday),
-							string(gopowerstore.DaysOfWeekEnumSaturday),
-							string(gopowerstore.DaysOfWeekEnumSunday),
+							"Monday",
+							"Tuesday",
+							"Wednesday",
+							"Thursday",
+							"Friday",
+							"Saturday",
+							"Sunday",
 						}...),
 					),
 				},
@@ -285,8 +285,8 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "The NAS filesystem snapshot access method for snapshot rule.",
 				Validators: []validator.String{
 					stringvalidator.OneOf([]string{
-						string(gopowerstore.NASAccessTypeEnumSnapshot),
-						string(gopowerstore.NASAccessTypeEnumProtocol),
+						"Snapshot",
+						"Protocol",
 					}...),
 				},
 			},
@@ -319,6 +319,12 @@ func (r *resourceSnapshotRule) Schema(ctx context.Context, req resource.SchemaRe
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"is_secure": schema.BoolAttribute{
+				Description:         "Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				MarkdownDescription: "Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				Optional:            true,
+				Computed:            true,
+			},
 		},
 	}
 }
@@ -330,18 +336,8 @@ func (r *resourceSnapshotRule) Configure(ctx context.Context, req resource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-
-		return
-	}
-
-	r.client = client
+	client := req.ProviderData.(*client.Client)
+	r.client = client.GenClient
 }
 
 // Create - method to create Snapshot rule resource
@@ -362,7 +358,7 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 
 	// Create New SnapshotRule
 	// The function returns only ID of the newly created snapshot rule
-	createRes, err := r.client.PStoreClient.CreateSnapshotRule(context.Background(), snapshotRuleCreate)
+	createRes, _, err := r.client.SnapshotRuleApi.PostAllSnapshotRules(ctx).Body(*snapshotRuleCreate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating snapshot rule",
@@ -374,7 +370,7 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 	log.Printf("Calling api to get snapshotrule created info")
 
 	// Get SnapshotRule Details using ID retrieved above
-	getRes, err := r.client.PStoreClient.GetSnapshotRule(context.Background(), createRes.ID)
+	getRes, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(ctx, *createRes.Id).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting snapshot rule after creation",
@@ -384,7 +380,7 @@ func (r *resourceSnapshotRule) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	state := models.SnapshotRule{}
-	r.serverToState(&plan, &state, getRes, operationCreate)
+	r.serverToState(&plan, &state, *getRes, operationCreate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -406,7 +402,7 @@ func (r *resourceSnapshotRule) Read(ctx context.Context, req resource.ReadReques
 
 	// Get snapshot details from API and then update what is in state from what the API returns
 	id := state.ID.ValueString()
-	response, err := r.client.PStoreClient.GetSnapshotRule(context.Background(), id)
+	response, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(ctx, id).Execute()
 
 	// todo distnguish whether error is for resource presence, in case resource is not present
 	// we should inform it like resource should be created
@@ -420,7 +416,7 @@ func (r *resourceSnapshotRule) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// as state is like a plan here, a current state prior to this read operation
-	r.serverToState(&state, &state, response, operationRead)
+	r.serverToState(&state, &state, *response, operationRead)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -453,13 +449,13 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	snapshotRuleUpdate := r.planToServer(plan)
+	snapshotRuleUpdate := r.planToServerUpdate(plan)
 
 	// Get snapshotRule ID from state
 	snapshotRuleID := state.ID.ValueString()
 
 	// Update snapshotRule by calling API
-	_, err := r.client.PStoreClient.ModifySnapshotRule(context.Background(), snapshotRuleUpdate, snapshotRuleID)
+	_, err := r.client.SnapshotRuleApi.PatchSnapshotRuleById(ctx, snapshotRuleID).Body(*snapshotRuleUpdate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating snapshotRule",
@@ -469,7 +465,7 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	// Get SnapshotRule Details
-	getRes, err := r.client.PStoreClient.GetSnapshotRule(context.Background(), snapshotRuleID)
+	getRes, _, err := r.client.SnapshotRuleApi.GetSnapshotRuleById(ctx, snapshotRuleID).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting snapshot rule after update",
@@ -478,7 +474,7 @@ func (r *resourceSnapshotRule) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	r.serverToState(&plan, &state, getRes, operationUpdate)
+	r.serverToState(&plan, &state, *getRes, operationUpdate)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -504,14 +500,14 @@ func (r *resourceSnapshotRule) Delete(ctx context.Context, req resource.DeleteRe
 	// Get snapshot rule ID from state
 	snapshotRuleID := state.ID.ValueString()
 
-	deleteParams := &gopowerstore.SnapshotRuleDelete{}
+	deleteParams := clientgen.SnapshotRuleDelete{}
 
 	if !state.DeleteSnaps.IsUnknown() && !state.DeleteSnaps.IsNull() {
-		deleteParams.DeleteSnaps = state.DeleteSnaps.ValueBool()
+		deleteParams.DeleteSnaps = helper.BoolPtr(state.DeleteSnaps.ValueBool())
 	}
 
 	// Delete snapshotRule by calling API
-	_, err := r.client.PStoreClient.DeleteSnapshotRule(context.Background(), deleteParams, snapshotRuleID)
+	_, err := r.client.SnapshotRuleApi.DeleteSnapshotRuleById(ctx, snapshotRuleID).Body(deleteParams).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting snapshotRule",
@@ -532,25 +528,26 @@ func (r *resourceSnapshotRule) ImportState(ctx context.Context, req resource.Imp
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, response gopowerstore.SnapshotRule, operation operation) {
+func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, response clientgen.SnapshotRuleInstance, operation operation) {
 
-	state.ID = types.StringValue(response.ID)
-	state.Name = types.StringValue(response.Name)
-	state.Interval = types.StringValue(string(response.Interval))
-	state.TimeOfDay = types.StringValue(response.TimeOfDay)
+	state.ID = helper.TfString(response.Id)
+	state.Name = helper.TfString(response.Name)
+	state.Interval = helper.TfString(response.Interval)
+	state.TimeOfDay = helper.TfString(response.TimeOfDay)
 
 	// a work-around
 	// converting hh:mm:ss to hh:mm in case server returns hh:mm:ss
 	// client can not send hh:mm:ss , else will be a server error , so no worry
-	if len(strings.Split(response.TimeOfDay, ":")) == 3 {
-		state.TimeOfDay = types.StringValue(strings.TrimSuffix(response.TimeOfDay, ":00"))
+	if response.TimeOfDay != nil && len(strings.Split(*response.TimeOfDay, ":")) == 3 {
+		trimmedTime := strings.TrimSuffix(*response.TimeOfDay, ":00")
+		state.TimeOfDay = types.StringValue(trimmedTime)
 	}
 
 	// this if-else will be removed once things got fixed on powerstore side
 	// as for import we don't have pre plan so let the imported value save in state
 	if operation == operationImport {
-		state.TimeZone = types.StringValue(string(response.TimeZone))
-		state.NASAccessType = types.StringValue(string(response.NASAccessType))
+		state.TimeZone = helper.TfString(response.Timezone)
+		state.NASAccessType = helper.TfString(response.NasAccessType)
 		state.IsReadOnly = types.BoolValue(false)
 	} else {
 		// a work-around
@@ -558,21 +555,21 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 		// if default value is returned in response, then if empty string in plan
 		// update state value as empty string
 
-		if response.TimeZone == gopowerstore.TimeZoneEnumUTC &&
+		if response.Timezone != nil && *response.Timezone == clientgen.TIMEZONEENUM_UTC &&
 			!plan.TimeZone.IsUnknown() && !plan.TimeZone.IsNull() &&
 			strings.TrimSpace(strings.Trim(plan.TimeZone.ValueString(), "\"")) == "" {
 			state.TimeZone = types.StringValue(plan.TimeZone.ValueString())
 		} else {
-			state.TimeZone = types.StringValue(string(response.TimeZone))
+			state.TimeZone = helper.TfString(response.Timezone)
 		}
 
 		// as per document, snapshot is default ,  but on server protocol is default
-		if response.NASAccessType == gopowerstore.NASAccessTypeEnumProtocol &&
+		if response.NasAccessType != nil && *response.NasAccessType == clientgen.NASACCESSTYPEENUM_PROTOCOL &&
 			!plan.NASAccessType.IsUnknown() && !plan.NASAccessType.IsNull() &&
 			strings.TrimSpace(strings.Trim(plan.NASAccessType.ValueString(), "\"")) == "" {
 			state.NASAccessType = types.StringValue(plan.NASAccessType.ValueString())
 		} else {
-			state.NASAccessType = types.StringValue(string(response.NASAccessType))
+			state.NASAccessType = helper.TfString(response.NasAccessType)
 		}
 
 		// a work-around, as we cannot set is_read_only as true on server,
@@ -583,52 +580,106 @@ func (r resourceSnapshotRule) serverToState(plan, state *models.SnapshotRule, re
 			state.IsReadOnly = types.BoolValue(false)
 		}
 	}
+	state.IsSecure = helper.TfBool(response.IsSecure)
 
-	attributeList := []attr.Value{}
-	for _, day := range response.DaysOfWeek {
-		attributeList = append(attributeList, types.StringValue(string(day)))
-	}
+	// DaysOfWeek mapping
+	slice := helper.SliceTransform(response.DaysOfWeek, func(in clientgen.DaysOfWeekEnum) attr.Value {
+		return types.StringValue(string(in))
+	})
+	list, _ := types.ListValue(types.StringType, slice)
+	state.DaysOfWeek = list
 
-	state.DaysOfWeek, _ = types.ListValue(types.StringType, attributeList)
-
-	state.DesiredRetention = types.Int32Value(response.DesiredRetention)
-	state.IsReplica = types.BoolValue(response.IsReplica)
-	state.ManagedBy = types.StringValue(string(response.ManagedBy))
-	state.ManagedByID = types.StringValue(string(response.ManagedByID))
+	state.DesiredRetention = types.Int32Value(helper.Int32Value(response.DesiredRetention))
+	state.IsReplica = helper.TfBool(response.IsReplica)
+	state.ManagedBy = helper.TfString(response.ManagedBy)
+	state.ManagedByID = helper.TfString(response.ManagedById)
 
 	if operation != operationRead {
 		// we are saving delete_snaps value in state from plan
 		// for future deleteion, if required
 		state.DeleteSnaps = plan.DeleteSnaps
 	}
-
-	// todo, check if still plan and state are not equal
-	// mark resources => should be replaced
 }
 
-func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *gopowerstore.SnapshotRuleCreate {
+func (r resourceSnapshotRule) planToServer(plan models.SnapshotRule) *clientgen.SnapshotRuleCreate {
 
-	snapshotRuleCreate := &gopowerstore.SnapshotRuleCreate{
+	snapshotRuleCreate := &clientgen.SnapshotRuleCreate{
 		Name:             plan.Name.ValueString(),
-		Interval:         gopowerstore.SnapshotRuleIntervalEnum(plan.Interval.ValueString()),
-		TimeOfDay:        plan.TimeOfDay.ValueString(),
-		TimeZone:         gopowerstore.TimeZoneEnum(plan.TimeZone.ValueString()),
 		DesiredRetention: plan.DesiredRetention.ValueInt32(),
-		NASAccessType:    gopowerstore.NASAccessTypeEnum(plan.NASAccessType.ValueString()),
+	}
+
+	if !plan.Interval.IsNull() && plan.Interval.ValueString() != "" {
+		intervalEnum := clientgen.SnapRuleIntervalEnum(plan.Interval.ValueString())
+		snapshotRuleCreate.Interval = &intervalEnum
+	}
+	if !plan.TimeOfDay.IsNull() && plan.TimeOfDay.ValueString() != "" {
+		snapshotRuleCreate.TimeOfDay = helper.StringPtr(plan.TimeOfDay.ValueString())
+	}
+	if !plan.TimeZone.IsNull() && plan.TimeZone.ValueString() != "" {
+		timezoneEnum := clientgen.TimeZoneEnum(plan.TimeZone.ValueString())
+		snapshotRuleCreate.Timezone = &timezoneEnum
+	}
+	if !plan.NASAccessType.IsNull() && plan.NASAccessType.ValueString() != "" {
+		nasAccessTypeEnum := clientgen.NASAccessTypeEnum(plan.NASAccessType.ValueString())
+		snapshotRuleCreate.NasAccessType = &nasAccessTypeEnum
+	}
+	if !plan.IsSecure.IsNull() {
+		snapshotRuleCreate.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
 	}
 
 	if len(plan.DaysOfWeek.Elements()) > 0 {
-		snapshotRuleCreate.DaysOfWeek = []gopowerstore.DaysOfWeekEnum{}
-
+		daysOfWeek := []clientgen.DaysOfWeekEnum{}
 		for _, d := range plan.DaysOfWeek.Elements() {
-			snapshotRuleCreate.DaysOfWeek = append(
-				snapshotRuleCreate.DaysOfWeek,
-				gopowerstore.DaysOfWeekEnum(
-					strings.Trim(d.String(), "\""),
-				),
+			daysOfWeek = append(
+				daysOfWeek,
+				clientgen.DaysOfWeekEnum(strings.Trim(d.String(), "\"")),
 			)
 		}
+		snapshotRuleCreate.DaysOfWeek = daysOfWeek
 	}
 
 	return snapshotRuleCreate
+}
+
+func (r resourceSnapshotRule) planToServerUpdate(plan models.SnapshotRule) *clientgen.SnapshotRuleModify {
+
+	snapshotRuleModify := &clientgen.SnapshotRuleModify{}
+
+	if !plan.Name.IsNull() && plan.Name.ValueString() != "" {
+		snapshotRuleModify.Name = helper.StringPtr(plan.Name.ValueString())
+	}
+	if !plan.Interval.IsNull() && plan.Interval.ValueString() != "" {
+		intervalEnum := clientgen.SnapRuleIntervalEnum(plan.Interval.ValueString())
+		snapshotRuleModify.Interval = &intervalEnum
+	}
+	if !plan.TimeOfDay.IsNull() && plan.TimeOfDay.ValueString() != "" {
+		snapshotRuleModify.TimeOfDay = helper.StringPtr(plan.TimeOfDay.ValueString())
+	}
+	if !plan.TimeZone.IsNull() && plan.TimeZone.ValueString() != "" {
+		timezoneEnum := clientgen.TimeZoneEnum(plan.TimeZone.ValueString())
+		snapshotRuleModify.Timezone = &timezoneEnum
+	}
+	if !plan.NASAccessType.IsNull() && plan.NASAccessType.ValueString() != "" {
+		nasAccessTypeEnum := clientgen.NASAccessTypeEnum(plan.NASAccessType.ValueString())
+		snapshotRuleModify.NasAccessType = &nasAccessTypeEnum
+	}
+	if !plan.IsSecure.IsNull() {
+		snapshotRuleModify.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
+	}
+	if !plan.DesiredRetention.IsNull() {
+		snapshotRuleModify.DesiredRetention = helper.Int32Ptr(plan.DesiredRetention.ValueInt32())
+	}
+
+	if len(plan.DaysOfWeek.Elements()) > 0 {
+		daysOfWeek := []clientgen.DaysOfWeekEnum{}
+		for _, d := range plan.DaysOfWeek.Elements() {
+			daysOfWeek = append(
+				daysOfWeek,
+				clientgen.DaysOfWeekEnum(strings.Trim(d.String(), "\"")),
+			)
+		}
+		snapshotRuleModify.DaysOfWeek = daysOfWeek
+	}
+
+	return snapshotRuleModify
 }

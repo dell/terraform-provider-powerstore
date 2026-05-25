@@ -19,21 +19,20 @@ package powerstore
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"regexp"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
+	"time"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 )
 
 const (
@@ -49,7 +48,7 @@ func newFileSystemSnapshotResource() resource.Resource {
 }
 
 type resourceFileSystemSnapshot struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata defines resource interface Metadata method
@@ -115,6 +114,12 @@ func (r *resourceFileSystemSnapshot) Schema(ctx context.Context, req resource.Sc
 				},
 				Default: stringdefault.StaticString("Snapshot"),
 			},
+			"is_secure": schema.BoolAttribute{
+				Description:         "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				MarkdownDescription: "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				Optional:            true,
+				Computed:            true,
+			},
 		},
 	}
 }
@@ -126,18 +131,8 @@ func (r *resourceFileSystemSnapshot) Configure(ctx context.Context, req resource
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-
-		return
-	}
-
-	r.client = client
+	client := req.ProviderData.(*client.Client)
+	r.client = client.GenClient
 }
 
 // Create - method to create filesystem snapshot resource
@@ -154,14 +149,25 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 	fileSystemID := plan.FileSystemID.ValueString()
 
 	// Create new filesystem snapshot
-	snapCreate := &gopowerstore.SnapshotFSCreate{
-		Name:                plan.Name.ValueString(),
-		Description:         plan.Description.ValueString(),
-		ExpirationTimestamp: plan.ExpirationTimestamp.ValueString(),
-		AccessType:          plan.AccessType.ValueString(),
+	snapCreate := clientgen.FileSystemSnapshot{
+		Name:        helper.StringPtr(plan.Name.ValueString()),
+		Description: helper.StringPtr(plan.Description.ValueString()),
+	}
+	if !plan.AccessType.IsNull() {
+		accessTypeEnum := clientgen.FileSystemSnapshotAccessTypeEnum(plan.AccessType.ValueString())
+		snapCreate.AccessType = &accessTypeEnum
+	}
+	if !plan.ExpirationTimestamp.IsNull() {
+		if plan.ExpirationTimestamp.ValueString() != "" {
+			expTime, _ := time.Parse(time.RFC3339, plan.ExpirationTimestamp.ValueString())
+			snapCreate.ExpirationTimestamp = &expTime
+		}
+	}
+	if !plan.IsSecure.IsNull() {
+		snapCreate.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
 	}
 
-	snapCreateResponse, err := r.client.PStoreClient.CreateFsSnapshot(context.Background(), snapCreate, fileSystemID)
+	snapCreateResponse, _, err := r.client.FileSystemApi.FileSystemSnapshot(ctx, fileSystemID).Body(snapCreate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating filesystem snapshot",
@@ -170,18 +176,18 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 		return
 	}
 	// Get snapshot Details using ID retrieved above
-	snapshotResponse, err1 := r.client.PStoreClient.GetFS(context.Background(), snapCreateResponse.ID)
-	if err1 != nil {
+	snapshotResponse, _, err := r.client.FileSystemApi.GetFileSystemById(ctx, *snapCreateResponse.Id).Execute()
+	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting filesystem snapshot after creation",
-			"Could not get filesystem snapshot, unexpected error: "+err1.Error(),
+			"Could not get filesystem snapshot, unexpected error: "+err.Error(),
 		)
 		return
 	}
 
 	// Update details to state
 	result := models.FileSystemSnapshot{}
-	r.updateSnapshotState(&plan, &result, snapshotResponse)
+	r.updateSnapshotState(&plan, &result, *snapshotResponse)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -204,7 +210,7 @@ func (r *resourceFileSystemSnapshot) Read(ctx context.Context, req resource.Read
 	snapshotID := state.ID.ValueString()
 
 	// Get snapshot details from API and then update what is in state from what the API returns
-	snapshotResponse, err := r.client.PStoreClient.GetFS(context.Background(), snapshotID)
+	snapshotResponse, _, err := r.client.FileSystemApi.GetFileSystemById(ctx, snapshotID).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading snapshot",
@@ -212,7 +218,7 @@ func (r *resourceFileSystemSnapshot) Read(ctx context.Context, req resource.Read
 		)
 		return
 	}
-	r.updateSnapshotState(nil, &state, snapshotResponse)
+	r.updateSnapshotState(nil, &state, *snapshotResponse)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -260,7 +266,7 @@ func (r *resourceFileSystemSnapshot) Update(ctx context.Context, req resource.Up
 	filesystemSnapshotID := state.ID.ValueString()
 
 	//Update filesystem snapshot by calling API
-	_, err := r.client.PStoreClient.ModifyFS(context.Background(), snapshotModify, filesystemSnapshotID)
+	_, err := r.client.FileSystemApi.PatchFileSystemById(ctx, filesystemSnapshotID).Body(*snapshotModify).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating filesystem snapshot resource",
@@ -270,7 +276,7 @@ func (r *resourceFileSystemSnapshot) Update(ctx context.Context, req resource.Up
 	}
 
 	//Get filesystem Snapshot details
-	getRes, err := r.client.PStoreClient.GetFS(context.Background(), filesystemSnapshotID)
+	getRes, _, err := r.client.FileSystemApi.GetFileSystemById(ctx, filesystemSnapshotID).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting snapshot resource after update",
@@ -279,7 +285,7 @@ func (r *resourceFileSystemSnapshot) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	r.updateSnapshotState(&plan, &state, getRes)
+	r.updateSnapshotState(&plan, &state, *getRes)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -305,7 +311,7 @@ func (r *resourceFileSystemSnapshot) Delete(ctx context.Context, req resource.De
 	snapshotID := state.ID.ValueString()
 
 	// Delete snapshot by calling API
-	_, err := r.client.PStoreClient.DeleteFsSnapshot(context.Background(), snapshotID)
+	_, err := r.client.FileSystemApi.DeleteFileSystemById(ctx, snapshotID).Execute()
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -324,30 +330,32 @@ func (r *resourceFileSystemSnapshot) ImportState(ctx context.Context, req resour
 }
 
 // updateSnapshotState - method to update terraform state
-func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSystemSnapshot, response gopowerstore.FileSystem) {
+func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSystemSnapshot, response clientgen.FileSystemInstance) {
 
-	expTime := response.ExpirationTimestamp
-	state.ID = types.StringValue(response.ID)
-	state.Name = types.StringValue(response.Name)
-	state.Description = types.StringValue(response.Description)
-	// if expiration timestamp is not present then set to null.
-	if expTime == "" {
-		state.ExpirationTimestamp = types.StringValue("")
-	} else {
-		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
-	}
-	state.AccessType = types.StringValue(response.AccessType)
-	state.FileSystemID = types.StringValue(response.ParentID)
+	state.ID = helper.TfString(response.Id)
+	state.Name = helper.TfString(response.Name)
+	state.Description = helper.TfString(response.Description)
+	state.ExpirationTimestamp = helper.TfStringFromPTime(response.ExpirationTimestamp)
+	state.AccessType = helper.TfString(response.AccessType)
+	state.FileSystemID = helper.TfString(response.ParentId)
+	state.IsSecure = helper.TfBool(response.IsSecure)
 }
 
-func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *gopowerstore.FSModify {
-	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
-	if !plan.ExpirationTimestamp.IsNull() && expirationTimestamp == "" {
-		expirationTimestamp = "1970-01-01T00:00:00.000Z"
+func (r resourceFileSystemSnapshot) planToServer(plan models.FileSystemSnapshot) *clientgen.FileSystemModify {
+	fsModify := &clientgen.FileSystemModify{
+		Description: helper.StringPtr(plan.Description.ValueString()),
 	}
-	fsSnapshotUpdate := &gopowerstore.FSModify{
-		Description:         plan.Description.ValueString(),
-		ExpirationTimestamp: expirationTimestamp,
+	if !plan.ExpirationTimestamp.IsNull() {
+		if plan.ExpirationTimestamp.ValueString() == "" {
+			expTime, _ := time.Parse(time.RFC3339, DefaultExpirationTimestamp)
+			fsModify.ExpirationTimestamp = &expTime
+		} else {
+			expTime, _ := time.Parse(time.RFC3339, plan.ExpirationTimestamp.ValueString())
+			fsModify.ExpirationTimestamp = &expTime
+		}
 	}
-	return fsSnapshotUpdate
+	if !plan.IsSecure.IsNull() {
+		fsModify.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
+	}
+	return fsModify
 }

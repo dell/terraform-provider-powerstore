@@ -19,13 +19,15 @@ package powerstore
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"net/url"
 	"regexp"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
+	"time"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -40,7 +42,7 @@ func newVGSnapshotResource() resource.Resource {
 }
 
 type resourceVGSnapshot struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata defines resource interface Metadata method
@@ -106,6 +108,12 @@ func (r *resourceVGSnapshot) Schema(ctx context.Context, req resource.SchemaRequ
 					),
 				},
 			},
+			"is_secure": schema.BoolAttribute{
+				Description:         "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				MarkdownDescription: "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				Optional:            true,
+				Computed:            true,
+			},
 		},
 	}
 }
@@ -117,18 +125,8 @@ func (r *resourceVGSnapshot) Configure(ctx context.Context, req resource.Configu
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-
-		return
-	}
-
-	r.client = client
+	client := req.ProviderData.(*client.Client)
+	r.client = client.GenClient
 }
 
 // Create - method to create volume group snapshot resource
@@ -150,7 +148,9 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 
 	// if volume group name is present instead of ID
 	if volGroupID == "" {
-		volGroupResponse, err := r.client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
+		queries := make(url.Values)
+		queries.Set("name", "eq."+plan.VolumeGroupName.ValueString())
+		volGroupResponse, _, err := r.client.VolumeGroupApi.GetAllVolumeGroups(ctx).Queries(queries).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error creating volume group snapshot",
@@ -158,18 +158,33 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 			)
 			return
 		}
-		volGroupID = volGroupResponse.ID
+		if len(volGroupResponse) == 0 {
+			resp.Diagnostics.AddError(
+				"Error creating volume group snapshot",
+				"Volume group not found",
+			)
+			return
+		}
+		volGroupID = *volGroupResponse[0].Id
 		plan.VolumeGroupID = types.StringValue(volGroupID)
 	}
 
 	// Create new volume group snapshot
-	vgSnapCreate := &gopowerstore.VolumeGroupSnapshotCreate{
-		Name:                name,
-		Description:         description,
-		ExpirationTimestamp: expirationTimestamp,
+	vgSnapCreate := clientgen.VolumeGroupSnapshot{
+		Name: name,
+	}
+	if description != "" {
+		vgSnapCreate.Description = helper.StringPtr(description)
+	}
+	if expirationTimestamp != "" {
+		expTime, _ := time.Parse(time.RFC3339, expirationTimestamp)
+		vgSnapCreate.ExpirationTimestamp = &expTime
+	}
+	if !plan.IsSecure.IsNull() {
+		vgSnapCreate.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
 	}
 
-	snapCreateResponse, err := r.client.PStoreClient.CreateVolumeGroupSnapshot(context.Background(), volGroupID, vgSnapCreate)
+	snapCreateResponse, _, err := r.client.VolumeGroupApi.VolumeGroupSnapshot(ctx, volGroupID).Body(vgSnapCreate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume group snapshot",
@@ -178,11 +193,11 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 	// Get volume group snapshot Details using ID retrieved above
-	snapshotResponse, err1 := r.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), snapCreateResponse.ID)
-	if err1 != nil {
+	snapshotResponse, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(ctx, *snapCreateResponse.Id).Execute()
+	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group snapshot after creation",
-			"Could not get volume group snapshot, unexpected error: "+err1.Error(),
+			"Could not get volume group snapshot, unexpected error: "+err.Error(),
 		)
 		return
 	}
@@ -190,7 +205,7 @@ func (r *resourceVGSnapshot) Create(ctx context.Context, req resource.CreateRequ
 	// Update details to state
 	result := models.VolumeGroupSnapshot{}
 
-	r.updateVGSnapshotState(&plan, &result, snapshotResponse)
+	r.updateVGSnapshotState(&plan, &result, *snapshotResponse)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -213,7 +228,7 @@ func (r *resourceVGSnapshot) Read(ctx context.Context, req resource.ReadRequest,
 	snapshotID := state.ID.ValueString()
 	// Get snapshot details from API and then update what is in state from what the API returns
 
-	snapshotResponse, err := r.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), snapshotID)
+	snapshotResponse, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(ctx, snapshotID).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error reading snapshot",
@@ -221,7 +236,7 @@ func (r *resourceVGSnapshot) Read(ctx context.Context, req resource.ReadRequest,
 		)
 		return
 	}
-	r.updateVGSnapshotState(nil, &state, snapshotResponse)
+	r.updateVGSnapshotState(nil, &state, *snapshotResponse)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -257,7 +272,9 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	var errFlag bool
 	// if volume group name is present instead of ID
 	if volGroupID == "" {
-		volGroupResponse, err := r.client.PStoreClient.GetVolumeGroupByName(context.Background(), plan.VolumeGroupName.ValueString())
+		queries := make(url.Values)
+		queries.Set("name", "eq."+plan.VolumeGroupName.ValueString())
+		volGroupResponse, _, err := r.client.VolumeGroupApi.GetAllVolumeGroups(ctx).Queries(queries).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error updating volume group snapshot",
@@ -265,7 +282,14 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 			)
 			return
 		}
-		if volGroupResponse.ID != state.VolumeGroupID.ValueString() {
+		if len(volGroupResponse) == 0 {
+			resp.Diagnostics.AddError(
+				"Error updating volume group snapshot",
+				"Volume group not found",
+			)
+			return
+		}
+		if *volGroupResponse[0].Id != state.VolumeGroupID.ValueString() {
 			errFlag = true
 		}
 	} else if volGroupID != "" && volGroupID != state.VolumeGroupID.ValueString() {
@@ -284,7 +308,7 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	volumeGroupSnapshotID := state.ID.ValueString()
 
 	//Update volume group snapshot by calling API
-	_, err := r.client.PStoreClient.ModifyVolumeGroupSnapshot(context.Background(), volModify, volumeGroupSnapshotID)
+	_, err := r.client.VolumeGroupApi.PatchVolumeGroupById(ctx, volumeGroupSnapshotID).Body(*volModify).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating volume group snapshot resource",
@@ -294,7 +318,7 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	//Get Volume Snapshot details
-	getRes, err := r.client.PStoreClient.GetVolumeGroupSnapshot(context.Background(), volumeGroupSnapshotID)
+	getRes, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(ctx, volumeGroupSnapshotID).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume group snapshot resource after update",
@@ -303,7 +327,7 @@ func (r *resourceVGSnapshot) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	r.updateVGSnapshotState(&plan, &state, getRes)
+	r.updateVGSnapshotState(&plan, &state, *getRes)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -330,7 +354,7 @@ func (r *resourceVGSnapshot) Delete(ctx context.Context, req resource.DeleteRequ
 
 	var err error
 	// Delete volume group snapshot by calling API
-	_, err = r.client.PStoreClient.DeleteVolumeGroup(context.Background(), snapshotID)
+	_, err = r.client.VolumeGroupApi.DeleteVolumeGroupById(ctx, snapshotID).Execute()
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -349,33 +373,34 @@ func (r *resourceVGSnapshot) ImportState(ctx context.Context, req resource.Impor
 }
 
 // updateVGSnapshotState - method to update terraform state
-func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGroupSnapshot, response gopowerstore.VolumeGroup) {
+func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGroupSnapshot, response clientgen.VolumeGroupInstance) {
 
-	expTime := response.ProtectionData.ExpirationTimeStamp
-	state.ID = types.StringValue(response.ID)
-	state.Name = types.StringValue(response.Name)
-	state.Description = types.StringValue(response.Description)
-	// if expiration timestamp is not present then set to null.
-	if expTime == "" {
-		state.ExpirationTimestamp = types.StringValue("")
-	} else {
-		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
+	state.ID = helper.TfString(response.Id)
+	state.Name = helper.TfString(response.Name)
+	state.Description = helper.TfString(response.Description)
+	if response.ProtectionData != nil {
+		state.ExpirationTimestamp = helper.TfStringFromPTime(response.ProtectionData.ExpirationTimestamp)
+		state.VolumeGroupID = helper.TfString(response.ProtectionData.ParentId)
+		state.IsSecure = helper.TfBool(response.ProtectionData.IsSecure)
 	}
-	state.VolumeGroupID = types.StringValue(response.ProtectionData.ParentID)
 	if plan != nil {
 		state.VolumeGroupName = plan.VolumeGroupName
 	}
 }
 
-func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *gopowerstore.VolumeGroupSnapshotModify {
-	name := plan.Name.ValueString()
-	description := plan.Description.ValueString()
-	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
-
-	volGroupSnapshotUpdate := &gopowerstore.VolumeGroupSnapshotModify{
-		Description:         description,
-		Name:                name,
-		ExpirationTimestamp: &expirationTimeStamp,
+func (r resourceVGSnapshot) planToServer(plan models.VolumeGroupSnapshot) *clientgen.VolumeGroupModify {
+	volModify := &clientgen.VolumeGroupModify{
+		Name:        helper.StringPtr(plan.Name.ValueString()),
+		Description: helper.StringPtr(plan.Description.ValueString()),
 	}
-	return volGroupSnapshotUpdate
+	if !plan.ExpirationTimestamp.IsNull() {
+		if plan.ExpirationTimestamp.ValueString() != "" {
+			expTime, _ := time.Parse(time.RFC3339, plan.ExpirationTimestamp.ValueString())
+			volModify.ExpirationTimestamp = &expTime
+		}
+	}
+	if !plan.IsSecure.IsNull() {
+		volModify.IsSecure = helper.BoolPtr(plan.IsSecure.ValueBool())
+	}
+	return volModify
 }

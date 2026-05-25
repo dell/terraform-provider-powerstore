@@ -112,3 +112,29 @@ func SetDefault[T any](in *T, defaultVal T) *T {
 	}
 	return &defaultVal
 }
+
+// StringPtr - Converts a string to *string
+func StringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+// BoolPtr - Converts a bool to *bool
+func BoolPtr(b bool) *bool {
+	return &b
+}
+
+// Int32Ptr - Converts int32 to *int32
+func Int32Ptr(i int32) *int32 {
+	return &i
+}
+
+// Int32Value - Converts *int32 to int32 with default 0
+func Int32Value(i *int32) int32 {
+	if i == nil {
+		return 0
+	}
+	return *i
+}
