@@ -33,7 +33,7 @@ import (
 
 // Acceptance tests
 
-func TestAccFileIoLimitRule_Create(t *testing.T) {
+func TestAccFileIoLimitRule(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -49,49 +49,15 @@ func TestAccFileIoLimitRule_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_file_io_limit_rule.test", "max_bw", "100"),
 				),
 			},
-		},
-	})
-}
-
-func TestAccFileIoLimitRule_Update(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + FileIoLimitRuleParamsCreate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_file_io_limit_rule.test", "max_bw", "100"),
-				),
-			},
 			{
 				Config: ProviderConfigForTesting + FileIoLimitRuleParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_file_io_limit_rule.test", "name", "tf_acc_file_io_limit_rule"),
 					resource.TestCheckResourceAttr("powerstore_file_io_limit_rule.test", "max_bw", "200"),
 				),
 			},
-		},
-	})
-}
-
-func TestAccFileIoLimitRule_Import(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + FileIoLimitRuleParamsCreate,
-			},
-			{
-				Config:            ProviderConfigForTesting + FileIoLimitRuleParamsCreate,
+				Config:            ProviderConfigForTesting + FileIoLimitRuleParamsUpdate,
 				ResourceName:      "powerstore_file_io_limit_rule.test",
 				ImportState:       true,
 				ExpectError:       nil,

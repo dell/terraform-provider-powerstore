@@ -33,7 +33,7 @@ import (
 
 // Acceptance tests
 
-func TestAccIoLimitRule_Create(t *testing.T) {
+func TestAccIoLimitRuleRes(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -50,11 +50,30 @@ func TestAccIoLimitRule_Create(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_iops", "1000"),
 				),
 			},
+			{
+				Config: ProviderConfigForTesting + IoLimitRuleParamsUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_iops", "2000"),
+					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_bw", "2000"),
+				),
+			},
+			{
+				Config:            ProviderConfigForTesting + IoLimitRuleParamsUpdate,
+				ResourceName:      "powerstore_io_limit_rule.test",
+				ImportState:       true,
+				ExpectError:       nil,
+				ImportStateVerify: true,
+				ImportStateCheck: func(s []*terraform.InstanceState) error {
+					assert.Equal(t, "tf_acc_io_limit_rule", s[0].Attributes["name"])
+					assert.Equal(t, "Absolute", s[0].Attributes["type"])
+					return nil
+				},
+			},
 		},
 	})
 }
 
-func TestAccIoLimitRule_CreateWithDensityType(t *testing.T) {
+func TestAccIoLimitRuleRes_CreateWithDensityType(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -73,7 +92,7 @@ func TestAccIoLimitRule_CreateWithDensityType(t *testing.T) {
 	})
 }
 
-func TestAccIoLimitRule_CreateWithAllOptionals(t *testing.T) {
+func TestAccIoLimitRuleRes_CreateWithAllOptionals(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -86,7 +105,7 @@ func TestAccIoLimitRule_CreateWithAllOptionals(t *testing.T) {
 				Config: ProviderConfigForTesting + IoLimitRuleParamsCreateAllOptionals,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_iops", "1000"),
-					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_bw", "500"),
+					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_bw", "2000"),
 					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "burst_percentage", "20"),
 				),
 			},
@@ -94,61 +113,7 @@ func TestAccIoLimitRule_CreateWithAllOptionals(t *testing.T) {
 	})
 }
 
-func TestAccIoLimitRule_Update(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + IoLimitRuleParamsCreate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_iops", "1000"),
-				),
-			},
-			{
-				Config: ProviderConfigForTesting + IoLimitRuleParamsUpdate,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_iops", "2000"),
-					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_bw", "500"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccIoLimitRule_Import(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + IoLimitRuleParamsCreate,
-			},
-			{
-				Config:            ProviderConfigForTesting + IoLimitRuleParamsCreate,
-				ResourceName:      "powerstore_io_limit_rule.test",
-				ImportState:       true,
-				ExpectError:       nil,
-				ImportStateVerify: true,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, "tf_acc_io_limit_rule", s[0].Attributes["name"])
-					assert.Equal(t, "Absolute", s[0].Attributes["type"])
-					return nil
-				},
-			},
-		},
-	})
-}
-
-func TestAccIoLimitRule_CreateWithoutName(t *testing.T) {
+func TestAccIoLimitRuleRes_CreateWithoutName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -165,7 +130,7 @@ func TestAccIoLimitRule_CreateWithoutName(t *testing.T) {
 	})
 }
 
-func TestAccIoLimitRule_CreateWithoutType(t *testing.T) {
+func TestAccIoLimitRuleRes_CreateWithoutType(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -182,7 +147,7 @@ func TestAccIoLimitRule_CreateWithoutType(t *testing.T) {
 	})
 }
 
-func TestAccIoLimitRule_CreateWithInvalidType(t *testing.T) {
+func TestAccIoLimitRuleRes_CreateWithInvalidType(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -336,7 +301,7 @@ resource "powerstore_io_limit_rule" "test" {
 	name             = "tf_acc_io_limit_rule_full"
 	type             = "Absolute"
 	max_iops         = 1000
-	max_bw           = 500
+	max_bw           = 2000
 	burst_percentage = 20
 }
 `
@@ -346,7 +311,7 @@ resource "powerstore_io_limit_rule" "test" {
 	name     = "tf_acc_io_limit_rule"
 	type     = "Absolute"
 	max_iops = 2000
-	max_bw   = 500
+	max_bw   = 2000
 }
 `
 
