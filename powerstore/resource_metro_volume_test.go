@@ -23,6 +23,7 @@ import (
 	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -34,6 +35,44 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/stretchr/testify/assert"
 )
+
+// Helper function to generate unique volume name
+func getMetroVolumeName() string {
+	return fmt.Sprintf("metro_test_vol-%d", time.Now().UnixNano())
+}
+
+// Helper function to generate metro volume create config
+func getMetroVolumeConfig(remoteSystemID string) string {
+	volName := getMetroVolumeName()
+	return fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.volume_create_test.id
+  remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+}
+
+// Helper function to generate metro volume create paused config
+func getMetroVolumeConfigPaused(remoteSystemID string) string {
+	volName := getMetroVolumeName()
+	return fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id            = powerstore_volume.volume_create_test.id
+  remote_system_id     = "%s"
+  is_replication_paused = true
+}
+`, volName, remoteSystemID)
+}
 
 // Test Schema method for metro volume resource
 func TestMetroVolumeResource_Schema(t *testing.T) {
@@ -236,12 +275,38 @@ func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
+	// Generate unique config once for this test
+	volName := getMetroVolumeName()
+	config := fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.volume_create_test.id
+  remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+	configPaused := fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id            = powerstore_volume.volume_create_test.id
+  remote_system_id     = "%s"
+  is_replication_paused = true
+}
+`, volName, remoteSystemID)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config: ProviderConfigForTesting + config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "id"),
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "metro_replication_session_id"),
@@ -250,21 +315,21 @@ func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 			},
 			// Import test
 			{
-				Config:            ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config:            ProviderConfigForTesting + config,
 				ResourceName:      "powerstore_metro_volume.test",
 				ImportState:       true,
 				ImportStateVerify: false,
 			},
 			// Update test - pause replication
 			{
-				Config: ProviderConfigForTesting + MetroVolumeParamsCreatePaused,
+				Config: ProviderConfigForTesting + configPaused,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_metro_volume.test", "is_replication_paused", "true"),
 				),
 			},
 			// Update test - resume replication
 			{
-				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config: ProviderConfigForTesting + config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_metro_volume.test", "is_replication_paused", "false"),
 				),
@@ -338,13 +403,39 @@ func TestAccMetroVolume_ReadUpdateDeleteErrors(t *testing.T) {
 		}
 	}()
 
+	// Generate unique config once for this test
+	volName := getMetroVolumeName()
+	config := fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.volume_create_test.id
+  remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+	configPaused := fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id            = powerstore_volume.volume_create_test.id
+  remote_system_id     = "%s"
+  is_replication_paused = true
+}
+`, volName, remoteSystemID)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Step 1: Create successfully
 			{
-				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config: ProviderConfigForTesting + config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "id"),
 				),
@@ -354,7 +445,7 @@ func TestAccMetroVolume_ReadUpdateDeleteErrors(t *testing.T) {
 				PreConfig: func() {
 					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).GetReplicationSessionByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config:      ProviderConfigForTesting + config,
 				ExpectError: regexp.MustCompile(`.*Error reading metro volume replication session.*`),
 			},
 			// Step 3: Update (pause) error
@@ -363,7 +454,7 @@ func TestAccMetroVolume_ReadUpdateDeleteErrors(t *testing.T) {
 					mocker1.UnPatch()
 					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).ReplicationSessionPauseExecute).Return(nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfigForTesting + MetroVolumeParamsCreatePaused,
+				Config:      ProviderConfigForTesting + configPaused,
 				ExpectError: regexp.MustCompile(`.*Error pausing metro volume replication.*`),
 			},
 			// Step 4: Delete error
@@ -372,7 +463,7 @@ func TestAccMetroVolume_ReadUpdateDeleteErrors(t *testing.T) {
 					mocker1.UnPatch()
 					mocker1 = mockey.Mock((*clientgen.VolumeApiService).VolumeEndMetroExecute).Return(nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config:      ProviderConfigForTesting + config,
 				Destroy:     true,
 				ExpectError: regexp.MustCompile(`.*Error ending metro volume configuration.*`),
 			},
@@ -382,7 +473,7 @@ func TestAccMetroVolume_ReadUpdateDeleteErrors(t *testing.T) {
 					mocker1.UnPatch()
 					mocker1 = nil
 				},
-				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
+				Config: ProviderConfigForTesting + config,
 			},
 		},
 	})
@@ -417,7 +508,7 @@ resource "powerstore_metro_volume" "test" {
 
 var MetroVolumeParamsCreate = fmt.Sprintf(`
 resource "powerstore_volume" "volume_create_test" {
-  name = "test_acc_cvol"
+  name = "metro_test_vol"
   size = 2.5
 }
 
@@ -429,7 +520,7 @@ resource "powerstore_metro_volume" "test" {
 
 var MetroVolumeParamsCreatePaused = fmt.Sprintf(`
 resource "powerstore_volume" "volume_create_test" {
-  name = "test_acc_cvol"
+  name = "metro_test_vol"
   size = 2.5
 }
 

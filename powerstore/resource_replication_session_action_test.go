@@ -23,6 +23,7 @@ import (
 	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -32,6 +33,22 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/stretchr/testify/assert"
 )
+
+// Helper to create metro volume config for replication session action tests
+func getMetroConfigForActionTests() string {
+	volName := fmt.Sprintf("repl-action-test-vol-%d", time.Now().UnixNano())
+	return fmt.Sprintf(`
+resource "powerstore_volume" "test_vol" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.test_vol.id
+  remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+}
 
 // Test Schema method for replication session action resource
 func TestReplicationSessionActionResource_Schema(t *testing.T) {
@@ -171,15 +188,30 @@ func TestAccReplicationSessionAction_PauseOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
+	metroConfig := getMetroConfigForActionTests()
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
+			// Step 1: Create metro volume (creates replication session)
 			{
-				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionPause, replicationSessionID),
+				Config: ProviderConfigForTesting + metroConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "metro_replication_session_id"),
+				),
+			},
+			// Step 2: Pause the session
+			{
+				Config: ProviderConfigForTesting + metroConfig + `
+resource "powerstore_replication_session_action" "test_pause" {
+  session_id = powerstore_metro_volume.test.metro_replication_session_id
+  action = "pause"
+}
+`,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_replication_session_action.test", "action", "pause"),
-					resource.TestCheckResourceAttr("powerstore_replication_session_action.test", "session_id", replicationSessionID),
+					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_pause", "action", "pause"),
+					resource.TestCheckResourceAttrSet("powerstore_replication_session_action.test_pause", "session_id"),
 				),
 			},
 		},
@@ -190,6 +222,9 @@ func TestAccReplicationSessionAction_PauseOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if endpoint != "http://localhost:3003/api/rest/" {
+		t.Skip("Skipping on real server - sync is not supported for synchronous (metro) replication sessions")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -210,6 +245,9 @@ func TestAccReplicationSessionAction_SyncOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_FailoverOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if endpoint != "http://localhost:3003/api/rest/" {
+		t.Skip("Skipping on real server - operation not supported for metro sessions")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -233,12 +271,52 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
+	// Generate unique name for this test
+	volName := fmt.Sprintf("resume-action-test-%d", time.Now().UnixNano())
+	metroConfig := fmt.Sprintf(`
+resource "powerstore_volume" "test_vol" {
+  name = "%s"
+  size = 2.5
+}
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.test_vol.id
+  remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+	metroConfigPaused := fmt.Sprintf(`
+resource "powerstore_volume" "test_vol" {
+  name = "%s"
+  size = 2.5
+}
+resource "powerstore_metro_volume" "test" {
+  volume_id             = powerstore_volume.test_vol.id
+  remote_system_id      = "%s"
+  is_replication_paused = true
+}
+`, volName, remoteSystemID)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
+			// Step 1: Create metro volume
 			{
-				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionResume, replicationSessionID),
+				Config: ProviderConfigForTesting + metroConfig,
+				Check:  resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "metro_replication_session_id"),
+			},
+			// Step 2: Pause the session
+			{
+				Config: ProviderConfigForTesting + metroConfigPaused,
+				Check:  resource.TestCheckResourceAttr("powerstore_metro_volume.test", "is_replication_paused", "true"),
+			},
+			// Step 3: Resume via action resource
+			{
+				Config: ProviderConfigForTesting + metroConfigPaused + `
+resource "powerstore_replication_session_action" "test_resume" {
+  session_id = powerstore_metro_volume.test.metro_replication_session_id
+  action = "resume"
+}
+`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_resume", "action", "resume"),
 				),
@@ -251,6 +329,9 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if endpoint != "http://localhost:3003/api/rest/" {
+		t.Skip("Skipping on real server - requires session in FAILED OVER state")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -271,6 +352,9 @@ func TestAccReplicationSessionAction_ReprotectOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_StartFailoverTestOnMock(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if endpoint != "http://localhost:3003/api/rest/" {
+		t.Skip("Skipping on real server - must be run from destination system")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -300,6 +384,9 @@ func TestAccReplicationSessionAction_StopFailoverTestOnMock(t *testing.T) {
 func TestAccReplicationSessionAction_CreateErrors(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if endpoint != "http://localhost:3003/api/rest/" {
+		t.Skip("Skipping on real server - mocked error test")
 	}
 
 	var mocker1 *mockey.Mocker
