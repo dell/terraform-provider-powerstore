@@ -48,6 +48,14 @@ func TfBool(in *bool) types.Bool {
 	return types.BoolValue(*in)
 }
 
+// TfInt32 - Converts *int32 to types.Int32, returns types.Int32Null if input is nil
+func TfInt32(in *int32) types.Int32 {
+	if in == nil {
+		return types.Int32Null()
+	}
+	return types.Int32Value(*in)
+}
+
 // TfObject - Converts input using the transform transform function, returns empty output if input is nil
 func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	if in == nil {
@@ -59,9 +67,9 @@ func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 
 // ValueToPointer - Extracts Go value pointer from attr.Value
 // Returns nil if input is not known
-// Supported types: types.String, types.Bool
+// Supported types: types.String, types.Bool, types.Int32
 // We can add more types in the future when required
-func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
+func ValueToPointer[T bool | ~string | ~int32, VT attr.Value](in VT) *T {
 	if in.IsNull() || in.IsUnknown() {
 		return nil
 	}
@@ -71,6 +79,8 @@ func ValueToPointer[T bool | string, VT attr.Value](in VT) *T {
 		ret = inv.ValueString()
 	case types.Bool:
 		ret = inv.ValueBool()
+	case types.Int32:
+		ret = inv.ValueInt32()
 	}
 
 	switch retv := ret.(type) {
