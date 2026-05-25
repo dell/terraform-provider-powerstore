@@ -18,6 +18,7 @@ limitations under the License.
 package helper
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -69,7 +70,7 @@ func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 // Returns nil if input is not known
 // Supported types: types.String, types.Bool, types.Int32
 // We can add more types in the future when required
-func ValueToPointer[T bool | ~string | ~int32, VT attr.Value](in VT) *T {
+func ValueToPointer[T bool | string | int32, VT attr.Value](in VT) *T {
 	if in.IsNull() || in.IsUnknown() {
 		return nil
 	}
@@ -88,6 +89,25 @@ func ValueToPointer[T bool | ~string | ~int32, VT attr.Value](in VT) *T {
 		return &retv
 	}
 	return nil
+}
+
+// ValueToEnumPointer - Converts attr.Value to *E where E is an enum type.
+// B is the underlying/basic type extracted from Terraform value.
+// Returns nil if input is null/unknown, unsupported, or not convertible to enum type E.
+func ValueToEnumPointer[B bool | string | int32, E ~bool | ~string | ~int32, VT attr.Value](in VT) *E {
+	basicVal := ValueToPointer[B](in)
+	if basicVal == nil {
+		return nil
+	}
+
+	var enumVal E
+	enumRV := reflect.ValueOf(&enumVal).Elem()
+	basicRV := reflect.ValueOf(*basicVal)
+	if !basicRV.Type().ConvertibleTo(enumRV.Type()) {
+		return nil
+	}
+	enumRV.Set(basicRV.Convert(enumRV.Type()))
+	return &enumVal
 }
 
 // SliceTransform - Applies the transform function to each element in a slice

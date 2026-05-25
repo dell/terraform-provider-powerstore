@@ -1455,6 +1455,200 @@
 				"operationId": "volume_group_remove_members"
 			}
 		},
+		"/file_system": {
+			"get": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Collection Query",
+				"description": "Query file systems.",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_system_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of file system instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_system_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_file_systems",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Create",
+				"description": "Create a file system.",
+				"parameters": [
+					{
+						"name": "body",
+						"required": true,
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/file_system_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_file_systems"
+			}
+		},
+		"/file_system/{id}": {
+			"get": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Instance Query",
+				"description": "Query a specific file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_system_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_file_system_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Modify",
+				"description": "Modify a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/file_system_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_file_system_by_id"
+			},
+			"delete": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Delete",
+				"description": "Delete a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_file_system_by_id"
+			}
+		},
 		"/recycle_bin": {
 			"get": {
 				"summary": "Collection Query",
@@ -10628,11 +10822,16 @@
 				},
 				"protection_policy": {
 					"type": "object",
-					"description": "This is the embeddable reference form of protection_policy_id attribute."
+					"$ref": "#/definitions/policy_instance",
+					"description": "This is the embeddable reference form of protection_policy_id attribute.",
+					"x-ref": "policy"
 				},
 				"performance_policy": {
 					"type": "object",
-					"description": "This is the embeddable reference form of performance_policy_id attribute."
+					"$ref": "#/definitions/policy_instance",
+					"description": "This is the embeddable reference form of performance_policy_id attribute.",
+					"x-ref": "policy",
+					"x-added": "4.1.0.0"
 				},
 				"file_tree_quotas": {
 					"type": "array",
@@ -10665,6 +10864,238 @@
 						"x-ref": "smb_share"
 					},
 					"description": "This is the inverse of the resource type smb_share association."
+				}
+			}
+		},
+		"file_system_create": {
+			"type": "object",
+			"description": "Parameters for the file system create operation.",
+			"required": [
+				"name",
+				"nas_server_id",
+				"size_total"
+			],
+			"properties": {
+				"name": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 255,
+					"description": "Name of the file system. (255 UTF-8 characters)."
+				},
+				"description": {
+					"type": "string",
+					"minLength": 0,
+					"maxLength": 255,
+					"description": "File system description. (255 UTF-8 characters)."
+				},
+				"size_total": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Size that the file system presents to the host or end user. (Bytes)\nValue is always rounded up to next MB.\n",
+					"x-units": "bytes",
+					"minimum": 3221225472,
+					"maximum": 281474976710656
+				},
+				"nas_server_id": {
+					"type": "string",
+					"description": "Unique identifier of the NAS Server on which the file system is mounted. name:{name} can be used instead of {id}. For example: 'nas_server_id':'name:nas_server_name'",
+					"x-ref": "nas_server"
+				},
+				"config_type": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileSystemConfigTypeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"access_policy": {
+					"$ref": "#/definitions/FileSystemAccessPolicyEnum"
+				},
+				"locking_policy": {
+					"$ref": "#/definitions/FileSystemLockingPolicyEnum"
+				},
+				"folder_rename_policy": {
+					"$ref": "#/definitions/FileSystemFolderRenamePolicyEnum"
+				},
+				"is_smb_sync_writes_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether the synchronous writes option is enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - Synchronous writes option is enabled on the file system.\n* false - Synchronous writes option is disabled on the file system.\n"
+				},
+				"is_smb_no_notify_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether notifications of changes to directory file structure are enabled.\n* true - Change directory notifications are disabled.\n* false - Change directory notifications are enabled.\n"
+				},
+				"is_smb_op_locks_enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Indicates whether opportunistic file locking is enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - Opportunistic file locking is enabled on the file system.\n* false - Opportunistic file locking is disabled on the file system.\n"
+				},
+				"is_smb_notify_on_access_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether file access notifications are enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - File access notifications are enabled on the file system.\n* false - File access notifications are disabled on the file system.\n"
+				},
+				"is_smb_notify_on_write_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether file writes notifications are enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - File writes notifications are enabled on the file system.\n* false - File writes notifications are disabled on the file system.\n"
+				},
+				"smb_notify_on_change_dir_depth": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Lowest directory level to which the enabled notifications apply, if any. Cannot change value from default for VMware Config Type.",
+					"minimum": 1,
+					"maximum": 512
+				},
+				"is_async_MTime_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether asynchronous MTIME is enabled on the file system or protocol snaps that are mounted writeable. Values are:\n* true - Asynchronous MTIME is enabled on the file system.\n* false - Asynchronous MTIME is disabled on the file system.\n"
+				},
+				"protection_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the protection policy applied to the file system. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'"
+				},
+				"performance_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the File_Performance type policy applied to the file_system.\nIf empty and there is no performance policy set for the parent nas_server, then no performance policy is governing the file_system.\n name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				},
+				"file_events_publishing_mode": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileEventsPublishingModeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"flr_attributes": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/flr_create",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"host_io_size": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileSystemHostIoSizeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				}
+			}
+		},
+		"file_system_modify": {
+			"type": "object",
+			"description": "Parameters for the file system modify operation.\nModify a filesystem settings, where {id} is the unique identifier of the filesystem instance to modify\nPlease note that modifying any of the following filesystem settings while in production may interrupt clients I/Os:\n    - access_policy\n    - locking_policy\n    - folder_rename_policy\n    - is_smb_sync_writes_enabled\n    - is_smb_op_locks_enabled\n    - is_async_MTime_enabled\n    - file_events_publishing_mode\n    - smb_notify_on_change_dir_depth\n",
+			"properties": {
+				"description": {
+					"type": "string",
+					"description": "Description of the file system. (255 UTF-8 characters).",
+					"minLength": 0,
+					"maxLength": 255
+				},
+				"size_total": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Size, in bytes, presented to the host or end user.\nThis can be used for both expand and shrink on a file system.\nValue is always rounded up to next MB.\n",
+					"x-units": "bytes",
+					"minimum": 3221225472,
+					"maximum": 281474976710656
+				},
+				"access_policy": {
+					"$ref": "#/definitions/FileSystemAccessPolicyEnum"
+				},
+				"locking_policy": {
+					"$ref": "#/definitions/FileSystemLockingPolicyEnum"
+				},
+				"folder_rename_policy": {
+					"$ref": "#/definitions/FileSystemFolderRenamePolicyEnum"
+				},
+				"is_smb_sync_writes_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether the synchronous writes option is enabled on the file system. Values are:\n* true - Synchronous writes option is enabled on the file system.\n* false - Synchronous writes option is disabled on the file system.\n"
+				},
+				"is_smb_op_locks_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether opportunistic file locking is enabled on the file system. Values are:\n* true - Opportunistic file locking is enabled on the file system.\n* false - Opportunistic file locking is disabled on the file system.\n"
+				},
+				"is_smb_notify_on_access_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether file access notifications are enabled on the file system. Values are:\n* true - File access notifications are enabled on the file system.\n* false - File access notifications on file access are disabled on the file system.\n"
+				},
+				"is_smb_notify_on_write_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether notifications on file writes are enabled on the file system. Values are:\n* true - File writes notifications are enabled on the file system.\n* false - File writes notifications are disabled on the file system.\n"
+				},
+				"smb_notify_on_change_dir_depth": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Lowest directory level to which the enabled notifications apply, if any.",
+					"minimum": 1,
+					"maximum": 512
+				},
+				"is_smb_no_notify_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether notifications of changes to a directory file structure are enabled. Values are:\n* true - Change directory notifications are disabled.\n* false - Change directory notifications are enabled.\n"
+				},
+				"is_async_MTime_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether asynchronous MTIME is enabled on the file system or protocol snaps that are mounted writeable. Values are:\n* true - Asynchronous MTIME is enabled on the file system.\n* false - Asynchronous MTIME is disabled on the file system.\n"
+				},
+				"protection_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the protection policy applied to the file system. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'"
+				},
+				"performance_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the File_Performance type policy applied to the file_system.\nIf empty and there is no performance policy set for the parent nas_server, then no performance policy is governing the file_system.\n name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				},
+				"is_quota_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether quota is enabled.\nQuotas are not supported for read-only file systems.\nDefault value for the grace period is set to infinite=-1 to match Windows' quota policy\nValues are:\n* true - Start tracking usages for all users on a file system or a quota tree, and user quota limits will be enforced.\n* false - Stop tracking usages for all users on a file system or a quota tree, and user quota limits will not be enforced.\n"
+				},
+				"grace_period": {
+					"description": "Grace period of soft limits (seconds):\n * -1: default: Infinite grace (Windows policy).\n *  0: Use system default of 1 week.\n * Positive: Grace period after which the soft limit is treated as a hard limit (seconds).\n",
+					"type": "integer",
+					"format": "int32",
+					"x-units": "seconds",
+					"minimum": -1,
+					"maximum": 2147483647
+				},
+				"default_hard_limit": {
+					"description": "Default hard limit of user quotas and tree quotas (bytes). The hard limit value is always rounded up to match the file system's physical block size.\n(0 means 'No limitation'. This value can be used to compute the amount of space consumed without limiting the space).\n",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 0,
+					"maximum": 9223372036854775807
+				},
+				"default_soft_limit": {
+					"description": "Default soft limit of user quotas and tree quotas (bytes). Value is always rounded up to match the file system's physical block size.\n(0 means 'No limitation'.)\n",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 0,
+					"maximum": 9223372036854775807
+				},
+				"expiration_timestamp": {
+					"type": "string",
+					"format": "date-time",
+					"description": "Time when the snapshot will expire. Use 1970-01-01T00:00:00.000Z to set expiration timestamp to null."
+				},
+				"file_events_publishing_mode": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileEventsPublishingModeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"flr_attributes": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/flr_modify",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"is_secure": {
+					"type": "boolean",
+					"description": "Indicates whether a snapshot type filesystem is secure:\n* true - The snapshot is read-only and cannot be deleted until it has expired.\n  The expiration time of secure snapshot cannot be reduced and cannot be set to infinite.\n  The value of is_secure cannot be changed from true to false.\n* false - A normal snapshot.\n\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
 				}
 			}
 		},
@@ -10836,12 +11267,10 @@
 				},
 				"clock_time": {
 					"type": "string",
-					"format": "date-time",
 					"description": "Per file system clock used to track the retention date.\nIt is initialized when an FLR-enabled file system is first mounted on a NAS Server.\nIt does not advance when a file system is not mounted.\n\nThis setting is significant only when flr mode is not None.\n"
 				},
 				"maximum_retention_date": {
 					"type": "string",
-					"format": "date-time",
 					"description": "Maximum date and time that has been set on any locked file in an FLR-enabled file system, which means that the file system itself will be protected until this date and time.\nThis value is compared to the FLR Clock Time to determine whether the date and time have passed.\nValue is null if the maximum locked date is infinite, or a specific time.\n\nThis setting is significant only when flr mode is not None.\n"
 				},
 				"mode_l10n": {
@@ -10852,6 +11281,70 @@
 			},
 			"description": "\nWas added in version 3.0.0.0. \nFiltering on the fields of this embedded resource is not supported.",
 			"x-no_filter": true
+		},
+		"flr_create": {
+			"x-added": "3.0.0.0",
+			"type": "object",
+			"properties": {
+				"mode": {
+					"$ref": "#/definitions/FileSystemFLRModeEnum"
+				},
+				"minimum_retention": {
+					"type": "string",
+					"default": "1D",
+					"description": "The shortest retention period for which files on an FLR-enabled file system can be locked and protected from deletion. This value must be less than or equal to the maximum retention period.\nAny attempt to lock a file for less than the minimum retention period results in the file being locked until the current system time plus the minimum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or the keyword infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"default_retention": {
+					"type": "string",
+					"description": "The default retention period that is used in an FLR-enabled file system when a file is locked and a retention period is not specified.\nThis value must be greater than or equal to the minimum retention period, and less than or equal to the maximum retention period.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite.\nThe default value for the default retention period is infinite for Enterprise FLR mode, and 1 year for Compliance FLR mode.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"maximum_retention": {
+					"type": "string",
+					"default": "infinite",
+					"description": "The longest retention period for which files on an FLR-enabled file system can be locked and protected from deletion.\nAny attempt to lock a file for more than this maximum retention period results in the file being locked until the current system time plus the maximum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				}
+			},
+			"description": "\nWas added in version 3.0.0.0."
+		},
+		"flr_modify": {
+			"x-added": "3.0.0.0",
+			"type": "object",
+			"properties": {
+				"minimum_retention": {
+					"type": "string",
+					"description": "The shortest retention period for which files on an FLR-enabled file system can be locked and protected from deletion. This value must be less than or equal to the maximum retention period.\nAny attempt to lock a file for less than the minimum retention period results in the file being locked until the current system time plus the minimum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or the keyword infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"default_retention": {
+					"type": "string",
+					"description": "The default retention period that is used in an FLR-enabled file system when a file is locked and a retention period is not specified.\nThis value must be greater than or equal to the minimum retention period, and less than or equal to the maximum retention period.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite.\nThe default value for the default retention period is infinite for Enterprise FLR mode, and 1 year for Compliance FLR mode.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"maximum_retention": {
+					"type": "string",
+					"description": "The longest retention period for which files on an FLR-enabled file system can be locked and protected from deletion.\nAny attempt to lock a file for more than this maximum retention period results in the file being locked until the current system time plus the maximum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"auto_lock": {
+					"type": "boolean",
+					"description": "Indicates whether to automatically lock files in an FLR-enabled file system. When true files are locked automatically after modification based on the flrPolicyInterval interval.\nWhen enabled, auto-locked files are set with the default retention period value.\nThis setting can only be applied to mounted FLR enabled file systems.\n"
+				},
+				"auto_delete": {
+					"type": "boolean",
+					"description": "Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.\nThis setting can only be applied to mounted FLR enabled file systems.\n"
+				},
+				"policy_interval": {
+					"type": "integer",
+					"minimum": 60,
+					"maximum": 31536000,
+					"description": "Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.\nThis setting can only be applied to mounted FLR enabled file systems.\n",
+					"format": "int32"
+				}
+			},
+			"description": "\nWas added in version 3.0.0.0."
 		},
 		"file_tree_quota_instance": {
 			"type": "object",

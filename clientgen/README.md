@@ -82,6 +82,11 @@ Class | Method | HTTP request | Description
 *FileIoLimitRuleApi* | [**GetFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#getfileiolimitrulebyid) | **Get** /file_io_limit_rule/{id} | Instance Query
 *FileIoLimitRuleApi* | [**PatchFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#patchfileiolimitrulebyid) | **Patch** /file_io_limit_rule/{id} | Modify
 *FileIoLimitRuleApi* | [**PostAllFileIoLimitRules**](docs/FileIoLimitRuleApi.md#postallfileiolimitrules) | **Post** /file_io_limit_rule | Create
+*FileSystemApi* | [**DeleteFileSystemById**](docs/FileSystemApi.md#deletefilesystembyid) | **Delete** /file_system/{id} | Delete
+*FileSystemApi* | [**GetAllFileSystems**](docs/FileSystemApi.md#getallfilesystems) | **Get** /file_system | Collection Query
+*FileSystemApi* | [**GetFileSystemById**](docs/FileSystemApi.md#getfilesystembyid) | **Get** /file_system/{id} | Instance Query
+*FileSystemApi* | [**PatchFileSystemById**](docs/FileSystemApi.md#patchfilesystembyid) | **Patch** /file_system/{id} | Modify
+*FileSystemApi* | [**PostAllFileSystems**](docs/FileSystemApi.md#postallfilesystems) | **Post** /file_system | Create
 *IoLimitRuleApi* | [**DeleteIoLimitRuleById**](docs/IoLimitRuleApi.md#deleteiolimitrulebyid) | **Delete** /io_limit_rule/{id} | Delete
 *IoLimitRuleApi* | [**GetAllIoLimitRules**](docs/IoLimitRuleApi.md#getalliolimitrules) | **Get** /io_limit_rule | Collection Query
 *IoLimitRuleApi* | [**GetIoLimitRuleById**](docs/IoLimitRuleApi.md#getiolimitrulebyid) | **Get** /io_limit_rule/{id} | Instance Query
@@ -174,11 +179,13 @@ Class | Method | HTTP request | Description
  - [FileQuotaStateEnum](docs/FileQuotaStateEnum.md)
  - [FileSystemAccessPolicyEnum](docs/FileSystemAccessPolicyEnum.md)
  - [FileSystemConfigTypeEnum](docs/FileSystemConfigTypeEnum.md)
+ - [FileSystemCreate](docs/FileSystemCreate.md)
  - [FileSystemFLRModeEnum](docs/FileSystemFLRModeEnum.md)
  - [FileSystemFolderRenamePolicyEnum](docs/FileSystemFolderRenamePolicyEnum.md)
  - [FileSystemHostIoSizeEnum](docs/FileSystemHostIoSizeEnum.md)
  - [FileSystemInstance](docs/FileSystemInstance.md)
  - [FileSystemLockingPolicyEnum](docs/FileSystemLockingPolicyEnum.md)
+ - [FileSystemModify](docs/FileSystemModify.md)
  - [FileSystemSnapshotAccessTypeEnum](docs/FileSystemSnapshotAccessTypeEnum.md)
  - [FileSystemSnapshotCreatorTypeEnum](docs/FileSystemSnapshotCreatorTypeEnum.md)
  - [FileSystemTypeEnum](docs/FileSystemTypeEnum.md)
@@ -186,7 +193,9 @@ Class | Method | HTTP request | Description
  - [FileUserQuotaInstance](docs/FileUserQuotaInstance.md)
  - [FileVirusCheckerInstance](docs/FileVirusCheckerInstance.md)
  - [FileVirusCheckerOfflinePolicyEnum](docs/FileVirusCheckerOfflinePolicyEnum.md)
+ - [FlrCreate](docs/FlrCreate.md)
  - [FlrInstance](docs/FlrInstance.md)
+ - [FlrModify](docs/FlrModify.md)
  - [FrontEndPortConnectionTypeEnum](docs/FrontEndPortConnectionTypeEnum.md)
  - [FsnInstance](docs/FsnInstance.md)
  - [HAOSTypeEnum](docs/HAOSTypeEnum.md)

@@ -21,13 +21,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"regexp"
-	client "terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 
+	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/models"
 	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -41,7 +42,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"terraform-provider-powerstore/models/jsonmodel"
 )
 
 type fileSystemResource struct {
@@ -416,25 +416,25 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	fileSystemCreate := &gopowerstore.FsCreate{
+	fileSystemCreate := clientgen.FileSystemCreate{
 		Name:                       plan.Name.ValueString(),
-		Description:                plan.Description.ValueString(),
-		Size:                       valInBytes,
-		NASServerID:                plan.NASServerID.ValueString(),
-		ConfigType:                 plan.ConfigType.ValueString(),
-		AccessPolicy:               plan.AccessPolicy.ValueString(),
-		LockingPolicy:              plan.LockingPolicy.ValueString(),
-		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-		IsAsyncMTimeEnabled:        plan.IsAsyncMTimeEnabled.ValueBool(),
-		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
-		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
-		HostIOSize:                 plan.HostIOSize.ValueString(),
-		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-		IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
-		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
-		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
-		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+		Description:                helper.ValueToPointer[string](plan.Description),
+		SizeTotal:                  valInBytes,
+		NasServerId:                plan.NASServerID.ValueString(),
+		ConfigType:                 helper.ValueToEnumPointer[string, clientgen.FileSystemConfigTypeEnum](plan.ConfigType),
+		AccessPolicy:               helper.ValueToEnumPointer[string, clientgen.FileSystemAccessPolicyEnum](plan.AccessPolicy),
+		LockingPolicy:              helper.ValueToEnumPointer[string, clientgen.FileSystemLockingPolicyEnum](plan.LockingPolicy),
+		FolderRenamePolicy:         helper.ValueToEnumPointer[string, clientgen.FileSystemFolderRenamePolicyEnum](plan.FolderRenamePolicy),
+		IsAsyncMTimeEnabled:        helper.ValueToPointer[bool](plan.IsAsyncMTimeEnabled),
+		ProtectionPolicyId:         helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		FileEventsPublishingMode:   helper.ValueToEnumPointer[string, clientgen.FileEventsPublishingModeEnum](plan.FileEventsPublishingMode),
+		HostIoSize:                 helper.ValueToEnumPointer[string, clientgen.FileSystemHostIoSizeEnum](plan.HostIOSize),
+		IsSmbSyncWritesEnabled:     helper.ValueToPointer[bool](plan.IsSmbSyncWritesEnabled),
+		IsSmbNoNotifyEnabled:       helper.ValueToPointer[bool](plan.IsSmbNoNotifyEnabled),
+		IsSmbOpLocksEnabled:        helper.ValueToPointer[bool](plan.IsSmbOpLocksEnabled),
+		IsSmbNotifyOnAccessEnabled: helper.ValueToPointer[bool](plan.IsSmbNotifyOnAccessEnabled),
+		IsSmbNotifyOnWriteEnabled:  helper.ValueToPointer[bool](plan.IsSmbNotifyOnWriteEnabled),
+		SmbNotifyOnChangeDirDepth:  helper.ValueToPointer[int32](plan.SmbNotifyOnChangeDirDepth),
 	}
 
 	var FlrCreate models.FlrAttributes
@@ -447,16 +447,16 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 			)
 			return
 		}
-		fileSystemCreate.FlrCreate = gopowerstore.FlrAttributes{
-			Mode:             FlrCreate.Mode.ValueString(),
-			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
-			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
-			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
+		fileSystemCreate.FlrAttributes = &clientgen.FlrCreate{
+			Mode:             helper.ValueToEnumPointer[string, clientgen.FileSystemFLRModeEnum](FlrCreate.Mode),
+			MinimumRetention: helper.ValueToPointer[string](FlrCreate.MinimumRetention),
+			DefaultRetention: helper.ValueToPointer[string](FlrCreate.DefaultRetention),
+			MaximumRetention: helper.ValueToPointer[string](FlrCreate.MaximumRetention),
 		}
 	}
 
 	// Create New FileSystem
-	fsCreateResponse, err := r.client.PStoreClient.CreateFS(context.Background(), fileSystemCreate)
+	fsCreateResponse, _, err := r.client.GenClient.FileSystemApi.PostAllFileSystems(ctx).Body(fileSystemCreate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating file system",
@@ -466,7 +466,7 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// Get file system Details using ID retrieved above
-	fsResponse, err1 := r.client.PStoreClient.GetFS(context.Background(), fsCreateResponse.ID)
+	fsResponse, err1 := r.readFileSystemAPI(ctx, *fsCreateResponse.Id)
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error getting file system after creation",
@@ -499,7 +499,7 @@ func (r fileSystemResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	// Get file system details from API and then update what is in state from what the API returns
 	fsID := state.ID.ValueString()
-	fsResponse, err := r.client.PStoreClient.GetFS(context.Background(), fsID)
+	fsResponse, err := r.readFileSystemAPI(ctx, fsID)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -608,36 +608,35 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		)
 		return
 	}
-	var fsModify *jsonmodel.FSModify
-	fsModify = &jsonmodel.FSModify{
-		Description:                plan.Description.ValueString(),
-		Size:                       int(valInBytes),
-		AccessPolicy:               plan.AccessPolicy.ValueString(),
-		LockingPolicy:              plan.LockingPolicy.ValueString(),
-		FolderRenamePolicy:         plan.FolderRenamePolicy.ValueString(),
-		IsAsyncMtimeEnabled:        helper.GetKnownBoolPointer(plan.IsAsyncMTimeEnabled),
-		ProtectionPolicyID:         plan.ProtectionPolicyID.ValueString(),
-		FileEventsPublishingMode:   plan.FileEventsPublishingMode.ValueString(),
-		IsSmbSyncWritesEnabled:     helper.GetKnownBoolPointer(plan.IsSmbSyncWritesEnabled),
-		IsSmbNoNotifyEnabled:       helper.GetKnownBoolPointer(plan.IsSmbNoNotifyEnabled),
-		IsSmbOpLocksEnabled:        helper.GetKnownBoolPointer(plan.IsSmbOpLocksEnabled),
+	fsModify := clientgen.FileSystemModify{
+		Description:                helper.ValueToPointer[string](plan.Description),
+		SizeTotal:                  &valInBytes,
+		AccessPolicy:               helper.ValueToEnumPointer[string, clientgen.FileSystemAccessPolicyEnum](plan.AccessPolicy),
+		LockingPolicy:              helper.ValueToEnumPointer[string, clientgen.FileSystemLockingPolicyEnum](plan.LockingPolicy),
+		FolderRenamePolicy:         helper.ValueToEnumPointer[string, clientgen.FileSystemFolderRenamePolicyEnum](plan.FolderRenamePolicy),
+		IsAsyncMTimeEnabled:        helper.ValueToPointer[bool](plan.IsAsyncMTimeEnabled),
+		ProtectionPolicyId:         helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		FileEventsPublishingMode:   helper.ValueToEnumPointer[string, clientgen.FileEventsPublishingModeEnum](plan.FileEventsPublishingMode),
+		IsSmbSyncWritesEnabled:     helper.ValueToPointer[bool](plan.IsSmbSyncWritesEnabled),
+		IsSmbNoNotifyEnabled:       helper.ValueToPointer[bool](plan.IsSmbNoNotifyEnabled),
+		IsSmbOpLocksEnabled:        helper.ValueToPointer[bool](plan.IsSmbOpLocksEnabled),
 		IsSmbNotifyOnAccessEnabled: helper.GetKnownBoolPointer(plan.IsSmbNotifyOnAccessEnabled),
 		IsSmbNotifyOnWriteEnabled:  helper.GetKnownBoolPointer(plan.IsSmbNotifyOnWriteEnabled),
-		SmbNotifyOnChangeDirDepth:  plan.SmbNotifyOnChangeDirDepth.ValueInt32(),
+		SmbNotifyOnChangeDirDepth:  helper.ValueToPointer[int32](plan.SmbNotifyOnChangeDirDepth),
 	}
 
 	if state.ConfigType.ValueString() == "General" && (FlrCreate.MinimumRetention.ValueString() != FlrCreateState.MinimumRetention.ValueString() || FlrCreate.DefaultRetention.ValueString() != FlrCreateState.DefaultRetention.ValueString() || FlrCreate.MaximumRetention.ValueString() != FlrCreateState.MaximumRetention.ValueString() || FlrCreate.AutoLock.ValueBool() != FlrCreateState.AutoLock.ValueBool() || FlrCreate.AutoDelete.ValueBool() != FlrCreateState.AutoDelete.ValueBool() || FlrCreate.PolicyInterval.ValueInt32() != FlrCreateState.PolicyInterval.ValueInt32()) {
-		fsModify.FlrCreate = jsonmodel.FlrAttributes{
-			MinimumRetention: FlrCreate.MinimumRetention.ValueString(),
-			DefaultRetention: FlrCreate.DefaultRetention.ValueString(),
-			MaximumRetention: FlrCreate.MaximumRetention.ValueString(),
+		fsModify.FlrAttributes = &clientgen.FlrModify{
+			MinimumRetention: helper.ValueToPointer[string](FlrCreate.MinimumRetention),
+			DefaultRetention: helper.ValueToPointer[string](FlrCreate.DefaultRetention),
+			MaximumRetention: helper.ValueToPointer[string](FlrCreate.MaximumRetention),
 			AutoLock:         helper.GetKnownBoolPointer(FlrCreate.AutoLock),
 			AutoDelete:       helper.GetKnownBoolPointer(FlrCreate.AutoDelete),
-			PolicyInterval:   FlrCreate.PolicyInterval.ValueInt32(),
+			PolicyInterval:   helper.ValueToPointer[int32](FlrCreate.PolicyInterval),
 		}
 	}
 
-	err := r.client.ModifyFS(context.Background(), fsModify, state.ID.ValueString())
+	_, err := r.client.GenClient.FileSystemApi.PatchFileSystemById(ctx, state.ID.ValueString()).Body(fsModify).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating file system",
@@ -646,7 +645,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	fsResponse, err1 := r.client.PStoreClient.GetFS(context.Background(), state.ID.ValueString())
+	fsResponse, err1 := r.readFileSystemAPI(ctx, state.ID.ValueString())
 	if err1 != nil {
 		resp.Diagnostics.AddError(
 			"Error getting file system after creation",
@@ -682,7 +681,7 @@ func (r fileSystemResource) Delete(ctx context.Context, req resource.DeleteReque
 	fsID := state.ID.ValueString()
 
 	// Delete file system  by calling API
-	_, err := r.client.PStoreClient.DeleteFS(context.Background(), fsID)
+	_, err := r.client.GenClient.FileSystemApi.DeleteFileSystemById(ctx, fsID).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting file system",
@@ -727,47 +726,59 @@ func convertFromBytesForFileSystem(bytes int64) (float64, string) {
 	return newSize, units[unit]
 }
 
-func updateFsState(fsState *models.FileSystem, fsResponse gopowerstore.FileSystem) {
-	// Update value from file system Response to State
-	fsState.ID = types.StringValue(fsResponse.ID)
-	fsState.Name = types.StringValue(fsResponse.Name)
-	fsState.Description = types.StringValue(fsResponse.Description)
-	fsState.NASServerID = types.StringValue(fsResponse.NasServerID)
-	size, unit := convertFromBytesForFileSystem(fsResponse.SizeTotal)
-	fsState.Size = types.Float64Value(size)
-	fsState.CapacityUnit = types.StringValue(unit)
-	fsState.ConfigType = types.StringValue(fsResponse.ConfigType)
-	fsState.AccessPolicy = types.StringValue(fsResponse.AccessPolicy)
-	fsState.LockingPolicy = types.StringValue(fsResponse.LockingPolicy)
-	fsState.FolderRenamePolicy = types.StringValue(fsResponse.FolderRenamePolicy)
-	fsState.IsAsyncMTimeEnabled = types.BoolValue(fsResponse.IsAsyncMTimeEnabled)
-	fsState.ProtectionPolicyID = types.StringValue(fsResponse.ProtectionPolicyID)
-	fsState.FileEventsPublishingMode = types.StringValue(fsResponse.FileEventsPublishingMode)
-	fsState.HostIOSize = types.StringValue(fsResponse.HostIOSize)
-	fsState.IsSmbSyncWritesEnabled = types.BoolValue(fsResponse.IsSmbSyncWritesEnabled)
-	fsState.IsSmbNoNotifyEnabled = types.BoolValue(fsResponse.IsSmbNoNotifyEnabled)
-	fsState.IsSmbOpLocksEnabled = types.BoolValue(fsResponse.IsSmbOpLocksEnabled)
-	fsState.IsSmbNotifyOnAccessEnabled = types.BoolValue(fsResponse.IsSmbNotifyOnAccessEnabled)
-	fsState.IsSmbNotifyOnWriteEnabled = types.BoolValue(fsResponse.IsSmbNotifyOnWriteEnabled)
-	fsState.SmbNotifyOnChangeDirDepth = types.Int32Value(fsResponse.SmbNotifyOnChangeDirDepth)
-	fsState.ParentID = types.StringValue(fsResponse.ParentID)
-	fsState.FilesystemType = types.StringValue(string(fsResponse.FilesystemType))
-	fsState.FlrAttributes, _ = types.ObjectValue(map[string]attr.Type{
-		"mode":              types.StringType,
-		"minimum_retention": types.StringType,
-		"default_retention": types.StringType,
-		"maximum_retention": types.StringType,
-		"auto_lock":         types.BoolType,
-		"auto_delete":       types.BoolType,
-		"policy_interval":   types.Int32Type,
-	}, map[string]attr.Value{
-		"mode":              types.StringValue(fsResponse.FlrCreate.Mode),
-		"minimum_retention": types.StringValue(fsResponse.FlrCreate.MinimumRetention),
-		"default_retention": types.StringValue(fsResponse.FlrCreate.DefaultRetention),
-		"maximum_retention": types.StringValue(fsResponse.FlrCreate.MaximumRetention),
-		"auto_lock":         types.BoolValue(fsResponse.FlrCreate.AutoLock),
-		"auto_delete":       types.BoolValue(fsResponse.FlrCreate.AutoDelete),
-		"policy_interval":   types.Int32Value(fsResponse.FlrCreate.PolicyInterval),
-	})
+func (r fileSystemResource) readFileSystemAPI(ctx context.Context, id string) (*clientgen.FileSystemInstance, error) {
+	queries := make(url.Values)
+	queries.Set("select", "id,name,description,nas_server_id,parent_id,filesystem_type,size_total,config_type,protection_policy_id,access_policy,locking_policy,folder_rename_policy,is_smb_sync_writes_enabled,is_smb_op_locks_enabled,is_smb_no_notify_enabled,is_smb_notify_on_access_enabled,is_smb_notify_on_write_enabled,smb_notify_on_change_dir_depth,is_async_MTime_enabled,file_events_publishing_mode,host_io_size,flr_attributes")
+	response, _, err := r.client.GenClient.FileSystemApi.GetFileSystemById(ctx, id).Queries(queries).Execute()
+	return response, err
+}
 
+func updateFsState(fsState *models.FileSystem, fsResponse *clientgen.FileSystemInstance) {
+	// Update value from file system Response to State
+	fsState.ID = helper.TfString(fsResponse.Id)
+	fsState.Name = helper.TfString(fsResponse.Name)
+	fsState.Description = helper.TfString(fsResponse.Description)
+	fsState.NASServerID = helper.TfString(fsResponse.NasServerId)
+	if fsResponse.SizeTotal != nil {
+		size, unit := convertFromBytesForFileSystem(*fsResponse.SizeTotal)
+		fsState.Size = types.Float64Value(size)
+		fsState.CapacityUnit = types.StringValue(unit)
+	}
+	fsState.ConfigType = helper.TfString(fsResponse.ConfigType)
+	fsState.AccessPolicy = helper.TfString(fsResponse.AccessPolicy)
+	fsState.LockingPolicy = helper.TfString(fsResponse.LockingPolicy)
+	fsState.FolderRenamePolicy = helper.TfString(fsResponse.FolderRenamePolicy)
+	fsState.IsAsyncMTimeEnabled = helper.TfBool(fsResponse.IsAsyncMTimeEnabled)
+	fsState.ProtectionPolicyID = helper.TfString(fsResponse.ProtectionPolicyId)
+	fsState.FileEventsPublishingMode = helper.TfString(fsResponse.FileEventsPublishingMode)
+	fsState.HostIOSize = helper.TfString(fsResponse.HostIoSize)
+	fsState.IsSmbSyncWritesEnabled = helper.TfBool(fsResponse.IsSmbSyncWritesEnabled)
+	fsState.IsSmbNoNotifyEnabled = helper.TfBool(fsResponse.IsSmbNoNotifyEnabled)
+	fsState.IsSmbOpLocksEnabled = helper.TfBool(fsResponse.IsSmbOpLocksEnabled)
+	fsState.IsSmbNotifyOnAccessEnabled = helper.TfBool(fsResponse.IsSmbNotifyOnAccessEnabled)
+	fsState.IsSmbNotifyOnWriteEnabled = helper.TfBool(fsResponse.IsSmbNotifyOnWriteEnabled)
+	fsState.SmbNotifyOnChangeDirDepth = helper.TfInt32(fsResponse.SmbNotifyOnChangeDirDepth)
+	fsState.ParentID = helper.TfString(fsResponse.ParentId)
+	fsState.FilesystemType = helper.TfString(fsResponse.FilesystemType)
+
+	if fsResponse.FlrAttributes != nil {
+		flr := fsResponse.FlrAttributes
+		fsState.FlrAttributes, _ = types.ObjectValue(map[string]attr.Type{
+			"mode":              types.StringType,
+			"minimum_retention": types.StringType,
+			"default_retention": types.StringType,
+			"maximum_retention": types.StringType,
+			"auto_lock":         types.BoolType,
+			"auto_delete":       types.BoolType,
+			"policy_interval":   types.Int32Type,
+		}, map[string]attr.Value{
+			"mode":              helper.TfString(flr.Mode),
+			"minimum_retention": helper.TfString(flr.MinimumRetention),
+			"default_retention": helper.TfString(flr.DefaultRetention),
+			"maximum_retention": helper.TfString(flr.MaximumRetention),
+			"auto_lock":         helper.TfBool(flr.AutoLock),
+			"auto_delete":       helper.TfBool(flr.AutoDelete),
+			"policy_interval":   helper.TfInt32(flr.PolicyInterval),
+		})
+	}
 }

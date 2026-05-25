@@ -1,5 +1,6 @@
 README.md
 api_file_io_limit_rule.go
+api_file_system.go
 api_io_limit_rule.go
 api_login_session.go
 api_policy.go
@@ -70,11 +71,13 @@ model_file_nis_instance_source_parameters.go
 model_file_quota_state_enum.go
 model_file_system_access_policy_enum.go
 model_file_system_config_type_enum.go
+model_file_system_create.go
 model_file_system_flr_mode_enum.go
 model_file_system_folder_rename_policy_enum.go
 model_file_system_host_io_size_enum.go
 model_file_system_instance.go
 model_file_system_locking_policy_enum.go
+model_file_system_modify.go
 model_file_system_snapshot_access_type_enum.go
 model_file_system_snapshot_creator_type_enum.go
 model_file_system_type_enum.go
@@ -82,7 +85,9 @@ model_file_tree_quota_instance.go
 model_file_user_quota_instance.go
 model_file_virus_checker_instance.go
 model_file_virus_checker_offline_policy_enum.go
+model_flr_create.go
 model_flr_instance.go
+model_flr_modify.go
 model_front_end_port_connection_type_enum.go
 model_fsn_instance.go
 model_fsn_status_enum.go

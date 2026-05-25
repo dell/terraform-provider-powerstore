@@ -273,7 +273,7 @@ func (r *resourceIoLimitRule) Update(ctx context.Context, req resource.UpdateReq
 	// Update I/O Limit Rule by calling API
 	_, err := r.client.IoLimitRuleApi.PatchIoLimitRuleById(ctx, ioLimitRuleID).Body(clientgen.IoLimitRuleModify{
 		Name:            helper.ValueToPointer[string](plan.Name),
-		Type:            helper.ValueToPointer[clientgen.BandwidthLimitTypeEnum](plan.Type),
+		Type:            helper.ValueToEnumPointer[string, clientgen.BandwidthLimitTypeEnum](plan.Type),
 		MaxIops:         helper.ValueToPointer[int32](plan.MaxIops),
 		MaxBw:           helper.ValueToPointer[int32](plan.MaxBw),
 		BurstPercentage: helper.ValueToPointer[int32](plan.BurstPercentage),

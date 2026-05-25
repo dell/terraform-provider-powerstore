@@ -58,6 +58,39 @@ def AddPowerStoreOpIds(json_obj: dict) -> dict:
             json_obj['paths'][key][op]['operationId'] = _add_op_id(key, op)
     return json_obj
 
+def NormalizePowerStoreDateTimeFields(json_obj: dict) -> dict:
+    """
+    Strips the 'date-time' format from specific properties in the OpenAPI spec
+    so the generated Go client uses *string instead of *time.Time.
+
+    The PowerStore API returns certain timestamp fields (e.g. flr_instance.clock_time,
+    flr_instance.maximum_retention_date) without timezone information, which causes
+    Go's time.Time JSON unmarshalling to fail. By removing the 'format' key, the
+    OpenAPI generator will produce *string fields that can hold any timestamp format.
+
+    Args:
+        json_obj (dict): The JSON OpenAPI spec of PowerStore.
+
+    Returns:
+        dict: The modified JSON OpenAPI spec.
+    """
+    # Map of definition name -> list of property names to strip date-time format from
+    fields_to_normalize = {
+        "flr_instance": ["clock_time", "maximum_retention_date"],
+    }
+
+    definitions = json_obj.get('definitions', {})
+    for schema_name, prop_names in fields_to_normalize.items():
+        schema = definitions.get(schema_name, {})
+        props = schema.get('properties', {})
+        for prop_name in prop_names:
+            prop = props.get(prop_name, {})
+            if prop.get('format') == 'date-time':
+                del prop['format']
+
+    return json_obj
+
+
 def AddPowerStoreFlexibleQuery(json_obj: dict) -> dict:
     """
     Adds 'x-flexible-query' = "true" to GET APIs of PowerStore OpenAPI spec.
