@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 	"testing"
 
 	"terraform-provider-powerstore/client"
@@ -235,25 +234,12 @@ func TestAccMetroVolume_CreateOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
-	var config string
-	var expectNonEmptyPlan bool
-	if strings.HasPrefix(endpoint, "http://localhost:3003") {
-		// Mock server test
-		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeParamsCreateMock, remoteSystemID)
-		expectNonEmptyPlan = false
-	} else {
-		// Real array test - create volume first
-		config = ProviderConfigForTesting + fmt.Sprintf(MetroVolumeParamsCreateReal, remoteSystemID)
-		expectNonEmptyPlan = true // Allow non-empty plan due to state drift
-	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:             config,
-				ExpectNonEmptyPlan: expectNonEmptyPlan,
+				Config: ProviderConfigForTesting + MetroVolumeParamsCreate,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "id"),
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "metro_replication_session_id"),
@@ -291,21 +277,14 @@ resource "powerstore_metro_volume" "test" {
 }
 `
 
-var MetroVolumeParamsCreateMock = `
-resource "powerstore_metro_volume" "test" {
-  volume_id        = "volume_post_id"
-  remote_system_id = "%s"
-}
-`
-
-var MetroVolumeParamsCreateReal = `
-resource "powerstore_volume" "test" {
-  name = "tf-acc-metro-test-volume-${replace(timestamp(), ":", "-")}"
-  size = 1
+var MetroVolumeParamsCreate = fmt.Sprintf(`
+resource "powerstore_volume" "volume_create_test" {
+  name = "test_acc_cvol"
+  size = 2.5
 }
 
 resource "powerstore_metro_volume" "test" {
-  volume_id        = powerstore_volume.test.id
+  volume_id        = powerstore_volume.volume_create_test.id
   remote_system_id = "%s"
 }
-`
+`, remoteSystemID)
