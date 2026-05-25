@@ -36,5 +36,5 @@ type FileEventsPublisherInstance struct {
 	// List of the file_events_pools that are associated with this file_events_publisher.
 	FileEventsPools []FileEventsPoolInstance `json:"file_events_pools,omitempty"`
 	// List of the nas_servers that are associated with this file_events_publisher.
-	NasServers []NasServerInstance `json:"nas_servers,omitempty"`
+	NasServers []map[string]interface{} `json:"nas_servers,omitempty"`
 }

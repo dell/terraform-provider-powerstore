@@ -25,6 +25,7 @@ type FileDnsInstance struct {
 	IsDestinationOverrideEnabled *bool                            `json:"is_destination_override_enabled,omitempty"`
 	SourceParameters             *FileDnsInstanceSourceParameters `json:"source_parameters,omitempty"`
 	// Localized message string corresponding to transport
-	TransportL10n *string            `json:"transport_l10n,omitempty"`
-	NasServer     *NasServerInstance `json:"nas_server,omitempty"`
+	TransportL10n *string `json:"transport_l10n,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

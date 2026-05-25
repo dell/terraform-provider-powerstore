@@ -77,7 +77,22 @@ All URIs are relative to */api/rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*FileIoLimitRuleApi* | [**DeleteFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#deletefileiolimitrulebyid) | **Delete** /file_io_limit_rule/{id} | Delete
+*FileIoLimitRuleApi* | [**GetAllFileIoLimitRules**](docs/FileIoLimitRuleApi.md#getallfileiolimitrules) | **Get** /file_io_limit_rule | Collection Query
+*FileIoLimitRuleApi* | [**GetFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#getfileiolimitrulebyid) | **Get** /file_io_limit_rule/{id} | Instance Query
+*FileIoLimitRuleApi* | [**PatchFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#patchfileiolimitrulebyid) | **Patch** /file_io_limit_rule/{id} | Modify
+*FileIoLimitRuleApi* | [**PostAllFileIoLimitRules**](docs/FileIoLimitRuleApi.md#postallfileiolimitrules) | **Post** /file_io_limit_rule | Create
+*IoLimitRuleApi* | [**DeleteIoLimitRuleById**](docs/IoLimitRuleApi.md#deleteiolimitrulebyid) | **Delete** /io_limit_rule/{id} | Delete
+*IoLimitRuleApi* | [**GetAllIoLimitRules**](docs/IoLimitRuleApi.md#getalliolimitrules) | **Get** /io_limit_rule | Collection Query
+*IoLimitRuleApi* | [**GetIoLimitRuleById**](docs/IoLimitRuleApi.md#getiolimitrulebyid) | **Get** /io_limit_rule/{id} | Instance Query
+*IoLimitRuleApi* | [**PatchIoLimitRuleById**](docs/IoLimitRuleApi.md#patchiolimitrulebyid) | **Patch** /io_limit_rule/{id} | Modify
+*IoLimitRuleApi* | [**PostAllIoLimitRules**](docs/IoLimitRuleApi.md#postalliolimitrules) | **Post** /io_limit_rule | Create
 *LoginSessionApi* | [**GetAllLoginSessions**](docs/LoginSessionApi.md#getallloginsessions) | **Get** /login_session | Collection Query
+*PolicyApi* | [**DeletePolicyById**](docs/PolicyApi.md#deletepolicybyid) | **Delete** /policy/{id} | Delete
+*PolicyApi* | [**GetAllPolicys**](docs/PolicyApi.md#getallpolicys) | **Get** /policy | Collection Query
+*PolicyApi* | [**GetPolicyById**](docs/PolicyApi.md#getpolicybyid) | **Get** /policy/{id} | Instance Query
+*PolicyApi* | [**PatchPolicyById**](docs/PolicyApi.md#patchpolicybyid) | **Patch** /policy/{id} | Modify
+*PolicyApi* | [**PostAllPolicys**](docs/PolicyApi.md#postallpolicys) | **Post** /policy | Create
 *RecycleBinApi* | [**DeleteRecycleBinById**](docs/RecycleBinApi.md#deleterecyclebinbyid) | **Delete** /recycle_bin/{id} | Delete
 *RecycleBinApi* | [**GetAllRecycleBins**](docs/RecycleBinApi.md#getallrecyclebins) | **Get** /recycle_bin | Collection Query
 *RecycleBinApi* | [**GetRecycleBinById**](docs/RecycleBinApi.md#getrecyclebinbyid) | **Get** /recycle_bin/{id} | Instance Query
@@ -144,7 +159,9 @@ Class | Method | HTTP request | Description
  - [FileInterfaceRouteInstance](docs/FileInterfaceRouteInstance.md)
  - [FileInterfaceRouteOperationalStatusEnum](docs/FileInterfaceRouteOperationalStatusEnum.md)
  - [FileInterfaceSourceParameters](docs/FileInterfaceSourceParameters.md)
+ - [FileIoLimitRuleCreate](docs/FileIoLimitRuleCreate.md)
  - [FileIoLimitRuleInstance](docs/FileIoLimitRuleInstance.md)
+ - [FileIoLimitRuleModify](docs/FileIoLimitRuleModify.md)
  - [FileKerberosInstance](docs/FileKerberosInstance.md)
  - [FileLDAPAuthenticationTypeEnum](docs/FileLDAPAuthenticationTypeEnum.md)
  - [FileLDAPProtocolEnum](docs/FileLDAPProtocolEnum.md)
@@ -206,7 +223,9 @@ Class | Method | HTTP request | Description
  - [ImportUniversalVolumeInstance](docs/ImportUniversalVolumeInstance.md)
  - [InitiatorInstance](docs/InitiatorInstance.md)
  - [InitiatorProtocolTypeEnum](docs/InitiatorProtocolTypeEnum.md)
+ - [IoLimitRuleCreate](docs/IoLimitRuleCreate.md)
  - [IoLimitRuleInstance](docs/IoLimitRuleInstance.md)
+ - [IoLimitRuleModify](docs/IoLimitRuleModify.md)
  - [IoPriorityEnum](docs/IoPriorityEnum.md)
  - [IpPoolAddressInstance](docs/IpPoolAddressInstance.md)
  - [IpPortInstance](docs/IpPortInstance.md)
@@ -242,8 +261,10 @@ Class | Method | HTTP request | Description
  - [NvmeTransportTypeEnum](docs/NvmeTransportTypeEnum.md)
  - [OSTypeEnum](docs/OSTypeEnum.md)
  - [PerformanceRuleInstance](docs/PerformanceRuleInstance.md)
+ - [PolicyCreate](docs/PolicyCreate.md)
  - [PolicyInstance](docs/PolicyInstance.md)
  - [PolicyManagedByEnum](docs/PolicyManagedByEnum.md)
+ - [PolicyModify](docs/PolicyModify.md)
  - [PolicyTypeEnum](docs/PolicyTypeEnum.md)
  - [PortStaleStateEnum](docs/PortStaleStateEnum.md)
  - [PostEventPolicyEnum](docs/PostEventPolicyEnum.md)

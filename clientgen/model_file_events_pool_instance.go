@@ -25,5 +25,5 @@ type FileEventsPoolInstance struct {
 	// Flag indicates if the file events pool is a replicated pool.
 	IsReplica *bool `json:"is_replica,omitempty"`
 	// List of the file_events_publishers that are associated with this file_events_pool.
-	FileEventsPublishers []FileEventsPublisherInstance `json:"file_events_publishers,omitempty"`
+	FileEventsPublishers []map[string]interface{} `json:"file_events_publishers,omitempty"`
 }

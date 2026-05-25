@@ -35,7 +35,7 @@ type DatastoreInstance struct {
 	// List of the virtual_machines that are associated with this datastore.
 	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
 	// List of the volumes that are associated with this datastore.
-	Volumes []VolumeInstance `json:"volumes,omitempty"`
+	Volumes []map[string]interface{} `json:"volumes,omitempty"`
 	// List of the vsphere_hosts that are associated with this datastore.
 	VsphereHosts []VsphereHostInstance `json:"vsphere_hosts,omitempty"`
 }

@@ -36,11 +36,12 @@ type IpPortInstance struct {
 	CurrentUsagesL10n []string `json:"current_usages_l10n,omitempty"`
 	// This is the inverse of the resource type ip_pool_address association.
 	IpPoolAddresses []IpPoolAddressInstance `json:"ip_pool_addresses,omitempty"`
-	Partner         *IpPortInstance         `json:"partner,omitempty"`
-	Fsn             *FsnInstance            `json:"fsn,omitempty"`
-	Bond            *BondInstance           `json:"bond,omitempty"`
-	EthPort         *EthPortInstance        `json:"eth_port,omitempty"`
-	VethPort        *VethPortInstance       `json:"veth_port,omitempty"`
+	// This is the embeddable reference form of partner_id attribute.
+	Partner  map[string]interface{} `json:"partner,omitempty"`
+	Fsn      *FsnInstance           `json:"fsn,omitempty"`
+	Bond     *BondInstance          `json:"bond,omitempty"`
+	EthPort  *EthPortInstance       `json:"eth_port,omitempty"`
+	VethPort *VethPortInstance      `json:"veth_port,omitempty"`
 	// This is the inverse of the resource type file_interface association.
-	FileInterfaces []FileInterfaceInstance `json:"file_interfaces,omitempty"`
+	FileInterfaces []map[string]interface{} `json:"file_interfaces,omitempty"`
 }

@@ -52,6 +52,7 @@ type FileVirusCheckerInstance struct {
 	// To enable scan on first read the reference time must be set. When the last access time of a file is earlier than the reference time, on access the file is sent to the Virus checker before the access is granted to the client.  Was added in version 4.0.0.0.
 	ReferenceTime *time.Time `json:"reference_time,omitempty"`
 	// Localized message string corresponding to offline_policy Was added in version 4.0.0.0.
-	OfflinePolicyL10n *string            `json:"offline_policy_l10n,omitempty"`
-	NasServer         *NasServerInstance `json:"nas_server,omitempty"`
+	OfflinePolicyL10n *string `json:"offline_policy_l10n,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

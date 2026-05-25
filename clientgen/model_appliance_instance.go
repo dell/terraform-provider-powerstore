@@ -52,7 +52,7 @@ type ApplianceInstance struct {
 	// This is the inverse of the resource type sas_port association.
 	SasPorts []SasPortInstance `json:"sas_ports,omitempty"`
 	// This is the inverse of the resource type eth_port association.
-	EthPorts []EthPortInstance `json:"eth_ports,omitempty"`
+	EthPorts []map[string]interface{} `json:"eth_ports,omitempty"`
 	// This is the inverse of the resource type eth_be_port association.
 	EthBePorts []EthBePortInstance `json:"eth_be_ports,omitempty"`
 	// This is the inverse of the resource type software_installed association.

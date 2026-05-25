@@ -17,6 +17,7 @@ type FileNdmpInstance struct {
 	// Unique identifier of the NAS server to be configured with these NDMP settings.
 	NasServerId *string `json:"nas_server_id,omitempty"`
 	// User name for accessing the NDMP service.
-	UserName  *string            `json:"user_name,omitempty"`
-	NasServer *NasServerInstance `json:"nas_server,omitempty"`
+	UserName *string `json:"user_name,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

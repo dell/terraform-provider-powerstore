@@ -49,6 +49,7 @@ type FileLdapInstance struct {
 	// Localized message string corresponding to protocol
 	ProtocolL10n *string `json:"protocol_l10n,omitempty"`
 	// Localized message string corresponding to schema_type
-	SchemaTypeL10n *string            `json:"schema_type_l10n,omitempty"`
-	NasServer      *NasServerInstance `json:"nas_server,omitempty"`
+	SchemaTypeL10n *string `json:"schema_type_l10n,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

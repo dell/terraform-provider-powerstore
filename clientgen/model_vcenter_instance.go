@@ -28,9 +28,9 @@ type VcenterInstance struct {
 	// Localized message string corresponding to vendor_provider_status Was added in version 2.0.0.0.
 	VendorProviderStatusL10n *string `json:"vendor_provider_status_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_machine association.
-	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
+	VirtualMachines []map[string]interface{} `json:"virtual_machines,omitempty"`
 	// This is the inverse of the resource type datastore association.
-	Datastores []DatastoreInstance `json:"datastores,omitempty"`
+	Datastores []map[string]interface{} `json:"datastores,omitempty"`
 	// This is the inverse of the resource type vsphere_host association.
 	VsphereHosts []VsphereHostInstance `json:"vsphere_hosts,omitempty"`
 }

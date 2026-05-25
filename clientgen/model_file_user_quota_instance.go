@@ -36,7 +36,9 @@ type FileUserQuotaInstance struct {
 	// Size currently consumed by the user on the filesystem, in bytes.
 	SizeUsed *int64 `json:"size_used,omitempty"`
 	// Localized message string corresponding to state
-	StateL10n  *string                `json:"state_l10n,omitempty"`
-	FileSystem *FileSystemInstance    `json:"file_system,omitempty"`
-	TreeQuota  *FileTreeQuotaInstance `json:"tree_quota,omitempty"`
+	StateL10n *string `json:"state_l10n,omitempty"`
+	// This is the embeddable reference form of file_system_id attribute.
+	FileSystem map[string]interface{} `json:"file_system,omitempty"`
+	// This is the embeddable reference form of tree_quota_id attribute.
+	TreeQuota map[string]interface{} `json:"tree_quota,omitempty"`
 }

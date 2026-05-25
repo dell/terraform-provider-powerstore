@@ -23,5 +23,6 @@ type FileNisInstance struct {
 	// Used in replication context when the user wants to override the settings on the destination. Was added in version 3.0.0.0.
 	IsDestinationOverrideEnabled *bool                            `json:"is_destination_override_enabled,omitempty"`
 	SourceParameters             *FileNisInstanceSourceParameters `json:"source_parameters,omitempty"`
-	NasServer                    *NasServerInstance               `json:"nas_server,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

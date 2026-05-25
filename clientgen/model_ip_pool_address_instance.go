@@ -33,7 +33,9 @@ type IpPoolAddressInstance struct {
 	// This is the inverse of the resource type nvme_discovered_cdc association.
 	NvmeDiscoveredCdcs []NvmeDiscoveredCdcInstance `json:"nvme_discovered_cdcs,omitempty"`
 	Network            *NetworkInstance            `json:"network,omitempty"`
-	IpPort             *IpPortInstance             `json:"ip_port,omitempty"`
-	Appliance          *ApplianceInstance          `json:"appliance,omitempty"`
-	Node               *NodeInstance               `json:"node,omitempty"`
+	// This is the embeddable reference form of ip_port_id attribute.
+	IpPort map[string]interface{} `json:"ip_port,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
+	Node      *NodeInstance          `json:"node,omitempty"`
 }

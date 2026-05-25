@@ -21,6 +21,7 @@ type FileKerberosInstance struct {
 	// Fully Qualified domain names of the Kerberos Key Distribution Center (KDC) servers. IPv4 and IPv6 addresses are not supported.
 	KdcAddresses []string `json:"kdc_addresses,omitempty"`
 	// KDC servers TCP port.
-	PortNumber *int32             `json:"port_number,omitempty"`
-	NasServer  *NasServerInstance `json:"nas_server,omitempty"`
+	PortNumber *int32 `json:"port_number,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

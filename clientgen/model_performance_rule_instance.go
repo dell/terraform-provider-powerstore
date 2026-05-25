@@ -20,5 +20,5 @@ type PerformanceRuleInstance struct {
 	// Localized message string corresponding to io_priority
 	IoPriorityL10n *string `json:"io_priority_l10n,omitempty"`
 	// List of the policies that are associated with this performance_rule.
-	Policies []PolicyInstance `json:"policies,omitempty"`
+	Policies []map[string]interface{} `json:"policies,omitempty"`
 }

@@ -39,11 +39,17 @@ type SasPortInstance struct {
 	// Localized message string corresponding to speed
 	SpeedL10n *string `json:"speed_l10n,omitempty"`
 	// Localized message string corresponding to stale_state Was added in version 2.0.0.0.
-	StaleStateL10n *string            `json:"stale_state_l10n,omitempty"`
-	Appliance      *ApplianceInstance `json:"appliance,omitempty"`
-	Node           *HardwareInstance  `json:"node,omitempty"`
-	Sfp            *HardwareInstance  `json:"sfp,omitempty"`
-	IoModule       *HardwareInstance  `json:"io_module,omitempty"`
-	HardwareParent *HardwareInstance  `json:"hardware_parent,omitempty"`
-	Partner        *SasPortInstance   `json:"partner,omitempty"`
+	StaleStateL10n *string `json:"stale_state_l10n,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
+	// This is the embeddable reference form of node_id attribute.
+	Node map[string]interface{} `json:"node,omitempty"`
+	// This is the embeddable reference form of sfp_id attribute.
+	Sfp map[string]interface{} `json:"sfp,omitempty"`
+	// This is the embeddable reference form of io_module_id attribute.
+	IoModule map[string]interface{} `json:"io_module,omitempty"`
+	// This is the embeddable reference form of hardware_parent_id attribute.
+	HardwareParent map[string]interface{} `json:"hardware_parent,omitempty"`
+	// This is the embeddable reference form of partner_id attribute.
+	Partner map[string]interface{} `json:"partner,omitempty"`
 }

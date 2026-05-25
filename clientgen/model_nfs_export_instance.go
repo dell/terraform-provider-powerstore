@@ -45,8 +45,9 @@ type NfsExportInstance struct {
 	// Localized message string corresponding to default_access
 	DefaultAccessL10n *string `json:"default_access_l10n,omitempty"`
 	// Localized message string corresponding to min_security
-	MinSecurityL10n *string             `json:"min_security_l10n,omitempty"`
-	FileSystem      *FileSystemInstance `json:"file_system,omitempty"`
+	MinSecurityL10n *string `json:"min_security_l10n,omitempty"`
+	// This is the embeddable reference form of file_system_id attribute.
+	FileSystem map[string]interface{} `json:"file_system,omitempty"`
 	// This is the inverse of the resource type datastore association.
-	Datastores []DatastoreInstance `json:"datastores,omitempty"`
+	Datastores []map[string]interface{} `json:"datastores,omitempty"`
 }

@@ -36,16 +36,19 @@ type ReplicationGroupInstance struct {
 	// Localized message string corresponding to creator_type Was added in version 3.0.0.0.
 	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	VirtualVolumes   []VirtualVolumeInstance   `json:"virtual_volumes,omitempty"`
-	StorageContainer *StorageContainerInstance `json:"storage_container,omitempty"`
-	Parent           *ReplicationGroupInstance `json:"parent,omitempty"`
+	VirtualVolumes []map[string]interface{} `json:"virtual_volumes,omitempty"`
+	// This is the embeddable reference form of storage_container_id attribute.
+	StorageContainer map[string]interface{} `json:"storage_container,omitempty"`
+	// This is the embeddable reference form of parent_id attribute.
+	Parent map[string]interface{} `json:"parent,omitempty"`
 	// This is the inverse of the resource type replication_group association.
-	ChildReplicationGroups []ReplicationGroupInstance `json:"child_replication_groups,omitempty"`
-	Source                 *ReplicationGroupInstance  `json:"source,omitempty"`
+	ChildReplicationGroups []map[string]interface{} `json:"child_replication_groups,omitempty"`
+	// This is the embeddable reference form of source_id attribute.
+	Source map[string]interface{} `json:"source,omitempty"`
 	// This is the inverse of the resource type replication_group association.
-	TargetReplicationGroups []ReplicationGroupInstance `json:"target_replication_groups,omitempty"`
+	TargetReplicationGroups []map[string]interface{} `json:"target_replication_groups,omitempty"`
 	// This is the inverse of the resource type virtual_machine association.
 	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
 	// List of the policies that are associated with this replication_group.
-	Policies []PolicyInstance `json:"policies,omitempty"`
+	Policies []map[string]interface{} `json:"policies,omitempty"`
 }

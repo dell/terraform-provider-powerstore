@@ -42,5 +42,5 @@ type ImportHostSystemInstance struct {
 	// Localized message string corresponding to agent_status
 	AgentStatusL10n *string `json:"agent_status_l10n,omitempty"`
 	// This is the inverse of the resource type host association.
-	Hosts []HostInstance `json:"hosts,omitempty"`
+	Hosts []map[string]interface{} `json:"hosts,omitempty"`
 }

@@ -35,6 +35,7 @@ type SoftwareInstalledInstance struct {
 	// Localized message string corresponding to build_flavor Was added in version 2.0.0.0.
 	BuildFlavorL10n *string `json:"build_flavor_l10n,omitempty"`
 	// Localized message string corresponding to build_type Was added in version 2.0.0.0.
-	BuildTypeL10n *string            `json:"build_type_l10n,omitempty"`
-	Appliance     *ApplianceInstance `json:"appliance,omitempty"`
+	BuildTypeL10n *string `json:"build_type_l10n,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
 }

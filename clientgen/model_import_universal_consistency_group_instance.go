@@ -20,6 +20,7 @@ type ImportUniversalConsistencyGroupInstance struct {
 	RemoteSystemId     *string                   `json:"remote_system_id,omitempty"`
 	ImportableCriteria *CGImportableCriteriaEnum `json:"importable_criteria,omitempty"`
 	// Localized message string corresponding to importable_criteria Was added in version 4.0.0.0.
-	ImportableCriteriaL10n *string               `json:"importable_criteria_l10n,omitempty"`
-	RemoteSystem           *RemoteSystemInstance `json:"remote_system,omitempty"`
+	ImportableCriteriaL10n *string `json:"importable_criteria_l10n,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
 }

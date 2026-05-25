@@ -95,10 +95,12 @@ type FileSystemInstance struct {
 	// Localized message string corresponding to file_events_publishing_mode Was added in version 3.0.0.0.
 	FileEventsPublishingModeL10n *string `json:"file_events_publishing_mode_l10n,omitempty"`
 	// Localized message string corresponding to host_io_size Was added in version 3.0.0.0.
-	HostIoSizeL10n    *string            `json:"host_io_size_l10n,omitempty"`
-	NasServer         *NasServerInstance `json:"nas_server,omitempty"`
-	ProtectionPolicy  *PolicyInstance    `json:"protection_policy,omitempty"`
-	PerformancePolicy *PolicyInstance    `json:"performance_policy,omitempty"`
+	HostIoSizeL10n *string            `json:"host_io_size_l10n,omitempty"`
+	NasServer      *NasServerInstance `json:"nas_server,omitempty"`
+	// This is the embeddable reference form of protection_policy_id attribute.
+	ProtectionPolicy map[string]interface{} `json:"protection_policy,omitempty"`
+	// This is the embeddable reference form of performance_policy_id attribute.
+	PerformancePolicy map[string]interface{} `json:"performance_policy,omitempty"`
 	// This is the inverse of the resource type file_tree_quota association.
 	FileTreeQuotas []FileTreeQuotaInstance `json:"file_tree_quotas,omitempty"`
 	// This is the inverse of the resource type file_user_quota association.

@@ -23,14 +23,15 @@ type VsphereHostInstance struct {
 	// ESXi host version.
 	Version *string `json:"version,omitempty"`
 	// ESXi host build.
-	Build   *string          `json:"build,omitempty"`
-	Vcenter *VcenterInstance `json:"vcenter,omitempty"`
+	Build *string `json:"build,omitempty"`
+	// This is the embeddable reference form of vcenter_id attribute.
+	Vcenter map[string]interface{} `json:"vcenter,omitempty"`
 	// This is the inverse of the resource type vsphere_host_license_assignment association.
 	LicenseAssignments []VsphereHostLicenseAssignmentInstance `json:"license_assignments,omitempty"`
 	// List of the virtual_machines that are associated with this vsphere_host.
-	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
+	VirtualMachines []map[string]interface{} `json:"virtual_machines,omitempty"`
 	// List of the datastores that are associated with this vsphere_host.
-	Datastores []DatastoreInstance `json:"datastores,omitempty"`
+	Datastores []map[string]interface{} `json:"datastores,omitempty"`
 	// List of the hosts that are associated with this vsphere_host.
-	Hosts []HostInstance `json:"hosts,omitempty"`
+	Hosts []map[string]interface{} `json:"hosts,omitempty"`
 }

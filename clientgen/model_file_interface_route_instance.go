@@ -24,6 +24,7 @@ type FileInterfaceRouteInstance struct {
 	Gateway           *string                                  `json:"gateway,omitempty"`
 	OperationalStatus *FileInterfaceRouteOperationalStatusEnum `json:"operational_status,omitempty"`
 	// Localized message string corresponding to operational_status
-	OperationalStatusL10n *string                `json:"operational_status_l10n,omitempty"`
-	FileInterface         *FileInterfaceInstance `json:"file_interface,omitempty"`
+	OperationalStatusL10n *string `json:"operational_status_l10n,omitempty"`
+	// This is the embeddable reference form of file_interface_id attribute.
+	FileInterface map[string]interface{} `json:"file_interface,omitempty"`
 }

@@ -17,6 +17,7 @@ type FileDhsmConfigInstance struct {
 	// Identifier of the parent NAS server.
 	NasServerId *string `json:"nas_server_id,omitempty"`
 	// User name for authentication to the DHSM server.
-	UserName  *string            `json:"user_name,omitempty"`
-	NasServer *NasServerInstance `json:"nas_server,omitempty"`
+	UserName *string `json:"user_name,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

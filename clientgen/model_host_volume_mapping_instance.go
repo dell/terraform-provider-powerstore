@@ -21,8 +21,10 @@ type HostVolumeMappingInstance struct {
 	// Unique identifier of the volume to which the host is attached.
 	VolumeId *string `json:"volume_id,omitempty"`
 	// Logical unit number for the host volume access.
-	LogicalUnitNumber *int32             `json:"logical_unit_number,omitempty"`
-	Host              *HostInstance      `json:"host,omitempty"`
-	HostGroup         *HostGroupInstance `json:"host_group,omitempty"`
-	Volume            *VolumeInstance    `json:"volume,omitempty"`
+	LogicalUnitNumber *int32 `json:"logical_unit_number,omitempty"`
+	// This is the embeddable reference form of host_id attribute.
+	Host map[string]interface{} `json:"host,omitempty"`
+	// This is the embeddable reference form of host_group_id attribute.
+	HostGroup map[string]interface{} `json:"host_group,omitempty"`
+	Volume    *VolumeInstance        `json:"volume,omitempty"`
 }

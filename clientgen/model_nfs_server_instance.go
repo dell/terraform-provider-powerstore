@@ -33,6 +33,7 @@ type NfsServerInstance struct {
 	// Indicates whether the NFS server supports more than 16 Unix groups in a Unix credential. Valid values are: - true - NFS server supports more than 16 Unix groups in a Unix credential. The NFS server will send additional request to Unix Directory service to identify Unix groups. - false - NFS server supports more than 16 Unix groups in a Unix credential. The NFS server will send additional request to Unix Directory service to identify Unix groups. Note - The NFS server builds its own Unix credential when it supports more than 16 groups. This process can slow the performance.
 	IsExtendedCredentialsEnabled *bool `json:"is_extended_credentials_enabled,omitempty"`
 	// Sets the Time-To-Live (in minutes) expiration timestamp for a Windows entry in the credentials cache. When failed mapping entries expire, the system retries mapping the UID to the SID.
-	CredentialsCacheTTL *int32             `json:"credentials_cache_TTL,omitempty"`
-	NasServer           *NasServerInstance `json:"nas_server,omitempty"`
+	CredentialsCacheTTL *int32 `json:"credentials_cache_TTL,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

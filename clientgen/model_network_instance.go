@@ -42,5 +42,5 @@ type NetworkInstance struct {
 	// Localized message string corresponding to nvme_discovery_mode Was added in version 3.0.0.0.
 	NvmeDiscoveryModeL10n *string `json:"nvme_discovery_mode_l10n,omitempty"`
 	// This is the inverse of the resource type ip_pool_address association.
-	IpPoolAddresses []IpPoolAddressInstance `json:"ip_pool_addresses,omitempty"`
+	IpPoolAddresses []map[string]interface{} `json:"ip_pool_addresses,omitempty"`
 }

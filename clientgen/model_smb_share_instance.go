@@ -34,6 +34,7 @@ type SmbShareInstance struct {
 	// The default UNIX umask for new files created on the Share. If not specified the umask defaults to 022.
 	Umask *string `json:"umask,omitempty"`
 	// Localized message string corresponding to offline_availability
-	OfflineAvailabilityL10n *string             `json:"offline_availability_l10n,omitempty"`
-	FileSystem              *FileSystemInstance `json:"file_system,omitempty"`
+	OfflineAvailabilityL10n *string `json:"offline_availability_l10n,omitempty"`
+	// This is the embeddable reference form of file_system_id attribute.
+	FileSystem map[string]interface{} `json:"file_system,omitempty"`
 }

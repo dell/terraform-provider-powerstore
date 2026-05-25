@@ -51,7 +51,9 @@ type RemoteSnapshotInstance struct {
 	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
 	RemoteSnapshots []RemoteSnapshotSessionInstance `json:"remote_snapshots,omitempty"`
-	Volume          *VolumeInstance                 `json:"volume,omitempty"`
-	VolumeGroup     *VolumeGroupInstance            `json:"volume_group,omitempty"`
-	RemoteSystem    *RemoteSystemInstance           `json:"remote_system,omitempty"`
+	// This is the embeddable reference form of volume_id attribute.
+	Volume      map[string]interface{} `json:"volume,omitempty"`
+	VolumeGroup *VolumeGroupInstance   `json:"volume_group,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
 }

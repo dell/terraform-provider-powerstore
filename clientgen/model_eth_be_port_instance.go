@@ -46,11 +46,14 @@ type EthBePortInstance struct {
 	// Localized message array corresponding to protocols Was added in version 3.0.0.0.
 	ProtocolsL10n []string `json:"protocols_l10n,omitempty"`
 	// Localized message string corresponding to stale_state Was added in version 3.0.0.0.
-	StaleStateL10n *string            `json:"stale_state_l10n,omitempty"`
-	Appliance      *ApplianceInstance `json:"appliance,omitempty"`
-	Node           *HardwareInstance  `json:"node,omitempty"`
-	Sfp            *HardwareInstance  `json:"sfp,omitempty"`
-	HardwareParent *HardwareInstance  `json:"hardware_parent,omitempty"`
-	ExpectedPeer   *EthBePortInstance `json:"expected_peer,omitempty"`
-	ActualPeer     *EthBePortInstance `json:"actual_peer,omitempty"`
+	StaleStateL10n *string `json:"stale_state_l10n,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance      map[string]interface{} `json:"appliance,omitempty"`
+	Node           *HardwareInstance      `json:"node,omitempty"`
+	Sfp            *HardwareInstance      `json:"sfp,omitempty"`
+	HardwareParent *HardwareInstance      `json:"hardware_parent,omitempty"`
+	// This is the embeddable reference form of expected_peer_id attribute.
+	ExpectedPeer map[string]interface{} `json:"expected_peer,omitempty"`
+	// This is the embeddable reference form of actual_peer_id attribute.
+	ActualPeer map[string]interface{} `json:"actual_peer,omitempty"`
 }
