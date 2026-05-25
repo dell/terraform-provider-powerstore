@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -31,6 +32,22 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/stretchr/testify/assert"
 )
+
+// Helper to create metro volume config for replication session datasource tests
+func getMetroConfigForDSTests() string {
+	volName := fmt.Sprintf("repl-ds-test-vol-%d", time.Now().UnixNano())
+	return fmt.Sprintf(`
+resource "powerstore_volume" "test_vol" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id        = powerstore_volume.test_vol.id
+  remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+}
 
 // Test Schema method for replication session datasource
 func TestReplicationSessionDataSource_Schema(t *testing.T) {
@@ -204,14 +221,28 @@ func TestAccReplicationSessionDataSource_ReadByIDMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
+	metroConfig := getMetroConfigForDSTests()
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
+			// Step 1: Create metro volume (creates replication session)
 			{
-				Config: ProviderConfigForTesting + fmt.Sprintf(ReplSessionDSReadByID, replicationSessionID),
+				Config: ProviderConfigForTesting + metroConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_metro_volume.test", "metro_replication_session_id"),
+				),
+			},
+			// Step 2: Read the session by ID
+			{
+				Config: ProviderConfigForTesting + metroConfig + `
+data "powerstore_replication_session" "by_id" {
+  id = powerstore_metro_volume.test.metro_replication_session_id
+}
+`,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "id", replicationSessionID),
+					resource.TestCheckResourceAttrSet("data.powerstore_replication_session.by_id", "id"),
 					resource.TestCheckResourceAttr("data.powerstore_replication_session.by_id", "replication_sessions.#", "1"),
 				),
 			},

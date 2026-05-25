@@ -23,6 +23,7 @@ import (
 	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -34,6 +35,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/stretchr/testify/assert"
 )
+
+// Helper function to generate unique volume group name
+func getMetroVolumeGroupName() string {
+	return fmt.Sprintf("metro_test_vg-%d", time.Now().UnixNano())
+}
 
 // Test Schema method for metro volume group resource
 func TestMetroVolumeGroupResource_Schema(t *testing.T) {
@@ -213,12 +219,60 @@ func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
+	// Generate unique config once for this test
+	vgName := getMetroVolumeGroupName()
+	config := fmt.Sprintf(`
+resource "powerstore_volume" "vol1" {
+  name = "%s-vol1"
+  size = 2.5
+}
+
+resource "powerstore_volume" "vol2" {
+  name = "%s-vol2"
+  size = 2.5
+}
+
+resource "powerstore_volumegroup" "test" {
+  name        = "%s"
+  description = "Creating Volume Group"
+  volume_ids = [powerstore_volume.vol1.id, powerstore_volume.vol2.id]
+}
+
+resource "powerstore_metro_volume_group" "test" {
+  volume_group_id  = powerstore_volumegroup.test.id
+  remote_system_id = "%s"
+}
+`, vgName, vgName, vgName, remoteSystemID)
+	configPaused := fmt.Sprintf(`
+resource "powerstore_volume" "vol1" {
+  name = "%s-vol1"
+  size = 2.5
+}
+
+resource "powerstore_volume" "vol2" {
+  name = "%s-vol2"
+  size = 2.5
+}
+
+resource "powerstore_volumegroup" "test" {
+  name        = "%s"
+  description = "Creating Volume Group"
+  volume_ids = [powerstore_volume.vol1.id, powerstore_volume.vol2.id]
+}
+
+resource "powerstore_metro_volume_group" "test" {
+  volume_group_id      = powerstore_volumegroup.test.id
+  remote_system_id     = "%s"
+  is_replication_paused = true
+}
+`, vgName, vgName, vgName, remoteSystemID)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config: ProviderConfigForTesting + config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "id"),
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "metro_replication_session_id"),
@@ -227,21 +281,21 @@ func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 			},
 			// Import test
 			{
-				Config:            ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config:            ProviderConfigForTesting + config,
 				ResourceName:      "powerstore_metro_volume_group.test",
 				ImportState:       true,
 				ImportStateVerify: false,
 			},
 			// Update test - pause replication
 			{
-				Config: ProviderConfigForTesting + MetroVolumeGroupParamsCreatePaused,
+				Config: ProviderConfigForTesting + configPaused,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_metro_volume_group.test", "is_replication_paused", "true"),
 				),
 			},
 			// Update test - resume replication
 			{
-				Config: ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config: ProviderConfigForTesting + config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_metro_volume_group.test", "is_replication_paused", "false"),
 				),
@@ -315,13 +369,61 @@ func TestAccMetroVolumeGroup_ReadUpdateDeleteErrors(t *testing.T) {
 		}
 	}()
 
+	// Generate unique config once for this test
+	vgName := getMetroVolumeGroupName()
+	config := fmt.Sprintf(`
+resource "powerstore_volume" "vol1" {
+  name = "%s-vol1"
+  size = 2.5
+}
+
+resource "powerstore_volume" "vol2" {
+  name = "%s-vol2"
+  size = 2.5
+}
+
+resource "powerstore_volumegroup" "test" {
+  name        = "%s"
+  description = "Creating Volume Group"
+  volume_ids = [powerstore_volume.vol1.id, powerstore_volume.vol2.id]
+}
+
+resource "powerstore_metro_volume_group" "test" {
+  volume_group_id  = powerstore_volumegroup.test.id
+  remote_system_id = "%s"
+}
+`, vgName, vgName, vgName, remoteSystemID)
+	configPaused := fmt.Sprintf(`
+resource "powerstore_volume" "vol1" {
+  name = "%s-vol1"
+  size = 2.5
+}
+
+resource "powerstore_volume" "vol2" {
+  name = "%s-vol2"
+  size = 2.5
+}
+
+resource "powerstore_volumegroup" "test" {
+  name        = "%s"
+  description = "Creating Volume Group"
+  volume_ids = [powerstore_volume.vol1.id, powerstore_volume.vol2.id]
+}
+
+resource "powerstore_metro_volume_group" "test" {
+  volume_group_id      = powerstore_volumegroup.test.id
+  remote_system_id     = "%s"
+  is_replication_paused = true
+}
+`, vgName, vgName, vgName, remoteSystemID)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Step 1: Create successfully
 			{
-				Config: ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config: ProviderConfigForTesting + config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_metro_volume_group.test", "id"),
 				),
@@ -331,7 +433,7 @@ func TestAccMetroVolumeGroup_ReadUpdateDeleteErrors(t *testing.T) {
 				PreConfig: func() {
 					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).GetReplicationSessionByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config:      ProviderConfigForTesting + config,
 				ExpectError: regexp.MustCompile(`.*Error reading metro volume group replication session.*`),
 			},
 			// Step 3: Update (pause) error
@@ -340,7 +442,7 @@ func TestAccMetroVolumeGroup_ReadUpdateDeleteErrors(t *testing.T) {
 					mocker1.UnPatch()
 					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).ReplicationSessionPauseExecute).Return(nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfigForTesting + MetroVolumeGroupParamsCreatePaused,
+				Config:      ProviderConfigForTesting + configPaused,
 				ExpectError: regexp.MustCompile(`.*Error pausing metro volume group replication.*`),
 			},
 			// Step 4: Delete error
@@ -349,7 +451,7 @@ func TestAccMetroVolumeGroup_ReadUpdateDeleteErrors(t *testing.T) {
 					mocker1.UnPatch()
 					mocker1 = mockey.Mock((*clientgen.VolumeGroupApiService).VolumeGroupEndMetroExecute).Return(nil, fmt.Errorf("mock error")).Build()
 				},
-				Config:      ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config:      ProviderConfigForTesting + config,
 				Destroy:     true,
 				ExpectError: regexp.MustCompile(`.*Error ending metro volume group configuration.*`),
 			},
@@ -359,7 +461,7 @@ func TestAccMetroVolumeGroup_ReadUpdateDeleteErrors(t *testing.T) {
 					mocker1.UnPatch()
 					mocker1 = nil
 				},
-				Config: ProviderConfigForTesting + MetroVolumeGroupParamsCreate,
+				Config: ProviderConfigForTesting + config,
 			},
 		},
 	})
@@ -387,7 +489,7 @@ resource "powerstore_metro_volume_group" "test" {
 
 var MetroVolumeGroupParamsCreate = fmt.Sprintf(`
 resource "powerstore_volumegroup" "test" {
-  name        = "tf_volume_group_new"
+  name        = "metro_test_vg"
   description = "Creating Volume Group"
 }
 
@@ -399,7 +501,7 @@ resource "powerstore_metro_volume_group" "test" {
 
 var MetroVolumeGroupParamsCreatePaused = fmt.Sprintf(`
 resource "powerstore_volumegroup" "test" {
-  name        = "tf_volume_group_new"
+  name        = "metro_test_vg"
   description = "Creating Volume Group"
 }
 
