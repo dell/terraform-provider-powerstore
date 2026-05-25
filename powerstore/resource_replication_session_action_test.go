@@ -27,6 +27,7 @@ import (
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 
+	"github.com/bytedance/mockey"
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/stretchr/testify/assert"
@@ -80,6 +81,16 @@ func TestReplicationSessionActionResource_Configure_Correct(t *testing.T) {
 	r.Configure(context.Background(), fwresource.ConfigureRequest{ProviderData: mockClient}, resp)
 	assert.False(t, resp.Diagnostics.HasError())
 	assert.NotNil(t, r.client)
+}
+
+// Test Update method returns error
+func TestReplicationSessionActionResource_Update(t *testing.T) {
+	r := &resourceReplicationSessionAction{}
+	resp := &fwresource.UpdateResponse{}
+	r.Update(context.Background(), fwresource.UpdateRequest{}, resp)
+	// Update is not supported for replication session action
+	assert.True(t, resp.Diagnostics.HasError())
+	assert.Contains(t, resp.Diagnostics[0].Summary(), "Update not supported")
 }
 
 // Acceptance test: Missing session_id
@@ -283,6 +294,44 @@ func TestAccReplicationSessionAction_StopFailoverTestOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	t.Skip("Mock server limitation: body-parser cannot handle POST responses with JSON body")
+}
+
+// Test mocked error paths for replication session action create
+func TestAccReplicationSessionAction_CreateErrors(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+
+	var mocker1 *mockey.Mocker
+	defer func() {
+		if mocker1 != nil {
+			mocker1.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Create error - sync action fails
+			{
+				PreConfig: func() {
+					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).ReplicationSessionSyncExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionSync, replicationSessionID),
+				ExpectError: regexp.MustCompile(`.*Error performing replication session action.*`),
+			},
+			// Create error - post-action read fails
+			{
+				PreConfig: func() {
+					mocker1.UnPatch()
+					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).GetReplicationSessionByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionPause, replicationSessionID),
+				ExpectError: regexp.MustCompile(`.*Error reading replication session after action.*`),
+			},
+		},
+	})
 }
 
 // HCL config strings
