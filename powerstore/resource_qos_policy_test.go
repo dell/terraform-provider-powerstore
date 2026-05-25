@@ -215,7 +215,7 @@ func TestAccQosPolicy_CreateWithInvalidType(t *testing.T) {
 	})
 }
 
-func TestAccQosPolicy_ConflictingLimitRuleIDs(t *testing.T) {
+func TestAccQosPolicy_CreateWithoutLimitRuleID(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -225,7 +225,7 @@ func TestAccQosPolicy_ConflictingLimitRuleIDs(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:      ProviderConfigForTesting + QosPolicyParamsConflictingIDs,
+				Config:      ProviderConfigForTesting + QosPolicyParamsCreateWithoutLimitRuleID,
 				ExpectError: regexp.MustCompile("Invalid Attribute Combination"),
 			},
 		},
@@ -332,7 +332,7 @@ func TestResourceQosPolicy_UpdateState_NilFields(t *testing.T) {
 	assert.Equal(t, "", state.Name.ValueString())
 	assert.Equal(t, "", state.Description.ValueString())
 	assert.Equal(t, "", state.Type.ValueString())
-	assert.Equal(t, "", state.FileIoLimitRuleId.ValueString())
+	assert.True(t, state.FileIoLimitRuleId.IsNull())
 	assert.True(t, state.IoLimitRuleId.IsNull())
 }
 
@@ -377,24 +377,46 @@ func TestResourceQosPolicy_UpdateState_FilePerformanceType(t *testing.T) {
 // Terraform configs
 
 var QosPolicyParamsCreate = `
+resource "powerstore_io_limit_rule" "test" {
+	name     = "tf_acc_io_limit_rule_qos"
+	type     = "Absolute"
+	max_iops = 1000
+	max_bw   = 2000
+}
+
 resource "powerstore_qos_policy" "test" {
-	name = "tf_acc_qos_policy"
-	type = "QoS"
+	name             = "tf_acc_qos_policy"
+	type             = "QoS"
+	io_limit_rule_id = powerstore_io_limit_rule.test.id
 }
 `
 
 var QosPolicyParamsCreateFilePerformance = `
+resource "powerstore_file_io_limit_rule" "test" {
+	name   = "tf_acc_file_io_limit_rule_qos"
+	max_bw = 100
+}
+
 resource "powerstore_qos_policy" "test" {
-	name = "tf_acc_qos_policy_file"
-	type = "File_Performance"
+	name                  = "tf_acc_qos_policy_file"
+	type                  = "File_Performance"
+	file_io_limit_rule_id = powerstore_file_io_limit_rule.test.id
 }
 `
 
 var QosPolicyParamsCreateWithDescription = `
+resource "powerstore_io_limit_rule" "test" {
+	name     = "tf_acc_io_limit_rule_desc"
+	type     = "Absolute"
+	max_iops = 1000
+	max_bw   = 2000
+}
+
 resource "powerstore_qos_policy" "test" {
-	name        = "tf_acc_qos_policy_desc"
-	type        = "QoS"
-	description = "Test QoS policy"
+	name             = "tf_acc_qos_policy_desc"
+	type             = "QoS"
+	description      = "Test QoS policy"
+	io_limit_rule_id = powerstore_io_limit_rule.test.id
 }
 `
 
@@ -407,37 +429,46 @@ resource "powerstore_qos_policy" "test" {
 `
 
 var QosPolicyParamsUpdate = `
+resource "powerstore_io_limit_rule" "test" {
+	name     = "tf_acc_io_limit_rule_qos"
+	type     = "Absolute"
+	max_iops = 1000
+	max_bw   = 2000
+}
+
 resource "powerstore_qos_policy" "test" {
-	name        = "tf_acc_qos_policy"
-	type        = "QoS"
-	description = "Updated description"
+	name             = "tf_acc_qos_policy"
+	type             = "QoS"
+	description      = "Updated description"
+	io_limit_rule_id = powerstore_io_limit_rule.test.id
 }
 `
 
 var QosPolicyParamsCreateWithoutName = `
 resource "powerstore_qos_policy" "test" {
-	type = "QoS"
+	type             = "QoS"
+	io_limit_rule_id = "some-rule-id"
 }
 `
 
 var QosPolicyParamsCreateWithoutType = `
 resource "powerstore_qos_policy" "test" {
-	name = "tf_acc_qos_policy"
+	name             = "tf_acc_qos_policy"
+	io_limit_rule_id = "some-rule-id"
 }
 `
 
 var QosPolicyParamsCreateWithInvalidType = `
 resource "powerstore_qos_policy" "test" {
-	name = "tf_acc_qos_policy"
-	type = "Invalid"
+	name             = "tf_acc_qos_policy"
+	type             = "Invalid"
+	io_limit_rule_id = "some-rule-id"
 }
 `
 
-var QosPolicyParamsConflictingIDs = `
+var QosPolicyParamsCreateWithoutLimitRuleID = `
 resource "powerstore_qos_policy" "test" {
-	name                  = "tf_acc_qos_policy"
-	type                  = "QoS"
-	io_limit_rule_id      = "some-io-rule-id"
-	file_io_limit_rule_id = "some-file-io-rule-id"
+	name = "tf_acc_qos_policy"
+	type = "QoS"
 }
 `

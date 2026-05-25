@@ -102,7 +102,7 @@ func (r *resourceQosPolicy) Schema(ctx context.Context, req resource.SchemaReque
 				Description:         "I/O limit rule identifier included in this policy. This attribute is only used for the QoS Performance Policy type.",
 				MarkdownDescription: "I/O limit rule identifier included in this policy. This attribute is only used for the QoS Performance Policy type.",
 				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
+					stringvalidator.ExactlyOneOf(path.Expressions{
 						path.MatchRoot("file_io_limit_rule_id"),
 					}...),
 				},
@@ -113,7 +113,7 @@ func (r *resourceQosPolicy) Schema(ctx context.Context, req resource.SchemaReque
 				Description:         "File I/O limit rule identifier included in this policy. This attribute is only valid for the File_Performance Policy type.",
 				MarkdownDescription: "File I/O limit rule identifier included in this policy. This attribute is only valid for the File_Performance Policy type.",
 				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
+					stringvalidator.ExactlyOneOf(path.Expressions{
 						path.MatchRoot("io_limit_rule_id"),
 					}...),
 				},
@@ -334,6 +334,6 @@ func (r resourceQosPolicy) updateQosPolicyState(qosPolicyResponse *clientgen.Pol
 		Description:       helper.TfString(helper.SetDefault(qosPolicyResponse.Description, "")),
 		Type:              helper.TfString(qosPolicyResponse.Type),
 		IoLimitRuleId:     helper.TfObject(qosPolicyResponse.IoLimitRule, func(r clientgen.IoLimitRuleInstance) types.String { return helper.TfString(r.Id) }),
-		FileIoLimitRuleId: helper.TfString(helper.SetDefault(qosPolicyResponse.FileIoLimitRuleId, "")),
+		FileIoLimitRuleId: helper.TfString(qosPolicyResponse.FileIoLimitRuleId),
 	}
 }

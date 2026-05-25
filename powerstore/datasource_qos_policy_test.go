@@ -341,7 +341,7 @@ func TestUpdateQosPolicyState_NilFields(t *testing.T) {
 	assert.Equal(t, "", state[0].Name.ValueString())
 	assert.Equal(t, "", state[0].Description.ValueString())
 	assert.Equal(t, "", state[0].Type.ValueString())
-	assert.Equal(t, "", state[0].FileIoLimitRuleId.ValueString())
+	assert.True(t, state[0].FileIoLimitRuleId.IsNull())
 	assert.True(t, state[0].IoLimitRuleId.IsNull())
 }
 
@@ -405,9 +405,17 @@ func TestUpdateQosPolicyState_Multiple(t *testing.T) {
 // Terraform configs
 
 var QosPolicyResourceParams = `
+resource "powerstore_io_limit_rule" "test" {
+	name     = "tf_acc_io_limit_rule_ds"
+	type     = "Absolute"
+	max_iops = 1000
+	max_bw   = 2000
+}
+
 resource "powerstore_qos_policy" "test" {
-	name = "tf_acc_qos_policy"
-	type = "QoS"
+	name             = "tf_acc_qos_policy"
+	type             = "QoS"
+	io_limit_rule_id = powerstore_io_limit_rule.test.id
 }
 `
 
