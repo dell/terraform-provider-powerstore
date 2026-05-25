@@ -371,15 +371,6 @@ func TestAccReplicationSessionAction_StartFailoverTestOnMock(t *testing.T) {
 	})
 }
 
-// Acceptance test: Stop failover test on mock server
-// Skipped due to mock server body-parser limitation with POST responses
-func TestAccReplicationSessionAction_StopFailoverTestOnMock(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	t.Skip("Mock server limitation: body-parser cannot handle POST responses with JSON body")
-}
-
 // Test mocked error paths for replication session action create
 func TestAccReplicationSessionAction_CreateErrors(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
@@ -489,12 +480,5 @@ var ReplSessionActionStartFailoverTest = `
 resource "powerstore_replication_session_action" "test_start_ft" {
   session_id = "%s"
   action     = "start_failover_test"
-}
-`
-
-var ReplSessionActionStopFailoverTestMock = `
-resource "powerstore_replication_session_action" "test_stop_ft" {
-  session_id = "b5f699ec-45a2-4bac-8153-3d520bffa861"
-  action     = "stop_failover_test"
 }
 `
