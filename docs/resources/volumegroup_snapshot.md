@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ After the execution of above resource block, volume group snapshot would have be
 
 - `description` (String) Description of the volume group snapshot.
 - `expiration_timestamp` (String) Expiration Timestamp of the volume group snapshot.Only UTC (+Z) format is allowed
+- `is_secure` (Boolean) Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.
 - `volume_group_id` (String) ID of the volume group to take snapshot. Conflicts with `volume_group_name`. Cannot be updated.
 - `volume_group_name` (String) Name of the volume group to take snapshot. Conflicts with `volume_group_id`. Cannot be updated.
 
