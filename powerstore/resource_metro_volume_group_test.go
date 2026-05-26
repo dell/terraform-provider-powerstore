@@ -38,7 +38,19 @@ import (
 
 // Helper function to generate unique volume group name
 func getMetroVolumeGroupName() string {
-	return fmt.Sprintf("metro_test_vg-%d", time.Now().UnixNano())
+	if endpoint == "http://localhost:3003/api/rest/" {
+		return "tf_volume_group_new" // Use mock server's expected name
+	}
+	return fmt.Sprintf("metro_test_vg-%d", time.Now().UnixNano()) // Use dynamic name for real server
+}
+
+// Helper function to generate volume names for volume group tests
+func getMetroVolumeNamesForVGroup() (string, string) {
+	if endpoint == "http://localhost:3003/api/rest/" {
+		return "test_acc_cvol", "test_acc_cvol" // Use mock server's expected names (both same)
+	}
+	vgName := getMetroVolumeGroupName()
+	return fmt.Sprintf("%s-vol1", vgName), fmt.Sprintf("%s-vol2", vgName)
 }
 
 // Test Schema method for metro volume group resource
@@ -221,14 +233,15 @@ func TestAccMetroVolumeGroup_CreateOnMock(t *testing.T) {
 
 	// Generate unique config once for this test
 	vgName := getMetroVolumeGroupName()
+	vol1Name, vol2Name := getMetroVolumeNamesForVGroup()
 	config := fmt.Sprintf(`
 resource "powerstore_volume" "vol1" {
-  name = "%s-vol1"
+  name = "%s"
   size = 2.5
 }
 
 resource "powerstore_volume" "vol2" {
-  name = "%s-vol2"
+  name = "%s"
   size = 2.5
 }
 
@@ -242,15 +255,15 @@ resource "powerstore_metro_volume_group" "test" {
   volume_group_id  = powerstore_volumegroup.test.id
   remote_system_id = "%s"
 }
-`, vgName, vgName, vgName, remoteSystemID)
+`, vol1Name, vol2Name, vgName, remoteSystemID)
 	configPaused := fmt.Sprintf(`
 resource "powerstore_volume" "vol1" {
-  name = "%s-vol1"
+  name = "%s"
   size = 2.5
 }
 
 resource "powerstore_volume" "vol2" {
-  name = "%s-vol2"
+  name = "%s"
   size = 2.5
 }
 
@@ -265,7 +278,7 @@ resource "powerstore_metro_volume_group" "test" {
   remote_system_id     = "%s"
   is_replication_paused = true
 }
-`, vgName, vgName, vgName, remoteSystemID)
+`, vol1Name, vol2Name, vgName, remoteSystemID)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -371,14 +384,15 @@ func TestAccMetroVolumeGroup_ReadUpdateDeleteErrors(t *testing.T) {
 
 	// Generate unique config once for this test
 	vgName := getMetroVolumeGroupName()
+	vol1Name, vol2Name := getMetroVolumeNamesForVGroup()
 	config := fmt.Sprintf(`
 resource "powerstore_volume" "vol1" {
-  name = "%s-vol1"
+  name = "%s"
   size = 2.5
 }
 
 resource "powerstore_volume" "vol2" {
-  name = "%s-vol2"
+  name = "%s"
   size = 2.5
 }
 
@@ -392,15 +406,15 @@ resource "powerstore_metro_volume_group" "test" {
   volume_group_id  = powerstore_volumegroup.test.id
   remote_system_id = "%s"
 }
-`, vgName, vgName, vgName, remoteSystemID)
+`, vol1Name, vol2Name, vgName, remoteSystemID)
 	configPaused := fmt.Sprintf(`
 resource "powerstore_volume" "vol1" {
-  name = "%s-vol1"
+  name = "%s"
   size = 2.5
 }
 
 resource "powerstore_volume" "vol2" {
-  name = "%s-vol2"
+  name = "%s"
   size = 2.5
 }
 
@@ -415,7 +429,7 @@ resource "powerstore_metro_volume_group" "test" {
   remote_system_id     = "%s"
   is_replication_paused = true
 }
-`, vgName, vgName, vgName, remoteSystemID)
+`, vol1Name, vol2Name, vgName, remoteSystemID)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -489,7 +503,7 @@ resource "powerstore_metro_volume_group" "test" {
 
 var MetroVolumeGroupParamsCreate = fmt.Sprintf(`
 resource "powerstore_volumegroup" "test" {
-  name        = "metro_test_vg"
+  name        = "tf_volume_group_new"
   description = "Creating Volume Group"
 }
 
@@ -501,7 +515,7 @@ resource "powerstore_metro_volume_group" "test" {
 
 var MetroVolumeGroupParamsCreatePaused = fmt.Sprintf(`
 resource "powerstore_volumegroup" "test" {
-  name        = "metro_test_vg"
+  name        = "tf_volume_group_new"
   description = "Creating Volume Group"
 }
 

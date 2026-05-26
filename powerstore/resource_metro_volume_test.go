@@ -38,7 +38,10 @@ import (
 
 // Helper function to generate unique volume name
 func getMetroVolumeName() string {
-	return fmt.Sprintf("metro_test_vol-%d", time.Now().UnixNano())
+	if endpoint == "http://localhost:3003/api/rest/" {
+		return "test_acc_cvol" // Use mock server's expected name
+	}
+	return fmt.Sprintf("metro_test_vol-%d", time.Now().UnixNano()) // Use dynamic name for real server
 }
 
 // Helper function to generate metro volume create config
@@ -508,7 +511,7 @@ resource "powerstore_metro_volume" "test" {
 
 var MetroVolumeParamsCreate = fmt.Sprintf(`
 resource "powerstore_volume" "volume_create_test" {
-  name = "metro_test_vol"
+  name = "test_acc_cvol"
   size = 2.5
 }
 
@@ -520,7 +523,7 @@ resource "powerstore_metro_volume" "test" {
 
 var MetroVolumeParamsCreatePaused = fmt.Sprintf(`
 resource "powerstore_volume" "volume_create_test" {
-  name = "metro_test_vol"
+  name = "test_acc_cvol"
   size = 2.5
 }
 

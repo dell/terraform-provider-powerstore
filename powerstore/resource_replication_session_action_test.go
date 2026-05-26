@@ -36,7 +36,12 @@ import (
 
 // Helper to create metro volume config for replication session action tests
 func getMetroConfigForActionTests() string {
-	volName := fmt.Sprintf("repl-action-test-vol-%d", time.Now().UnixNano())
+	var volName string
+	if endpoint == "http://localhost:3003/api/rest/" {
+		volName = "test_acc_cvol" // Use mock server's expected name
+	} else {
+		volName = fmt.Sprintf("repl-action-test-vol-%d", time.Now().UnixNano()) // Use dynamic name for real server
+	}
 	return fmt.Sprintf(`
 resource "powerstore_volume" "test_vol" {
   name = "%s"
@@ -46,6 +51,28 @@ resource "powerstore_volume" "test_vol" {
 resource "powerstore_metro_volume" "test" {
   volume_id        = powerstore_volume.test_vol.id
   remote_system_id = "%s"
+}
+`, volName, remoteSystemID)
+}
+
+// Helper to create paused metro volume config for replication session action tests
+func getMetroConfigPausedForActionTests() string {
+	var volName string
+	if endpoint == "http://localhost:3003/api/rest/" {
+		volName = "test_acc_cvol" // Use mock server's expected name
+	} else {
+		volName = fmt.Sprintf("repl-action-test-vol-%d", time.Now().UnixNano()) // Use dynamic name for real server
+	}
+	return fmt.Sprintf(`
+resource "powerstore_volume" "test_vol" {
+  name = "%s"
+  size = 2.5
+}
+
+resource "powerstore_metro_volume" "test" {
+  volume_id             = powerstore_volume.test_vol.id
+  remote_system_id      = "%s"
+  is_replication_paused = true
 }
 `, volName, remoteSystemID)
 }
@@ -271,29 +298,8 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
-	// Generate unique name for this test
-	volName := fmt.Sprintf("resume-action-test-%d", time.Now().UnixNano())
-	metroConfig := fmt.Sprintf(`
-resource "powerstore_volume" "test_vol" {
-  name = "%s"
-  size = 2.5
-}
-resource "powerstore_metro_volume" "test" {
-  volume_id        = powerstore_volume.test_vol.id
-  remote_system_id = "%s"
-}
-`, volName, remoteSystemID)
-	metroConfigPaused := fmt.Sprintf(`
-resource "powerstore_volume" "test_vol" {
-  name = "%s"
-  size = 2.5
-}
-resource "powerstore_metro_volume" "test" {
-  volume_id             = powerstore_volume.test_vol.id
-  remote_system_id      = "%s"
-  is_replication_paused = true
-}
-`, volName, remoteSystemID)
+	metroConfig := getMetroConfigForActionTests()
+	metroConfigPaused := getMetroConfigPausedForActionTests()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
