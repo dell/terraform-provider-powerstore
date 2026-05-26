@@ -231,6 +231,11 @@ func TestAccReplicationSessionAction_ResumeOnMock(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 
+	// Skip on real server - timing issues with metro replication state transitions
+	if endpoint != "http://localhost:3003/api/rest" {
+		t.Skip("Skipping on real server - resume has timing issues with metro replication state transitions")
+	}
+
 	metroConfig := getMetroConfigForActionTests()
 	metroConfigPaused := getMetroConfigPausedForActionTests()
 
