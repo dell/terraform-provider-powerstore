@@ -16,6 +16,4 @@ type ValidateCreateIssue struct {
 	Resolution *ErrorMessage `json:"resolution,omitempty"`
 	// The appliance on which the issue was detected.
 	ApplianceId *string `json:"appliance_id,omitempty"`
-	// The appliance on which the issue was detected. Was added in version 2.0.0.0. Was deprecated in version 3.0.0.0.
-	// ApplianceId *string `json:"applianceId,omitempty"`
 }
