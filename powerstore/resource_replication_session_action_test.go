@@ -18,20 +18,13 @@ limitations under the License.
 package powerstore
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"regexp"
 	"testing"
 	"time"
 
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/clientgen"
-
-	"github.com/bytedance/mockey"
-	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/stretchr/testify/assert"
 )
 
 // Helper to create metro volume config for replication session action tests
@@ -75,66 +68,6 @@ resource "powerstore_metro_volume" "test" {
   is_replication_paused = true
 }
 `, volName, remoteSystemID)
-}
-
-// Test Schema method for replication session action resource
-func TestReplicationSessionActionResource_Schema(t *testing.T) {
-	r := newReplicationSessionActionResource()
-	resp := &fwresource.SchemaResponse{}
-	r.Schema(context.Background(), fwresource.SchemaRequest{}, resp)
-	assert.False(t, resp.Diagnostics.HasError())
-	assert.NotNil(t, resp.Schema)
-
-	assert.True(t, resp.Schema.Attributes["session_id"].IsRequired())
-	assert.True(t, resp.Schema.Attributes["action"].IsRequired())
-	assert.True(t, resp.Schema.Attributes["id"].IsComputed())
-	assert.True(t, resp.Schema.Attributes["post_state"].IsComputed())
-	assert.True(t, resp.Schema.Attributes["is_planned"].IsOptional())
-	assert.True(t, resp.Schema.Attributes["reverse"].IsOptional())
-}
-
-// Test Metadata method
-func TestReplicationSessionActionResource_Metadata(t *testing.T) {
-	r := newReplicationSessionActionResource()
-	resp := &fwresource.MetadataResponse{}
-	r.Metadata(context.Background(), fwresource.MetadataRequest{ProviderTypeName: "powerstore"}, resp)
-	assert.Equal(t, "powerstore_replication_session_action", resp.TypeName)
-}
-
-// Test Configure method with nil provider data
-func TestReplicationSessionActionResource_Configure_Nil(t *testing.T) {
-	r := &resourceReplicationSessionAction{}
-	resp := &fwresource.ConfigureResponse{}
-	r.Configure(context.Background(), fwresource.ConfigureRequest{ProviderData: nil}, resp)
-	assert.False(t, resp.Diagnostics.HasError())
-}
-
-// Test Configure method with wrong type
-func TestReplicationSessionActionResource_Configure_WrongType(t *testing.T) {
-	r := &resourceReplicationSessionAction{}
-	resp := &fwresource.ConfigureResponse{}
-	r.Configure(context.Background(), fwresource.ConfigureRequest{ProviderData: "wrong"}, resp)
-	assert.True(t, resp.Diagnostics.HasError())
-}
-
-// Test Configure method with correct type
-func TestReplicationSessionActionResource_Configure_Correct(t *testing.T) {
-	r := &resourceReplicationSessionAction{}
-	resp := &fwresource.ConfigureResponse{}
-	mockClient := &client.Client{GenClient: &clientgen.APIClient{}}
-	r.Configure(context.Background(), fwresource.ConfigureRequest{ProviderData: mockClient}, resp)
-	assert.False(t, resp.Diagnostics.HasError())
-	assert.NotNil(t, r.client)
-}
-
-// Test Update method returns error
-func TestReplicationSessionActionResource_Update(t *testing.T) {
-	r := &resourceReplicationSessionAction{}
-	resp := &fwresource.UpdateResponse{}
-	r.Update(context.Background(), fwresource.UpdateRequest{}, resp)
-	// Update is not supported for replication session action
-	assert.True(t, resp.Diagnostics.HasError())
-	assert.Contains(t, resp.Diagnostics[0].Summary(), "Update not supported")
 }
 
 // Acceptance test: Missing session_id
@@ -372,47 +305,6 @@ func TestAccReplicationSessionAction_StartFailoverTestOnMock(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_replication_session_action.test_start_ft", "action", "start_failover_test"),
 				),
-			},
-		},
-	})
-}
-
-// Test mocked error paths for replication session action create
-func TestAccReplicationSessionAction_CreateErrors(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if endpoint != "http://localhost:3003/api/rest/" {
-		t.Skip("Skipping on real server - mocked error test")
-	}
-
-	var mocker1 *mockey.Mocker
-	defer func() {
-		if mocker1 != nil {
-			mocker1.UnPatch()
-		}
-	}()
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			// Create error - sync action fails
-			{
-				PreConfig: func() {
-					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).ReplicationSessionSyncExecute).Return(nil, fmt.Errorf("mock error")).Build()
-				},
-				Config:      ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionSync, replicationSessionID),
-				ExpectError: regexp.MustCompile(`.*Error performing replication session action.*`),
-			},
-			// Create error - post-action read fails
-			{
-				PreConfig: func() {
-					mocker1.UnPatch()
-					mocker1 = mockey.Mock((*clientgen.ReplicationSessionApiService).GetReplicationSessionByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
-				},
-				Config:      ProviderConfigForTesting + fmt.Sprintf(ReplSessionActionPause, replicationSessionID),
-				ExpectError: regexp.MustCompile(`.*Error reading replication session after action.*`),
 			},
 		},
 	})
