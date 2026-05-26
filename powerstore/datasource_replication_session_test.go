@@ -30,7 +30,7 @@ import (
 // Helper to create metro volume config for replication session datasource tests
 func getMetroConfigForDSTests() string {
 	var volName string
-	if endpoint == "http://localhost:3003/api/rest/" {
+	if endpoint == "http://localhost:3003/api/rest" {
 		volName = "test_acc_cvol" // Use mock server's expected name
 	} else {
 		volName = fmt.Sprintf("repl-ds-test-vol-%d", time.Now().UnixNano()) // Use dynamic name for real server

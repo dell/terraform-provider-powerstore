@@ -30,7 +30,7 @@ import (
 // Helper to create metro volume config for replication session action tests
 func getMetroConfigForActionTests() string {
 	var volName string
-	if endpoint == "http://localhost:3003/api/rest/" {
+	if endpoint == "http://localhost:3003/api/rest" {
 		volName = "test_acc_cvol" // Use mock server's expected name
 	} else {
 		volName = fmt.Sprintf("repl-action-test-vol-%d", time.Now().UnixNano()) // Use dynamic name for real server
@@ -51,7 +51,7 @@ resource "powerstore_metro_volume" "test" {
 // Helper to create paused metro volume config for replication session action tests
 func getMetroConfigPausedForActionTests() string {
 	var volName string
-	if endpoint == "http://localhost:3003/api/rest/" {
+	if endpoint == "http://localhost:3003/api/rest" {
 		volName = "test_acc_cvol" // Use mock server's expected name
 	} else {
 		volName = fmt.Sprintf("repl-action-test-vol-%d", time.Now().UnixNano()) // Use dynamic name for real server

@@ -29,7 +29,7 @@ import (
 
 // Helper function to generate unique volume group name
 func getMetroVolumeGroupName() string {
-	if endpoint == "http://localhost:3003/api/rest/" {
+	if endpoint == "http://localhost:3003/api/rest" {
 		return "tf_volume_group_new" // Use mock server's expected name
 	}
 	return fmt.Sprintf("metro_test_vg-%d", time.Now().UnixNano()) // Use dynamic name for real server
@@ -37,7 +37,7 @@ func getMetroVolumeGroupName() string {
 
 // Helper function to generate volume names for volume group tests
 func getMetroVolumeNamesForVGroup() (string, string) {
-	if endpoint == "http://localhost:3003/api/rest/" {
+	if endpoint == "http://localhost:3003/api/rest" {
 		return "test_acc_cvol", "test_acc_cvol" // Use mock server's expected names (both same)
 	}
 	vgName := getMetroVolumeGroupName()

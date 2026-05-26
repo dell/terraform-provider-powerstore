@@ -29,7 +29,7 @@ import (
 
 // Helper function to generate unique volume name
 func getMetroVolumeName() string {
-	if endpoint == "http://localhost:3003/api/rest/" {
+	if endpoint == "http://localhost:3003/api/rest" {
 		return "test_acc_cvol" // Use mock server's expected name
 	}
 	return fmt.Sprintf("metro_test_vol-%d", time.Now().UnixNano()) // Use dynamic name for real server
