@@ -36,6 +36,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 const (
@@ -149,7 +150,9 @@ func (r *resourceFileSystemSnapshot) Create(ctx context.Context, req resource.Cr
 	var expirationTimestamp *time.Time
 	if !plan.ExpirationTimestamp.IsNull() {
 		expTime, _ := plan.ExpirationTimestamp.ValueRFC3339Time()
-		expirationTimestamp = &expTime
+		if !expTime.IsZero() {
+			expirationTimestamp = &expTime
+		}
 	}
 
 	// Create new filesystem snapshot
@@ -274,10 +277,7 @@ func (r *resourceFileSystemSnapshot) Update(ctx context.Context, req resource.Up
 	var expirationTimestamp *time.Time
 	if !plan.ExpirationTimestamp.IsNull() {
 		expTime, _ := plan.ExpirationTimestamp.ValueRFC3339Time()
-		if expTime.IsZero() {
-			expTime, _ := time.Parse(time.RFC3339, DefaultExpirationTimestamp)
-			expirationTimestamp = &expTime
-		} else {
+		if !expTime.IsZero() {
 			expirationTimestamp = &expTime
 		}
 	}
@@ -363,11 +363,16 @@ func (r *resourceFileSystemSnapshot) ImportState(ctx context.Context, req resour
 }
 
 // updateSnapshotState - method to update terraform state
-func (r resourceFileSystemSnapshot) updateSnapshotState(_, state *models.FileSystemSnapshot, response clientgen.FileSystemInstance) {
+func (r resourceFileSystemSnapshot) updateSnapshotState(plan, state *models.FileSystemSnapshot, response clientgen.FileSystemInstance) {
 
 	state.ID = helper.TfString(response.Id)
 	state.Name = helper.TfString(response.Name)
-	state.Description = helper.TfString(response.Description)
+	// Handle case where API returns null for description but plan had empty string
+	if response.Description == nil && plan != nil && plan.Description.ValueString() == "" {
+		state.Description = types.StringValue("")
+	} else {
+		state.Description = helper.TfString(response.Description)
+	}
 	if response.ExpirationTimestamp != nil {
 		state.ExpirationTimestamp = timetypes.NewRFC3339TimePointerValue(response.ExpirationTimestamp)
 	}

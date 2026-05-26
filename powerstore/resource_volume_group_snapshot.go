@@ -408,7 +408,12 @@ func (r resourceVGSnapshot) updateVGSnapshotState(plan, state *models.VolumeGrou
 
 	state.ID = helper.TfString(response.Id)
 	state.Name = helper.TfString(response.Name)
-	state.Description = helper.TfString(response.Description)
+	// Handle case where API returns null for description but plan had empty string
+	if response.Description == nil && plan != nil && plan.Description.ValueString() == "" {
+		state.Description = types.StringValue("")
+	} else {
+		state.Description = helper.TfString(response.Description)
+	}
 	if response.ProtectionData != nil {
 		state.ExpirationTimestamp = timetypes.NewRFC3339TimePointerValue(response.ProtectionData.ExpirationTimestamp)
 		state.VolumeGroupID = helper.TfString(response.ProtectionData.ParentId)
