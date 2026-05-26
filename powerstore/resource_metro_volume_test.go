@@ -35,39 +35,6 @@ func getMetroVolumeName() string {
 	return fmt.Sprintf("metro_test_vol-%d", time.Now().UnixNano()) // Use dynamic name for real server
 }
 
-// Helper function to generate metro volume create config
-func getMetroVolumeConfig(remoteSystemID string) string {
-	volName := getMetroVolumeName()
-	return fmt.Sprintf(`
-resource "powerstore_volume" "volume_create_test" {
-  name = "%s"
-  size = 2.5
-}
-
-resource "powerstore_metro_volume" "test" {
-  volume_id        = powerstore_volume.volume_create_test.id
-  remote_system_id = "%s"
-}
-`, volName, remoteSystemID)
-}
-
-// Helper function to generate metro volume create paused config
-func getMetroVolumeConfigPaused(remoteSystemID string) string {
-	volName := getMetroVolumeName()
-	return fmt.Sprintf(`
-resource "powerstore_volume" "volume_create_test" {
-  name = "%s"
-  size = 2.5
-}
-
-resource "powerstore_metro_volume" "test" {
-  volume_id            = powerstore_volume.volume_create_test.id
-  remote_system_id     = "%s"
-  is_replication_paused = true
-}
-`, volName, remoteSystemID)
-}
-
 // Acceptance test: Create metro volume - missing volume_id
 func TestAccMetroVolume_MissingVolumeID(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
