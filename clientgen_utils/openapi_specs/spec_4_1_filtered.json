@@ -4774,12 +4774,6 @@
 				"appliance_id": {
 					"description": "The appliance on which the issue was detected.",
 					"type": "string"
-				},
-				"applianceId": {
-					"description": "The appliance on which the issue was detected.\nWas added in version 2.0.0.0.\nWas deprecated in version 3.0.0.0.",
-					"type": "string",
-					"x-added": "2.0.0.0",
-					"x-deprecated": "3.0.0.0"
 				}
 			}
 		},
