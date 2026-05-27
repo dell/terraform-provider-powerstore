@@ -217,7 +217,7 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	result := models.Volumegroup{}
-	r.updateVolGroupState(&result, volGroupResponse, &plan)
+	r.updateVolGroupState(&result, volGroupResponse, &plan, false)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -321,7 +321,7 @@ func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	r.updateVolGroupState(&state, response, &state)
+	r.updateVolGroupState(&state, response, &state, false)
 
 	//Set state
 	diags = resp.State.Set(ctx, &state)
@@ -486,7 +486,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	r.updateVolGroupState(&state, getRes, &plan)
+	r.updateVolGroupState(&state, getRes, &plan, true)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -503,7 +503,7 @@ func (r *resourceVolumeGroup) ImportState(ctx context.Context, req resource.Impo
 }
 
 // updateVolGroupState - method to update terraform state
-func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse *clientgen.VolumeGroupInstance, volGroupPlan *models.Volumegroup) {
+func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegroup, volGroupResponse *clientgen.VolumeGroupInstance, volGroupPlan *models.Volumegroup, preserveVolumeIDs bool) {
 	// Update value from Volume Group Response to State
 	volgroupState.ID = helper.TfString(helper.SetDefault(volGroupResponse.Id, ""))
 	volgroupState.Name = helper.TfString(helper.SetDefault(volGroupResponse.Name, ""))
@@ -511,13 +511,17 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.IsWriteOrderConsistent = helper.TfBool(helper.SetDefault(volGroupResponse.IsWriteOrderConsistent, false))
 	volgroupState.ProtectionPolicyID = helper.TfString(helper.SetDefault(volGroupResponse.ProtectionPolicyId, ""))
 
-	//Update VolumeIDs value from Response to State
-	volgroupState.VolumeIDs, _ = types.SetValue(
-		types.StringType,
-		helper.SliceTransform(volGroupResponse.Volumes, func(in clientgen.VolumeInstance) attr.Value {
-			return helper.TfString(in.Id)
-		}),
-	)
+	//Update VolumeIDs value from Response to State, or preserve planned values
+	if preserveVolumeIDs {
+		volgroupState.VolumeIDs = volGroupPlan.VolumeIDs
+	} else {
+		volgroupState.VolumeIDs, _ = types.SetValue(
+			types.StringType,
+			helper.SliceTransform(volGroupResponse.Volumes, func(in clientgen.VolumeInstance) attr.Value {
+				return helper.TfString(in.Id)
+			}),
+		)
+	}
 
 	//Update VolumeNames value from Plan to State
 	volgroupState.VolumeNames, _ = types.SetValue(
