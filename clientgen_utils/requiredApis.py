@@ -55,4 +55,5 @@ RequiredAPIs = [
     '/replication_session/{id}/stop_failover_test',
     '/remote_system',
     '/remote_system/{id}',
+    '/security_config/generate_temp_credentials',
 ]
