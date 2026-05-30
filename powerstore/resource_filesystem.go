@@ -240,6 +240,12 @@ func (r fileSystemResource) Schema(ctx context.Context, req resource.SchemaReque
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"performance_policy_id": schema.StringAttribute{
+				Computed:            true,
+				Optional:            true,
+				Description:         "Unique identifier of the File_Performance type QoS policy applied to the file system.",
+				MarkdownDescription: "Unique identifier of the File_Performance type QoS policy applied to the file system.",
+			},
 			"file_events_publishing_mode": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
@@ -427,6 +433,7 @@ func (r fileSystemResource) Create(ctx context.Context, req resource.CreateReque
 		FolderRenamePolicy:         helper.ValueToEnumPointer[string, clientgen.FileSystemFolderRenamePolicyEnum](plan.FolderRenamePolicy),
 		IsAsyncMTimeEnabled:        helper.ValueToPointer[bool](plan.IsAsyncMTimeEnabled),
 		ProtectionPolicyId:         helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		PerformancePolicyId:        helper.ValueToPointer[string](plan.PerformancePolicyID),
 		FileEventsPublishingMode:   helper.ValueToEnumPointer[string, clientgen.FileEventsPublishingModeEnum](plan.FileEventsPublishingMode),
 		HostIoSize:                 helper.ValueToEnumPointer[string, clientgen.FileSystemHostIoSizeEnum](plan.HostIOSize),
 		IsSmbSyncWritesEnabled:     helper.ValueToPointer[bool](plan.IsSmbSyncWritesEnabled),
@@ -616,6 +623,7 @@ func (r fileSystemResource) Update(ctx context.Context, req resource.UpdateReque
 		FolderRenamePolicy:         helper.ValueToEnumPointer[string, clientgen.FileSystemFolderRenamePolicyEnum](plan.FolderRenamePolicy),
 		IsAsyncMTimeEnabled:        helper.ValueToPointer[bool](plan.IsAsyncMTimeEnabled),
 		ProtectionPolicyId:         helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		PerformancePolicyId:        helper.ValueToPointer[string](plan.PerformancePolicyID),
 		FileEventsPublishingMode:   helper.ValueToEnumPointer[string, clientgen.FileEventsPublishingModeEnum](plan.FileEventsPublishingMode),
 		IsSmbSyncWritesEnabled:     helper.ValueToPointer[bool](plan.IsSmbSyncWritesEnabled),
 		IsSmbNoNotifyEnabled:       helper.ValueToPointer[bool](plan.IsSmbNoNotifyEnabled),
@@ -728,7 +736,7 @@ func convertFromBytesForFileSystem(bytes int64) (float64, string) {
 
 func (r fileSystemResource) readFileSystemAPI(ctx context.Context, id string) (*clientgen.FileSystemInstance, error) {
 	queries := make(url.Values)
-	queries.Set("select", "id,name,description,nas_server_id,parent_id,filesystem_type,size_total,config_type,protection_policy_id,access_policy,locking_policy,folder_rename_policy,is_smb_sync_writes_enabled,is_smb_op_locks_enabled,is_smb_no_notify_enabled,is_smb_notify_on_access_enabled,is_smb_notify_on_write_enabled,smb_notify_on_change_dir_depth,is_async_MTime_enabled,file_events_publishing_mode,host_io_size,flr_attributes")
+	queries.Set("select", "id,name,description,nas_server_id,parent_id,filesystem_type,size_total,config_type,protection_policy_id,performance_policy_id,access_policy,locking_policy,folder_rename_policy,is_smb_sync_writes_enabled,is_smb_op_locks_enabled,is_smb_no_notify_enabled,is_smb_notify_on_access_enabled,is_smb_notify_on_write_enabled,smb_notify_on_change_dir_depth,is_async_MTime_enabled,file_events_publishing_mode,host_io_size,flr_attributes")
 	response, _, err := r.client.GenClient.FileSystemApi.GetFileSystemById(ctx, id).Queries(queries).Execute()
 	return response, err
 }
@@ -750,6 +758,7 @@ func updateFsState(fsState *models.FileSystem, fsResponse *clientgen.FileSystemI
 	fsState.FolderRenamePolicy = helper.TfString(fsResponse.FolderRenamePolicy)
 	fsState.IsAsyncMTimeEnabled = helper.TfBool(fsResponse.IsAsyncMTimeEnabled)
 	fsState.ProtectionPolicyID = helper.TfString(fsResponse.ProtectionPolicyId)
+	fsState.PerformancePolicyID = helper.TfStringNN(fsResponse.PerformancePolicyId)
 	fsState.FileEventsPublishingMode = helper.TfString(fsResponse.FileEventsPublishingMode)
 	fsState.HostIOSize = helper.TfString(fsResponse.HostIoSize)
 	fsState.IsSmbSyncWritesEnabled = helper.TfBool(fsResponse.IsSmbSyncWritesEnabled)

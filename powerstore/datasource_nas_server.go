@@ -119,16 +119,16 @@ func (d *nasServerDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	//Fetch NAS Server based on id/name; if nothing is mentioned, it fetches all NAS Servers
 	if plan.Id.ValueString() != "" {
-		nasServer, err = d.client.PStoreClient.GetNAS(context.Background(), plan.Id.ValueString())
+		nasServer, err = d.client.GetNASWithoutHealthDetails(context.Background(), plan.Id.ValueString())
 		nasServers = append(nasServers, nasServer)
 	} else if plan.Name.ValueString() != "" {
-		nasServer, err = d.client.PStoreClient.GetNASByName(context.Background(), plan.Name.ValueString())
+		nasServer, err = d.client.GetNASByNameWithoutHealthDetails(context.Background(), plan.Name.ValueString())
 		nasServers = append(nasServers, nasServer)
 	} else if plan.Filters.ValueString() != "" {
 		filterMap := convertQueriesToMap(plan.Filters.ValueQueries())
 		nasServers, err = d.client.GetNaSServersByFilter(ctx, filterMap)
 	} else {
-		nasServers, err = d.client.PStoreClient.GetNASServers(ctx)
+		nasServers, err = d.client.GetNASServersWithoutHealthDetails(ctx)
 	}
 
 	if err != nil {

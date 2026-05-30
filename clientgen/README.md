@@ -105,6 +105,11 @@ Class | Method | HTTP request | Description
 *RecycleBinApi* | [**RecycleBinRecover**](docs/RecycleBinApi.md#recyclebinrecover) | **Post** /recycle_bin/{id}/recover | Recover
 *RecycleBinConfigApi* | [**GetRecycleBinConfigById**](docs/RecycleBinConfigApi.md#getrecyclebinconfigbyid) | **Get** /recycle_bin_config/{id} | Instance Query
 *RecycleBinConfigApi* | [**PatchRecycleBinConfigById**](docs/RecycleBinConfigApi.md#patchrecyclebinconfigbyid) | **Patch** /recycle_bin_config/{id} | Modify
+*VolumeApi* | [**DeleteVolumeById**](docs/VolumeApi.md#deletevolumebyid) | **Delete** /volume/{id} | Delete
+*VolumeApi* | [**GetAllVolumes**](docs/VolumeApi.md#getallvolumes) | **Get** /volume | Collection Query
+*VolumeApi* | [**GetVolumeById**](docs/VolumeApi.md#getvolumebyid) | **Get** /volume/{id} | Instance Query
+*VolumeApi* | [**PatchVolumeById**](docs/VolumeApi.md#patchvolumebyid) | **Patch** /volume/{id} | Modify
+*VolumeApi* | [**PostAllVolumes**](docs/VolumeApi.md#postallvolumes) | **Post** /volume | Create
 *VolumeGroupApi* | [**DeleteVolumeGroupById**](docs/VolumeGroupApi.md#deletevolumegroupbyid) | **Delete** /volume_group/{id} | Delete
 *VolumeGroupApi* | [**GetAllVolumeGroups**](docs/VolumeGroupApi.md#getallvolumegroups) | **Get** /volume_group | Collection Query
 *VolumeGroupApi* | [**GetVolumeGroupById**](docs/VolumeGroupApi.md#getvolumegroupbyid) | **Get** /volume_group/{id} | Instance Query
@@ -345,6 +350,8 @@ Class | Method | HTTP request | Description
  - [VirtualVolumeUsageTypeEnum](docs/VirtualVolumeUsageTypeEnum.md)
  - [VmProtectionDataInstance](docs/VmProtectionDataInstance.md)
  - [VolumeBlockSizeEnum](docs/VolumeBlockSizeEnum.md)
+ - [VolumeCreate](docs/VolumeCreate.md)
+ - [VolumeDelete](docs/VolumeDelete.md)
  - [VolumeGroupAddMembers](docs/VolumeGroupAddMembers.md)
  - [VolumeGroupCreate](docs/VolumeGroupCreate.md)
  - [VolumeGroupDelete](docs/VolumeGroupDelete.md)
@@ -353,6 +360,7 @@ Class | Method | HTTP request | Description
  - [VolumeGroupRemoveMembers](docs/VolumeGroupRemoveMembers.md)
  - [VolumeImportableCriteriaEnum](docs/VolumeImportableCriteriaEnum.md)
  - [VolumeInstance](docs/VolumeInstance.md)
+ - [VolumeModify](docs/VolumeModify.md)
  - [VolumeStateEnum](docs/VolumeStateEnum.md)
  - [VolumeTypeEnum](docs/VolumeTypeEnum.md)
  - [VsphereHostInstance](docs/VsphereHostInstance.md)

@@ -120,6 +120,13 @@ func (r *resourceVolumeGroup) Schema(ctx context.Context, req resource.SchemaReq
 				},
 			},
 
+			"qos_performance_policy_id": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "Unique identifier of the QoS performance policy assigned to the volume group.",
+				MarkdownDescription: "Unique identifier of the QoS performance policy assigned to the volume group.",
+			},
+
 			"volume_names": schema.SetAttribute{
 				ElementType:         types.StringType,
 				Optional:            true,
@@ -194,6 +201,7 @@ func (r *resourceVolumeGroup) Create(ctx context.Context, req resource.CreateReq
 		VolumeIds:              volumeIds,
 		IsWriteOrderConsistent: helper.GetKnownBoolPointer(plan.IsWriteOrderConsistent),
 		ProtectionPolicyId:     helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		QosPerformancePolicyId: helper.ValueToPointer[string](plan.QosPerformancePolicyID),
 	}
 
 	//Create New Volume Group
@@ -333,7 +341,7 @@ func (r *resourceVolumeGroup) Read(ctx context.Context, req resource.ReadRequest
 }
 
 func (r *resourceVolumeGroup) ReadAPI(ctx context.Context, id string) (*clientgen.VolumeGroupInstance, error) {
-	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*)"
+	sel := "*,volumes(*),protection_policy(*),protection_data,location_history,migration_session(*),qos_performance_policy_id"
 	queries := make(url.Values)
 	queries.Set("select", sel)
 	response, _, err := r.client.VolumeGroupApi.GetVolumeGroupById(context.Background(), id).Queries(queries).Execute()
@@ -435,6 +443,7 @@ func (r *resourceVolumeGroup) Update(ctx context.Context, req resource.UpdateReq
 	volumeGroupUpdate := clientgen.VolumeGroupModify{
 		Description:            helper.ValueToPointer[string](plan.Description),
 		ProtectionPolicyId:     helper.ValueToPointer[string](plan.ProtectionPolicyID),
+		QosPerformancePolicyId: helper.ValueToPointer[string](plan.QosPerformancePolicyID),
 		Name:                   helper.ValueToPointer[string](plan.Name),
 		IsWriteOrderConsistent: helper.ValueToPointer[bool](plan.IsWriteOrderConsistent),
 	}
@@ -510,6 +519,7 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.Description = helper.TfString(helper.SetDefault(volGroupResponse.Description, ""))
 	volgroupState.IsWriteOrderConsistent = helper.TfBool(helper.SetDefault(volGroupResponse.IsWriteOrderConsistent, false))
 	volgroupState.ProtectionPolicyID = helper.TfString(helper.SetDefault(volGroupResponse.ProtectionPolicyId, ""))
+	volgroupState.QosPerformancePolicyID = helper.TfString(helper.SetDefault(volGroupResponse.QosPerformancePolicyId, ""))
 
 	//Update VolumeIDs value from Response to State
 	volgroupState.VolumeIDs, _ = types.SetValue(

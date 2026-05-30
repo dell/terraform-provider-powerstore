@@ -33,6 +33,14 @@ func TfString[T ~string](in *T) types.String {
 	return types.StringValue(string(*in))
 }
 
+// TfStringNN - Converts *string to non-null types.String, returns empty string if input is nil
+func TfStringNN[T ~string](in *T) types.String {
+	if in == nil {
+		return types.StringValue("")
+	}
+	return types.StringValue(string(*in))
+}
+
 // TfStringFromPTime - Converts *time.Time to types.String, returns types.StringNull if input is nil
 func TfStringFromPTime(in *time.Time) types.String {
 	if in == nil {
@@ -57,6 +65,14 @@ func TfInt32(in *int32) types.Int32 {
 	return types.Int32Value(*in)
 }
 
+// TfInt64 - Converts *int64 to types.Int64, returns types.Int64Null if input is nil
+func TfInt64(in *int64) types.Int64 {
+	if in == nil {
+		return types.Int64Null()
+	}
+	return types.Int64Value(*in)
+}
+
 // TfObject - Converts input using the transform transform function, returns empty output if input is nil
 func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	if in == nil {
@@ -66,11 +82,11 @@ func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	return transform(*in)
 }
 
-// ValueToPointer - Extracts Go value pointer from attr.Value
+// ValueToPointer - Extracts Go value pointer from attr.Value. Supports bool, string, int32, int64.
 // Returns nil if input is not known
-// Supported types: types.String, types.Bool, types.Int32
+// Supported types: types.String, types.Bool, types.Int32, types.Int64
 // We can add more types in the future when required
-func ValueToPointer[T bool | string | int32, VT attr.Value](in VT) *T {
+func ValueToPointer[T bool | string | int32 | int64, VT attr.Value](in VT) *T {
 	if in.IsNull() || in.IsUnknown() {
 		return nil
 	}
@@ -82,6 +98,8 @@ func ValueToPointer[T bool | string | int32, VT attr.Value](in VT) *T {
 		ret = inv.ValueBool()
 	case types.Int32:
 		ret = inv.ValueInt32()
+	case types.Int64:
+		ret = inv.ValueInt64()
 	}
 
 	switch retv := ret.(type) {
@@ -89,6 +107,25 @@ func ValueToPointer[T bool | string | int32, VT attr.Value](in VT) *T {
 		return &retv
 	}
 	return nil
+}
+
+// ValueToPointerNE - Like ValueToPointer but also returns nil for empty strings and zero values.
+// Use for optional ID fields where empty string or zero is not a valid API value.
+func ValueToPointerNE[T bool | string | int32 | int64, VT attr.Value](in VT) *T {
+	p := ValueToPointer[T](in)
+	if p == nil {
+		return nil
+	}
+	if s, ok := any(*p).(string); ok && s == "" {
+		return nil
+	}
+	if i, ok := any(*p).(int64); ok && i == 0 {
+		return nil
+	}
+	if i, ok := any(*p).(int32); ok && i == 0 {
+		return nil
+	}
+	return p
 }
 
 // ValueToEnumPointer - Converts attr.Value to *E where E is an enum type.

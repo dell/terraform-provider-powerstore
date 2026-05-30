@@ -32,4 +32,6 @@ RequiredAPIs = [
     "/recycle_bin_config/{id}",
     "/file_system",
     "/file_system/{id}",
+    "/volume",
+    "/volume/{id}",
 ]

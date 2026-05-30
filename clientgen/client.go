@@ -62,6 +62,8 @@ type APIClient struct {
 
 	RecycleBinConfigApi *RecycleBinConfigApiService
 
+	VolumeApi *VolumeApiService
+
 	VolumeGroupApi *VolumeGroupApiService
 }
 
@@ -88,6 +90,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.PolicyApi = (*PolicyApiService)(&c.common)
 	c.RecycleBinApi = (*RecycleBinApiService)(&c.common)
 	c.RecycleBinConfigApi = (*RecycleBinConfigApiService)(&c.common)
+	c.VolumeApi = (*VolumeApiService)(&c.common)
 	c.VolumeGroupApi = (*VolumeGroupApiService)(&c.common)
 
 	return c

@@ -66,16 +66,13 @@ type VolumeInstance struct {
 	// Localized message string corresponding to node_affinity
 	NodeAffinityL10n *string `json:"node_affinity_l10n,omitempty"`
 	// Localized message string corresponding to app_type Was added in version 2.1.0.0.
-	AppTypeL10n *string `json:"app_type_l10n,omitempty"`
-	// This is the embeddable reference form of appliance_id attribute.
-	Appliance map[string]interface{} `json:"appliance,omitempty"`
-	// This is the embeddable reference form of protection_policy_id attribute.
-	ProtectionPolicy map[string]interface{} `json:"protection_policy,omitempty"`
-	// This is the embeddable reference form of qos_performance_policy_id attribute.
-	QosPerformancePolicy map[string]interface{}    `json:"qos_performance_policy,omitempty"`
+	AppTypeL10n          *string                   `json:"app_type_l10n,omitempty"`
+	Appliance            *ApplianceInstance        `json:"appliance,omitempty"`
+	ProtectionPolicy     *PolicyInstance           `json:"protection_policy,omitempty"`
+	QosPerformancePolicy *PolicyInstance           `json:"qos_performance_policy,omitempty"`
 	MigrationSession     *MigrationSessionInstance `json:"migration_session,omitempty"`
 	// This is the inverse of the resource type host_volume_mapping association.
-	MappedVolumes []map[string]interface{} `json:"mapped_volumes,omitempty"`
+	MappedVolumes []HostVolumeMappingInstance `json:"mapped_volumes,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
 	RemoteSnapshotSessions []RemoteSnapshotSessionInstance `json:"remote_snapshot_sessions,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.

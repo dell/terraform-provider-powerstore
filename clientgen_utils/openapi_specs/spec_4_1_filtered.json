@@ -1455,6 +1455,210 @@
 				"operationId": "volume_group_remove_members"
 			}
 		},
+		"/volume": {
+			"get": {
+				"description": "Query volumes that are provisioned on the appliance.",
+				"summary": "Collection Query",
+				"tags": [
+					"volume"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/volume_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of volume instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/volume_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_volumes",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"description": "Create a volume on the appliance.",
+				"summary": "Create",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_volumes"
+			}
+		},
+		"/volume/{id}": {
+			"get": {
+				"description": "Query a specific volume instance.",
+				"summary": "Instance Query",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume to query. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					}
+				],
+				"tags": [
+					"volume"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_volume_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"description": "Modify the parameters of a volume.\n\nFor metro volumes, name and performance_policy can only be modified from the preferred side when the metro replication session is paused.\n\nVolume size of metro volumes can only be modified if the metro replication session is fractured or paused.\nThe QoS performance policy is not replicated for metro volumes.\n",
+				"summary": "Modify",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume to modify. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_volume_by_id"
+			},
+			"delete": {
+				"description": "Delete a volume. \n\nFor a metro volume, first end the metro configuration and then delete the local volume.\n\n* A volume which is attached to a host or host group or is a member of a volume group cannot be deleted.\n\n* A volume which has protection policies attached to it cannot be deleted.\n\n* A volume which has snapshots that are part of a snapset cannot be deleted.\n\n* Clones of a deleted production volume or a clone are not deleted.\n\n* Snapshots of the volume are deleted along with the volume being deleted.\n",
+				"summary": "Delete",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume to delete. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Delete a volume.\nWas added in version 3.5.0.0.",
+						"required": false,
+						"x-added": "3.5.0.0",
+						"schema": {
+							"$ref": "#/definitions/volume_delete"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_volume_by_id"
+			}
+		},
 		"/file_system": {
 			"get": {
 				"tags": [
@@ -8711,15 +8915,22 @@
 				},
 				"appliance": {
 					"type": "object",
-					"description": "This is the embeddable reference form of appliance_id attribute."
+					"$ref": "#/definitions/appliance_instance",
+					"description": "This is the embeddable reference form of appliance_id attribute.",
+					"x-ref": "appliance"
 				},
 				"protection_policy": {
 					"type": "object",
-					"description": "This is the embeddable reference form of protection_policy_id attribute."
+					"$ref": "#/definitions/policy_instance",
+					"description": "This is the embeddable reference form of protection_policy_id attribute.",
+					"x-ref": "policy"
 				},
 				"qos_performance_policy": {
 					"type": "object",
-					"description": "This is the embeddable reference form of qos_performance_policy_id attribute."
+					"$ref": "#/definitions/policy_instance",
+					"description": "This is the embeddable reference form of qos_performance_policy_id attribute.",
+					"x-ref": "policy",
+					"x-added": "4.0.0.0"
 				},
 				"migration_session": {
 					"type": "object",
@@ -8730,7 +8941,8 @@
 				"mapped_volumes": {
 					"type": "array",
 					"items": {
-						"type": "object"
+						"$ref": "#/definitions/host_volume_mapping_instance",
+						"x-ref": "host_volume_mapping"
 					},
 					"description": "This is the inverse of the resource type host_volume_mapping association."
 				},
@@ -8786,6 +8998,192 @@
 					},
 					"description": "List of the replication_sessions that are associated with this volume.",
 					"x-added": "4.0.0.0"
+				}
+			}
+		},
+		"volume_create": {
+			"description": "Parameters for the volume create operation.",
+			"properties": {
+				"name": {
+					"description": "Unique name for the volume to be created. This value must contain 128\nor fewer printable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"size": {
+					"description": "Size of the volume to be created, in bytes. Minimum volume size is\n1MB. Maximum volume size is 256TB. Size must be a multiple of 8192.\n",
+					"type": "integer",
+					"format": "int64",
+					"x-units": "bytes",
+					"minimum": 1048576,
+					"maximum": 281474976710656
+				},
+				"host_id": {
+					"description": "Unique identifier of the host to be attached to the volume. If not\nspecified, an unmapped volume is created.\nOnly one of host_id or host_group_id can be supplied.\n name:{name} can be used instead of {id}. For example: 'host_id':'name:host_name'",
+					"type": "string",
+					"x-ref": "host"
+				},
+				"host_group_id": {
+					"description": "Unique identifier of the host group to be attached to the volume. If\nnot specified, an unmapped volume is created.\nOnly one of host_id or host_group_id can be supplied.\n name:{name} can be used instead of {id}. For example: 'host_group_id':'name:host_group_name'",
+					"type": "string",
+					"x-ref": "host_group"
+				},
+				"logical_unit_number": {
+					"description": "Optional logical unit number when creating a  attached volume.  If no\nhost_id or host_group_id is specified, this property is ignored.\n",
+					"type": "integer",
+					"minimum": 0,
+					"maximum": 16383,
+					"format": "int32"
+				},
+				"description": {
+					"description": "Description of the volume. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"appliance_id": {
+					"description": "Identifier of the appliance on which the volume is\nprovisioned.\n name:{name} can be used instead of {id}. For example: 'appliance_id':'name:appliance_name'",
+					"type": "string",
+					"x-ref": "appliance"
+				},
+				"volume_group_id": {
+					"description": "Volume group to add the volume to.  If not specified, the volume\nis not added to a volume group.\n name:{name} can be used instead of {id}. For example: 'volume_group_id':'name:volume_group_name'",
+					"type": "string",
+					"x-ref": "volume_group"
+				},
+				"min_size": {
+					"description": "Optional minimum size for the volume, in bytes.",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 1048576,
+					"maximum": 281474976710656
+				},
+				"sector_size": {
+					"description": "Optional sector size, in bytes. Only 512-byte and 4096-byte sectors\nare supported.\n",
+					"type": "integer",
+					"minimum": 512,
+					"maximum": 4096,
+					"format": "int32"
+				},
+				"protection_policy_id": {
+					"description": "Unique identifier of the protection policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"qos_performance_policy_id": {
+					"description": "Unique identifier of the QoS performance policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'qos_performance_policy_id':'name:policy_name'\nWas added in version 4.0.0.0.",
+					"type": "string",
+					"x-added": "4.0.0.0",
+					"x-ref": "policy"
+				},
+				"app_type": {
+					"type": "string",
+					"x-added": "2.1.0.0",
+					"$ref": "#/definitions/AppTypeEnum",
+					"description": "\nWas added in version 2.1.0.0."
+				},
+				"app_type_other": {
+					"type": "string",
+					"description": "An optional field used to describe application type usage for a volume.\nThis field can only be set if app_type is set to Relational_Databases_Other, Big_Data_Analytics_Other,\nBusiness_Applications_Other, Healthcare_Other, Virtualization_Other or Other.\nIf the app_type attribute is set to anything other than one of these values, the attribute will be cleared.\n\nWas added in version 2.1.0.0.",
+					"x-added": "2.1.0.0",
+					"maxLength": 32
+				}
+			},
+			"required": [
+				"name",
+				"size"
+			]
+		},
+		"volume_modify": {
+			"description": "Parameters for the volume modify operation.",
+			"properties": {
+				"name": {
+					"description": "New name of the volume. This value must contain 128 or fewer printable\nUnicode characters.\n",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "New description of the volume. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"size": {
+					"description": "New size of the volume in bytes,\nmust be a multiple of 8192,\nmust be bigger than the current volume size.\nMaximum volume size is 256TB.\n",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 1048576,
+					"maximum": 281474976710656
+				},
+				"expiration_timestamp": {
+					"description": "New expiration time of the snapshot. Expired snapshots are deleted by\nthe snapshot aging service that runs periodically in the background.\nIf not specified, the snapshot never expires.\n\nUse a maximum timestamp value or null to set an expiration to never expire.\n",
+					"type": "string",
+					"format": "date-time",
+					"x-pstore-nullable": true
+				},
+				"protection_policy_id": {
+					"description": "Unique identifier of the protection policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-pstore-nullable": true,
+					"x-ref": "policy"
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"qos_performance_policy_id": {
+					"description": "Unique identifier of the QoS performance policy assigned to the volume.\nIf an empty string or null is specified, the QoS performance policy will be removed from this volume.\n name:{name} can be used instead of {id}. For example: 'qos_performance_policy_id':'name:policy_name'\nWas added in version 4.0.0.0.",
+					"type": "string",
+					"x-added": "4.0.0.0",
+					"x-ref": "policy",
+					"x-pstore-nullable": true
+				},
+				"is_replication_destination": {
+					"description": "New value for is_replication_destination property. The modification is\nonly supported for primary and clone volume, only when the current\nvalue is true and there is no longer a replication session using this\nvolume as a destination, and only to false.\n",
+					"type": "boolean"
+				},
+				"force": {
+					"description": "Normally a replication destination volume cannot be modified since it is\ncontrolled by replication. However, there can be cases where replication has\nfailed or is no longer active and the replication destination volume needs to\nbe cleaned up.\n\nWith the force option, the user will be allowed to remove the\nprotection policy from the replication destination volume provided that the\nreplication session has never been synchronized and the last_sync_timestamp property is empty.\n\nThis parameter defaults to false, if not specified.\n",
+					"type": "boolean",
+					"default": false
+				},
+				"node_affinity": {
+					"description": "Set which node will optimized for IO.",
+					"$ref": "#/definitions/NodeAffinityEnum"
+				},
+				"app_type": {
+					"type": "string",
+					"x-added": "2.1.0.0",
+					"$ref": "#/definitions/AppTypeEnum",
+					"description": "\nWas added in version 2.1.0.0."
+				},
+				"app_type_other": {
+					"type": "string",
+					"description": "An optional field used to describe application type usage for a volume.\nThis field can only be set if app_type is set to Relational_Databases_Other, Big_Data_Analytics_Other,\nBusiness_Applications_Other, Healthcare_Other, Virtualization_Other or Other.\nIf the app_type attribute is set to anything other than one of these values, the attribute will be cleared.\n\nWas added in version 2.1.0.0.",
+					"x-added": "2.1.0.0",
+					"maxLength": 32
+				},
+				"is_secure": {
+					"description": "This parameter only applies to block snapshots.\nIf true, mark the snapshot as a secured snapshot. An expiration timestamp\nmust also be set or be specified.\nA secure snapshot can not be unlocked by setting this flag to false.\n\nWas added in version 3.5.0.0.",
+					"type": "boolean",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_delete": {
+			"description": "Delete arguments.\nWas added in version 3.5.0.0.",
+			"x-added": "3.5.0.0",
+			"properties": {
+				"immediate": {
+					"description": "Delete the volume immediately and permanently, instead of moving the volume to the Recycle Bin.\nThis is only valid for a volume and clone. A snapshot is immediately and permanently deleted if individually deleted.\n",
+					"default": true,
+					"type": "boolean"
 				}
 			}
 		},

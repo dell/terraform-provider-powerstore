@@ -21,7 +21,9 @@ import (
 	"context"
 	"fmt"
 	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
 	pstore "github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -36,38 +38,40 @@ const (
 	TiB = 1024 * GiB
 )
 
-func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapping []pstore.HostVolumeMapping, volGroupMapping pstore.VolumeGroups, volPlan *models.Volume, operation operation) {
+func updateVolState(volState *models.Volume, volResponse *clientgen.VolumeInstance, volPlan *models.Volume, operation operation) {
 	// Update value from Volume Response to State
-	volState.ID = types.StringValue(volResponse.ID)
-	volState.Name = types.StringValue(volResponse.Name)
-	size, unit := convertFromBytes(volResponse.Size)
-	volState.Size = types.Float64Value(size)
-	volState.CapacityUnit = types.StringValue(unit)
-	volState.Type = types.StringValue(string(volResponse.Type))
-	volState.WWN = types.StringValue(volResponse.Wwn)
-	volState.Description = types.StringValue(volResponse.Description)
-	volState.State = types.StringValue(string(volResponse.State))
-	volState.WWN = types.StringValue(volResponse.Wwn)
-	volState.ApplianceID = types.StringValue(volResponse.ApplianceID)
-	volState.CreationTimeStamp = types.StringValue(volResponse.CreationTimeStamp)
-	volState.ProtectionPolicyID = types.StringValue(volResponse.ProtectionPolicyID)
-	volState.PerformancePolicyID = types.StringValue(volResponse.PerformancePolicyID)
+	volState.ID = helper.TfString(volResponse.Id)
+	volState.Name = helper.TfString(volResponse.Name)
+	if volResponse.Size != nil {
+		size, unit := convertFromBytes(*volResponse.Size)
+		volState.Size = types.Float64Value(size)
+		volState.CapacityUnit = types.StringValue(unit)
+	}
+	volState.Type = helper.TfString(volResponse.Type)
+	volState.WWN = helper.TfString(volResponse.Wwn)
+	volState.Description = helper.TfString(volResponse.Description)
+	volState.State = helper.TfString(volResponse.State)
+	volState.ApplianceID = helper.TfString(volResponse.ApplianceId)
+	volState.CreationTimeStamp = helper.TfStringFromPTime(volResponse.CreationTimestamp)
+	volState.ProtectionPolicyID = helper.TfString(volResponse.ProtectionPolicyId)
+	volState.PerformancePolicyID = helper.TfString(volResponse.PerformancePolicyId)
+	volState.QosPerformancePolicyID = helper.TfStringNN(volResponse.QosPerformancePolicyId)
 
-	if len(volGroupMapping.VolumeGroup) > 0 {
-		volState.VolumeGroupID = types.StringValue(volGroupMapping.VolumeGroup[0].ID)
+	if len(volResponse.VolumeGroups) > 0 {
+		volState.VolumeGroupID = helper.TfString(volResponse.VolumeGroups[0].Id)
 	} else {
 		volState.VolumeGroupID = types.StringValue("")
 	}
 
 	// Only if Host is mapped to the volume then update host details
-	if len(hostMapping) > 0 {
-		volState.HostID = types.StringValue(hostMapping[0].HostID)
-		volState.HostGroupID = types.StringValue(hostMapping[0].HostGroupID)
-		volState.LogicalUnitNumber = types.Int64Value(hostMapping[0].LogicalUnitNumber)
+	if len(volResponse.MappedVolumes) > 0 {
+		volState.HostID = helper.TfString(volResponse.MappedVolumes[0].HostId)
+		volState.HostGroupID = helper.TfString(volResponse.MappedVolumes[0].HostGroupId)
+		volState.LogicalUnitNumber = helper.TfInt32(volResponse.MappedVolumes[0].LogicalUnitNumber)
 	} else {
 		volState.HostID = types.StringValue("")
 		volState.HostGroupID = types.StringValue("")
-		volState.LogicalUnitNumber = types.Int64Value(0)
+		volState.LogicalUnitNumber = types.Int32Value(0)
 	}
 
 	if operation == operationCreate || operation == operationUpdate {
@@ -79,16 +83,20 @@ func updateVolState(volState *models.Volume, volResponse pstore.Volume, hostMapp
 		volState.VolumeGroupName = volPlan.VolumeGroupName
 		volState.ProtectionPolicyName = volPlan.ProtectionPolicyName
 	} else if operation == operationImport || operation == operationRead {
-		volState.SectorSize = types.Int64Value(defaultSectorSize)
+		volState.SectorSize = types.Int32Value(defaultSectorSize)
 	}
 
-	volState.AppType = types.StringValue(string(volResponse.AppType))
-	volState.AppTypeOther = types.StringValue(volResponse.AppTypeOther)
-	volState.IsReplicationDestination = types.BoolValue(volResponse.IsReplicationDestination)
-	volState.NodeAffinity = types.StringValue(string(volResponse.NodeAffinity))
-	volState.LogicalUsed = types.Int64Value(volResponse.LogicalUsed)
-	volState.Nsid = types.Int64Value(volResponse.Nsid)
-	volState.Nguid = types.StringValue(volResponse.Nguid)
+	volState.AppType = helper.TfString(volResponse.AppType)
+	volState.AppTypeOther = helper.TfString(volResponse.AppTypeOther)
+	volState.IsReplicationDestination = helper.TfBool(volResponse.IsReplicationDestination)
+	volState.NodeAffinity = helper.TfString(volResponse.NodeAffinity)
+	volState.LogicalUsed = helper.TfInt64(volResponse.LogicalUsed)
+	if volResponse.Nsid != nil {
+		volState.Nsid = types.Int64Value(int64(*volResponse.Nsid))
+	} else {
+		volState.Nsid = types.Int64Value(0)
+	}
+	volState.Nguid = helper.TfString(volResponse.Nguid)
 }
 
 func updateVol(ctx context.Context, client client.Client, planVol, stateVol models.Volume) ([]string, []string, []string) {
@@ -315,40 +323,30 @@ func detachVolumeGroup(ctx context.Context, stateVol models.Volume, client clien
 }
 
 func modifyVolume(planVol models.Volume, valInBytes int64, volID string, client client.Client) error {
-	protectionPolicy := planVol.ProtectionPolicyID.ValueString()
-	vgModify := &pstore.VolumeModify{
-		Name:                planVol.Name.ValueString(),
-		Size:                valInBytes,
-		ProtectionPolicyID:  protectionPolicy,
-		PerformancePolicyID: planVol.PerformancePolicyID.ValueString(),
-		Description:         planVol.Description.ValueString(),
-		AppType:             planVol.AppType.ValueString(),
-		AppTypeOther:        planVol.AppTypeOther.ValueString(),
+	var sizePtr *int64
+	if valInBytes > 0 {
+		sizePtr = &valInBytes
+	}
+	volModify := clientgen.VolumeModify{
+		Name:                   helper.ValueToPointer[string](planVol.Name),
+		Size:                   sizePtr,
+		ProtectionPolicyId:     helper.ValueToPointer[string](planVol.ProtectionPolicyID),
+		PerformancePolicyId:    helper.ValueToPointer[string](planVol.PerformancePolicyID),
+		QosPerformancePolicyId: helper.ValueToPointer[string](planVol.QosPerformancePolicyID),
+		Description:            helper.ValueToPointer[string](planVol.Description),
+		AppType:                helper.ValueToEnumPointer[string, clientgen.AppTypeEnum](planVol.AppType),
+		AppTypeOther:           helper.ValueToPointer[string](planVol.AppTypeOther),
 	}
 
-	_, err := client.PStoreClient.ModifyVolume(context.Background(), vgModify, volID)
+	_, err := client.GenClient.VolumeApi.PatchVolumeById(context.Background(), volID).Body(volModify).Execute()
 	return err
 }
 
 func (r volumeResource) performRead(ctx context.Context, volID string, state *models.Volume) error {
-	// Get volume details from API and then update what is in state from what the API returns
-
-	volResponse, err := r.client.PStoreClient.GetVolume(context.Background(), volID)
-
+	volResponse, err := r.ReadAPI(ctx, volID)
 	if err != nil {
-
 		return fmt.Errorf("error fetching volume details: %s", err.Error())
 	}
-	// Get Host Mapping details from API
-	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volID)
-	if err != nil {
-		return fmt.Errorf("error fetching volume host mapping: %s", err.Error())
-	}
-	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volID)
-	if err != nil {
-		return fmt.Errorf("error fetching volume group mapping: %s", err.Error())
-	}
-	updateVolState(state, volResponse, hostMapping, volGroupMapping, nil, operationRead)
+	updateVolState(state, volResponse, nil, operationRead)
 	return nil
 }
