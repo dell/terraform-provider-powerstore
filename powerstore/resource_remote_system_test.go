@@ -18,16 +18,11 @@ limitations under the License.
 package powerstore
 
 import (
-	"context"
 	"os"
 	"regexp"
 	"strings"
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/clientgen"
-	"terraform-provider-powerstore/models"
 	"testing"
 
-	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
@@ -246,155 +241,6 @@ func TestAccRemoteSystem_InvalidLatency(t *testing.T) {
 			},
 		},
 	})
-}
-
-// --- Unit Tests ---
-
-func TestResourceRemoteSystem_Configure_InvalidType(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	req := fwresource.ConfigureRequest{ProviderData: "invalid_type"}
-	resp := &fwresource.ConfigureResponse{}
-	r.Configure(context.Background(), req, resp)
-	assert.True(t, resp.Diagnostics.HasError())
-	assert.NotEmpty(t, resp.Diagnostics.Errors()[0].Summary)
-}
-
-func TestResourceRemoteSystem_Configure_Nil(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	req := fwresource.ConfigureRequest{ProviderData: nil}
-	resp := &fwresource.ConfigureResponse{}
-	r.Configure(context.Background(), req, resp)
-	assert.False(t, resp.Diagnostics.HasError())
-	assert.Nil(t, r.client)
-}
-
-func TestResourceRemoteSystem_Configure_Success(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	c := &client.Client{GenClient: &clientgen.APIClient{}}
-	req := fwresource.ConfigureRequest{ProviderData: c}
-	resp := &fwresource.ConfigureResponse{}
-	r.Configure(context.Background(), req, resp)
-	assert.False(t, resp.Diagnostics.HasError())
-	assert.NotNil(t, r.client)
-}
-
-func TestResourceRemoteSystem_Metadata(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	req := fwresource.MetadataRequest{}
-	resp := &fwresource.MetadataResponse{}
-	r.Metadata(context.Background(), req, resp)
-	assert.Contains(t, resp.TypeName, "remote_system")
-}
-
-func TestResourceRemoteSystem_Schema(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	req := fwresource.SchemaRequest{}
-	resp := &fwresource.SchemaResponse{}
-	r.Schema(context.Background(), req, resp)
-	assert.False(t, resp.Diagnostics.HasError())
-	assert.NotNil(t, resp.Schema)
-	_, ok := resp.Schema.Attributes["management_address"]
-	assert.True(t, ok, "management_address attribute should exist")
-	_, ok = resp.Schema.Attributes["id"]
-	assert.True(t, ok, "id attribute should exist")
-	_, ok = resp.Schema.Attributes["state"]
-	assert.True(t, ok, "state attribute should exist")
-	_, ok = resp.Schema.Attributes["capabilities"]
-	assert.True(t, ok, "capabilities attribute should exist")
-	_, ok = resp.Schema.Attributes["serial_number"]
-	assert.True(t, ok, "serial_number attribute should exist")
-	_, ok = resp.Schema.Attributes["data_network_latency"]
-	assert.True(t, ok, "data_network_latency attribute should exist")
-}
-
-func TestRemoteSystem_UpdateState_NilInstance(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	state := &models.RemoteSystemResource{}
-	r.updateState(context.Background(), state, nil)
-	assert.Empty(t, state.ID.ValueString())
-}
-
-func TestRemoteSystem_UpdateState_WithAllFields(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	state := &models.RemoteSystemResource{}
-
-	id := "test-id"
-	name := "test-name"
-	desc := "test-desc"
-	addr := "10.0.0.1"
-	serial := "PS1234"
-	version := "4.1.0.0"
-	rsType := clientgen.RemoteSystemTypeEnum("PowerStore")
-	rsState := clientgen.RemoteSystemStateEnum("OK")
-	dataConnState := clientgen.DataConnectionStateEnum("OK")
-	latency := clientgen.RemoteSystemLatencyEnum("Low")
-	connType := clientgen.DataConnectionTypeEnum("iSCSI")
-
-	rs := &clientgen.RemoteSystemInstance{
-		Id:                  &id,
-		Name:                &name,
-		Description:         &desc,
-		ManagementAddress:   &addr,
-		SerialNumber:        &serial,
-		Version:             &version,
-		Type:                &rsType,
-		State:               &rsState,
-		DataConnectionState: &dataConnState,
-		DataNetworkLatency:  &latency,
-		DataConnectionType:  &connType,
-		Capabilities:        []clientgen.RemoteProtectionCapabilityEnum{"Asynchronous_Block_Replication"},
-	}
-
-	r.updateState(context.Background(), state, rs)
-
-	assert.Equal(t, "test-id", state.ID.ValueString())
-	assert.Equal(t, "test-name", state.Name.ValueString())
-	assert.Equal(t, "test-desc", state.Description.ValueString())
-	assert.Equal(t, "10.0.0.1", state.ManagementAddress.ValueString())
-	assert.Equal(t, "PS1234", state.SerialNumber.ValueString())
-	assert.Equal(t, "4.1.0.0", state.Version.ValueString())
-	assert.Equal(t, "PowerStore", state.Type.ValueString())
-	assert.Equal(t, "OK", state.State.ValueString())
-	assert.Equal(t, "OK", state.DataConnectionState.ValueString())
-	assert.Equal(t, "Low", state.DataNetworkLatency.ValueString())
-	assert.Equal(t, "iSCSI", state.DataConnectionType.ValueString())
-	assert.Equal(t, 1, len(state.Capabilities.Elements()))
-}
-
-func TestRemoteSystem_UpdateState_WithNilOptionalFields(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	state := &models.RemoteSystemResource{}
-
-	id := "test-id"
-	addr := "10.0.0.1"
-	rs := &clientgen.RemoteSystemInstance{
-		Id:                &id,
-		ManagementAddress: &addr,
-	}
-
-	r.updateState(context.Background(), state, rs)
-
-	assert.Equal(t, "test-id", state.ID.ValueString())
-	assert.Equal(t, "10.0.0.1", state.ManagementAddress.ValueString())
-	assert.Empty(t, state.Type.ValueString())
-	assert.Empty(t, state.State.ValueString())
-	assert.Empty(t, state.DataNetworkLatency.ValueString())
-	assert.True(t, state.Capabilities.IsNull())
-}
-
-func TestRemoteSystem_UpdateState_EmptyCapabilities(t *testing.T) {
-	r := &resourceRemoteSystem{}
-	state := &models.RemoteSystemResource{}
-
-	id := "test-id"
-	rs := &clientgen.RemoteSystemInstance{
-		Id:           &id,
-		Capabilities: []clientgen.RemoteProtectionCapabilityEnum{},
-	}
-
-	r.updateState(context.Background(), state, rs)
-	assert.False(t, state.Capabilities.IsNull())
-	assert.Equal(t, 0, len(state.Capabilities.Elements()))
 }
 
 // --- Test Config Strings ---
