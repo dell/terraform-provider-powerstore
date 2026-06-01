@@ -363,6 +363,31 @@ func TestAccRemoteSystemResource_CreateWithIscsiAddresses(t *testing.T) {
 	})
 }
 
+// TestAccRemoteSystemResource_NoChangeUpdate covers no-op update (no fields changed).
+func TestAccRemoteSystemResource_NoChangeUpdate(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
+			},
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateConfig, // Same config - no changes
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+				),
+			},
+		},
+	})
+}
+
 // --- Test Config Strings ---
 
 var RemoteSystemCreateConfig = `
