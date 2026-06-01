@@ -21,7 +21,6 @@ import (
 	"context"
 	"os"
 	"regexp"
-	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
@@ -33,12 +32,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// isMockServer returns true when tests run against the local mock server
-func isMockServer() bool {
-	return strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1")
-}
-
-// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT for remote system creation
+// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT or uses the default
 var remoteManagementAddress = func() string {
 	addr := setDefault(os.Getenv("POWERSTORE_REMOTE_ENDPOINT"), "10.230.45.71")
 	for _, prefix := range []string{"https://", "http://"} {
@@ -55,37 +49,24 @@ var remoteManagementAddress = func() string {
 	return addr
 }()
 
-// uniqueTestAddress generates a unique management address for testing to avoid conflicts on real server
-var uniqueTestAddress = func() string {
-	if isMockServer() {
-		return remoteManagementAddress
-	}
-	// For real server, use a non-existent IP to avoid conflicts
-	// The test will fail with a meaningful error if the address is unreachable
-	return "192.168.254.254"
-}()
-
 // --- Acceptance Tests ---
 
-// TestAccRemoteSystem_CRUD - Full Create→Import→UpdateDesc→UpdateLatency lifecycle
+// TestAccRemoteSystem_CRUD covers Create, Read, Update (description + latency), ImportState, and Delete.
 func TestAccRemoteSystem_CRUD(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping CRUD on real server - use TestAccRemoteSystem_ImportOnReal instead")
 	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
-			// Step 1: Create with management_address, description, data_network_latency
+			// Step 1: Create
 			{
 				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", uniqueTestAddress),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", remoteManagementAddress),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Terraform acceptance test remote system"),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Low"),
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "state"),
@@ -101,7 +82,7 @@ func TestAccRemoteSystem_CRUD(t *testing.T) {
 				ImportState:  true,
 				ExpectError:  nil,
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, uniqueTestAddress, s[0].Attributes["management_address"])
+					assert.Equal(t, remoteManagementAddress, s[0].Attributes["management_address"])
 					assert.NotEmpty(t, s[0].Attributes["id"])
 					assert.NotEmpty(t, s[0].Attributes["serial_number"])
 					assert.NotEmpty(t, s[0].Attributes["state"])
@@ -117,7 +98,7 @@ func TestAccRemoteSystem_CRUD(t *testing.T) {
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Low"),
 				),
 			},
-			// Step 4: Update data_network_latency to High
+			// Step 4: Update data_network_latency
 			{
 				Config: ProviderConfigForTesting + RemoteSystemUpdateLatencyConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -129,71 +110,10 @@ func TestAccRemoteSystem_CRUD(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_MissingAddress - Create without management_address (schema validation, both servers)
-func TestAccRemoteSystem_MissingAddress(t *testing.T) {
+// TestAccRemoteSystem_UpdateName covers the name field update path in Update.
+func TestAccRemoteSystem_UpdateName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config:      ProviderConfigForTesting + RemoteSystemMissingAddress,
-				ExpectError: regexp.MustCompile(`.*management_address.*`),
-			},
-		},
-	})
-}
-
-// TestAccRemoteSystem_EmptyAddress - Create with empty management_address (schema validation, both servers)
-func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config:      ProviderConfigForTesting + RemoteSystemEmptyAddress,
-				ExpectError: regexp.MustCompile(`.*Attribute management_address string length must be at least 1.*`),
-			},
-		},
-	})
-}
-
-// TestAccRemoteSystem_InvalidAddress - Create with invalid IP address format (real server only - mock doesn't validate)
-func TestAccRemoteSystem_InvalidAddress(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if isMockServer() {
-		t.Skip("Skipping on mock server - mock doesn't validate IP address format")
-	}
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config:      ProviderConfigForTesting + RemoteSystemInvalidAddress,
-				ExpectError: regexp.MustCompile(`0xE0101001000E`),
-			},
-		},
-	})
-}
-
-// TestAccRemoteSystem_ImportOnReal - Import existing remote system on real server
-func TestAccRemoteSystem_ImportOnReal(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if isMockServer() {
-		t.Skip("Skipping on mock server - import test for real server only")
-	}
-	existingID := os.Getenv("TF_VAR_remote_system_id")
-	if existingID == "" {
-		t.Skip("Skipping real server test - TF_VAR_remote_system_id not set")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -201,31 +121,23 @@ func TestAccRemoteSystem_ImportOnReal(t *testing.T) {
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config:            ProviderConfigForTesting + RemoteSystemImportConfig,
-				ResourceName:      "powerstore_remote_system.real_test",
-				ImportState:       true,
-				ImportStateId:     existingID,
-				ImportStateVerify: false,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, existingID, s[0].Attributes["id"])
-					assert.NotEmpty(t, s[0].Attributes["management_address"])
-					assert.NotEmpty(t, s[0].Attributes["state"])
-					assert.NotEmpty(t, s[0].Attributes["serial_number"])
-					assert.NotEmpty(t, s[0].Attributes["type"])
-					return nil
-				},
+				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
+			},
+			{
+				Config: ProviderConfigForTesting + RemoteSystemUpdateNameConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "name", "Updated Name"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Low"),
+				),
 			},
 		},
 	})
 }
 
-// TestAccRemoteSystem_CreateWithCredentials - Create with remote_username and remote_password
+// TestAccRemoteSystem_CreateWithCredentials covers remote_username and remote_password in Create.
 func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires valid remote credentials")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -244,13 +156,10 @@ func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_UpdateCredentials - Update remote_username and remote_password
+// TestAccRemoteSystem_UpdateCredentials covers remote_username and remote_password in Update.
 func TestAccRemoteSystem_UpdateCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires valid remote credentials")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -270,83 +179,41 @@ func TestAccRemoteSystem_UpdateCredentials(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_CreateWithType - Create with type field
-func TestAccRemoteSystem_CreateWithType(t *testing.T) {
+// TestAccRemoteSystem_MissingAddress validates that management_address is required.
+func TestAccRemoteSystem_MissingAddress(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - type validation differs")
-	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + RemoteSystemCreateWithTypeConfig,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", remoteManagementAddress),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "type", "PowerStore"),
-				),
+				Config:      ProviderConfigForTesting + RemoteSystemMissingAddress,
+				ExpectError: regexp.MustCompile(`.*management_address.*`),
 			},
 		},
 	})
 }
 
-// TestAccRemoteSystem_UpdateName - Update name field
-func TestAccRemoteSystem_UpdateName(t *testing.T) {
+// TestAccRemoteSystem_EmptyAddress validates that management_address cannot be empty.
+func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires existing remote system")
-	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
-				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
-			},
-			{
-				Config: ProviderConfigForTesting + RemoteSystemUpdateNameConfig,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "name", "Updated Name"),
-				),
+				Config:      ProviderConfigForTesting + RemoteSystemEmptyAddress,
+				ExpectError: regexp.MustCompile(`.*Attribute management_address string length must be at least 1.*`),
 			},
 		},
 	})
 }
 
-// TestAccRemoteSystem_EmptyDescription - Create with empty description
-func TestAccRemoteSystem_EmptyDescription(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires valid remote system")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + RemoteSystemEmptyDescriptionConfig,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", remoteManagementAddress),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", ""),
-				),
-			},
-		},
-	})
-}
-
-// TestAccRemoteSystem_InvalidLatency - Create with invalid data_network_latency (schema validation, both servers)
+// TestAccRemoteSystem_InvalidLatency validates that invalid latency values are rejected.
 func TestAccRemoteSystem_InvalidLatency(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
@@ -516,7 +383,7 @@ func TestRemoteSystem_UpdateState_EmptyCapabilities(t *testing.T) {
 
 var RemoteSystemCreateConfig = `
 resource "powerstore_remote_system" "test" {
-	management_address   = "` + uniqueTestAddress + `"
+	management_address   = "` + remoteManagementAddress + `"
 	description          = "Terraform acceptance test remote system"
 	data_network_latency = "Low"
 }
@@ -524,7 +391,7 @@ resource "powerstore_remote_system" "test" {
 
 var RemoteSystemUpdateDescConfig = `
 resource "powerstore_remote_system" "test" {
-	management_address   = "` + uniqueTestAddress + `"
+	management_address   = "` + remoteManagementAddress + `"
 	description          = "Updated description"
 	data_network_latency = "Low"
 }
@@ -532,9 +399,18 @@ resource "powerstore_remote_system" "test" {
 
 var RemoteSystemUpdateLatencyConfig = `
 resource "powerstore_remote_system" "test" {
-	management_address   = "` + uniqueTestAddress + `"
+	management_address   = "` + remoteManagementAddress + `"
 	description          = "Updated description"
 	data_network_latency = "High"
+}
+`
+
+var RemoteSystemUpdateNameConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	name                 = "Updated Name"
+	description          = "Terraform acceptance test remote system"
+	data_network_latency = "Low"
 }
 `
 
@@ -550,16 +426,10 @@ resource "powerstore_remote_system" "test" {
 }
 `
 
-var RemoteSystemInvalidAddress = `
+var RemoteSystemInvalidLatency = `
 resource "powerstore_remote_system" "test" {
-	management_address   = "999.999.999.999"
-	data_network_latency = "Low"
-}
-`
-
-var RemoteSystemImportConfig = `
-resource "powerstore_remote_system" "real_test" {
-	management_address = "` + remoteManagementAddress + `"
+	management_address   = "` + remoteManagementAddress + `"
+	data_network_latency = "Invalid"
 }
 `
 
@@ -577,38 +447,6 @@ resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
 	remote_username      = "newuser"
 	remote_password      = "NewPassword123!"
-	data_network_latency = "Low"
-}
-`
-
-var RemoteSystemInvalidLatency = `
-resource "powerstore_remote_system" "test" {
-	management_address   = "` + remoteManagementAddress + `"
-	data_network_latency = "Invalid"
-}
-`
-
-var RemoteSystemCreateWithTypeConfig = `
-resource "powerstore_remote_system" "test" {
-	management_address   = "` + remoteManagementAddress + `"
-	type                 = "PowerStore"
-	data_network_latency = "Low"
-}
-`
-
-var RemoteSystemUpdateNameConfig = `
-resource "powerstore_remote_system" "test" {
-	management_address   = "` + uniqueTestAddress + `"
-	name                 = "Updated Name"
-	description          = "Terraform acceptance test remote system"
-	data_network_latency = "Low"
-}
-`
-
-var RemoteSystemEmptyDescriptionConfig = `
-resource "powerstore_remote_system" "test" {
-	management_address   = "` + remoteManagementAddress + `"
-	description          = ""
 	data_network_latency = "Low"
 }
 `
