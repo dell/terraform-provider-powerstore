@@ -13,6 +13,7 @@ Method | HTTP request | Description
 [**VolumeGroupConfigureMetro**](VolumeGroupApi.md#VolumeGroupConfigureMetro) | **Post** /volume_group/{id}/configure_metro | Configure Metro
 [**VolumeGroupEndMetro**](VolumeGroupApi.md#VolumeGroupEndMetro) | **Post** /volume_group/{id}/end_metro | End Metro Configuration
 [**VolumeGroupRemoveMembers**](VolumeGroupApi.md#VolumeGroupRemoveMembers) | **Post** /volume_group/{id}/remove_members | Remove Members
+[**VolumeGroupSnapshot**](VolumeGroupApi.md#VolumeGroupSnapshot) | **Post** /volume_group/{id}/snapshot | Snapshot
 
 
 
@@ -620,6 +621,78 @@ Name | Type | Description  | Notes
 ### Return type
 
  (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## VolumeGroupSnapshot
+
+> VolumeGroupSnapshotResponse VolumeGroupSnapshot(ctx, id).Body(body).Execute()
+
+Snapshot
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID/clientgen"
+)
+
+func main() {
+    id := "id_example" // string | Unique identifier of the volume group. name:{name} can be used instead of {id}.
+    body := *openapiclient.NewVolumeGroupSnapshot("Name_example") // VolumeGroupSnapshot | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.VolumeGroupApi.VolumeGroupSnapshot(context.Background(), id).Body(body).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `VolumeGroupApi.VolumeGroupSnapshot``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `VolumeGroupSnapshot`: VolumeGroupSnapshotResponse
+    fmt.Fprintf(os.Stdout, "Response from `VolumeGroupApi.VolumeGroupSnapshot`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | Unique identifier of the volume group. name:{name} can be used instead of {id}. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiVolumeGroupSnapshotRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **body** | [**VolumeGroupSnapshot**](VolumeGroupSnapshot.md) |  | 
+
+### Return type
+
+[**VolumeGroupSnapshotResponse**](VolumeGroupSnapshotResponse.md)
 
 ### Authorization
 

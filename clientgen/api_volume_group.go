@@ -1219,3 +1219,173 @@ func (a *VolumeGroupApiService) VolumeGroupRemoveMembersExecute(r ApiVolumeGroup
 
 	return localVarHTTPResponse, nil
 }
+
+type ApiVolumeGroupSnapshotRequest struct {
+	ctx        context.Context
+	ApiService *VolumeGroupApiService
+	id         string
+	body       *VolumeGroupSnapshot
+}
+
+func (r ApiVolumeGroupSnapshotRequest) Body(body VolumeGroupSnapshot) ApiVolumeGroupSnapshotRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiVolumeGroupSnapshotRequest) Execute() (*VolumeGroupSnapshotResponse, *http.Response, error) {
+	return r.ApiService.VolumeGroupSnapshotExecute(r)
+}
+
+/*
+VolumeGroupSnapshot Snapshot
+
+Create a new snapshot set for a volume group.
+
+When a snapshot of a volume group is created, the resultant
+snapshot volume group is referred to as a "snapshot set" and it
+represents a point-in-time copy of the members in the volume group.
+The snapshot set will be created on the same appliance as the source
+volume group.
+
+A snapshot of a volume group will result in a new volume
+group of __Snapshot__ type. The snapshot set will belong to the same
+family as the source volume group.
+
+When the source of a snapshot operation is a primary or clone
+volume group,
+
+* __source_id__ of the snapshot set will be set to the identifier of the
+source volume group.
+
+* __source_time__ of the snapshot set will be set to the time at which
+the snapshot set will be created.
+
+The __is_write_order_consistent__ property of the source volume
+group determines whether the snapshot set will be write-order
+consistent.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id Unique identifier of the volume group. name:{name} can be used instead of {id}.
+	@return ApiVolumeGroupSnapshotRequest
+*/
+func (a *VolumeGroupApiService) VolumeGroupSnapshot(ctx context.Context, id string) ApiVolumeGroupSnapshotRequest {
+	return ApiVolumeGroupSnapshotRequest{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
+	}
+}
+
+// Execute executes the request
+//
+//	@return VolumeGroupSnapshotResponse
+func (a *VolumeGroupApiService) VolumeGroupSnapshotExecute(r ApiVolumeGroupSnapshotRequest) (*VolumeGroupSnapshotResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *VolumeGroupSnapshotResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VolumeGroupApiService.VolumeGroupSnapshot")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/volume_group/{id}/snapshot"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}

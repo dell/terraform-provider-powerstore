@@ -86,7 +86,7 @@ func TestAccFileSystemSnapshotDs(t *testing.T) {
 			},
 			{
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsIDNegative,
-				ExpectError: regexp.MustCompile("Unable to Read PowerStore File System Snapshot by ID"),
+				ExpectError: regexp.MustCompile("Unable to Read PowerStore File System Snapshots"),
 			},
 			{
 				Config:      ProviderConfigForTesting + FileSystemSnapshotDataSourceparamsFilterNegative,

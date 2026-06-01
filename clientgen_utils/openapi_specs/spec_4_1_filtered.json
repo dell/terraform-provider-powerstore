@@ -729,6 +729,283 @@
 		"application/json"
 	],
 	"paths": {
+		"/cluster": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Query the details about the cluster. \nThis resource type collection query does not support filtering, sorting or pagination.",
+				"tags": [
+					"cluster"
+				],
+				"x-simple_get": true,
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/cluster_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of cluster instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/cluster_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_clusters",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"summary": "Create",
+				"description": "Create a Power Store or Power Store X Cluster of one or more appliances.\n * You can create a cluster of up to 4 appliances.\n * Except where explicitly noted, all parameters in **vcenters** object are mandatory when creating a PowerStoreX cluster.\n * When creating a multi-appliance cluster, the most capable appliance is chosen as the Primary appliance based on the appliance configuration type.\n * All of the appliances must have the 4-Port Card installed to be added into a multi-appliance cluster.\n * When creating a multi-appliance cluster, best effort is made to successfully create the cluster. The create operation:\n    * Fails, if the Primary appliance is not configured successfully.\n    * Succeeds, if one or more secondary appliances fail to configure.\n      * Any secondary appliance that is configured successfully will be added to the cluster.\n      * An alert is generated for any failed secondary appliance. Look for these alerts in the PowerStore Manager. Resolve issues on failed appliances before  adding the appliances to the cluster.\n * When creating a cluster asynchronously, wait for ~10 minutes until Job Service is initialized before querying the status of the running job.\n\nWas added in version 2.0.0.0.",
+				"tags": [
+					"cluster"
+				],
+				"x-added": "2.0.0.0",
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/cluster_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created\nWas added in version 2.0.0.0.",
+						"x-added": "2.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request\nWas added in version 2.0.0.0.",
+						"x-added": "2.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/cluster_create_error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed\nWas added in version 2.0.0.0.",
+						"x-added": "2.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_clusters"
+			}
+		},
+		"/snapshot_rule": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Query all snapshot rules.",
+				"tags": [
+					"snapshot_rule"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/snapshot_rule_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of snapshot rule instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/snapshot_rule_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_snapshot_rules",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"summary": "Create",
+				"description": "Create a new snapshot rule.\n",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_snapshot_rules"
+			}
+		},
+		"/snapshot_rule/{id}": {
+			"get": {
+				"summary": "Instance Query",
+				"description": "Query a specific snapshot rule.",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the snapshot rule. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "snapshot_rule"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_snapshot_rule_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"summary": "Modify",
+				"description": "Modify a snapshot rule.\nIf the snapshot rule is associated with a policy that is currently applied to a storage resource, the modified rule is immediately applied to the associated storage resource.\n",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the snapshot rule. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "snapshot_rule"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_snapshot_rule_by_id"
+			},
+			"delete": {
+				"summary": "Delete",
+				"description": "Delete a snapshot rule.\n",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the snapshot rule. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "snapshot_rule"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_delete"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_snapshot_rule_by_id"
+			}
+		},
 		"/login_session": {
 			"get": {
 				"summary": "Collection Query",
@@ -1055,6 +1332,65 @@
 				"operationId": "volume_group_remove_members"
 			}
 		},
+		"/volume_group/{id}/snapshot": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the volume group. name:{name} can be used instead of {id}.",
+					"required": true,
+					"type": "string",
+					"x-ref": "volume_group"
+				}
+			],
+			"post": {
+				"description": "Create a new snapshot set for a volume group.\n\nWhen a snapshot of a volume group is created, the resultant\nsnapshot volume group is referred to as a \"snapshot set\" and it\nrepresents a point-in-time copy of the members in the volume group.\nThe snapshot set will be created on the same appliance as the source\nvolume group.\n\nA snapshot of a volume group will result in a new volume\ngroup of __Snapshot__ type. The snapshot set will belong to the same\nfamily as the source volume group.\n\nWhen the source of a snapshot operation is a primary or clone\nvolume group, \n\n* __source_id__ of the snapshot set will be set to the identifier of the\nsource volume group. \n\n* __source_time__ of the snapshot set will be set to the time at which\nthe snapshot set will be created.\n\n\nThe __is_write_order_consistent__ property of the source volume\ngroup determines whether the snapshot set will be write-order\nconsistent.\n",
+				"summary": "Snapshot",
+				"tags": [
+					"volume_group"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_group_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_group_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_snapshot"
+			}
+		},
 		"/volume_group/{id}/configure_metro": {
 			"post": {
 				"description": "Configure a metro volume group so it exists in two PowerStore clusters.\n\nWas added in version 4.0.0.0.",
@@ -1163,6 +1499,267 @@
 					}
 				},
 				"operationId": "volume_group_end_metro"
+			}
+		},
+		"/volume": {
+			"get": {
+				"description": "Query volumes that are provisioned on the appliance.",
+				"summary": "Collection Query",
+				"tags": [
+					"volume"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/volume_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of volume instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/volume_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_volumes",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"description": "Create a volume on the appliance.",
+				"summary": "Create",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_volumes"
+			}
+		},
+		"/volume/{id}": {
+			"get": {
+				"description": "Query a specific volume instance.",
+				"summary": "Instance Query",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume to query. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					}
+				],
+				"tags": [
+					"volume"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_volume_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"description": "Modify the parameters of a volume.\n\nFor metro volumes, name and performance_policy can only be modified from the preferred side when the metro replication session is paused.\n\nVolume size of metro volumes can only be modified if the metro replication session is fractured or paused.\nThe QoS performance policy is not replicated for metro volumes.\n",
+				"summary": "Modify",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume to modify. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_volume_by_id"
+			},
+			"delete": {
+				"description": "Delete a volume. \n\nFor a metro volume, first end the metro configuration and then delete the local volume.\n\n* A volume which is attached to a host or host group or is a member of a volume group cannot be deleted.\n\n* A volume which has protection policies attached to it cannot be deleted.\n\n* A volume which has snapshots that are part of a snapset cannot be deleted.\n\n* Clones of a deleted production volume or a clone are not deleted.\n\n* Snapshots of the volume are deleted along with the volume being deleted.\n",
+				"summary": "Delete",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume to delete. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Delete a volume.\nWas added in version 3.5.0.0.",
+						"required": false,
+						"x-added": "3.5.0.0",
+						"schema": {
+							"$ref": "#/definitions/volume_delete"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_volume_by_id"
+			}
+		},
+		"/volume/{id}/snapshot": {
+			"post": {
+				"description": "Create a snapshot of a volume or a clone.\nA snapshot is a point-in-time copy of a volume or clone.\n",
+				"summary": "Snapshot",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume or clone that is the source of the snapshot. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": false,
+						"schema": {
+							"$ref": "#/definitions/volume_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_snapshot"
 			}
 		},
 		"/volume/{id}/configure_metro": {
@@ -1921,6 +2518,256 @@
 					}
 				},
 				"operationId": "replication_session_stop_failover_test"
+			}
+		},
+		"/file_system": {
+			"get": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Collection Query",
+				"description": "Query file systems.",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_system_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of file system instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_system_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_file_systems",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Create",
+				"description": "Create a file system.",
+				"parameters": [
+					{
+						"name": "body",
+						"required": true,
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/file_system_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_file_systems"
+			}
+		},
+		"/file_system/{id}": {
+			"get": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Instance Query",
+				"description": "Query a specific file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_system_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_file_system_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Modify",
+				"description": "Modify a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/file_system_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_file_system_by_id"
+			},
+			"delete": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Delete",
+				"description": "Delete a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_file_system_by_id"
+			}
+		},
+		"/file_system/{id}/snapshot": {
+			"post": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Snapshot",
+				"description": "Create a snapshot of a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/file_system_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_system_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "file_system_snapshot"
 			}
 		},
 		"/recycle_bin": {
@@ -3625,6 +4472,30 @@
 				}
 			]
 		},
+		"PhysicalSwitchConnectMethodEnum": {
+			"type": "string",
+			"description": "Physical switch connect method type. Valid values are:\n  * SSH - Secure shell.\n  * SNMPv2c - SNMPv2 community string.\n",
+			"enum": [
+				"SSH",
+				"SNMPv2c"
+			],
+			"x-display_enum_text": {
+				"SSH": "SSH",
+				"SNMPv2c": "SNMP v2 community string"
+			}
+		},
+		"PhysicalSwitchPurposeEnum": {
+			"type": "string",
+			"description": "Physical switch purpose in network. Possible purposes are:\n  * Data_and_Management - Physical switch for all data and management networks.\n  * Management_Only - Physical switch for management network only.\n",
+			"enum": [
+				"Data_and_Management",
+				"Management_Only"
+			],
+			"x-display_enum_text": {
+				"Data_and_Management": "Data and Management",
+				"Management_Only": "Management Only"
+			}
+		},
 		"fsn_instance": {
 			"type": "object",
 			"description": "Properties of a fail-safe network (FSN).\nWas added in version 3.5.0.0.\nThis resource type has queriable associations from fsn, appliance, ip_port, bond, eth_port",
@@ -3886,6 +4757,540 @@
 					"$ref": "#/definitions/node_instance",
 					"description": "This is the embeddable reference form of node_id attribute.",
 					"x-ref": "node"
+				}
+			}
+		},
+		"validate_create_issue": {
+			"type": "object",
+			"description": "An issue found during validation accompanied by the suggested resolution.\nWas added in version 2.0.0.0.",
+			"x-added": "2.0.0.0",
+			"properties": {
+				"reason": {
+					"$ref": "#/definitions/error_message"
+				},
+				"resolution": {
+					"$ref": "#/definitions/error_message"
+				},
+				"appliance_id": {
+					"description": "The appliance on which the issue was detected.",
+					"type": "string"
+				}
+			}
+		},
+		"cluster_instance": {
+			"type": "object",
+			"description": "Properties of a cluster.\nValues was added in 2.0.0.0: primary_appliance_id.\nValues was deprecated in 2.0.0.0: master_appliance_id.",
+			"x-added_value": {
+				"2.0.0.0": [
+					"primary_appliance_id"
+				]
+			},
+			"x-deprecated_value": {
+				"2.0.0.0": [
+					"master_appliance_id"
+				]
+			},
+			"x-select_cli": [
+				"name",
+				"management_address",
+				"storage_discovery_address",
+				"master_appliance_id",
+				"primary_appliance_id",
+				"appliance_count",
+				"state"
+			],
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "The unique identifier of the cluster.",
+					"example": "0"
+				},
+				"global_id": {
+					"type": "string",
+					"description": "The global unique identifier of the cluster.",
+					"example": "PS11AA22BB33CC"
+				},
+				"name": {
+					"type": "string",
+					"description": "The name of the cluster.",
+					"example": "Awesome storage cluster"
+				},
+				"management_address": {
+					"type": "string",
+					"description": "The floating management IP address for the cluster in IPv4 or IPv6 format.",
+					"format": "ip-address",
+					"example": "11.22.33.44"
+				},
+				"storage_discovery_address": {
+					"type": "string",
+					"description": "The floating storage discovery IP address for the cluster in IPv4 or IPv6 format.\nIf multiple storage discovery addresses are configured, this property will be set to 'null'.\nIn this case the storage network of interest should be used to retrieve the discovery address.\n",
+					"format": "ip-address",
+					"example": "11.22.33.45"
+				},
+				"master_appliance_id": {
+					"type": "string",
+					"description": "The unique identifier of the appliance acting as primary.\nWas deprecated in version 2.0.0.0.",
+					"x-deprecated": "2.0.0.0",
+					"example": "A1"
+				},
+				"primary_appliance_id": {
+					"type": "string",
+					"description": "The unique identifier of the appliance acting as primary.\nWas added in version 2.0.0.0.",
+					"x-added": "2.0.0.0",
+					"example": "A1"
+				},
+				"appliance_count": {
+					"type": "integer",
+					"description": "Number of appliances configured in this cluster.",
+					"example": 4,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"physical_mtu": {
+					"type": "integer",
+					"description": "The physical ethernet port (eth_port resource) MTU setting is global\nfor all ports in the cluster. This is the default MTU setting for IP traffic,\nand the upper limit on network-specific MTU settings (network resource),\nwhere this can be overridden for some specific kinds of traffic (management,\ndata, and vMotion).\n",
+					"example": 1500,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"is_encryption_enabled": {
+					"type": "boolean",
+					"description": "Whether or not Data at Rest Encryption is enabled on the cluster.",
+					"example": true
+				},
+				"compatibility_level": {
+					"type": "integer",
+					"description": "The behavioral version of the software version API, and it is used\nto ensure the compatibility across potentially different software versions.\n",
+					"example": 1,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"state": {
+					"$ref": "#/definitions/ClusterStateEnum"
+				},
+				"state_l10n": {
+					"type": "string",
+					"description": "Localized string corresponding to state."
+				},
+				"system_time": {
+					"description": "Current clock time for the system. System time and all the system reported\ntimes are in UTC (GMT+0:00) format. The system time is controlled via NTP.\nIt cannot be set directly.\n\nWas added in version 2.0.0.0.",
+					"type": "string",
+					"format": "date-time",
+					"x-added": "2.0.0.0"
+				},
+				"nvm_subsystem_nqn": {
+					"description": "NVMe Subsystem NQN for cluster. It cannot be set directly.\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"x-added": "3.0.0.0"
+				}
+			}
+		},
+		"cluster_create": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "Cluster create parameters.\nWas added in version 2.0.0.0.",
+			"required": [
+				"cluster",
+				"appliances",
+				"dns_servers",
+				"ntp_servers",
+				"networks"
+			],
+			"properties": {
+				"cluster": {
+					"$ref": "#/definitions/cluster_create_cluster"
+				},
+				"appliances": {
+					"type": "array",
+					"description": "The configuration settings for adding appliances during cluster creation.\nAt least one appliance is required.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_appliances"
+					}
+				},
+				"dns_servers": {
+					"type": "array",
+					"items": {
+						"description": "DNS server addresses in IPv4 or IPv6 format. At least one DNS server\nshould be provided.\n",
+						"type": "string",
+						"format": "ip-address",
+						"minItems": 1,
+						"maxItems": 3,
+						"uniqueItems": true
+					},
+					"example": [
+						"12.22.33.44",
+						"55.66.77.88"
+					]
+				},
+				"ntp_servers": {
+					"type": "array",
+					"items": {
+						"description": "NTP server addresses in IPv4 or IPv6 or hostname format. At least one\nNTP server should be provided.\n",
+						"type": "string",
+						"format": "ip-address",
+						"minItems": 1,
+						"maxItems": 3,
+						"uniqueItems": true
+					},
+					"example": [
+						"12.22.33.44",
+						"55.66.77.88"
+					]
+				},
+				"physical_switches": {
+					"type": "array",
+					"description": "Physical switch settings for a cluster.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_physical_switches"
+					}
+				},
+				"networks": {
+					"type": "array",
+					"description": "Configuration of one or more network(s) based on network type.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_networks"
+					}
+				},
+				"vcenters": {
+					"type": "array",
+					"description": "Configure vCenter settings when creating cluster. Parameters are required\nwhen creating PowerStore X cluster and optional for PowerStore cluster.\n * Note - Currently only single element is supported.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_vcenters"
+					},
+					"maxItems": 1
+				},
+				"security_config": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/cluster_create_security_config",
+					"description": "\nWas added in version 3.0.0.0."
+				}
+			}
+		},
+		"cluster_create_cluster": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "The configuration settings of cluster during cluster creation.\n\nWas added in version 2.0.0.0.",
+			"required": [
+				"name"
+			],
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "The name of the cluster. The name can be up to 64 UTF-8 characters and cannot be an empty string.\n",
+					"minLength": 1,
+					"maxLength": 64,
+					"example": "Cluster-007"
+				},
+				"ignore_network_warnings": {
+					"type": "boolean",
+					"description": "Set to true to ignore network warnings about unreachable external network services discovered while cluster creation.\nThis can be useful for configuring a system before delivery into the intended deployment environment.\nThe default is false, and these warnings will cause cluster creation to fail.\n",
+					"default": false,
+					"example": true
+				}
+			}
+		},
+		"cluster_create_appliances": {
+			"description": "Appliance configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"link_local_address"
+			],
+			"properties": {
+				"link_local_address": {
+					"type": "string",
+					"description": "The link local address is a dynamically set local IPv4 address.\nIt is unique to this appliance and is set by Zeroconf. Use the PowerStore\nDiscovery Tool to get the link local addresses of available PowerStore appliances\non the local subnet.\n",
+					"format": "ip-address",
+					"example": "11.22.33.44"
+				},
+				"name": {
+					"type": "string",
+					"description": "The name of the new appliance. By default, the name is \"[cluster name]-appliance-[index number]\". The maximum size is 64 characters.\n",
+					"minLength": 1,
+					"maxLength": 64,
+					"example": "MyCluster-appliance-2",
+					"uniqueItems": true
+				},
+				"drive_failure_tolerance_level": {
+					"$ref": "#/definitions/DriveFailureToleranceLevelEnum"
+				}
+			}
+		},
+		"cluster_create_physical_switches": {
+			"description": "Physical switch configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"name",
+				"purpose",
+				"connections"
+			],
+			"properties": {
+				"name": {
+					"description": "Name of physical switch.",
+					"type": "string",
+					"example": "Cluster-Switch-1"
+				},
+				"purpose": {
+					"$ref": "#/definitions/PhysicalSwitchPurposeEnum"
+				},
+				"connections": {
+					"description": "Supported connections for a physical switch.",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/cluster_create_physical_switch_connection"
+					}
+				}
+			}
+		},
+		"cluster_create_physical_switch_connection": {
+			"description": "Physical switch connection configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"address",
+				"connect_method"
+			],
+			"properties": {
+				"address": {
+					"description": "Physical switch address in IPv4 or IPv6 or DNS hostname format.",
+					"type": "string",
+					"format": "ip-address",
+					"example": "10.244.244.244"
+				},
+				"port": {
+					"description": "Port used for connection to switch.",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 65535,
+					"example": 22
+				},
+				"connect_method": {
+					"$ref": "#/definitions/PhysicalSwitchConnectMethodEnum"
+				},
+				"username": {
+					"description": "Username to connect a physical switch for SSH connection method.",
+					"type": "string",
+					"example": "admin"
+				},
+				"ssh_password": {
+					"description": "SSH password to connect a physical switch if SSH connect method is specified.",
+					"type": "string",
+					"format": "password",
+					"example": "password"
+				},
+				"snmp_community_string": {
+					"description": "SNMPv2 community string, if SNMPv2c connect method is specified.",
+					"type": "string",
+					"format": "password",
+					"example": "passwordCommunityString"
+				}
+			}
+		},
+		"cluster_create_networks": {
+			"description": "Network configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"type",
+				"addresses",
+				"prefix_length"
+			],
+			"properties": {
+				"type": {
+					"$ref": "#/definitions/NetworkTypeEnum"
+				},
+				"vlan_id": {
+					"description": "VLAN identifier.\n",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 4094,
+					"example": 10,
+					"default": 0
+				},
+				"prefix_length": {
+					"description": "Network prefix length, used for both IPv4 and IPv6.\n",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 128,
+					"example": 64
+				},
+				"gateway": {
+					"description": "Network gateway in IPv4 or IPv6 format, corresponding to the network's IP version.\n",
+					"type": "string",
+					"format": "ip-address",
+					"example": "10.244.24.1",
+					"default": ""
+				},
+				"cluster_mgmt_address": {
+					"type": "string",
+					"description": "New cluster management IP address in IPv4 or IPv6 format, corresponding to the network's IP version.\nThis can only be specified only when configuring the management type network.\n",
+					"format": "ip-address",
+					"example": "11.22.33.44"
+				},
+				"storage_discovery_address": {
+					"type": "string",
+					"description": "New storage discovery IP address in IPv4 or IPv6 format, corresponding to the network's IP version.\nThis can only be specified only when configuring the storage type network.\n",
+					"format": "ip-address",
+					"example": "11.22.33.45"
+				},
+				"addresses": {
+					"description": "IP addresses in IPv4 or IPv6 format.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"format": "ip-address",
+						"uniqueItems": true,
+						"maxItems": 256
+					},
+					"example": [
+						"10.244.24.191",
+						"10.244.24.192"
+					]
+				},
+				"purposes": {
+					"x-added": "2.1.0.0",
+					"description": "Purposes of the network. Only applicable to storage networks. Omitting the property is equivalent to providing all applicable purposes, which are: ISCSI, NVMe/TCP. If provided, must include iSCSI to enable the internal host storage access.\nWas added in version 2.1.0.0.",
+					"type": "array",
+					"minItems": 0,
+					"maxItems": 32,
+					"uniqueItems": true,
+					"items": {
+						"$ref": "#/definitions/NetworkPurposeEnum"
+					},
+					"example": [
+						"ISCSI",
+						"NVMe_TCP"
+					]
+				}
+			}
+		},
+		"cluster_create_vcenters": {
+			"description": "vCenter configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"address",
+				"username",
+				"password",
+				"is_verify_server_cert",
+				"vasa_provider_credentials"
+			],
+			"properties": {
+				"address": {
+					"description": "IP address of vCenter in IPv4 or IPv6 or hostname format.\n",
+					"type": "string",
+					"format": "ip-address",
+					"example": "10.244.84.121"
+				},
+				"username": {
+					"description": "User name to login to vCenter.\n",
+					"type": "string",
+					"example": "administrator@vsphere.local"
+				},
+				"password": {
+					"description": "Password to login to vCenter.\n",
+					"type": "string",
+					"format": "password",
+					"example": "pass789!"
+				},
+				"is_verify_server_cert": {
+					"description": "Whether or not the connection will be secured with the vCenter SSL certificate.\n",
+					"type": "boolean",
+					"example": false
+				},
+				"data_center_id": {
+					"description": "VMWare ID of the datacenter. This should be specified when creating PowerStoreX cluster to join an existing datacenter.\ndata_center_name may not also be specified with this.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"example": "datacenter-42",
+					"x-added": "3.0.0.0"
+				},
+				"data_center_name": {
+					"description": "Name of the data center. This should be specified when creating PowerStoreX cluster in order to create and join a new datacenter in vCenter.\ndata_center_id may not also be specified with this.\nWhen data_center_create is false, then an existing datacenter will be used if the name matches, otherwise a new one will be created.\n",
+					"type": "string",
+					"example": "DataCenter-H3007"
+				},
+				"data_center_create": {
+					"description": "Along with data_center_name, indicates an intent to either create or use existing data center by name.\n\nWas added in version 3.0.0.0.\nWas deprecated in version 3.0.0.0.",
+					"type": "boolean",
+					"default": false,
+					"x-added": "3.0.0.0",
+					"x-deprecated": "3.0.0.0"
+				},
+				"esx_cluster_name": {
+					"description": "ESXi cluster name.\nThe default name is \"Cluster-\" followed by the PowerStore cluster name. This should be specified when creating PowerStore X cluster.\n",
+					"type": "string",
+					"example": "Cluster-H3007",
+					"default": "name"
+				},
+				"vasa_provider_credentials": {
+					"$ref": "#/definitions/cluster_create_vasa_provider_credentials"
+				}
+			}
+		},
+		"cluster_create_security_config": {
+			"type": "object",
+			"x-added": "3.0.0.0",
+			"description": "security configuration setting during cluster creation.\nWas added in version 3.0.0.0.",
+			"properties": {
+				"is_http_redirect_enabled": {
+					"x-added": "3.0.0.0",
+					"type": "boolean",
+					"default": true,
+					"description": "If true, redirecting HTTP requests to HTTPS is enabled. If false, HTTP redirection is disabled and only HTTPS is allowed.\nWas added in version 3.0.0.0."
+				},
+				"vasa_retain_certificate": {
+					"x-added": "3.5.0.0",
+					"type": "boolean",
+					"default": false,
+					"description": "If true, VASA server certificate will not be overwritten by the vCenter.\nWas added in version 3.5.0.0."
+				}
+			}
+		},
+		"cluster_create_vasa_provider_credentials": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "Storage system credentials for vCenter to use for communicating with the storage system using VASA.\nParameters are required when creating PowerStore X cluster and optional for PowerStore cluster.\n\nWas added in version 2.0.0.0.",
+			"required": [
+				"username",
+				"password"
+			],
+			"properties": {
+				"username": {
+					"description": "Username of the local user account which will be used by vSphere to register VASA provider.\n",
+					"type": "string",
+					"example": "user456"
+				},
+				"password": {
+					"description": "Password of the local user account which will be used by vSphere to register VASA provider.\n",
+					"type": "string",
+					"format": "password",
+					"example": "pass456!"
+				}
+			}
+		},
+		"cluster_create_error_response": {
+			"type": "object",
+			"description": "Error response for create operation. Contains a list of localized messages and a list of validation issues accompanied by the suggested resolution.\n\nWas added in version 2.0.0.0.",
+			"x-added": "2.0.0.0",
+			"properties": {
+				"messages": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/error_message"
+					}
+				},
+				"issues": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/validate_create_issue"
+					}
 				}
 			}
 		},
@@ -6137,6 +7542,138 @@
 				}
 			}
 		},
+		"snapshot_rule_create": {
+			"type": "object",
+			"description": "Create a new snapshot rule.",
+			"required": [
+				"name",
+				"desired_retention"
+			],
+			"properties": {
+				"name": {
+					"description": "Name of the snapshot rule.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"remote_system_id": {
+					"description": "Unique identifier for the Data Domain remote system. If present, the associated volume/volume group is backed up to specified data domain remote system, else a local snapshot is taken. name:{name} can be used instead of {id}. For example: 'remote_system_id':'name:remote_system_name'\nWas added in version 3.5.0.0.",
+					"type": "string",
+					"x-added": "3.5.0.0",
+					"x-ref": "remote_system"
+				},
+				"interval": {
+					"$ref": "#/definitions/SnapRuleIntervalEnum"
+				},
+				"time_of_day": {
+					"description": "Time of the day to take a daily snapshot, with format \"hh:mm\" using a 24 hour clock.\nEither the interval parameter or the time_of_day parameter will be set, but not both.\n",
+					"type": "string",
+					"example": "13:30"
+				},
+				"timezone": {
+					"$ref": "#/definitions/TimeZoneEnum",
+					"x-added": "2.0.0.0",
+					"description": "\nWas added in version 2.0.0.0."
+				},
+				"days_of_week": {
+					"description": "Days of the week when the snapshot rule should be applied.\nDays are determined based on the UTC time zone, unless the time_of_day and timezone properties are set.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/DaysOfWeekEnum"
+					}
+				},
+				"desired_retention": {
+					"description": "Desired snapshot retention period in hours. The system will retain snapshots for this time period.\nThe maximum retention is 70 years for remote snapshot rules and 1 year for local snapshot rules.\n",
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 613200,
+					"format": "int32"
+				},
+				"nas_access_type": {
+					"description": "The access type for file snapshots created by this snapshot rule.\n\nWas added in version 3.0.0.0.",
+					"$ref": "#/definitions/NASAccessTypeEnum",
+					"x-added": "3.0.0.0"
+				},
+				"is_read_only": {
+					"description": "Indicates whether this snapshot rule can be modified.\n\nWas added in version 3.0.0.0.",
+					"type": "boolean",
+					"default": false,
+					"x-added": "3.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Secure snapshots are created by the rule if this flag is true.\nThe snapshots cannot be deleted until the expiration time, and the expiration time cannot be reduced.\nSecure snapshots will only be created for block volumes, volume groups and file systems.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"snapshot_rule_modify": {
+			"type": "object",
+			"description": "Modify a snapshot rule.\nIf the snapshot rule is associated with a policy that is currently applied to a storage resource, the modified rule is immediately applied to the associated storage resource.\n",
+			"properties": {
+				"name": {
+					"description": "Snapshot rule name.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"remote_system_id": {
+					"description": "Unique identifier for the PowerProtect DD remote system. If present, the associated\nvolume/volume group is backed up to specified PowerProtect DD remote system, else\na local snapshot is taken. This attribute can be modified only if existing value\nis non null and the associated policy is not attached to a volume or a volume group.\nThe rule intended to take snapshots locally cannot be converted to take snapshots\non a PowerProtect DD remote system and vice versa.\n name:{name} can be used instead of {id}. For example: 'remote_system_id':'name:remote_system_name'\nWas added in version 3.5.0.0.",
+					"type": "string",
+					"x-ref": "remote_system",
+					"x-added": "3.5.0.0"
+				},
+				"interval": {
+					"$ref": "#/definitions/SnapRuleIntervalEnum"
+				},
+				"time_of_day": {
+					"description": "Time of the day to take a daily snapshot, with format \"hh:mm\" using a 24 hour clock.\nEither the interval parameter or the time_of_day parameter will be set, but not both.\n",
+					"type": "string",
+					"example": "13:30"
+				},
+				"timezone": {
+					"$ref": "#/definitions/TimeZoneEnum",
+					"x-added": "2.0.0.0",
+					"description": "\nWas added in version 2.0.0.0."
+				},
+				"days_of_week": {
+					"description": "Days of the week when the snapshot rule should be applied.\nDays are determined based on the UTC time zone, unless the time_of_day and timezone properties are set.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/DaysOfWeekEnum"
+					}
+				},
+				"desired_retention": {
+					"description": "Desired snapshot retention period in hours. The system will retain snapshots for this time period.\nThe maximum retention is 70 years for remote snapshot rules and 1 year for local snapshot rules.\n",
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 613200,
+					"format": "int32"
+				},
+				"nas_access_type": {
+					"description": "The access type for file snapshots created by this snapshot rule.\nWas added in version 3.0.0.0.",
+					"$ref": "#/definitions/NASAccessTypeEnum",
+					"x-added": "3.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"description": "Secure snapshots are created by the rule if this flag is true.\nThe snapshots cannot be deleted until the expiration time, and the expiration time cannot be reduced.\nSecure snapshots will only be created for block volumes, volume groups and file systems.\nSnapshots already created by this rule will not have their is_secure attribute modified.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"snapshot_rule_delete": {
+			"type": "object",
+			"description": "Delete a snapshot rule.\nDeleting a snapshot rule is not allowed if the snapshot rule is associated with a protection policy that is currently assigned to one or more storage resources.\n",
+			"properties": {
+				"delete_snaps": {
+					"description": "Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.\n",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
 		"RPOEnum": {
 			"description": "Recovery point objective (RPO), which is the acceptable amount of data,\nmeasured in units of time, that may be lost in case of a failure. When RPO is Zero,\nit implies synchronous replication. Values are:\n  * Five_Minutes\n  * Fifteen_Minutes\n  * Thirty_Minutes\n  * One_Hour\n  * Six_Hours\n  * Twelve_Hours\n  * One_Day\n  * Zero\n",
 			"type": "string",
@@ -7582,6 +9119,53 @@
 				}
 			}
 		},
+		"ClusterStateEnum": {
+			"description": "Possible cluster states.\n* Unconfigured - This is a single appliance that is not in a cluster and is in factory state.\n* Unconfigured_Faulted - This is single appliance that is not in a cluster and Hardware is in faulted state.\n* Configuring - Cluster is in the process of initial setup.\n* Core_Initialization - Cluster is in the process of core initialization.\n* Configured - Cluster is configured and operational.\n* Expanding - Appliance(s) are being added to the cluster.\n* Removing - Appliance(s) are being removed from the cluster.\n* Clustering_Failed - This is a single appliance that failed an attempt to join a cluster.\n* Core_Initialization_Failed - This is a single appliance that failed an attempt to join a cluster, bad state.\n* Removed - Appliance has been removed from cluster.\n* Post_Core_Initialization - In the process of configuring post core containers.\n* Unknown - System is in unknown state.\n\nValues was added in 2.0.0.0: Core_Initialization, Core_Initialization_Failed, Post_Core_Initialization, Removed, Unknown.\nValues was deprecated in 2.0.0.0: Configuring, Clustering_Failed.",
+			"type": "string",
+			"x-added_value": {
+				"2.0.0.0": [
+					"Core_Initialization",
+					"Core_Initialization_Failed",
+					"Post_Core_Initialization",
+					"Removed",
+					"Unknown"
+				]
+			},
+			"x-deprecated_value": {
+				"2.0.0.0": [
+					"Configuring",
+					"Clustering_Failed"
+				]
+			},
+			"enum": [
+				"Unconfigured",
+				"Unconfigured_Faulted",
+				"Configuring",
+				"Core_Initialization",
+				"Configured",
+				"Expanding",
+				"Removing",
+				"Clustering_Failed",
+				"Core_Initialization_Failed",
+				"Removed",
+				"Post_Core_Initialization",
+				"Unknown"
+			],
+			"x-display_enum_text": {
+				"Unconfigured": "Unconfigured",
+				"Unconfigured_Faulted": "Unconfigured_Faulted",
+				"Configuring": "Configuring",
+				"Core_Initialization": "Core_Initialization",
+				"Configured": "Configured",
+				"Expanding": "Expanding",
+				"Removing": "Removing",
+				"Clustering_Failed": "Clustering_Failed",
+				"Core_Initialization_Failed": "Core_Initialization_Failed",
+				"Removed": "Removed",
+				"Post_Core_Initialization": "Post_Core_Initialization",
+				"Unknown": "Unknown"
+			}
+		},
 		"LocationHistoryReasonEnum": {
 			"description": "Reason for storage resource relocation.\n * Initial - Initial placement.\n * Manual - Manual migration operation initiated by user.\n * Recommended - Storage system recommended migration.\n",
 			"type": "string",
@@ -8825,6 +10409,236 @@
 				}
 			}
 		},
+		"volume_create": {
+			"description": "Parameters for the volume create operation.",
+			"properties": {
+				"name": {
+					"description": "Unique name for the volume to be created. This value must contain 128\nor fewer printable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"size": {
+					"description": "Size of the volume to be created, in bytes. Minimum volume size is\n1MB. Maximum volume size is 256TB. Size must be a multiple of 8192.\n",
+					"type": "integer",
+					"format": "int64",
+					"x-units": "bytes",
+					"minimum": 1048576,
+					"maximum": 281474976710656
+				},
+				"host_id": {
+					"description": "Unique identifier of the host to be attached to the volume. If not\nspecified, an unmapped volume is created.\nOnly one of host_id or host_group_id can be supplied.\n name:{name} can be used instead of {id}. For example: 'host_id':'name:host_name'",
+					"type": "string",
+					"x-ref": "host"
+				},
+				"host_group_id": {
+					"description": "Unique identifier of the host group to be attached to the volume. If\nnot specified, an unmapped volume is created.\nOnly one of host_id or host_group_id can be supplied.\n name:{name} can be used instead of {id}. For example: 'host_group_id':'name:host_group_name'",
+					"type": "string",
+					"x-ref": "host_group"
+				},
+				"logical_unit_number": {
+					"description": "Optional logical unit number when creating a  attached volume.  If no\nhost_id or host_group_id is specified, this property is ignored.\n",
+					"type": "integer",
+					"minimum": 0,
+					"maximum": 16383,
+					"format": "int32"
+				},
+				"description": {
+					"description": "Description of the volume. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"appliance_id": {
+					"description": "Identifier of the appliance on which the volume is\nprovisioned.\n name:{name} can be used instead of {id}. For example: 'appliance_id':'name:appliance_name'",
+					"type": "string",
+					"x-ref": "appliance"
+				},
+				"volume_group_id": {
+					"description": "Volume group to add the volume to.  If not specified, the volume\nis not added to a volume group.\n name:{name} can be used instead of {id}. For example: 'volume_group_id':'name:volume_group_name'",
+					"type": "string",
+					"x-ref": "volume_group"
+				},
+				"min_size": {
+					"description": "Optional minimum size for the volume, in bytes.",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 1048576,
+					"maximum": 281474976710656
+				},
+				"sector_size": {
+					"description": "Optional sector size, in bytes. Only 512-byte and 4096-byte sectors\nare supported.\n",
+					"type": "integer",
+					"minimum": 512,
+					"maximum": 4096,
+					"format": "int32"
+				},
+				"protection_policy_id": {
+					"description": "Unique identifier of the protection policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"qos_performance_policy_id": {
+					"description": "Unique identifier of the QoS performance policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'qos_performance_policy_id':'name:policy_name'\nWas added in version 4.0.0.0.",
+					"type": "string",
+					"x-added": "4.0.0.0",
+					"x-ref": "policy"
+				},
+				"app_type": {
+					"type": "string",
+					"x-added": "2.1.0.0",
+					"$ref": "#/definitions/AppTypeEnum",
+					"description": "\nWas added in version 2.1.0.0."
+				},
+				"app_type_other": {
+					"type": "string",
+					"description": "An optional field used to describe application type usage for a volume.\nThis field can only be set if app_type is set to Relational_Databases_Other, Big_Data_Analytics_Other,\nBusiness_Applications_Other, Healthcare_Other, Virtualization_Other or Other.\nIf the app_type attribute is set to anything other than one of these values, the attribute will be cleared.\n\nWas added in version 2.1.0.0.",
+					"x-added": "2.1.0.0",
+					"maxLength": 32
+				}
+			},
+			"required": [
+				"name",
+				"size"
+			]
+		},
+		"volume_modify": {
+			"description": "Parameters for the volume modify operation.",
+			"properties": {
+				"name": {
+					"description": "New name of the volume. This value must contain 128 or fewer printable\nUnicode characters.\n",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "New description of the volume. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"size": {
+					"description": "New size of the volume in bytes,\nmust be a multiple of 8192,\nmust be bigger than the current volume size.\nMaximum volume size is 256TB.\n",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 1048576,
+					"maximum": 281474976710656
+				},
+				"expiration_timestamp": {
+					"description": "New expiration time of the snapshot. Expired snapshots are deleted by\nthe snapshot aging service that runs periodically in the background.\nIf not specified, the snapshot never expires.\n\nUse a maximum timestamp value or null to set an expiration to never expire.\n",
+					"type": "string",
+					"format": "date-time",
+					"x-pstore-nullable": true
+				},
+				"protection_policy_id": {
+					"description": "Unique identifier of the protection policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-pstore-nullable": true,
+					"x-ref": "policy"
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the volume. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"qos_performance_policy_id": {
+					"description": "Unique identifier of the QoS performance policy assigned to the volume.\nIf an empty string or null is specified, the QoS performance policy will be removed from this volume.\n name:{name} can be used instead of {id}. For example: 'qos_performance_policy_id':'name:policy_name'\nWas added in version 4.0.0.0.",
+					"type": "string",
+					"x-added": "4.0.0.0",
+					"x-ref": "policy",
+					"x-pstore-nullable": true
+				},
+				"is_replication_destination": {
+					"description": "New value for is_replication_destination property. The modification is\nonly supported for primary and clone volume, only when the current\nvalue is true and there is no longer a replication session using this\nvolume as a destination, and only to false.\n",
+					"type": "boolean"
+				},
+				"force": {
+					"description": "Normally a replication destination volume cannot be modified since it is\ncontrolled by replication. However, there can be cases where replication has\nfailed or is no longer active and the replication destination volume needs to\nbe cleaned up.\n\nWith the force option, the user will be allowed to remove the\nprotection policy from the replication destination volume provided that the\nreplication session has never been synchronized and the last_sync_timestamp property is empty.\n\nThis parameter defaults to false, if not specified.\n",
+					"type": "boolean",
+					"default": false
+				},
+				"node_affinity": {
+					"description": "Set which node will optimized for IO.",
+					"$ref": "#/definitions/NodeAffinityEnum"
+				},
+				"app_type": {
+					"type": "string",
+					"x-added": "2.1.0.0",
+					"$ref": "#/definitions/AppTypeEnum",
+					"description": "\nWas added in version 2.1.0.0."
+				},
+				"app_type_other": {
+					"type": "string",
+					"description": "An optional field used to describe application type usage for a volume.\nThis field can only be set if app_type is set to Relational_Databases_Other, Big_Data_Analytics_Other,\nBusiness_Applications_Other, Healthcare_Other, Virtualization_Other or Other.\nIf the app_type attribute is set to anything other than one of these values, the attribute will be cleared.\n\nWas added in version 2.1.0.0.",
+					"x-added": "2.1.0.0",
+					"maxLength": 32
+				},
+				"is_secure": {
+					"description": "This parameter only applies to block snapshots.\nIf true, mark the snapshot as a secured snapshot. An expiration timestamp\nmust also be set or be specified.\nA secure snapshot can not be unlocked by setting this flag to false.\n\nWas added in version 3.5.0.0.",
+					"type": "boolean",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_delete": {
+			"description": "Delete arguments.\nWas added in version 3.5.0.0.",
+			"x-added": "3.5.0.0",
+			"properties": {
+				"immediate": {
+					"description": "Delete the volume immediately and permanently, instead of moving the volume to the Recycle Bin.\nThis is only valid for a volume and clone. A snapshot is immediately and permanently deleted if individually deleted.\n",
+					"default": true,
+					"type": "boolean"
+				}
+			}
+		},
+		"volume_snapshot": {
+			"description": "Parameters for the volume snapshot operation.",
+			"properties": {
+				"name": {
+					"description": "Name of the snapshot to be created. This value must contain 128 or\nfewer printable Unicode characters. The default name of the volume\nsnapshot is the date and time when the snapshot is taken.\n",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Description of the snapshot. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the snapshot. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"expiration_timestamp": {
+					"description": "Time at which the snapshot will expire. Expired snapshots are deleted by the\nsnapshot aging service that runs periodically in the background. If\nnot specified, the snapshot never expires.\n\nUse a maximum timestamp value to set an expiration to never expire.\n",
+					"type": "string",
+					"format": "date-time"
+				},
+				"creator_type": {
+					"$ref": "#/definitions/StorageCreatorTypeEnum"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Create a secure snapshot. This parameter requires a valid expiration_timestamp to be set in the request.\nSecure snapshots can only be taken on block volumes.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_snapshot_response": {
+			"description": "Volume snapshot response definition.",
+			"properties": {
+				"id": {
+					"description": "Unique identifier of the new snapshot.",
+					"type": "string"
+				}
+			}
+		},
 		"volume_configure_metro": {
 			"x-added": "3.0.0.0",
 			"description": "Configure metro operation arguments.\nWas added in version 3.0.0.0.",
@@ -9310,6 +11124,45 @@
 						"description": " name:{name} can be used instead of {id}. For example: 'volume_ids':['name:volume_name']"
 					},
 					"description": "A list of volumes that need to be removed from the volume group.\nThis list cannot be empty.\n"
+				}
+			}
+		},
+		"volume_group_snapshot": {
+			"type": "object",
+			"description": "Snapshot volume group request.",
+			"required": [
+				"name"
+			],
+			"properties": {
+				"name": {
+					"description": "Unique name of the snapshot set to be created.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Optional description for the snapshot set.\n\nIf description is not specified, the description for the snapshot set\nwill not be set.\n",
+					"type": "string"
+				},
+				"expiration_timestamp": {
+					"description": "Time after which the snapshot set can be auto-purged. Time\nmust be specified in Zulu time zone. Expiration time cannot be prior\nto current time.\n\nUse a maximum timestamp value to set an expiration to never expire.\n\nValid format is yyyy-MM-dd'T'HH:mm:ssZ or yyyy-MM-dd'T'HH:mm:ss.SSSZ.\n\nBy default, expiration time will not be set.\n\nWas added in version 2.0.0.0.",
+					"type": "string",
+					"format": "date-time",
+					"x-added": "2.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Create a secure snapshot. This parameter requires a valid\nexpiration_timestamp to be set in the request.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_group_snapshot_response": {
+			"description": "Unique identifier of the new snapshot volume.",
+			"properties": {
+				"id": {
+					"type": "string"
 				}
 			}
 		},
@@ -11026,6 +12879,328 @@
 				}
 			}
 		},
+		"file_system_create": {
+			"type": "object",
+			"description": "Parameters for the file system create operation.",
+			"required": [
+				"name",
+				"nas_server_id",
+				"size_total"
+			],
+			"properties": {
+				"name": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 255,
+					"description": "Name of the file system. (255 UTF-8 characters)."
+				},
+				"description": {
+					"type": "string",
+					"minLength": 0,
+					"maxLength": 255,
+					"description": "File system description. (255 UTF-8 characters)."
+				},
+				"size_total": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Size that the file system presents to the host or end user. (Bytes)\nValue is always rounded up to next MB.\n",
+					"x-units": "bytes",
+					"minimum": 3221225472,
+					"maximum": 281474976710656
+				},
+				"nas_server_id": {
+					"type": "string",
+					"description": "Unique identifier of the NAS Server on which the file system is mounted. name:{name} can be used instead of {id}. For example: 'nas_server_id':'name:nas_server_name'",
+					"x-ref": "nas_server"
+				},
+				"config_type": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileSystemConfigTypeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"access_policy": {
+					"$ref": "#/definitions/FileSystemAccessPolicyEnum"
+				},
+				"locking_policy": {
+					"$ref": "#/definitions/FileSystemLockingPolicyEnum"
+				},
+				"folder_rename_policy": {
+					"$ref": "#/definitions/FileSystemFolderRenamePolicyEnum"
+				},
+				"is_smb_sync_writes_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether the synchronous writes option is enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - Synchronous writes option is enabled on the file system.\n* false - Synchronous writes option is disabled on the file system.\n"
+				},
+				"is_smb_no_notify_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether notifications of changes to directory file structure are enabled.\n* true - Change directory notifications are disabled.\n* false - Change directory notifications are enabled.\n"
+				},
+				"is_smb_op_locks_enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Indicates whether opportunistic file locking is enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - Opportunistic file locking is enabled on the file system.\n* false - Opportunistic file locking is disabled on the file system.\n"
+				},
+				"is_smb_notify_on_access_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether file access notifications are enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - File access notifications are enabled on the file system.\n* false - File access notifications are disabled on the file system.\n"
+				},
+				"is_smb_notify_on_write_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether file writes notifications are enabled on the file system. Cannot change value from default for VMware Config Type. Values are:\n* true - File writes notifications are enabled on the file system.\n* false - File writes notifications are disabled on the file system.\n"
+				},
+				"smb_notify_on_change_dir_depth": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Lowest directory level to which the enabled notifications apply, if any. Cannot change value from default for VMware Config Type.",
+					"minimum": 1,
+					"maximum": 512
+				},
+				"is_async_MTime_enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether asynchronous MTIME is enabled on the file system or protocol snaps that are mounted writeable. Values are:\n* true - Asynchronous MTIME is enabled on the file system.\n* false - Asynchronous MTIME is disabled on the file system.\n"
+				},
+				"protection_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the protection policy applied to the file system. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'"
+				},
+				"performance_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the File_Performance type policy applied to the file_system.\nIf empty and there is no performance policy set for the parent nas_server, then no performance policy is governing the file_system.\n name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				},
+				"file_events_publishing_mode": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileEventsPublishingModeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"flr_attributes": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/flr_create",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"host_io_size": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileSystemHostIoSizeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				}
+			}
+		},
+		"file_system_modify": {
+			"type": "object",
+			"description": "Parameters for the file system modify operation.\nModify a filesystem settings, where {id} is the unique identifier of the filesystem instance to modify\nPlease note that modifying any of the following filesystem settings while in production may interrupt clients I/Os:\n    - access_policy\n    - locking_policy\n    - folder_rename_policy\n    - is_smb_sync_writes_enabled\n    - is_smb_op_locks_enabled\n    - is_async_MTime_enabled\n    - file_events_publishing_mode\n    - smb_notify_on_change_dir_depth\n",
+			"properties": {
+				"description": {
+					"type": "string",
+					"description": "Description of the file system. (255 UTF-8 characters).",
+					"minLength": 0,
+					"maxLength": 255
+				},
+				"size_total": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Size, in bytes, presented to the host or end user.\nThis can be used for both expand and shrink on a file system.\nValue is always rounded up to next MB.\n",
+					"x-units": "bytes",
+					"minimum": 3221225472,
+					"maximum": 281474976710656
+				},
+				"access_policy": {
+					"$ref": "#/definitions/FileSystemAccessPolicyEnum"
+				},
+				"locking_policy": {
+					"$ref": "#/definitions/FileSystemLockingPolicyEnum"
+				},
+				"folder_rename_policy": {
+					"$ref": "#/definitions/FileSystemFolderRenamePolicyEnum"
+				},
+				"is_smb_sync_writes_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether the synchronous writes option is enabled on the file system. Values are:\n* true - Synchronous writes option is enabled on the file system.\n* false - Synchronous writes option is disabled on the file system.\n"
+				},
+				"is_smb_op_locks_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether opportunistic file locking is enabled on the file system. Values are:\n* true - Opportunistic file locking is enabled on the file system.\n* false - Opportunistic file locking is disabled on the file system.\n"
+				},
+				"is_smb_notify_on_access_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether file access notifications are enabled on the file system. Values are:\n* true - File access notifications are enabled on the file system.\n* false - File access notifications on file access are disabled on the file system.\n"
+				},
+				"is_smb_notify_on_write_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether notifications on file writes are enabled on the file system. Values are:\n* true - File writes notifications are enabled on the file system.\n* false - File writes notifications are disabled on the file system.\n"
+				},
+				"smb_notify_on_change_dir_depth": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Lowest directory level to which the enabled notifications apply, if any.",
+					"minimum": 1,
+					"maximum": 512
+				},
+				"is_smb_no_notify_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether notifications of changes to a directory file structure are enabled. Values are:\n* true - Change directory notifications are disabled.\n* false - Change directory notifications are enabled.\n"
+				},
+				"is_async_MTime_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether asynchronous MTIME is enabled on the file system or protocol snaps that are mounted writeable. Values are:\n* true - Asynchronous MTIME is enabled on the file system.\n* false - Asynchronous MTIME is disabled on the file system.\n"
+				},
+				"protection_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the protection policy applied to the file system. name:{name} can be used instead of {id}. For example: 'protection_policy_id':'name:policy_name'"
+				},
+				"performance_policy_id": {
+					"type": "string",
+					"x-ref": "policy",
+					"description": "Unique identifier of the File_Performance type policy applied to the file_system.\nIf empty and there is no performance policy set for the parent nas_server, then no performance policy is governing the file_system.\n name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				},
+				"is_quota_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether quota is enabled.\nQuotas are not supported for read-only file systems.\nDefault value for the grace period is set to infinite=-1 to match Windows' quota policy\nValues are:\n* true - Start tracking usages for all users on a file system or a quota tree, and user quota limits will be enforced.\n* false - Stop tracking usages for all users on a file system or a quota tree, and user quota limits will not be enforced.\n"
+				},
+				"grace_period": {
+					"description": "Grace period of soft limits (seconds):\n * -1: default: Infinite grace (Windows policy).\n *  0: Use system default of 1 week.\n * Positive: Grace period after which the soft limit is treated as a hard limit (seconds).\n",
+					"type": "integer",
+					"format": "int32",
+					"x-units": "seconds",
+					"minimum": -1,
+					"maximum": 2147483647
+				},
+				"default_hard_limit": {
+					"description": "Default hard limit of user quotas and tree quotas (bytes). The hard limit value is always rounded up to match the file system's physical block size.\n(0 means 'No limitation'. This value can be used to compute the amount of space consumed without limiting the space).\n",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 0,
+					"maximum": 9223372036854775807
+				},
+				"default_soft_limit": {
+					"description": "Default soft limit of user quotas and tree quotas (bytes). Value is always rounded up to match the file system's physical block size.\n(0 means 'No limitation'.)\n",
+					"type": "integer",
+					"x-units": "bytes",
+					"format": "int64",
+					"minimum": 0,
+					"maximum": 9223372036854775807
+				},
+				"expiration_timestamp": {
+					"type": "string",
+					"format": "date-time",
+					"description": "Time when the snapshot will expire. Use 1970-01-01T00:00:00.000Z to set expiration timestamp to null."
+				},
+				"file_events_publishing_mode": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileEventsPublishingModeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"flr_attributes": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/flr_modify",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"is_secure": {
+					"type": "boolean",
+					"description": "Indicates whether a snapshot type filesystem is secure:\n* true - The snapshot is read-only and cannot be deleted until it has expired.\n  The expiration time of secure snapshot cannot be reduced and cannot be set to infinite.\n  The value of is_secure cannot be changed from true to false.\n* false - A normal snapshot.\n\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				}
+			}
+		},
+		"file_system_snapshot": {
+			"type": "object",
+			"description": "Parameters for the file system snapshot operation.",
+			"properties": {
+				"name": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 255,
+					"description": "Name of the snapshot. The default name of the snapshot is the date and time when the snapshot is taken."
+				},
+				"description": {
+					"type": "string",
+					"minLength": 0,
+					"maxLength": 255,
+					"description": "Description of the snapshot."
+				},
+				"expiration_timestamp": {
+					"type": "string",
+					"format": "date-time",
+					"description": "Time, when the snapshot will expire."
+				},
+				"is_auto_delete_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether the snapshot can be automatically deleted per threshold settings. Values are:\n* true - Snapshot can be automatically deleted per threshold settings.\n* false - Snapshot cannot be automatically deleted.\n"
+				},
+				"access_type": {
+					"$ref": "#/definitions/FileSystemSnapshotAccessTypeEnum"
+				},
+				"access_policy": {
+					"$ref": "#/definitions/FileSystemAccessPolicyEnum"
+				},
+				"locking_policy": {
+					"$ref": "#/definitions/FileSystemLockingPolicyEnum"
+				},
+				"folder_rename_policy": {
+					"$ref": "#/definitions/FileSystemFolderRenamePolicyEnum"
+				},
+				"is_smb_sync_writes_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether the synchronous writes option is enabled on the file system. Values are:\n* true - Synchronous writes option is enabled on the file system.\n* false - Synchronous writes option is disabled on the file system.\n"
+				},
+				"is_smb_no_notify_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether notifications of changes to a directory file structure are enabled.\n* true - Change directory notifications are disabled.\n* false - Change directory notifications are enabled.\n"
+				},
+				"is_smb_op_locks_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether opportunistic file locking is enabled on the file system. Values are:\n* true - Opportunistic file locking is enabled on the file system.\n* false - Opportunistic file locking is disabled on the file system.\n"
+				},
+				"is_smb_notify_on_access_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether file access notifications are enabled on the file system. Values are:\n* true - File access notifications are enabled on the file system.\n* false - File access notifications are disabled on the file system.\n"
+				},
+				"is_smb_notify_on_write_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether file writes notifications are enabled on the file system. Values are:\n* true - File writes notifications are enabled on the file system.\n* false - File writes notifications are disabled on the file system.\n"
+				},
+				"smb_notify_on_change_dir_depth": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Lowest directory level to which the enabled notifications apply, if any.",
+					"minimum": 1,
+					"maximum": 512
+				},
+				"is_async_MTime_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether asynchronous MTIME is enabled on the protocol snaps that are mounted writeable. Values are:\n* true - Asynchronous MTIME is enabled on the file system.\n* false - Asynchronous MTIME is disabled on the file system.\n"
+				},
+				"file_events_publishing_mode": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileEventsPublishingModeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"is_secure": {
+					"type": "boolean",
+					"description": "Indicates whether a snapshot type filesystem is secure:\n* true - The snapshot is read-only and cannot be deleted until it has expired.\n  The expiration time of secure snapshot cannot be reduced and cannot be set to infinite.\n  The value of is_secure cannot be changed from true to false.\n* false - A normal snapshot.\n\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				}
+			}
+		},
+		"file_system_snapshot_response": {
+			"description": "Snapshot file system created.",
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "The unique identifier of the created snapshot."
+				}
+			}
+		},
 		"FileSystemTypeEnum": {
 			"type": "string",
 			"description": "Indicates the type of a file system.\n * Primary - Normal file system or clone.\n * Snapshot - Snapshot of a file system.\n",
@@ -11210,6 +13385,70 @@
 			},
 			"description": "\nWas added in version 3.0.0.0. \nFiltering on the fields of this embedded resource is not supported.",
 			"x-no_filter": true
+		},
+		"flr_create": {
+			"x-added": "3.0.0.0",
+			"type": "object",
+			"properties": {
+				"mode": {
+					"$ref": "#/definitions/FileSystemFLRModeEnum"
+				},
+				"minimum_retention": {
+					"type": "string",
+					"default": "1D",
+					"description": "The shortest retention period for which files on an FLR-enabled file system can be locked and protected from deletion. This value must be less than or equal to the maximum retention period.\nAny attempt to lock a file for less than the minimum retention period results in the file being locked until the current system time plus the minimum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or the keyword infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"default_retention": {
+					"type": "string",
+					"description": "The default retention period that is used in an FLR-enabled file system when a file is locked and a retention period is not specified.\nThis value must be greater than or equal to the minimum retention period, and less than or equal to the maximum retention period.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite.\nThe default value for the default retention period is infinite for Enterprise FLR mode, and 1 year for Compliance FLR mode.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"maximum_retention": {
+					"type": "string",
+					"default": "infinite",
+					"description": "The longest retention period for which files on an FLR-enabled file system can be locked and protected from deletion.\nAny attempt to lock a file for more than this maximum retention period results in the file being locked until the current system time plus the maximum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				}
+			},
+			"description": "\nWas added in version 3.0.0.0."
+		},
+		"flr_modify": {
+			"x-added": "3.0.0.0",
+			"type": "object",
+			"properties": {
+				"minimum_retention": {
+					"type": "string",
+					"description": "The shortest retention period for which files on an FLR-enabled file system can be locked and protected from deletion. This value must be less than or equal to the maximum retention period.\nAny attempt to lock a file for less than the minimum retention period results in the file being locked until the current system time plus the minimum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or the keyword infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"default_retention": {
+					"type": "string",
+					"description": "The default retention period that is used in an FLR-enabled file system when a file is locked and a retention period is not specified.\nThis value must be greater than or equal to the minimum retention period, and less than or equal to the maximum retention period.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite.\nThe default value for the default retention period is infinite for Enterprise FLR mode, and 1 year for Compliance FLR mode.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"maximum_retention": {
+					"type": "string",
+					"description": "The longest retention period for which files on an FLR-enabled file system can be locked and protected from deletion.\nAny attempt to lock a file for more than this maximum retention period results in the file being locked until the current system time plus the maximum retention period is reached.\nFormat [default_int][Y|M|D] (example 5Y for 5 years). Specify Y for years, M for months, D for days, or infinite. Setting infinite means that the files can never be deleted.\nThis attribute should be set only for FLR enabled filesystems.\n",
+					"pattern": "(^\\d+[DMY])|(^infinite$)"
+				},
+				"auto_lock": {
+					"type": "boolean",
+					"description": "Indicates whether to automatically lock files in an FLR-enabled file system. When true files are locked automatically after modification based on the flrPolicyInterval interval.\nWhen enabled, auto-locked files are set with the default retention period value.\nThis setting can only be applied to mounted FLR enabled file systems.\n"
+				},
+				"auto_delete": {
+					"type": "boolean",
+					"description": "Indicates whether locked files will be automatically delete from an FLR-enabled file system once their retention periods have expired.\nThis setting can only be applied to mounted FLR enabled file systems.\n"
+				},
+				"policy_interval": {
+					"type": "integer",
+					"minimum": 60,
+					"maximum": 31536000,
+					"description": "Indicates how long to wait (in seconds) after files are modified before the files are automatically locked.\nThis setting can only be applied to mounted FLR enabled file systems.\n",
+					"format": "int32"
+				}
+			},
+			"description": "\nWas added in version 3.0.0.0."
 		},
 		"file_tree_quota_instance": {
 			"type": "object",

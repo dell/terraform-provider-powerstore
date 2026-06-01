@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@ After the execution of above resource block, filesystem snapshot would have been
 - `access_type` (String) Access type of the filesystem snapshot. Access type can be 'Snapshot' or 'Protocol'. Cannot be updated.
 - `description` (String) Description of the filesystem snapshot.
 - `expiration_timestamp` (String) Expiration Timestamp of the filesystem snapshot, if not provided there will no expiration for the snapshot. To remove the expiration timestamp, specify it as an empty string. Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z
+- `is_secure` (Boolean) Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.
 - `name` (String) Name of the filesystem snapshot.The default name of the filesystem snapshot is the date and time when the snapshot is taken.
 
 ### Read-Only

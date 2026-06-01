@@ -77,6 +77,14 @@ All URIs are relative to */api/rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*ClusterApi* | [**GetAllClusters**](docs/ClusterApi.md#getallclusters) | **Get** /cluster | Collection Query
+*ClusterApi* | [**PostAllClusters**](docs/ClusterApi.md#postallclusters) | **Post** /cluster | Create
+*FileSystemApi* | [**DeleteFileSystemById**](docs/FileSystemApi.md#deletefilesystembyid) | **Delete** /file_system/{id} | Delete
+*FileSystemApi* | [**FileSystemSnapshot**](docs/FileSystemApi.md#filesystemsnapshot) | **Post** /file_system/{id}/snapshot | Snapshot
+*FileSystemApi* | [**GetAllFileSystems**](docs/FileSystemApi.md#getallfilesystems) | **Get** /file_system | Collection Query
+*FileSystemApi* | [**GetFileSystemById**](docs/FileSystemApi.md#getfilesystembyid) | **Get** /file_system/{id} | Instance Query
+*FileSystemApi* | [**PatchFileSystemById**](docs/FileSystemApi.md#patchfilesystembyid) | **Patch** /file_system/{id} | Modify
+*FileSystemApi* | [**PostAllFileSystems**](docs/FileSystemApi.md#postallfilesystems) | **Post** /file_system | Create
 *LoginSessionApi* | [**GetAllLoginSessions**](docs/LoginSessionApi.md#getallloginsessions) | **Get** /login_session | Collection Query
 *RecycleBinApi* | [**DeleteRecycleBinById**](docs/RecycleBinApi.md#deleterecyclebinbyid) | **Delete** /recycle_bin/{id} | Delete
 *RecycleBinApi* | [**GetAllRecycleBins**](docs/RecycleBinApi.md#getallrecyclebins) | **Get** /recycle_bin | Collection Query
@@ -100,8 +108,19 @@ Class | Method | HTTP request | Description
 *ReplicationSessionApi* | [**ReplicationSessionStartFailoverTest**](docs/ReplicationSessionApi.md#replicationsessionstartfailovertest) | **Post** /replication_session/{id}/start_failover_test | Start DR Failover Simulation Test
 *ReplicationSessionApi* | [**ReplicationSessionStopFailoverTest**](docs/ReplicationSessionApi.md#replicationsessionstopfailovertest) | **Post** /replication_session/{id}/stop_failover_test | Stop DR Failover Simulation Test
 *ReplicationSessionApi* | [**ReplicationSessionSync**](docs/ReplicationSessionApi.md#replicationsessionsync) | **Post** /replication_session/{id}/sync | Synchronize
+*SnapshotRuleApi* | [**DeleteSnapshotRuleById**](docs/SnapshotRuleApi.md#deletesnapshotrulebyid) | **Delete** /snapshot_rule/{id} | Delete
+*SnapshotRuleApi* | [**GetAllSnapshotRules**](docs/SnapshotRuleApi.md#getallsnapshotrules) | **Get** /snapshot_rule | Collection Query
+*SnapshotRuleApi* | [**GetSnapshotRuleById**](docs/SnapshotRuleApi.md#getsnapshotrulebyid) | **Get** /snapshot_rule/{id} | Instance Query
+*SnapshotRuleApi* | [**PatchSnapshotRuleById**](docs/SnapshotRuleApi.md#patchsnapshotrulebyid) | **Patch** /snapshot_rule/{id} | Modify
+*SnapshotRuleApi* | [**PostAllSnapshotRules**](docs/SnapshotRuleApi.md#postallsnapshotrules) | **Post** /snapshot_rule | Create
+*VolumeApi* | [**DeleteVolumeById**](docs/VolumeApi.md#deletevolumebyid) | **Delete** /volume/{id} | Delete
+*VolumeApi* | [**GetAllVolumes**](docs/VolumeApi.md#getallvolumes) | **Get** /volume | Collection Query
+*VolumeApi* | [**GetVolumeById**](docs/VolumeApi.md#getvolumebyid) | **Get** /volume/{id} | Instance Query
+*VolumeApi* | [**PatchVolumeById**](docs/VolumeApi.md#patchvolumebyid) | **Patch** /volume/{id} | Modify
+*VolumeApi* | [**PostAllVolumes**](docs/VolumeApi.md#postallvolumes) | **Post** /volume | Create
 *VolumeApi* | [**VolumeConfigureMetro**](docs/VolumeApi.md#volumeconfiguremetro) | **Post** /volume/{id}/configure_metro | Configure Metro
 *VolumeApi* | [**VolumeEndMetro**](docs/VolumeApi.md#volumeendmetro) | **Post** /volume/{id}/end_metro | End Metro Configuration
+*VolumeApi* | [**VolumeSnapshot**](docs/VolumeApi.md#volumesnapshot) | **Post** /volume/{id}/snapshot | Snapshot
 *VolumeGroupApi* | [**DeleteVolumeGroupById**](docs/VolumeGroupApi.md#deletevolumegroupbyid) | **Delete** /volume_group/{id} | Delete
 *VolumeGroupApi* | [**GetAllVolumeGroups**](docs/VolumeGroupApi.md#getallvolumegroups) | **Get** /volume_group | Collection Query
 *VolumeGroupApi* | [**GetVolumeGroupById**](docs/VolumeGroupApi.md#getvolumegroupbyid) | **Get** /volume_group/{id} | Instance Query
@@ -111,6 +130,7 @@ Class | Method | HTTP request | Description
 *VolumeGroupApi* | [**VolumeGroupConfigureMetro**](docs/VolumeGroupApi.md#volumegroupconfiguremetro) | **Post** /volume_group/{id}/configure_metro | Configure Metro
 *VolumeGroupApi* | [**VolumeGroupEndMetro**](docs/VolumeGroupApi.md#volumegroupendmetro) | **Post** /volume_group/{id}/end_metro | End Metro Configuration
 *VolumeGroupApi* | [**VolumeGroupRemoveMembers**](docs/VolumeGroupApi.md#volumegroupremovemembers) | **Post** /volume_group/{id}/remove_members | Remove Members
+*VolumeGroupApi* | [**VolumeGroupSnapshot**](docs/VolumeGroupApi.md#volumegroupsnapshot) | **Post** /volume_group/{id}/snapshot | Snapshot
 
 
 ## Documentation For Models
@@ -127,6 +147,18 @@ Class | Method | HTTP request | Description
  - [BondingTypeEnum](docs/BondingTypeEnum.md)
  - [CGImportableCriteriaEnum](docs/CGImportableCriteriaEnum.md)
  - [ChapCredentialsInstance](docs/ChapCredentialsInstance.md)
+ - [ClusterCreate](docs/ClusterCreate.md)
+ - [ClusterCreateAppliances](docs/ClusterCreateAppliances.md)
+ - [ClusterCreateCluster](docs/ClusterCreateCluster.md)
+ - [ClusterCreateErrorResponse](docs/ClusterCreateErrorResponse.md)
+ - [ClusterCreateNetworks](docs/ClusterCreateNetworks.md)
+ - [ClusterCreatePhysicalSwitchConnection](docs/ClusterCreatePhysicalSwitchConnection.md)
+ - [ClusterCreatePhysicalSwitches](docs/ClusterCreatePhysicalSwitches.md)
+ - [ClusterCreateSecurityConfig](docs/ClusterCreateSecurityConfig.md)
+ - [ClusterCreateVasaProviderCredentials](docs/ClusterCreateVasaProviderCredentials.md)
+ - [ClusterCreateVcenters](docs/ClusterCreateVcenters.md)
+ - [ClusterInstance](docs/ClusterInstance.md)
+ - [ClusterStateEnum](docs/ClusterStateEnum.md)
  - [CreateResponse](docs/CreateResponse.md)
  - [DataConnectionInstance](docs/DataConnectionInstance.md)
  - [DataConnectionStateEnum](docs/DataConnectionStateEnum.md)
@@ -178,19 +210,25 @@ Class | Method | HTTP request | Description
  - [FileQuotaStateEnum](docs/FileQuotaStateEnum.md)
  - [FileSystemAccessPolicyEnum](docs/FileSystemAccessPolicyEnum.md)
  - [FileSystemConfigTypeEnum](docs/FileSystemConfigTypeEnum.md)
+ - [FileSystemCreate](docs/FileSystemCreate.md)
  - [FileSystemFLRModeEnum](docs/FileSystemFLRModeEnum.md)
  - [FileSystemFolderRenamePolicyEnum](docs/FileSystemFolderRenamePolicyEnum.md)
  - [FileSystemHostIoSizeEnum](docs/FileSystemHostIoSizeEnum.md)
  - [FileSystemInstance](docs/FileSystemInstance.md)
  - [FileSystemLockingPolicyEnum](docs/FileSystemLockingPolicyEnum.md)
+ - [FileSystemModify](docs/FileSystemModify.md)
+ - [FileSystemSnapshot](docs/FileSystemSnapshot.md)
  - [FileSystemSnapshotAccessTypeEnum](docs/FileSystemSnapshotAccessTypeEnum.md)
  - [FileSystemSnapshotCreatorTypeEnum](docs/FileSystemSnapshotCreatorTypeEnum.md)
+ - [FileSystemSnapshotResponse](docs/FileSystemSnapshotResponse.md)
  - [FileSystemTypeEnum](docs/FileSystemTypeEnum.md)
  - [FileTreeQuotaInstance](docs/FileTreeQuotaInstance.md)
  - [FileUserQuotaInstance](docs/FileUserQuotaInstance.md)
  - [FileVirusCheckerInstance](docs/FileVirusCheckerInstance.md)
  - [FileVirusCheckerOfflinePolicyEnum](docs/FileVirusCheckerOfflinePolicyEnum.md)
+ - [FlrCreate](docs/FlrCreate.md)
  - [FlrInstance](docs/FlrInstance.md)
+ - [FlrModify](docs/FlrModify.md)
  - [FrontEndPortConnectionTypeEnum](docs/FrontEndPortConnectionTypeEnum.md)
  - [FsnInstance](docs/FsnInstance.md)
  - [HAOSTypeEnum](docs/HAOSTypeEnum.md)
@@ -263,6 +301,8 @@ Class | Method | HTTP request | Description
  - [NvmeTransportTypeEnum](docs/NvmeTransportTypeEnum.md)
  - [OSTypeEnum](docs/OSTypeEnum.md)
  - [PerformanceRuleInstance](docs/PerformanceRuleInstance.md)
+ - [PhysicalSwitchConnectMethodEnum](docs/PhysicalSwitchConnectMethodEnum.md)
+ - [PhysicalSwitchPurposeEnum](docs/PhysicalSwitchPurposeEnum.md)
  - [PolicyInstance](docs/PolicyInstance.md)
  - [PolicyManagedByEnum](docs/PolicyManagedByEnum.md)
  - [PolicyTypeEnum](docs/PolicyTypeEnum.md)
@@ -321,7 +361,10 @@ Class | Method | HTTP request | Description
  - [SmbServerInstance](docs/SmbServerInstance.md)
  - [SmbShareInstance](docs/SmbShareInstance.md)
  - [SnapRuleIntervalEnum](docs/SnapRuleIntervalEnum.md)
+ - [SnapshotRuleCreate](docs/SnapshotRuleCreate.md)
+ - [SnapshotRuleDelete](docs/SnapshotRuleDelete.md)
  - [SnapshotRuleInstance](docs/SnapshotRuleInstance.md)
+ - [SnapshotRuleModify](docs/SnapshotRuleModify.md)
  - [SoftwareInstalledBuildFlavorEnum](docs/SoftwareInstalledBuildFlavorEnum.md)
  - [SoftwareInstalledBuildTypeEnum](docs/SoftwareInstalledBuildTypeEnum.md)
  - [SoftwareInstalledInstance](docs/SoftwareInstalledInstance.md)
@@ -337,6 +380,7 @@ Class | Method | HTTP request | Description
  - [UnityFileDetailsModify](docs/UnityFileDetailsModify.md)
  - [VGPlacementRule](docs/VGPlacementRule.md)
  - [ValidUpgradeInstance](docs/ValidUpgradeInstance.md)
+ - [ValidateCreateIssue](docs/ValidateCreateIssue.md)
  - [VcenterInstance](docs/VcenterInstance.md)
  - [VendorProviderStatusEnum](docs/VendorProviderStatusEnum.md)
  - [VethPortInstance](docs/VethPortInstance.md)
@@ -351,6 +395,8 @@ Class | Method | HTTP request | Description
  - [VolumeBlockSizeEnum](docs/VolumeBlockSizeEnum.md)
  - [VolumeConfigureMetro](docs/VolumeConfigureMetro.md)
  - [VolumeConfigureMetroResponse](docs/VolumeConfigureMetroResponse.md)
+ - [VolumeCreate](docs/VolumeCreate.md)
+ - [VolumeDelete](docs/VolumeDelete.md)
  - [VolumeEndMetro](docs/VolumeEndMetro.md)
  - [VolumeGroupAddMembers](docs/VolumeGroupAddMembers.md)
  - [VolumeGroupConfigureMetro](docs/VolumeGroupConfigureMetro.md)
@@ -361,8 +407,13 @@ Class | Method | HTTP request | Description
  - [VolumeGroupInstance](docs/VolumeGroupInstance.md)
  - [VolumeGroupModify](docs/VolumeGroupModify.md)
  - [VolumeGroupRemoveMembers](docs/VolumeGroupRemoveMembers.md)
+ - [VolumeGroupSnapshot](docs/VolumeGroupSnapshot.md)
+ - [VolumeGroupSnapshotResponse](docs/VolumeGroupSnapshotResponse.md)
  - [VolumeImportableCriteriaEnum](docs/VolumeImportableCriteriaEnum.md)
  - [VolumeInstance](docs/VolumeInstance.md)
+ - [VolumeModify](docs/VolumeModify.md)
+ - [VolumeSnapshot](docs/VolumeSnapshot.md)
+ - [VolumeSnapshotResponse](docs/VolumeSnapshotResponse.md)
  - [VolumeStateEnum](docs/VolumeStateEnum.md)
  - [VolumeTypeEnum](docs/VolumeTypeEnum.md)
  - [VsphereHostInstance](docs/VsphereHostInstance.md)

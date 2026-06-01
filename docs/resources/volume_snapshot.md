@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ After the execution of above resource block, volume snapshot would have been cre
 - `creator_type` (String) Creator Type of the volume snapshot.
 - `description` (String) Description of the volume snapshot.
 - `expiration_timestamp` (String) Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.
+- `is_secure` (Boolean) Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.
 - `name` (String) Name of the volume snapshot.The default name of the volume snapshot is the date and time when the snapshot is taken.
 - `performance_policy_id` (String) Performance Policy id of the volume snapshot. Valid values are default_medium, default_low, default_high.
 - `volume_id` (String) ID of the volume to take snapshot. Conflicts with `volume_name`. Cannot be updated.

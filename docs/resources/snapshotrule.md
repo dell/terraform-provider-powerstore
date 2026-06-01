@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2022-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2022-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -86,6 +86,7 @@ After the execution of above resource block, snapshot rule would have been creat
 - `delete_snaps` (Boolean) Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.
 - `interval` (String) The interval between snapshots taken by a snapshot rule.
 - `is_read_only` (Boolean) Indicates whether this snapshot rule can be modified.
+- `is_secure` (Boolean) Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.
 - `nas_access_type` (String) The NAS filesystem snapshot access method for snapshot rule.
 - `time_of_day` (String) The time of the day to take a daily snapshot, with format hh:mm.
 - `timezone` (String) The time zone identifier for applying the time zone to the time_of_day for a snapshot rule.

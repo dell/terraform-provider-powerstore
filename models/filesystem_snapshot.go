@@ -17,14 +17,18 @@ limitations under the License.
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework-timetypes/timetypes"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
 // FileSystemSnapshot - FileSystem Snapshot properties
 type FileSystemSnapshot struct {
-	ID                  types.String `tfsdk:"id"`
-	Name                types.String `tfsdk:"name"`
-	Description         types.String `tfsdk:"description"`
-	ExpirationTimestamp types.String `tfsdk:"expiration_timestamp"`
-	FileSystemID        types.String `tfsdk:"filesystem_id"`
-	AccessType          types.String `tfsdk:"access_type"`
+	ID                  types.String      `tfsdk:"id"`
+	Name                types.String      `tfsdk:"name"`
+	Description         types.String      `tfsdk:"description"`
+	ExpirationTimestamp timetypes.RFC3339 `tfsdk:"expiration_timestamp"`
+	FileSystemID        types.String      `tfsdk:"filesystem_id"`
+	AccessType          types.String      `tfsdk:"access_type"`
+	IsSecure            types.Bool        `tfsdk:"is_secure"`
 }

@@ -21,11 +21,15 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"regexp"
+	"net/url"
+	"strings"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
+	"time"
 
-	"github.com/dell/gopowerstore"
+	"github.com/hashicorp/terraform-plugin-framework-timetypes/timetypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -41,7 +45,7 @@ func newVolumeSnapshotResource() resource.Resource {
 }
 
 type resourceVolumeSnapshot struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata defines resource interface Metadata method
@@ -114,12 +118,7 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 				Computed:            true,
 				Description:         "Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed",
 				MarkdownDescription: "Expiration Timestamp of the volume snapshot.Only UTC (+Z) format is allowed.",
-				Validators: []validator.String{
-					stringvalidator.RegexMatches(
-						regexp.MustCompile(`(^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)$|^$)`),
-						"Only UTC (+Z) format is allowed eg: 2023-05-06T09:01:47Z",
-					),
-				},
+				CustomType:          timetypes.RFC3339Type{},
 			},
 			"creator_type": schema.StringAttribute{
 				Computed:            true,
@@ -135,6 +134,12 @@ func (r *resourceVolumeSnapshot) Schema(ctx context.Context, req resource.Schema
 					}...),
 				},
 			},
+			"is_secure": schema.BoolAttribute{
+				Description:         "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				MarkdownDescription: "Indicates whether the snapshot is secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+				Optional:            true,
+				Computed:            true,
+			},
 		},
 	}
 }
@@ -146,18 +151,8 @@ func (r *resourceVolumeSnapshot) Configure(ctx context.Context, req resource.Con
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-
-		return
-	}
-
-	r.client = client
+	client := req.ProviderData.(*client.Client)
+	r.client = client.GenClient
 }
 
 // Create - method to create volume snapshot resource
@@ -175,7 +170,9 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 
 	// if volume name is present instead of ID
 	if plan.VolumeID.ValueString() == "" {
-		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
+		queries := make(url.Values)
+		queries.Set("name", "eq."+plan.VolumeName.ValueString())
+		volResponse, _, err := r.client.VolumeApi.GetAllVolumes(ctx).Queries(queries).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error creating volume snapshot",
@@ -183,39 +180,53 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 			)
 			return
 		}
-		volID = volResponse.ID
+		if len(volResponse) == 0 {
+			resp.Diagnostics.AddError(
+				"Error creating volume snapshot",
+				"Volume not found",
+			)
+			return
+		}
+		volID = *volResponse[0].Id
 		plan.VolumeID = types.StringValue(volID)
 	}
 
 	name := plan.Name.ValueString()
-	description := plan.Description.ValueString()
-	performancePolicyID := plan.PerformancePolicyID.ValueString()
-	expirationTimestamp := plan.ExpirationTimestamp.ValueString()
-	creatorType := plan.CreatorType.ValueString()
 
 	// If name of the snapshot is not present, the default name of the volume snapshot is the date and time when the snapshot is taken.
 	if name == "" {
-		cluster, err := r.client.PStoreClient.GetCluster(ctx)
+		clusterTime, err := helper.DetermineClusterTime(ctx, r.client)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error creating volume snapshot",
-				"Could not fetch name of the cluster, unexpected error: "+err.Error(),
+				"Could not fetch cluster time, unexpected error: "+err.Error(),
 			)
 			return
 		}
-		name = cluster.SystemTime
+		name = clusterTime.Format("2006-01-02T15:04:05Z")
 	}
+
+	var expirationTimestamp *time.Time
+	if !plan.ExpirationTimestamp.IsNull() {
+		expTime, _ := plan.ExpirationTimestamp.ValueRFC3339Time()
+		if !expTime.IsZero() {
+			expirationTimestamp = &expTime
+		}
+	}
+
+	creatorTypeEnum := clientgen.StorageCreatorTypeEnum(plan.CreatorType.ValueString())
 
 	// Create new volume snapshot
-	snapCreate := &gopowerstore.SnapshotCreate{
-		Name:                &name,
-		Description:         &description,
-		PerformancePolicyID: performancePolicyID,
-		ExpirationTimestamp: expirationTimestamp,
-		CreatorType:         gopowerstore.StorageCreatorTypeEnum(creatorType),
-	}
-
-	snapCreateResponse, err := r.client.PStoreClient.CreateSnapshot(context.Background(), snapCreate, volID)
+	snapCreateResponse, _, err := r.client.VolumeApi.VolumeSnapshot(ctx, volID).
+		Body(clientgen.VolumeSnapshot{
+			// Name:                helper.ValueToPointer[string](types.StringValue(name)),
+			Name:                &name,
+			Description:         helper.ValueToPointer[string](plan.Description),
+			PerformancePolicyId: helper.ValueToPointer[string](plan.PerformancePolicyID),
+			ExpirationTimestamp: expirationTimestamp,
+			CreatorType:         &creatorTypeEnum,
+			IsSecure:            helper.ValueToPointer[bool](plan.IsSecure),
+		}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume snapshot",
@@ -223,9 +234,10 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 		)
 		return
 	}
+
 	// Get snapshot Details using ID retrieved above
-	snapshotResponse, err1 := r.client.PStoreClient.GetSnapshot(context.Background(), snapCreateResponse.ID)
-	if err1 != nil {
+	snapshotResponse, err := r.ReadAPI(context.Background(), *snapCreateResponse.Id)
+	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume snapshot after creation",
 			"Could not get volume snapshot, unexpected error: "+err.Error(),
@@ -235,7 +247,7 @@ func (r *resourceVolumeSnapshot) Create(ctx context.Context, req resource.Create
 
 	// Update details to state
 	result := models.Snapshot{}
-	r.updateSnapshotState(&plan, &result, snapshotResponse)
+	r.updateSnapshotState(&plan, &result, *snapshotResponse)
 
 	diags = resp.State.Set(ctx, result)
 	resp.Diagnostics.Append(diags...)
@@ -258,15 +270,33 @@ func (r *resourceVolumeSnapshot) Read(ctx context.Context, req resource.ReadRequ
 	snapshotID := state.ID.ValueString()
 
 	// Get snapshot details from API and then update what is in state from what the API returns
-	snapshotResponse, err := r.client.PStoreClient.GetSnapshot(context.Background(), snapshotID)
+	snapshotResponse, err := r.ReadAPI(context.Background(), snapshotID)
 	if err != nil {
+		// Check if it's a 404 error and snapshot has expiration timestamp
+		if strings.Contains(err.Error(), "404") && !state.ExpirationTimestamp.IsNull() {
+			clusterTime, clusterErr := helper.DetermineClusterTime(ctx, r.client)
+			if clusterErr == nil {
+				expTime, _ := state.ExpirationTimestamp.ValueRFC3339Time()
+				// Allow 1 minute buffer for API delays
+				if expTime.Add(time.Minute).Before(clusterTime) {
+					resp.Diagnostics.AddWarning(
+						"Snapshot auto-deleted",
+						fmt.Sprintf("Snapshot %s was automatically deleted after expiration at %s", snapshotID, expTime.Format(time.RFC3339)),
+					)
+					resp.State.RemoveResource(ctx)
+					return
+				}
+			}
+		}
+
+		// Fall through to standard error handling
 		resp.Diagnostics.AddError(
 			"Error reading snapshot",
 			"Could not read snapshotID with error "+snapshotID+": "+err.Error(),
 		)
 		return
 	}
-	r.updateSnapshotState(nil, &state, snapshotResponse)
+	r.updateSnapshotState(nil, &state, *snapshotResponse)
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)
@@ -301,7 +331,9 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 	var errFlag bool
 	// if volume name is present instead of ID
 	if plan.VolumeID.IsUnknown() {
-		volResponse, err := r.client.PStoreClient.GetVolumeByName(context.Background(), plan.VolumeName.ValueString())
+		queries := make(url.Values)
+		queries.Set("name", "eq."+plan.VolumeName.ValueString())
+		volResponse, _, err := r.client.VolumeApi.GetAllVolumes(ctx).Queries(queries).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error updating volume snapshot",
@@ -309,7 +341,14 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 			)
 			return
 		}
-		if volResponse.ID != state.VolumeID.ValueString() {
+		if len(volResponse) == 0 {
+			resp.Diagnostics.AddError(
+				"Error updating volume snapshot",
+				"Volume not found",
+			)
+			return
+		}
+		if *volResponse[0].Id != state.VolumeID.ValueString() {
 			errFlag = true
 		}
 	}
@@ -324,13 +363,26 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	volModify := r.planToServer(plan)
+	var expirationTimestamp *time.Time
+	if !plan.ExpirationTimestamp.IsNull() {
+		expTime, _ := plan.ExpirationTimestamp.ValueRFC3339Time()
+		if !expTime.IsZero() {
+			expirationTimestamp = &expTime
+		}
+	}
 
 	//Get volume snapshot ID from state
 	volumeSnapshotID := state.ID.ValueString()
 
 	//Update volume snapshot by calling API
-	_, err := r.client.PStoreClient.ModifyVolume(context.Background(), volModify, volumeSnapshotID)
+	_, err := r.client.VolumeApi.PatchVolumeById(ctx, volumeSnapshotID).
+		Body(clientgen.VolumeModify{
+			Name:                helper.ValueToPointer[string](plan.Name),
+			Description:         helper.ValueToPointer[string](plan.Description),
+			PerformancePolicyId: helper.ValueToPointer[string](plan.PerformancePolicyID),
+			ExpirationTimestamp: expirationTimestamp,
+			IsSecure:            helper.ValueToPointer[bool](plan.IsSecure),
+		}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating volume snapshot resource",
@@ -340,7 +392,7 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 	}
 
 	//Get Volume Snapshot details
-	getRes, err := r.client.PStoreClient.GetSnapshot(context.Background(), volumeSnapshotID)
+	getRes, err := r.ReadAPI(context.Background(), volumeSnapshotID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting snapshot resource after update",
@@ -349,7 +401,7 @@ func (r *resourceVolumeSnapshot) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	r.updateSnapshotState(&plan, &state, getRes)
+	r.updateSnapshotState(&plan, &state, *getRes)
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -375,7 +427,7 @@ func (r *resourceVolumeSnapshot) Delete(ctx context.Context, req resource.Delete
 	snapshotID := state.ID.ValueString()
 
 	// Delete snapshot by calling API
-	_, err := r.client.PStoreClient.DeleteSnapshot(context.Background(), nil, snapshotID)
+	_, err := r.client.VolumeApi.DeleteVolumeById(ctx, snapshotID).Body(clientgen.VolumeDelete{}).Execute()
 
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -393,38 +445,28 @@ func (r *resourceVolumeSnapshot) ImportState(ctx context.Context, req resource.I
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-// updateSnapshotState - method to update terraform state
-func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot, response gopowerstore.Volume) {
+func (r resourceVolumeSnapshot) ReadAPI(ctx context.Context, id string) (*clientgen.VolumeInstance, error) {
+	sel := "id,name,description,protection_data,performance_policy_id"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	response, _, err := r.client.VolumeApi.GetVolumeById(context.Background(), id).Queries(queries).Execute()
+	return response, err
+}
 
-	expTime := response.ProtectionData.ExpirationTimeStamp
-	state.ID = types.StringValue(response.ID)
-	state.Name = types.StringValue(response.Name)
-	state.Description = types.StringValue(response.Description)
-	// if expiration timestamp is not present then set to null.
-	if expTime == "" {
-		state.ExpirationTimestamp = types.StringValue("")
-	} else {
-		state.ExpirationTimestamp = types.StringValue(expTime[:len(expTime)-6] + "Z")
+// updateSnapshotState - method to update terraform state
+func (r resourceVolumeSnapshot) updateSnapshotState(plan, state *models.Snapshot, response clientgen.VolumeInstance) {
+
+	state.ID = helper.TfString(response.Id)
+	state.Name = helper.TfString(response.Name)
+	state.Description = helper.TfString(response.Description)
+	if response.ProtectionData != nil {
+		state.ExpirationTimestamp = timetypes.NewRFC3339TimePointerValue(response.ProtectionData.ExpirationTimestamp)
+		state.VolumeID = helper.TfString(response.ProtectionData.ParentId)
+		state.IsSecure = helper.TfBool(response.ProtectionData.IsSecure)
 	}
-	state.VolumeID = types.StringValue(response.ProtectionData.ParentID)
-	state.PerformancePolicyID = types.StringValue(response.PerformancePolicyID)
+	state.PerformancePolicyID = helper.TfString(response.PerformancePolicyId)
 	if plan != nil {
 		state.VolumeName = plan.VolumeName
 		state.CreatorType = plan.CreatorType
 	}
-}
-
-func (r resourceVolumeSnapshot) planToServer(plan models.Snapshot) *gopowerstore.VolumeModify {
-	name := plan.Name.ValueString()
-	description := plan.Description.ValueString()
-	performancePolicyID := plan.PerformancePolicyID.ValueString()
-	expirationTimeStamp := plan.ExpirationTimestamp.ValueString()
-
-	volSnapshotUpdate := &gopowerstore.VolumeModify{
-		Description:         description,
-		Name:                name,
-		PerformancePolicyID: performancePolicyID,
-		ExpirationTimestamp: &expirationTimeStamp,
-	}
-	return volSnapshotUpdate
 }
