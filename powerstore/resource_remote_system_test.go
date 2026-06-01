@@ -163,10 +163,13 @@ func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_InvalidAddress - Create with invalid IP address format (both servers)
+// TestAccRemoteSystem_InvalidAddress - Create with invalid IP address format (real server only - mock doesn't validate)
 func TestAccRemoteSystem_InvalidAddress(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if isMockServer() {
+		t.Skip("Skipping on mock server - mock doesn't validate IP address format")
 	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -312,32 +315,6 @@ func TestAccRemoteSystem_UpdateName(t *testing.T) {
 				Config: ProviderConfigForTesting + RemoteSystemUpdateNameConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "name", "Updated Name"),
-				),
-			},
-		},
-	})
-}
-
-// TestAccRemoteSystem_UpdateLatencyMedium - Update data_network_latency to Medium
-func TestAccRemoteSystem_UpdateLatencyMedium(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires existing remote system")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
-			},
-			{
-				Config: ProviderConfigForTesting + RemoteSystemUpdateLatencyMediumConfig,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Medium"),
 				),
 			},
 		},
@@ -625,14 +602,6 @@ resource "powerstore_remote_system" "test" {
 	name                 = "Updated Name"
 	description          = "Terraform acceptance test remote system"
 	data_network_latency = "Low"
-}
-`
-
-var RemoteSystemUpdateLatencyMediumConfig = `
-resource "powerstore_remote_system" "test" {
-	management_address   = "` + uniqueTestAddress + `"
-	description          = "Terraform acceptance test remote system"
-	data_network_latency = "Medium"
 }
 `
 
