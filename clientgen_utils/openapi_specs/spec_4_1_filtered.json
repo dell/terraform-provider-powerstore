@@ -1332,6 +1332,65 @@
 				"operationId": "volume_group_remove_members"
 			}
 		},
+		"/volume_group/{id}/snapshot": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the volume group. name:{name} can be used instead of {id}.",
+					"required": true,
+					"type": "string",
+					"x-ref": "volume_group"
+				}
+			],
+			"post": {
+				"description": "Create a new snapshot set for a volume group.\n\nWhen a snapshot of a volume group is created, the resultant\nsnapshot volume group is referred to as a \"snapshot set\" and it\nrepresents a point-in-time copy of the members in the volume group.\nThe snapshot set will be created on the same appliance as the source\nvolume group.\n\nA snapshot of a volume group will result in a new volume\ngroup of __Snapshot__ type. The snapshot set will belong to the same\nfamily as the source volume group.\n\nWhen the source of a snapshot operation is a primary or clone\nvolume group, \n\n* __source_id__ of the snapshot set will be set to the identifier of the\nsource volume group. \n\n* __source_time__ of the snapshot set will be set to the time at which\nthe snapshot set will be created.\n\n\nThe __is_write_order_consistent__ property of the source volume\ngroup determines whether the snapshot set will be write-order\nconsistent.\n",
+				"summary": "Snapshot",
+				"tags": [
+					"volume_group"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_group_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_group_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_snapshot"
+			}
+		},
 		"/volume_group/{id}/configure_metro": {
 			"post": {
 				"description": "Configure a metro volume group so it exists in two PowerStore clusters.\n\nWas added in version 4.0.0.0.",
@@ -1440,65 +1499,6 @@
 					}
 				},
 				"operationId": "volume_group_end_metro"
-			}
-		},
-		"/volume_group/{id}/snapshot": {
-			"parameters": [
-				{
-					"name": "id",
-					"in": "path",
-					"description": "Unique identifier of the volume group. name:{name} can be used instead of {id}.",
-					"required": true,
-					"type": "string",
-					"x-ref": "volume_group"
-				}
-			],
-			"post": {
-				"description": "Create a new snapshot set for a volume group.\n\nWhen a snapshot of a volume group is created, the resultant\nsnapshot volume group is referred to as a \"snapshot set\" and it\nrepresents a point-in-time copy of the members in the volume group.\nThe snapshot set will be created on the same appliance as the source\nvolume group.\n\nA snapshot of a volume group will result in a new volume\ngroup of __Snapshot__ type. The snapshot set will belong to the same\nfamily as the source volume group.\n\nWhen the source of a snapshot operation is a primary or clone\nvolume group, \n\n* __source_id__ of the snapshot set will be set to the identifier of the\nsource volume group. \n\n* __source_time__ of the snapshot set will be set to the time at which\nthe snapshot set will be created.\n\n\nThe __is_write_order_consistent__ property of the source volume\ngroup determines whether the snapshot set will be write-order\nconsistent.\n",
-				"summary": "Snapshot",
-				"tags": [
-					"volume_group"
-				],
-				"parameters": [
-					{
-						"name": "body",
-						"in": "body",
-						"required": true,
-						"schema": {
-							"$ref": "#/definitions/volume_group_snapshot"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success",
-						"schema": {
-							"$ref": "#/definitions/volume_group_snapshot_response"
-						}
-					},
-					"204": {
-						"description": "Success"
-					},
-					"400": {
-						"description": "Invalid request",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"404": {
-						"description": "Not Found",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"422": {
-						"description": "Operation Failed",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "volume_group_snapshot"
 			}
 		},
 		"/volume": {
@@ -1705,6 +1705,63 @@
 				"operationId": "delete_volume_by_id"
 			}
 		},
+		"/volume/{id}/snapshot": {
+			"post": {
+				"description": "Create a snapshot of a volume or a clone.\nA snapshot is a point-in-time copy of a volume or clone.\n",
+				"summary": "Snapshot",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume or clone that is the source of the snapshot. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": false,
+						"schema": {
+							"$ref": "#/definitions/volume_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_snapshot"
+			}
+		},
 		"/volume/{id}/configure_metro": {
 			"post": {
 				"description": "Configure a metro volume so it exists in two PowerStore clusters.\n\nWas added in version 3.0.0.0.",
@@ -1813,313 +1870,6 @@
 					}
 				},
 				"operationId": "volume_end_metro"
-			}
-		},
-		"/volume/{id}/snapshot": {
-			"post": {
-				"description": "Create a snapshot of a volume or a clone.\nA snapshot is a point-in-time copy of a volume or clone.\n",
-				"summary": "Snapshot",
-				"tags": [
-					"volume"
-				],
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Unique identifier of the volume or clone that is the source of the snapshot. name:{name} can be used instead of {id}.",
-						"in": "path",
-						"type": "string",
-						"required": true,
-						"x-ref": "volume"
-					},
-					{
-						"name": "body",
-						"in": "body",
-						"required": false,
-						"schema": {
-							"$ref": "#/definitions/volume_snapshot"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success",
-						"schema": {
-							"$ref": "#/definitions/volume_snapshot_response"
-						}
-					},
-					"204": {
-						"description": "Success"
-					},
-					"400": {
-						"description": "Invalid request",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"404": {
-						"description": "Not Found",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"422": {
-						"description": "Operation Failed",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "volume_snapshot"
-			}
-		},
-		"/file_system": {
-			"get": {
-				"tags": [
-					"file_system"
-				],
-				"summary": "Collection Query",
-				"description": "Query file systems.",
-				"responses": {
-					"200": {
-						"description": "Success",
-						"schema": {
-							"type": "array",
-							"items": {
-								"$ref": "#/definitions/file_system_instance"
-							}
-						}
-					},
-					"206": {
-						"description": "Partial content of file system instance objects",
-						"schema": {
-							"type": "array",
-							"items": {
-								"$ref": "#/definitions/file_system_instance"
-							}
-						}
-					}
-				},
-				"operationId": "get_all_file_systems",
-				"x-flexible-query": "true"
-			},
-			"post": {
-				"tags": [
-					"file_system"
-				],
-				"summary": "Create",
-				"description": "Create a file system.",
-				"parameters": [
-					{
-						"name": "body",
-						"required": true,
-						"in": "body",
-						"schema": {
-							"$ref": "#/definitions/file_system_create"
-						}
-					}
-				],
-				"responses": {
-					"201": {
-						"description": "Created",
-						"schema": {
-							"$ref": "#/definitions/create_response"
-						}
-					},
-					"400": {
-						"description": "Invalid Request",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"422": {
-						"description": "Operation Failed",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "post_all_file_systems"
-			}
-		},
-		"/file_system/{id}": {
-			"get": {
-				"tags": [
-					"file_system"
-				],
-				"summary": "Instance Query",
-				"description": "Query a specific file system.",
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"type": "string",
-						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
-						"x-ref": "file_system"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success",
-						"schema": {
-							"$ref": "#/definitions/file_system_instance"
-						}
-					},
-					"404": {
-						"description": "Not Found",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "get_file_system_by_id",
-				"x-flexible-query": "true"
-			},
-			"patch": {
-				"tags": [
-					"file_system"
-				],
-				"summary": "Modify",
-				"description": "Modify a file system.",
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"type": "string",
-						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
-						"x-ref": "file_system"
-					},
-					{
-						"name": "body",
-						"in": "body",
-						"required": true,
-						"schema": {
-							"$ref": "#/definitions/file_system_modify"
-						}
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "Success"
-					},
-					"400": {
-						"description": "Invalid Request",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"404": {
-						"description": "Not Found",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"422": {
-						"description": "Operation Failed",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "patch_file_system_by_id"
-			},
-			"delete": {
-				"tags": [
-					"file_system"
-				],
-				"summary": "Delete",
-				"description": "Delete a file system.",
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"type": "string",
-						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
-						"x-ref": "file_system"
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "Success"
-					},
-					"400": {
-						"description": "Invalid request",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"404": {
-						"description": "Not Found",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"422": {
-						"description": "Operation Failed",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "delete_file_system_by_id"
-			}
-		},
-		"/file_system/{id}/snapshot": {
-			"post": {
-				"tags": [
-					"file_system"
-				],
-				"summary": "Snapshot",
-				"description": "Create a snapshot of a file system.",
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"type": "string",
-						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
-						"x-ref": "file_system"
-					},
-					{
-						"name": "body",
-						"in": "body",
-						"schema": {
-							"$ref": "#/definitions/file_system_snapshot"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success",
-						"schema": {
-							"$ref": "#/definitions/file_system_snapshot_response"
-						}
-					},
-					"204": {
-						"description": "Success"
-					},
-					"400": {
-						"description": "Invalid Request",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"404": {
-						"description": "Not Found",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					},
-					"422": {
-						"description": "Operation Failed",
-						"schema": {
-							"$ref": "#/definitions/error_response"
-						}
-					}
-				},
-				"operationId": "file_system_snapshot"
 			}
 		},
 		"/remote_system": {
@@ -2768,6 +2518,256 @@
 					}
 				},
 				"operationId": "replication_session_stop_failover_test"
+			}
+		},
+		"/file_system": {
+			"get": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Collection Query",
+				"description": "Query file systems.",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_system_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of file system instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_system_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_file_systems",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Create",
+				"description": "Create a file system.",
+				"parameters": [
+					{
+						"name": "body",
+						"required": true,
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/file_system_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_file_systems"
+			}
+		},
+		"/file_system/{id}": {
+			"get": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Instance Query",
+				"description": "Query a specific file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_system_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_file_system_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Modify",
+				"description": "Modify a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/file_system_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_file_system_by_id"
+			},
+			"delete": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Delete",
+				"description": "Delete a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_file_system_by_id"
+			}
+		},
+		"/file_system/{id}/snapshot": {
+			"post": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Snapshot",
+				"description": "Create a snapshot of a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/file_system_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_system_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "file_system_snapshot"
 			}
 		},
 		"/recycle_bin": {
@@ -10595,6 +10595,50 @@
 				}
 			}
 		},
+		"volume_snapshot": {
+			"description": "Parameters for the volume snapshot operation.",
+			"properties": {
+				"name": {
+					"description": "Name of the snapshot to be created. This value must contain 128 or\nfewer printable Unicode characters. The default name of the volume\nsnapshot is the date and time when the snapshot is taken.\n",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Description of the snapshot. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the snapshot. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"expiration_timestamp": {
+					"description": "Time at which the snapshot will expire. Expired snapshots are deleted by the\nsnapshot aging service that runs periodically in the background. If\nnot specified, the snapshot never expires.\n\nUse a maximum timestamp value to set an expiration to never expire.\n",
+					"type": "string",
+					"format": "date-time"
+				},
+				"creator_type": {
+					"$ref": "#/definitions/StorageCreatorTypeEnum"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Create a secure snapshot. This parameter requires a valid expiration_timestamp to be set in the request.\nSecure snapshots can only be taken on block volumes.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_snapshot_response": {
+			"description": "Volume snapshot response definition.",
+			"properties": {
+				"id": {
+					"description": "Unique identifier of the new snapshot.",
+					"type": "string"
+				}
+			}
+		},
 		"volume_configure_metro": {
 			"x-added": "3.0.0.0",
 			"description": "Configure metro operation arguments.\nWas added in version 3.0.0.0.",
@@ -10637,50 +10681,6 @@
 					"description": "If the force option is specified, any errors returned while attempting to tear down the remote side of the\nmetro session will be ignored and the remote side may be left in an indeterminate state.\nIf any errors occur on the local side the operation can still fail.\nIt is not recommended to use this option unless the remote side is known to be down.\n",
 					"type": "boolean",
 					"default": false
-				}
-			}
-		},
-		"volume_snapshot": {
-			"description": "Parameters for the volume snapshot operation.",
-			"properties": {
-				"name": {
-					"description": "Name of the snapshot to be created. This value must contain 128 or\nfewer printable Unicode characters. The default name of the volume\nsnapshot is the date and time when the snapshot is taken.\n",
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 128
-				},
-				"description": {
-					"description": "Description of the snapshot. This value must contain 128 or fewer\nprintable Unicode characters.\n",
-					"type": "string",
-					"maxLength": 128
-				},
-				"performance_policy_id": {
-					"description": "Unique identifier of the performance policy assigned to the snapshot. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
-					"type": "string",
-					"x-ref": "policy"
-				},
-				"expiration_timestamp": {
-					"description": "Time at which the snapshot will expire. Expired snapshots are deleted by the\nsnapshot aging service that runs periodically in the background. If\nnot specified, the snapshot never expires.\n\nUse a maximum timestamp value to set an expiration to never expire.\n",
-					"type": "string",
-					"format": "date-time"
-				},
-				"creator_type": {
-					"$ref": "#/definitions/StorageCreatorTypeEnum"
-				},
-				"is_secure": {
-					"type": "boolean",
-					"default": false,
-					"description": "Create a secure snapshot. This parameter requires a valid expiration_timestamp to be set in the request.\nSecure snapshots can only be taken on block volumes.\n\nWas added in version 3.5.0.0.",
-					"x-added": "3.5.0.0"
-				}
-			}
-		},
-		"volume_snapshot_response": {
-			"description": "Volume snapshot response definition.",
-			"properties": {
-				"id": {
-					"description": "Unique identifier of the new snapshot.",
-					"type": "string"
 				}
 			}
 		},
@@ -11127,6 +11127,45 @@
 				}
 			}
 		},
+		"volume_group_snapshot": {
+			"type": "object",
+			"description": "Snapshot volume group request.",
+			"required": [
+				"name"
+			],
+			"properties": {
+				"name": {
+					"description": "Unique name of the snapshot set to be created.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Optional description for the snapshot set.\n\nIf description is not specified, the description for the snapshot set\nwill not be set.\n",
+					"type": "string"
+				},
+				"expiration_timestamp": {
+					"description": "Time after which the snapshot set can be auto-purged. Time\nmust be specified in Zulu time zone. Expiration time cannot be prior\nto current time.\n\nUse a maximum timestamp value to set an expiration to never expire.\n\nValid format is yyyy-MM-dd'T'HH:mm:ssZ or yyyy-MM-dd'T'HH:mm:ss.SSSZ.\n\nBy default, expiration time will not be set.\n\nWas added in version 2.0.0.0.",
+					"type": "string",
+					"format": "date-time",
+					"x-added": "2.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Create a secure snapshot. This parameter requires a valid\nexpiration_timestamp to be set in the request.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_group_snapshot_response": {
+			"description": "Unique identifier of the new snapshot volume.",
+			"properties": {
+				"id": {
+					"type": "string"
+				}
+			}
+		},
 		"volume_group_configure_metro": {
 			"x-added": "4.0.0.0",
 			"description": "Configure metro operation arguments.\nWas added in version 4.0.0.0.",
@@ -11169,45 +11208,6 @@
 					"description": "If the force option is specified, any errors returned while attempting to tear down the remote side of the\nmetro session will be ignored and the remote side may be left in an indeterminate state.\nIf any errors occur on the local side the operation can still fail.\nIt is not recommended to use this option unless the remote side is known to be down.\n",
 					"type": "boolean",
 					"default": false
-				}
-			}
-		},
-		"volume_group_snapshot": {
-			"type": "object",
-			"description": "Snapshot volume group request.",
-			"required": [
-				"name"
-			],
-			"properties": {
-				"name": {
-					"description": "Unique name of the snapshot set to be created.",
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 128
-				},
-				"description": {
-					"description": "Optional description for the snapshot set.\n\nIf description is not specified, the description for the snapshot set\nwill not be set.\n",
-					"type": "string"
-				},
-				"expiration_timestamp": {
-					"description": "Time after which the snapshot set can be auto-purged. Time\nmust be specified in Zulu time zone. Expiration time cannot be prior\nto current time.\n\nUse a maximum timestamp value to set an expiration to never expire.\n\nValid format is yyyy-MM-dd'T'HH:mm:ssZ or yyyy-MM-dd'T'HH:mm:ss.SSSZ.\n\nBy default, expiration time will not be set.\n\nWas added in version 2.0.0.0.",
-					"type": "string",
-					"format": "date-time",
-					"x-added": "2.0.0.0"
-				},
-				"is_secure": {
-					"type": "boolean",
-					"default": false,
-					"description": "Create a secure snapshot. This parameter requires a valid\nexpiration_timestamp to be set in the request.\n\nWas added in version 3.5.0.0.",
-					"x-added": "3.5.0.0"
-				}
-			}
-		},
-		"volume_group_snapshot_response": {
-			"description": "Unique identifier of the new snapshot volume.",
-			"properties": {
-				"id": {
-					"type": "string"
 				}
 			}
 		},
