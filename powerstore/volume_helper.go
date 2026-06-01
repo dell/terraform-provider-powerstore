@@ -49,12 +49,12 @@ func updateVolState(volState *models.Volume, volResponse *clientgen.VolumeInstan
 	}
 	volState.Type = helper.TfString(volResponse.Type)
 	volState.WWN = helper.TfString(volResponse.Wwn)
-	volState.Description = helper.TfString(volResponse.Description)
+	volState.Description = helper.TfStringNN(volResponse.Description)
 	volState.State = helper.TfString(volResponse.State)
-	volState.ApplianceID = helper.TfString(volResponse.ApplianceId)
+	volState.ApplianceID = helper.TfStringNN(volResponse.ApplianceId)
 	volState.CreationTimeStamp = helper.TfStringFromPTime(volResponse.CreationTimestamp)
-	volState.ProtectionPolicyID = helper.TfString(volResponse.ProtectionPolicyId)
-	volState.PerformancePolicyID = helper.TfString(volResponse.PerformancePolicyId)
+	volState.ProtectionPolicyID = helper.TfStringNN(volResponse.ProtectionPolicyId)
+	volState.PerformancePolicyID = helper.TfStringNN(volResponse.PerformancePolicyId)
 	volState.QosPerformancePolicyID = helper.TfStringNN(volResponse.QosPerformancePolicyId)
 
 	if len(volResponse.VolumeGroups) > 0 {
@@ -87,7 +87,7 @@ func updateVolState(volState *models.Volume, volResponse *clientgen.VolumeInstan
 	}
 
 	volState.AppType = helper.TfString(volResponse.AppType)
-	volState.AppTypeOther = helper.TfString(volResponse.AppTypeOther)
+	volState.AppTypeOther = helper.TfStringNN(volResponse.AppTypeOther)
 	volState.IsReplicationDestination = helper.TfBool(volResponse.IsReplicationDestination)
 	volState.NodeAffinity = helper.TfString(volResponse.NodeAffinity)
 	volState.LogicalUsed = helper.TfInt64(volResponse.LogicalUsed)

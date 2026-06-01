@@ -745,7 +745,7 @@ func updateFsState(fsState *models.FileSystem, fsResponse *clientgen.FileSystemI
 	// Update value from file system Response to State
 	fsState.ID = helper.TfString(fsResponse.Id)
 	fsState.Name = helper.TfString(fsResponse.Name)
-	fsState.Description = helper.TfString(fsResponse.Description)
+	fsState.Description = helper.TfStringNN(fsResponse.Description)
 	fsState.NASServerID = helper.TfString(fsResponse.NasServerId)
 	if fsResponse.SizeTotal != nil {
 		size, unit := convertFromBytesForFileSystem(*fsResponse.SizeTotal)
@@ -757,7 +757,7 @@ func updateFsState(fsState *models.FileSystem, fsResponse *clientgen.FileSystemI
 	fsState.LockingPolicy = helper.TfString(fsResponse.LockingPolicy)
 	fsState.FolderRenamePolicy = helper.TfString(fsResponse.FolderRenamePolicy)
 	fsState.IsAsyncMTimeEnabled = helper.TfBool(fsResponse.IsAsyncMTimeEnabled)
-	fsState.ProtectionPolicyID = helper.TfString(fsResponse.ProtectionPolicyId)
+	fsState.ProtectionPolicyID = helper.TfStringNN(fsResponse.ProtectionPolicyId)
 	fsState.PerformancePolicyID = helper.TfStringNN(fsResponse.PerformancePolicyId)
 	fsState.FileEventsPublishingMode = helper.TfString(fsResponse.FileEventsPublishingMode)
 	fsState.HostIOSize = helper.TfString(fsResponse.HostIoSize)
