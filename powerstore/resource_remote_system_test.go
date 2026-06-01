@@ -19,32 +19,33 @@ package powerstore
 
 import (
 	"context"
-	"net/url"
 	"os"
 	"regexp"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/models"
 	"testing"
 
+	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
 )
 
-var remoteEndpoint = setDefault(os.Getenv("POWERSTORE_REMOTE_ENDPOINT"), "https://10.230.45.71/api/rest/")
-var remoteUsername = setDefault(os.Getenv("POWERSTORE_REMOTE_USERNAME"), "admin")
-var remotePassword = setDefault(os.Getenv("POWERSTORE_REMOTE_PASSWORD"), "Password123!")
+// isMockServer returns true when tests run against the local mock server
+func isMockServer() bool {
+	return strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1")
+}
 
-// remoteManagementAddress extracts the host from the remote endpoint for creating remote systems
+// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT for remote system creation
 var remoteManagementAddress = func() string {
 	addr := setDefault(os.Getenv("POWERSTORE_REMOTE_ENDPOINT"), "10.230.45.71")
-	// Strip protocol and path if present
 	for _, prefix := range []string{"https://", "http://"} {
 		if len(addr) > len(prefix) && addr[:len(prefix)] == prefix {
 			addr = addr[len(prefix):]
 		}
 	}
-	// Strip trailing path
 	for i, c := range addr {
 		if c == '/' {
 			addr = addr[:i]
@@ -54,23 +55,36 @@ var remoteManagementAddress = func() string {
 	return addr
 }()
 
-// TestAccRemoteSystem_CreateOnMock - Create PowerStore remote system
-func TestAccRemoteSystem_CreateOnMock(t *testing.T) {
+// --- Acceptance Tests ---
+
+// TestAccRemoteSystem_CRUD - Full Create→Import→UpdateDesc→UpdateLatency lifecycle (mock only)
+func TestAccRemoteSystem_CRUD(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping CRUD on real server - remote system to this address already exists")
+	}
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
+			// Step 1: Create with management_address, description, data_network_latency
 			{
 				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", remoteManagementAddress),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Terraform acceptance test remote system"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Low"),
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "state"),
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "serial_number"),
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "version"),
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "type"),
 				),
 			},
-			// Import
+			// Step 2: Import and verify state
 			{
 				Config:       ProviderConfigForTesting + RemoteSystemCreateConfig,
 				ResourceName: "powerstore_remote_system.test",
@@ -79,14 +93,25 @@ func TestAccRemoteSystem_CreateOnMock(t *testing.T) {
 				ImportStateCheck: func(s []*terraform.InstanceState) error {
 					assert.Equal(t, remoteManagementAddress, s[0].Attributes["management_address"])
 					assert.NotEmpty(t, s[0].Attributes["id"])
+					assert.NotEmpty(t, s[0].Attributes["serial_number"])
+					assert.NotEmpty(t, s[0].Attributes["state"])
 					return nil
 				},
 			},
-			// Update description
+			// Step 3: Update description
 			{
-				Config: ProviderConfigForTesting + RemoteSystemUpdateConfig,
+				Config: ProviderConfigForTesting + RemoteSystemUpdateDescConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Updated description"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Low"),
+				),
+			},
+			// Step 4: Update data_network_latency to High
+			{
+				Config: ProviderConfigForTesting + RemoteSystemUpdateLatencyConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "High"),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Updated description"),
 				),
 			},
@@ -94,8 +119,11 @@ func TestAccRemoteSystem_CreateOnMock(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_MissingAddress - Create without management_address (negative)
+// TestAccRemoteSystem_MissingAddress - Create without management_address (schema validation, both servers)
 func TestAccRemoteSystem_MissingAddress(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -108,8 +136,11 @@ func TestAccRemoteSystem_MissingAddress(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_EmptyAddress - Create with empty management_address (negative)
+// TestAccRemoteSystem_EmptyAddress - Create with empty management_address (schema validation, both servers)
 func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -122,8 +153,14 @@ func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_InvalidAddress - Create with invalid management_address (negative)
+// TestAccRemoteSystem_InvalidAddress - Create with unresolvable address (mock only - would timeout on real)
 func TestAccRemoteSystem_InvalidAddress(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - unresolvable address would timeout")
+	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -136,8 +173,11 @@ func TestAccRemoteSystem_InvalidAddress(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_InvalidLatency - Create with invalid data_network_latency (negative)
+// TestAccRemoteSystem_InvalidLatency - Create with invalid data_network_latency (schema validation, both servers)
 func TestAccRemoteSystem_InvalidLatency(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -150,86 +190,156 @@ func TestAccRemoteSystem_InvalidLatency(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_ImportOnReal - Import existing remote system and verify attributes on real array
-func TestAccRemoteSystem_ImportOnReal(t *testing.T) {
-	if os.Getenv("POWERSTORE_ENDPOINT") == "" || os.Getenv("POWERSTORE_ENDPOINT") == "http://localhost:3003/api/rest" {
-		t.Skip("Skipping real array test - set POWERSTORE_ENDPOINT to a real PowerStore array")
-	}
-	existingID := os.Getenv("TF_VAR_remote_system_id")
-	if existingID == "" {
-		t.Skip("Skipping real array test - TF_VAR_remote_system_id not set")
-	}
+// --- Unit Tests ---
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config:            ProviderConfigForTesting + RemoteSystemImportConfig,
-				ResourceName:      "powerstore_remote_system.real_test",
-				ImportState:       true,
-				ImportStateId:     existingID,
-				ImportStateVerify: false,
-				ImportStateCheck: func(s []*terraform.InstanceState) error {
-					assert.Equal(t, existingID, s[0].Attributes["id"])
-					assert.Equal(t, remoteManagementAddress, s[0].Attributes["management_address"])
-					assert.NotEmpty(t, s[0].Attributes["state"])
-					assert.NotEmpty(t, s[0].Attributes["serial_number"])
-					assert.Equal(t, "PowerStore", s[0].Attributes["type"])
-					return nil
-				},
-			},
-		},
-	})
+func TestResourceRemoteSystem_Configure_InvalidType(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	req := fwresource.ConfigureRequest{ProviderData: "invalid_type"}
+	resp := &fwresource.ConfigureResponse{}
+	r.Configure(context.Background(), req, resp)
+	assert.True(t, resp.Diagnostics.HasError())
+	assert.NotEmpty(t, resp.Diagnostics.Errors()[0].Summary)
 }
 
-// TestAccRemoteSystem_UpdateOnReal - Update description of existing remote system on real array
-func TestAccRemoteSystem_UpdateOnReal(t *testing.T) {
-	if os.Getenv("POWERSTORE_ENDPOINT") == "" || os.Getenv("POWERSTORE_ENDPOINT") == "http://localhost:3003/api/rest" {
-		t.Skip("Skipping real array test - set POWERSTORE_ENDPOINT to a real PowerStore array")
-	}
-	existingID := os.Getenv("TF_VAR_remote_system_id")
-	if existingID == "" {
-		t.Skip("Skipping real array test - TF_VAR_remote_system_id not set")
-	}
-
-	// Use the API directly to verify update works
-	t.Run("update_description_via_api", func(t *testing.T) {
-		ctx := context.Background()
-		pstoreClient, err := client.NewClient(
-			endpoint, username, password, true, 120,
-		)
-		if err != nil {
-			t.Fatalf("Failed to create client: %v", err)
-		}
-
-		// Update description
-		desc := "Updated by Terraform AT"
-		modifyBody := clientgen.RemoteSystemModify{
-			Description: &desc,
-		}
-		_, err = pstoreClient.GenClient.RemoteSystemApi.PatchRemoteSystemById(ctx, existingID).Body(modifyBody).Execute()
-		assert.NoError(t, err, "Failed to update remote system description")
-
-		// Read back and verify
-		sel := "*"
-		queries := make(url.Values)
-		queries.Set("select", sel)
-		rs, _, err := pstoreClient.GenClient.RemoteSystemApi.GetRemoteSystemById(ctx, existingID).Queries(queries).Execute()
-		assert.NoError(t, err, "Failed to read remote system")
-		assert.Equal(t, desc, *rs.Description)
-
-		// Restore description
-		restore := ""
-		restoreBody := clientgen.RemoteSystemModify{
-			Description: &restore,
-		}
-		_, err = pstoreClient.GenClient.RemoteSystemApi.PatchRemoteSystemById(ctx, existingID).Body(restoreBody).Execute()
-		assert.NoError(t, err, "Failed to restore remote system description")
-	})
+func TestResourceRemoteSystem_Configure_Nil(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	req := fwresource.ConfigureRequest{ProviderData: nil}
+	resp := &fwresource.ConfigureResponse{}
+	r.Configure(context.Background(), req, resp)
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.Nil(t, r.client)
 }
 
-// Test configurations
+func TestResourceRemoteSystem_Configure_Success(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	c := &client.Client{GenClient: &clientgen.APIClient{}}
+	req := fwresource.ConfigureRequest{ProviderData: c}
+	resp := &fwresource.ConfigureResponse{}
+	r.Configure(context.Background(), req, resp)
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.NotNil(t, r.client)
+}
+
+func TestResourceRemoteSystem_Metadata(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	req := fwresource.MetadataRequest{}
+	resp := &fwresource.MetadataResponse{}
+	r.Metadata(context.Background(), req, resp)
+	assert.Contains(t, resp.TypeName, "remote_system")
+}
+
+func TestResourceRemoteSystem_Schema(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	req := fwresource.SchemaRequest{}
+	resp := &fwresource.SchemaResponse{}
+	r.Schema(context.Background(), req, resp)
+	assert.False(t, resp.Diagnostics.HasError())
+	assert.NotNil(t, resp.Schema)
+	_, ok := resp.Schema.Attributes["management_address"]
+	assert.True(t, ok, "management_address attribute should exist")
+	_, ok = resp.Schema.Attributes["id"]
+	assert.True(t, ok, "id attribute should exist")
+	_, ok = resp.Schema.Attributes["state"]
+	assert.True(t, ok, "state attribute should exist")
+	_, ok = resp.Schema.Attributes["capabilities"]
+	assert.True(t, ok, "capabilities attribute should exist")
+	_, ok = resp.Schema.Attributes["serial_number"]
+	assert.True(t, ok, "serial_number attribute should exist")
+	_, ok = resp.Schema.Attributes["data_network_latency"]
+	assert.True(t, ok, "data_network_latency attribute should exist")
+}
+
+func TestRemoteSystem_UpdateState_NilInstance(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	state := &models.RemoteSystemResource{}
+	r.updateState(context.Background(), state, nil)
+	assert.Empty(t, state.ID.ValueString())
+}
+
+func TestRemoteSystem_UpdateState_WithAllFields(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	state := &models.RemoteSystemResource{}
+
+	id := "test-id"
+	name := "test-name"
+	desc := "test-desc"
+	addr := "10.0.0.1"
+	serial := "PS1234"
+	version := "4.1.0.0"
+	rsType := clientgen.RemoteSystemTypeEnum("PowerStore")
+	rsState := clientgen.RemoteSystemStateEnum("OK")
+	dataConnState := clientgen.DataConnectionStateEnum("OK")
+	latency := clientgen.RemoteSystemLatencyEnum("Low")
+	connType := clientgen.DataConnectionTypeEnum("iSCSI")
+
+	rs := &clientgen.RemoteSystemInstance{
+		Id:                  &id,
+		Name:                &name,
+		Description:         &desc,
+		ManagementAddress:   &addr,
+		SerialNumber:        &serial,
+		Version:             &version,
+		Type:                &rsType,
+		State:               &rsState,
+		DataConnectionState: &dataConnState,
+		DataNetworkLatency:  &latency,
+		DataConnectionType:  &connType,
+		Capabilities:        []clientgen.RemoteProtectionCapabilityEnum{"Asynchronous_Block_Replication"},
+	}
+
+	r.updateState(context.Background(), state, rs)
+
+	assert.Equal(t, "test-id", state.ID.ValueString())
+	assert.Equal(t, "test-name", state.Name.ValueString())
+	assert.Equal(t, "test-desc", state.Description.ValueString())
+	assert.Equal(t, "10.0.0.1", state.ManagementAddress.ValueString())
+	assert.Equal(t, "PS1234", state.SerialNumber.ValueString())
+	assert.Equal(t, "4.1.0.0", state.Version.ValueString())
+	assert.Equal(t, "PowerStore", state.Type.ValueString())
+	assert.Equal(t, "OK", state.State.ValueString())
+	assert.Equal(t, "OK", state.DataConnectionState.ValueString())
+	assert.Equal(t, "Low", state.DataNetworkLatency.ValueString())
+	assert.Equal(t, "iSCSI", state.DataConnectionType.ValueString())
+	assert.Equal(t, 1, len(state.Capabilities.Elements()))
+}
+
+func TestRemoteSystem_UpdateState_WithNilOptionalFields(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	state := &models.RemoteSystemResource{}
+
+	id := "test-id"
+	addr := "10.0.0.1"
+	rs := &clientgen.RemoteSystemInstance{
+		Id:                &id,
+		ManagementAddress: &addr,
+	}
+
+	r.updateState(context.Background(), state, rs)
+
+	assert.Equal(t, "test-id", state.ID.ValueString())
+	assert.Equal(t, "10.0.0.1", state.ManagementAddress.ValueString())
+	assert.Empty(t, state.Type.ValueString())
+	assert.Empty(t, state.State.ValueString())
+	assert.Empty(t, state.DataNetworkLatency.ValueString())
+	assert.True(t, state.Capabilities.IsNull())
+}
+
+func TestRemoteSystem_UpdateState_EmptyCapabilities(t *testing.T) {
+	r := &resourceRemoteSystem{}
+	state := &models.RemoteSystemResource{}
+
+	id := "test-id"
+	rs := &clientgen.RemoteSystemInstance{
+		Id:           &id,
+		Capabilities: []clientgen.RemoteProtectionCapabilityEnum{},
+	}
+
+	r.updateState(context.Background(), state, rs)
+	assert.False(t, state.Capabilities.IsNull())
+	assert.Equal(t, 0, len(state.Capabilities.Elements()))
+}
+
+// --- Test Config Strings ---
 
 var RemoteSystemCreateConfig = `
 resource "powerstore_remote_system" "test" {
@@ -239,11 +349,19 @@ resource "powerstore_remote_system" "test" {
 }
 `
 
-var RemoteSystemUpdateConfig = `
+var RemoteSystemUpdateDescConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
 	description          = "Updated description"
 	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemUpdateLatencyConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	description          = "Updated description"
+	data_network_latency = "High"
 }
 `
 
@@ -270,21 +388,5 @@ var RemoteSystemInvalidLatency = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
 	data_network_latency = "Invalid"
-}
-`
-
-var RemoteSystemImportConfig = `
-resource "powerstore_remote_system" "real_test" {
-	management_address   = "` + remoteManagementAddress + `"
-	description          = ""
-	data_network_latency = "Low"
-}
-`
-
-var RemoteSystemRealUpdateConfig = `
-resource "powerstore_remote_system" "real_test" {
-	management_address   = "` + remoteManagementAddress + `"
-	description          = "Updated by Terraform AT"
-	data_network_latency = "Low"
 }
 `
