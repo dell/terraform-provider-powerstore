@@ -63,7 +63,7 @@ func TestAccRemoteSystem_CRUD(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping CRUD on real server - remote system to 10.230.45.71 already exists on 10.230.24.184. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
+		t.Skip("Skipping CRUD on real server - remote system to 10.230.45.71 already exists on 10.230.24.184 with active replication sessions. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -125,7 +125,7 @@ func TestAccRemoteSystem_UpdateName(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -152,7 +152,7 @@ func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
+		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -177,7 +177,7 @@ func TestAccRemoteSystem_UpdateCredentials(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
+		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
 	}
 
 	resource.Test(t, resource.TestCase{
