@@ -21,6 +21,7 @@ import (
 	"context"
 	"os"
 	"regexp"
+	"strings"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
@@ -31,6 +32,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
 )
+
+// isMockServer returns true when tests run against the local mock server
+func isMockServer() bool {
+	return strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1")
+}
 
 // remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT or uses the default
 var remoteManagementAddress = func() string {
@@ -55,6 +61,9 @@ var remoteManagementAddress = func() string {
 func TestAccRemoteSystem_CRUD(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping CRUD on real server - remote system to 10.230.45.71 already exists on 10.230.24.184. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -115,6 +124,9 @@ func TestAccRemoteSystem_UpdateName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
+	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -139,6 +151,9 @@ func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
+	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -160,6 +175,9 @@ func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
 func TestAccRemoteSystem_UpdateCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to an unregistered address.")
 	}
 
 	resource.Test(t, resource.TestCase{
