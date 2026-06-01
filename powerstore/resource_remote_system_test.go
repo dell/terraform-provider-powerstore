@@ -52,8 +52,8 @@ var remoteManagementAddress = func() string {
 
 // --- Acceptance Tests ---
 
-// TestAccRemoteSystem_CRUD covers Create, Read, Update (description + latency), ImportState, and Delete.
-func TestAccRemoteSystem_CRUD(t *testing.T) {
+// TestAccRemoteSystemResource_CRUD covers Create, Read, Update (description + latency), ImportState, and Delete.
+func TestAccRemoteSystemResource_CRUD(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -114,8 +114,8 @@ func TestAccRemoteSystem_CRUD(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_UpdateName covers the name field update path in Update.
-func TestAccRemoteSystem_UpdateName(t *testing.T) {
+// TestAccRemoteSystemResource_UpdateName covers the name field update path in Update.
+func TestAccRemoteSystemResource_UpdateName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -141,8 +141,8 @@ func TestAccRemoteSystem_UpdateName(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_CreateWithCredentials covers remote_username and remote_password in Create.
-func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
+// TestAccRemoteSystemResource_CreateWithCredentials covers remote_username and remote_password in Create.
+func TestAccRemoteSystemResource_CreateWithCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -166,8 +166,8 @@ func TestAccRemoteSystem_CreateWithCredentials(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_UpdateCredentials covers remote_username and remote_password in Update.
-func TestAccRemoteSystem_UpdateCredentials(t *testing.T) {
+// TestAccRemoteSystemResource_UpdateCredentials covers remote_username and remote_password in Update.
+func TestAccRemoteSystemResource_UpdateCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -192,8 +192,8 @@ func TestAccRemoteSystem_UpdateCredentials(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_MissingAddress validates that management_address is required.
-func TestAccRemoteSystem_MissingAddress(t *testing.T) {
+// TestAccRemoteSystemResource_MissingAddress validates that management_address is required.
+func TestAccRemoteSystemResource_MissingAddress(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -209,8 +209,8 @@ func TestAccRemoteSystem_MissingAddress(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_EmptyAddress validates that management_address cannot be empty.
-func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
+// TestAccRemoteSystemResource_EmptyAddress validates that management_address cannot be empty.
+func TestAccRemoteSystemResource_EmptyAddress(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
@@ -226,8 +226,8 @@ func TestAccRemoteSystem_EmptyAddress(t *testing.T) {
 	})
 }
 
-// TestAccRemoteSystem_InvalidLatency validates that invalid latency values are rejected.
-func TestAccRemoteSystem_InvalidLatency(t *testing.T) {
+// TestAccRemoteSystemResource_InvalidLatency validates that invalid latency values are rejected.
+func TestAccRemoteSystemResource_InvalidLatency(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
