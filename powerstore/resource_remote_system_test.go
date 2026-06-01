@@ -243,6 +243,126 @@ func TestAccRemoteSystemResource_InvalidLatency(t *testing.T) {
 	})
 }
 
+// TestAccRemoteSystemResource_CreateWithType covers Type field in Create.
+func TestAccRemoteSystemResource_CreateWithType(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateWithTypeConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "type", "PowerStore"),
+				),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_UpdateType covers Type field update path in Update.
+func TestAccRemoteSystemResource_UpdateType(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateWithTypeConfig,
+			},
+			{
+				Config: ProviderConfigForTesting + RemoteSystemUpdateTypeConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "type", "NonPowerStore"),
+				),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_UpdateAddress covers management_address update path in Update.
+func TestAccRemoteSystemResource_UpdateAddress(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
+			},
+			{
+				Config: ProviderConfigForTesting + RemoteSystemUpdateAddressConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", "10.230.24.10"),
+				),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_CreateWithDataConnectionType covers DataConnectionType field in Create.
+func TestAccRemoteSystemResource_CreateWithDataConnectionType(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateWithDataConnectionTypeConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_connection_type", "iSCSI"),
+				),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_CreateWithIscsiAddresses covers IscsiAddresses field in Create.
+func TestAccRemoteSystemResource_CreateWithIscsiAddresses(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateWithIscsiAddressesConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "iscsi_addresses.0", "192.168.1.1"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "iscsi_addresses.1", "192.168.1.2"),
+				),
+			},
+		},
+	})
+}
+
 // --- Test Config Strings ---
 
 var RemoteSystemCreateConfig = `
@@ -311,6 +431,46 @@ resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
 	remote_username      = "newuser"
 	remote_password      = "NewPassword123!"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemCreateWithTypeConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	type                 = "PowerStore"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemUpdateTypeConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	type                 = "NonPowerStore"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemUpdateAddressConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "10.230.24.10"
+	description          = "Terraform acceptance test remote system"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemCreateWithDataConnectionTypeConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address    = "` + remoteManagementAddress + `"
+	data_connection_type = "iSCSI"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemCreateWithIscsiAddressesConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	iscsi_addresses      = ["192.168.1.1", "192.168.1.2"]
 	data_network_latency = "Low"
 }
 `
