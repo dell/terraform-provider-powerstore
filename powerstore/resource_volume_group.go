@@ -522,7 +522,7 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	volgroupState.QosPerformancePolicyID = helper.TfString(helper.SetDefault(volGroupResponse.QosPerformancePolicyId, ""))
 
 	//Update VolumeIDs value from Response to State, or preserve planned values
-	if preserveVolumeIDs {
+	if preserveVolumeIDs && !volGroupPlan.VolumeIDs.IsUnknown() {
 		volgroupState.VolumeIDs = volGroupPlan.VolumeIDs
 	} else {
 		volgroupState.VolumeIDs, _ = types.SetValue(
@@ -534,12 +534,16 @@ func (r resourceVolumeGroup) updateVolGroupState(volgroupState *models.Volumegro
 	}
 
 	//Update VolumeNames value from Plan to State
-	volgroupState.VolumeNames, _ = types.SetValue(
-		types.StringType,
-		helper.SliceTransform(volGroupPlan.VolumeNames.Elements(), func(in attr.Value) attr.Value {
-			return types.StringValue(strings.Trim(in.String(), "\""))
-		}),
-	)
+	if volGroupPlan.VolumeNames.IsUnknown() {
+		volgroupState.VolumeNames, _ = types.SetValue(types.StringType, []attr.Value{})
+	} else {
+		volgroupState.VolumeNames, _ = types.SetValue(
+			types.StringType,
+			helper.SliceTransform(volGroupPlan.VolumeNames.Elements(), func(in attr.Value) attr.Value {
+				return types.StringValue(strings.Trim(in.String(), "\""))
+			}),
+		)
+	}
 
 	//Update ProtectionPolicyName value from Plan to State
 	volgroupState.ProtectionPolicyName = volGroupPlan.ProtectionPolicyName
