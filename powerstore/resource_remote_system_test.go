@@ -29,10 +29,13 @@ import (
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
 
+	"github.com/bytedance/mockey"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/stretchr/testify/assert"
 )
+
+var rsYesMocker, rsNoMocker *mockey.Mocker
 
 // isMockServer returns true when tests run against the local mock server
 func isMockServer() bool {
@@ -484,6 +487,152 @@ func TestAccRemoteSystemResource_CreateWithDescription(t *testing.T) {
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Description only test"),
 				),
+			},
+		},
+	})
+}
+
+// --- Unit Tests for Error Paths (Mock Server Only) ---
+
+// TestAccRemoteSystemResource_CreateError tests create API error handling.
+func TestAccRemoteSystemResource_CreateError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - this test requires mocked API responses")
+	}
+
+	defer func() {
+		if rsYesMocker != nil {
+			rsYesMocker.UnPatch()
+		}
+		if rsNoMocker != nil {
+			rsNoMocker.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Test create error - mock PostAllRemoteSystems to return error
+			{
+				PreConfig: func() {
+					rsNoMocker = mockey.Mock((*clientgen.RemoteSystemApiService).PostAllRemoteSystemsExecute).Return(nil, nil, fmt.Errorf("mock create error")).Build()
+				},
+				Config:      ProviderConfigForTesting + RemoteSystemCreateConfig,
+				ExpectError: regexp.MustCompile(`.*Could not create remote system.*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_ReadAfterCreateError tests read error after create.
+func TestAccRemoteSystemResource_ReadAfterCreateError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - this test requires mocked API responses")
+	}
+
+	defer func() {
+		if rsYesMocker != nil {
+			rsYesMocker.UnPatch()
+		}
+		if rsNoMocker != nil {
+			rsNoMocker.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Test read error after create - mock create to succeed but read to fail
+			{
+				PreConfig: func() {
+					testID := "test-remote-system-id"
+					rsYesMocker = mockey.Mock((*clientgen.RemoteSystemApiService).PostAllRemoteSystemsExecute).Return(&clientgen.CreateResponse{Id: &testID}, nil, nil).Build()
+					rsNoMocker = mockey.Mock((*clientgen.RemoteSystemApiService).GetRemoteSystemByIdExecute).Return(nil, nil, fmt.Errorf("mock read error")).Build()
+				},
+				Config:      ProviderConfigForTesting + RemoteSystemCreateConfig,
+				ExpectError: regexp.MustCompile(`.*Could not read remote system.*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_UpdateError tests update API error handling.
+func TestAccRemoteSystemResource_UpdateError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - this test requires mocked API responses")
+	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
+
+	defer func() {
+		if rsYesMocker != nil {
+			rsYesMocker.UnPatch()
+		}
+		if rsNoMocker != nil {
+			rsNoMocker.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Create first
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
+			},
+			// Test update error
+			{
+				PreConfig: func() {
+					rsNoMocker = mockey.Mock((*clientgen.RemoteSystemApiService).PatchRemoteSystemByIdExecute).Return(nil, fmt.Errorf("mock update error")).Build()
+				},
+				Config:      ProviderConfigForTesting + RemoteSystemUpdateDescConfig,
+				ExpectError: regexp.MustCompile(`.*Could not update remote system.*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_CertificateExchangeError tests certificate exchange error handling.
+func TestAccRemoteSystemResource_CertificateExchangeError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - this test requires mocked API responses")
+	}
+
+	defer func() {
+		if rsYesMocker != nil {
+			rsYesMocker.UnPatch()
+		}
+		if rsNoMocker != nil {
+			rsNoMocker.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Test certificate exchange error
+			{
+				PreConfig: func() {
+					rsNoMocker = mockey.Mock((*clientgen.X509CertificateApiService).PostX509CertificateByIdExecute).Return(nil, fmt.Errorf("mock certificate exchange error")).Build()
+				},
+				Config:      ProviderConfigForTesting + RemoteSystemCreateConfig,
+				ExpectError: regexp.MustCompile(`.*Could not exchange certificates.*`),
 			},
 		},
 	})
