@@ -215,13 +215,13 @@ func TestAccRemoteSystemResource_CRUD(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_UpdateName covers the name field update path in Update.
-// Note: PowerStore API requires description or management_address to be modified - name-only update not supported.
+// Note: PowerStore-to-PowerStore remote systems auto-generate name from remote system - custom name not supported.
 func TestAccRemoteSystemResource_UpdateName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - API requires description or management_address for update, name-only not supported")
+		t.Skip("Skipping on real server - PowerStore remote systems auto-generate name, custom name not supported")
 	}
 	deleteExistingRemoteSystem(t)
 	t.Cleanup(func() { restoreRemoteSystem(t) })
@@ -269,13 +269,9 @@ func TestAccRemoteSystemResource_CreateWithCredentials(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_UpdateCredentials covers remote_username and remote_password in Update.
-// Note: PowerStore API requires description or management_address to be modified - credentials-only update not supported.
 func TestAccRemoteSystemResource_UpdateCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - API requires description or management_address for update")
 	}
 	deleteExistingRemoteSystem(t)
 	t.Cleanup(func() { restoreRemoteSystem(t) })
@@ -538,7 +534,7 @@ resource "powerstore_remote_system" "test" {
 	exchange_username    = "` + remoteExchangeUsername + `"
 	exchange_password    = "` + remoteExchangePassword + `"
 	name                 = "Updated Name"
-	description          = "Terraform acceptance test remote system"
+	description          = "Updated with name change"
 	data_network_latency = "Low"
 }
 `
@@ -580,6 +576,7 @@ resource "powerstore_remote_system" "test" {
 	exchange_password    = "` + remoteExchangePassword + `"
 	remote_username      = "newuser"
 	remote_password      = "NewPassword123!"
+	description          = "Updated with credentials change"
 	data_network_latency = "Low"
 }
 `
