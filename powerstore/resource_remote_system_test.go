@@ -441,6 +441,54 @@ func TestAccRemoteSystemResource_NoChangeUpdate(t *testing.T) {
 	})
 }
 
+// TestAccRemoteSystemResource_CreateWithAllFields covers creating with all optional fields.
+func TestAccRemoteSystemResource_CreateWithAllFields(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateWithAllFieldsConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Test with all fields"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "High"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "type", "PowerStore"),
+				),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_CreateWithDescription covers creating with just description.
+func TestAccRemoteSystemResource_CreateWithDescription(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config: ProviderConfigForTesting + RemoteSystemCreateWithDescriptionConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.test", "description", "Description only test"),
+				),
+			},
+		},
+	})
+}
+
 // --- Test Config Strings ---
 
 var RemoteSystemCreateConfig = `
@@ -522,5 +570,46 @@ resource "powerstore_remote_system" "test" {
 	exchange_password    = "` + remoteExchangePassword + `"
 	type                 = "PowerStore"
 	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemCreateWithAllFieldsConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
+	description          = "Test with all fields"
+	type                 = "PowerStore"
+	data_network_latency = "High"
+}
+`
+
+var RemoteSystemInvalidCredentialsConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
+	remote_username      = ""
+	remote_password      = "Password123!"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemInvalidDataConnectionTypeConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
+	data_connection_type = "Invalid"
+	data_network_latency = "Low"
+}
+`
+
+var RemoteSystemCreateWithDescriptionConfig = `
+resource "powerstore_remote_system" "test" {
+	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
+	description          = "Description only test"
 }
 `
