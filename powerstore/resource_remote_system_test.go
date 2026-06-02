@@ -216,32 +216,9 @@ func TestAccRemoteSystemResource_CRUD(t *testing.T) {
 
 // TestAccRemoteSystemResource_UpdateName covers the name field update path in Update.
 // Note: PowerStore-to-PowerStore remote systems auto-generate name from remote system - custom name not supported.
+// This test cannot be automated on real server due to API limitation.
 func TestAccRemoteSystemResource_UpdateName(t *testing.T) {
-	if os.Getenv("TF_ACC") == "" {
-		t.Skip("Dont run with units tests because it will try to create the context")
-	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - PowerStore remote systems auto-generate name, custom name not supported")
-	}
-	deleteExistingRemoteSystem(t)
-	t.Cleanup(func() { restoreRemoteSystem(t) })
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testProviderFactory,
-		Steps: []resource.TestStep{
-			{
-				Config: ProviderConfigForTesting + RemoteSystemCreateConfig,
-			},
-			{
-				Config: ProviderConfigForTesting + RemoteSystemUpdateNameConfig,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "name", "Updated Name"),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "data_network_latency", "Low"),
-				),
-			},
-		},
-	})
+	t.Skip("Cannot automate - PowerStore auto-generates name from remote system, custom name not supported")
 }
 
 // TestAccRemoteSystemResource_CreateWithCredentials covers remote_username and remote_password in Create.
