@@ -79,7 +79,7 @@ type RemoteSystemInstance struct {
 	// This is the inverse of the resource type import_session association.
 	ImportSessions []ImportSessionInstance `json:"import_sessions,omitempty"`
 	// This is the inverse of the resource type storage_container_destination association.
-	StorageContainerDestinations []map[string]interface{} `json:"storage_container_destinations,omitempty"`
+	StorageContainerDestinations []StorageContainerDestinationInstance `json:"storage_container_destinations,omitempty"`
 	// This is the inverse of the resource type replication_session association.
 	ReplicationSessions []ReplicationSessionInstance `json:"replication_sessions,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.

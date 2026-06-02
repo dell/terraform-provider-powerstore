@@ -65,14 +65,12 @@ type ReplicationSessionInstance struct {
 	// Localized message string corresponding to data_connection_state Was added in version 3.0.0.0.
 	DataConnectionStateL10n *string `json:"data_connection_state_l10n,omitempty"`
 	// Localized message string corresponding to local_resource_state Was added in version 3.0.0.0.
-	LocalResourceStateL10n *string `json:"local_resource_state_l10n,omitempty"`
-	// This is the embeddable reference form of remote_system_id attribute.
-	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
-	// This is the embeddable reference form of migration_session_id attribute.
-	MigrationSession map[string]interface{}   `json:"migration_session,omitempty"`
-	ReplicationRule  *ReplicationRuleInstance `json:"replication_rule,omitempty"`
+	LocalResourceStateL10n *string                   `json:"local_resource_state_l10n,omitempty"`
+	RemoteSystem           *RemoteSystemInstance     `json:"remote_system,omitempty"`
+	MigrationSession       *MigrationSessionInstance `json:"migration_session,omitempty"`
+	ReplicationRule        *ReplicationRuleInstance  `json:"replication_rule,omitempty"`
 	// List of the volumes that are associated with this replication_session.
-	Volumes []map[string]interface{} `json:"volumes,omitempty"`
+	Volumes []VolumeInstance `json:"volumes,omitempty"`
 	// List of the volume_groups that are associated with this replication_session.
-	VolumeGroups []map[string]interface{} `json:"volume_groups,omitempty"`
+	VolumeGroups []VolumeGroupInstance `json:"volume_groups,omitempty"`
 }

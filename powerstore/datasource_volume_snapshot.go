@@ -19,10 +19,13 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -43,7 +46,7 @@ func newVolumeSnapshotDataSource() datasource.DataSource {
 }
 
 type volumeSnapshotDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 func (d *volumeSnapshotDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -247,6 +250,7 @@ func (d *volumeSnapshotDataSource) Schema(_ context.Context, _ datasource.Schema
 								"source_id":            types.StringType,
 								"creator_type":         types.StringType,
 								"expiration_timestamp": types.StringType,
+								"is_secure":            types.BoolType,
 							},
 						},
 						"location_history": schema.ListNestedAttribute{
@@ -375,14 +379,12 @@ func (d *volumeSnapshotDataSource) Configure(_ context.Context, req datasource.C
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	client := req.ProviderData.(*client.Client)
+	d.client = client.GenClient
 }
 
 func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state volumeDataSourceModel
-	var volumes []gopowerstore.Volume
-	var volume gopowerstore.Volume
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -390,15 +392,20 @@ func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	//Read the snapshot based on snapshot id/name and if nothing is mentioned, then it returns all the snapshots
-	if state.Name.ValueString() != "" {
-		volume, err = d.client.PStoreClient.GetSnapshotByName(context.Background(), state.Name.ValueString())
-		volumes = append(volumes, volume)
-	} else if state.ID.ValueString() != "" {
-		volume, err = d.client.PStoreClient.GetSnapshot(context.Background(), state.ID.ValueString())
-		volumes = append(volumes, volume)
-	} else if state.Filters.ValueString() != "" {
-		err = validateVolumeFilter(state.Filters.ValueString())
+	sel := "*,protection_policy(*),protection_data,location_history,migration_session(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+	queries.Set("type", fmt.Sprintf("eq.%s", clientgen.VOLUMETYPEENUM_SNAPSHOT))
+	dsreq := helper.DsReq[clientgen.VolumeInstance, clientgen.ApiGetVolumeByIdRequest, clientgen.ApiGetAllVolumesRequest]{
+		Instance:   d.client.VolumeApi.GetVolumeById,
+		Collection: d.client.VolumeApi.GetAllVolumes,
+	}
+
+	id := state.ID.ValueString()
+	if !state.Name.IsNull() {
+		queries.Set("name", "eq."+state.Name.ValueString())
+	} else if !state.Filters.IsNull() {
+		err := validateVolumeFilter(state.Filters.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("filter_expression"),
@@ -407,14 +414,10 @@ func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.Read
 			)
 			return
 		}
-		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
-		volumes, err = d.client.GetVolumesSnapshotsByFilter(ctx, filterMap)
-
-	} else {
-		volumes, err = d.client.PStoreClient.GetSnapshots(context.Background())
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
+	volumes, err := dsreq.Execute(ctx, queries, id)
 
-	//check if there is any error while getting the volume snapshot
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Read PowerStore Volume Snapshots",
@@ -423,18 +426,112 @@ func (d *volumeSnapshotDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	state.Volumes, err = updateVolumeState(volumes, d.client)
-	if err != nil {
+	if state.Name.ValueString() != "" && len(volumes) == 0 {
 		resp.Diagnostics.AddError(
-			"Failed to update volume snapshot state",
-			err.Error(),
+			"Unable to Read PowerStore Volume Snapshot",
+			"There is no volume snapshot with name "+state.Name.ValueString(),
 		)
 		return
 	}
+
+	state.Volumes = updateVolumeSnapshotState(volumes)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+
+// updateVolumeSnapshotState iterates over the volume snapshot list and update the state
+func updateVolumeSnapshotState(volumes []clientgen.VolumeInstance) []models.VolumeDataSource {
+	return helper.SliceTransform(volumes, func(in clientgen.VolumeInstance) models.VolumeDataSource {
+		var size int64
+		if in.Size != nil {
+			size = *in.Size
+		}
+		sizeVal, unit := convertFromBytes(size)
+		return models.VolumeDataSource{
+			ID:                        helper.TfString(in.Id),
+			Name:                      helper.TfString(in.Name),
+			Size:                      types.Float64Value(sizeVal),
+			CapacityUnit:              types.StringValue(unit),
+			Description:               helper.TfString(in.Description),
+			ApplianceID:               helper.TfString(in.ApplianceId),
+			ProtectionPolicyID:        helper.TfString(in.ProtectionPolicyId),
+			PerformancePolicyID:       helper.TfString(in.PerformancePolicyId),
+			CreationTimeStamp:         helper.TfStringFromPTime(in.CreationTimestamp),
+			IsReplicationDestination:  helper.TfBool(in.IsReplicationDestination),
+			NodeAffinity:              helper.TfString(in.NodeAffinity),
+			Type:                      helper.TfString(in.Type),
+			WWN:                       helper.TfString(in.Wwn),
+			State:                     helper.TfString(in.State),
+			LogicalUsed:               helper.TfInt64(in.LogicalUsed),
+			AppType:                   helper.TfString(in.AppType),
+			AppTypeOther:              helper.TfString(in.AppTypeOther),
+			Nsid:                      helper.TfInt32AsInt64(in.Nsid),
+			Nguid:                     helper.TfString(in.Nguid),
+			MigrationSessionID:        helper.TfString(in.MigrationSessionId),
+			MetroReplicationSessionID: helper.TfString(in.MetroReplicationSessionId),
+			TypeL10n:                  helper.TfString(in.TypeL10n),
+			StateL10n:                 helper.TfString(in.StateL10n),
+			NodeAffinityL10n:          helper.TfString(in.NodeAffinityL10n),
+			AppTypeL10n:               helper.TfString(in.AppTypeL10n),
+			IsHostAccessAvailable:     helper.TfBool(in.IsHostAccessAvailable),
+			ProtectionData: helper.TfObject(in.ProtectionData, func(in clientgen.ProtectionDataInstance) models.ProtectionData {
+				return models.ProtectionData{
+					SourceID:            helper.TfString(in.SourceId),
+					CreatorType:         helper.TfString(in.CreatorType),
+					ExpirationTimestamp: helper.TfStringFromPTime(in.ExpirationTimestamp),
+					IsSecure:            helper.TfBool(in.IsSecure),
+				}
+			}),
+			Appliance: helper.TfObject(in.Appliance, func(in clientgen.ApplianceInstance) models.Appliance {
+				return models.Appliance{
+					ID:         helper.TfString(in.Id),
+					Name:       helper.TfString(in.Name),
+					ServiceTag: helper.TfString(in.ServiceTag),
+				}
+			}),
+			ProtectionPolicy: helper.TfObject(in.ProtectionPolicy, func(in clientgen.PolicyInstance) models.VolProtectionPolicy {
+				return models.VolProtectionPolicy{
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
+				}
+			}),
+			MigrationSession: helper.TfObject(in.MigrationSession, func(in clientgen.MigrationSessionInstance) models.MigrationSession {
+				return models.MigrationSession{
+					ID:   helper.TfString(in.Id),
+					Name: helper.TfString(in.Name),
+				}
+			}),
+			LocationHistory: helper.SliceTransform(in.LocationHistory, func(in clientgen.LocationHistoryInstance) models.LocationHistory {
+				return models.LocationHistory{
+					FromApplianceID: helper.TfString(in.FromApplianceId),
+					ToApplianceID:   helper.TfString(in.ToApplianceId),
+					MigratedOn:      helper.TfStringFromPTime(in.MigratedOn),
+				}
+			}),
+			MappedVolumes: helper.SliceTransform(in.MappedVolumes, func(in clientgen.HostVolumeMappingInstance) models.MappedVolumes {
+				return models.MappedVolumes{
+					ID: helper.TfString(in.Id),
+				}
+			}),
+			VolumeGroup: helper.SliceTransform(in.VolumeGroups, func(in clientgen.VolumeGroupInstance) models.VolumeGroup {
+				return models.VolumeGroup{
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
+				}
+			}),
+			Datastores: helper.SliceTransform(in.Datastores, func(in clientgen.DatastoreInstance) models.Datastores {
+				return models.Datastores{
+					ID:           helper.TfString(in.Id),
+					Name:         helper.TfString(in.Name),
+					InstanceUUID: helper.TfString(in.InstanceUuid),
+				}
+			}),
+		}
+	})
 }

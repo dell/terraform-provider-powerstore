@@ -45,11 +45,10 @@ type SnapshotRuleInstance struct {
 	// Localized message string corresponding to nas_access_type Was added in version 3.0.0.0.
 	NasAccessTypeL10n *string `json:"nas_access_type_l10n,omitempty"`
 	// Localized message string corresponding to managed_by Was added in version 3.0.0.0.
-	ManagedByL10n *string `json:"managed_by_l10n,omitempty"`
-	// This is the embeddable reference form of remote_system_id attribute.
-	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
+	ManagedByL10n *string               `json:"managed_by_l10n,omitempty"`
+	RemoteSystem  *RemoteSystemInstance `json:"remote_system,omitempty"`
 	// This is the inverse of the resource type remote_snapshot_session association.
-	RemoteSnapshotSessions []map[string]interface{} `json:"remote_snapshot_sessions,omitempty"`
+	RemoteSnapshotSessions []RemoteSnapshotSessionInstance `json:"remote_snapshot_sessions,omitempty"`
 	// List of the policies that are associated with this snapshot_rule.
-	Policies []map[string]interface{} `json:"policies,omitempty"`
+	Policies []PolicyInstance `json:"policies,omitempty"`
 }

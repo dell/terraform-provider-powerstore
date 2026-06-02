@@ -77,12 +77,15 @@ All URIs are relative to */api/rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*ClusterApi* | [**GetAllClusters**](docs/ClusterApi.md#getallclusters) | **Get** /cluster | Collection Query
+*ClusterApi* | [**PostAllClusters**](docs/ClusterApi.md#postallclusters) | **Post** /cluster | Create
 *FileIoLimitRuleApi* | [**DeleteFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#deletefileiolimitrulebyid) | **Delete** /file_io_limit_rule/{id} | Delete
 *FileIoLimitRuleApi* | [**GetAllFileIoLimitRules**](docs/FileIoLimitRuleApi.md#getallfileiolimitrules) | **Get** /file_io_limit_rule | Collection Query
 *FileIoLimitRuleApi* | [**GetFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#getfileiolimitrulebyid) | **Get** /file_io_limit_rule/{id} | Instance Query
 *FileIoLimitRuleApi* | [**PatchFileIoLimitRuleById**](docs/FileIoLimitRuleApi.md#patchfileiolimitrulebyid) | **Patch** /file_io_limit_rule/{id} | Modify
 *FileIoLimitRuleApi* | [**PostAllFileIoLimitRules**](docs/FileIoLimitRuleApi.md#postallfileiolimitrules) | **Post** /file_io_limit_rule | Create
 *FileSystemApi* | [**DeleteFileSystemById**](docs/FileSystemApi.md#deletefilesystembyid) | **Delete** /file_system/{id} | Delete
+*FileSystemApi* | [**FileSystemSnapshot**](docs/FileSystemApi.md#filesystemsnapshot) | **Post** /file_system/{id}/snapshot | Snapshot
 *FileSystemApi* | [**GetAllFileSystems**](docs/FileSystemApi.md#getallfilesystems) | **Get** /file_system | Collection Query
 *FileSystemApi* | [**GetFileSystemById**](docs/FileSystemApi.md#getfilesystembyid) | **Get** /file_system/{id} | Instance Query
 *FileSystemApi* | [**PatchFileSystemById**](docs/FileSystemApi.md#patchfilesystembyid) | **Patch** /file_system/{id} | Modify
@@ -105,18 +108,44 @@ Class | Method | HTTP request | Description
 *RecycleBinApi* | [**RecycleBinRecover**](docs/RecycleBinApi.md#recyclebinrecover) | **Post** /recycle_bin/{id}/recover | Recover
 *RecycleBinConfigApi* | [**GetRecycleBinConfigById**](docs/RecycleBinConfigApi.md#getrecyclebinconfigbyid) | **Get** /recycle_bin_config/{id} | Instance Query
 *RecycleBinConfigApi* | [**PatchRecycleBinConfigById**](docs/RecycleBinConfigApi.md#patchrecyclebinconfigbyid) | **Patch** /recycle_bin_config/{id} | Modify
+*RemoteSystemApi* | [**DeleteRemoteSystemById**](docs/RemoteSystemApi.md#deleteremotesystembyid) | **Delete** /remote_system/{id} | Delete
+*RemoteSystemApi* | [**GetAllRemoteSystems**](docs/RemoteSystemApi.md#getallremotesystems) | **Get** /remote_system | Collection Query
+*RemoteSystemApi* | [**GetRemoteSystemById**](docs/RemoteSystemApi.md#getremotesystembyid) | **Get** /remote_system/{id} | Instance Query
+*RemoteSystemApi* | [**PatchRemoteSystemById**](docs/RemoteSystemApi.md#patchremotesystembyid) | **Patch** /remote_system/{id} | Modify
+*RemoteSystemApi* | [**PostAllRemoteSystems**](docs/RemoteSystemApi.md#postallremotesystems) | **Post** /remote_system | Create
+*ReplicationSessionApi* | [**GetAllReplicationSessions**](docs/ReplicationSessionApi.md#getallreplicationsessions) | **Get** /replication_session | Collection Query
+*ReplicationSessionApi* | [**GetReplicationSessionById**](docs/ReplicationSessionApi.md#getreplicationsessionbyid) | **Get** /replication_session/{id} | Instance Query
+*ReplicationSessionApi* | [**PatchReplicationSessionById**](docs/ReplicationSessionApi.md#patchreplicationsessionbyid) | **Patch** /replication_session/{id} | Modify
+*ReplicationSessionApi* | [**ReplicationSessionFailover**](docs/ReplicationSessionApi.md#replicationsessionfailover) | **Post** /replication_session/{id}/failover | Failover
+*ReplicationSessionApi* | [**ReplicationSessionPause**](docs/ReplicationSessionApi.md#replicationsessionpause) | **Post** /replication_session/{id}/pause | Pause
+*ReplicationSessionApi* | [**ReplicationSessionReprotect**](docs/ReplicationSessionApi.md#replicationsessionreprotect) | **Post** /replication_session/{id}/reprotect | Reprotect
+*ReplicationSessionApi* | [**ReplicationSessionResume**](docs/ReplicationSessionApi.md#replicationsessionresume) | **Post** /replication_session/{id}/resume | Resume
+*ReplicationSessionApi* | [**ReplicationSessionStartFailoverTest**](docs/ReplicationSessionApi.md#replicationsessionstartfailovertest) | **Post** /replication_session/{id}/start_failover_test | Start DR Failover Simulation Test
+*ReplicationSessionApi* | [**ReplicationSessionStopFailoverTest**](docs/ReplicationSessionApi.md#replicationsessionstopfailovertest) | **Post** /replication_session/{id}/stop_failover_test | Stop DR Failover Simulation Test
+*ReplicationSessionApi* | [**ReplicationSessionSync**](docs/ReplicationSessionApi.md#replicationsessionsync) | **Post** /replication_session/{id}/sync | Synchronize
+*SnapshotRuleApi* | [**DeleteSnapshotRuleById**](docs/SnapshotRuleApi.md#deletesnapshotrulebyid) | **Delete** /snapshot_rule/{id} | Delete
+*SnapshotRuleApi* | [**GetAllSnapshotRules**](docs/SnapshotRuleApi.md#getallsnapshotrules) | **Get** /snapshot_rule | Collection Query
+*SnapshotRuleApi* | [**GetSnapshotRuleById**](docs/SnapshotRuleApi.md#getsnapshotrulebyid) | **Get** /snapshot_rule/{id} | Instance Query
+*SnapshotRuleApi* | [**PatchSnapshotRuleById**](docs/SnapshotRuleApi.md#patchsnapshotrulebyid) | **Patch** /snapshot_rule/{id} | Modify
+*SnapshotRuleApi* | [**PostAllSnapshotRules**](docs/SnapshotRuleApi.md#postallsnapshotrules) | **Post** /snapshot_rule | Create
 *VolumeApi* | [**DeleteVolumeById**](docs/VolumeApi.md#deletevolumebyid) | **Delete** /volume/{id} | Delete
 *VolumeApi* | [**GetAllVolumes**](docs/VolumeApi.md#getallvolumes) | **Get** /volume | Collection Query
 *VolumeApi* | [**GetVolumeById**](docs/VolumeApi.md#getvolumebyid) | **Get** /volume/{id} | Instance Query
 *VolumeApi* | [**PatchVolumeById**](docs/VolumeApi.md#patchvolumebyid) | **Patch** /volume/{id} | Modify
 *VolumeApi* | [**PostAllVolumes**](docs/VolumeApi.md#postallvolumes) | **Post** /volume | Create
+*VolumeApi* | [**VolumeConfigureMetro**](docs/VolumeApi.md#volumeconfiguremetro) | **Post** /volume/{id}/configure_metro | Configure Metro
+*VolumeApi* | [**VolumeEndMetro**](docs/VolumeApi.md#volumeendmetro) | **Post** /volume/{id}/end_metro | End Metro Configuration
+*VolumeApi* | [**VolumeSnapshot**](docs/VolumeApi.md#volumesnapshot) | **Post** /volume/{id}/snapshot | Snapshot
 *VolumeGroupApi* | [**DeleteVolumeGroupById**](docs/VolumeGroupApi.md#deletevolumegroupbyid) | **Delete** /volume_group/{id} | Delete
 *VolumeGroupApi* | [**GetAllVolumeGroups**](docs/VolumeGroupApi.md#getallvolumegroups) | **Get** /volume_group | Collection Query
 *VolumeGroupApi* | [**GetVolumeGroupById**](docs/VolumeGroupApi.md#getvolumegroupbyid) | **Get** /volume_group/{id} | Instance Query
 *VolumeGroupApi* | [**PatchVolumeGroupById**](docs/VolumeGroupApi.md#patchvolumegroupbyid) | **Patch** /volume_group/{id} | Modify
 *VolumeGroupApi* | [**PostAllVolumeGroups**](docs/VolumeGroupApi.md#postallvolumegroups) | **Post** /volume_group | Create
 *VolumeGroupApi* | [**VolumeGroupAddMembers**](docs/VolumeGroupApi.md#volumegroupaddmembers) | **Post** /volume_group/{id}/add_members | Add Members
+*VolumeGroupApi* | [**VolumeGroupConfigureMetro**](docs/VolumeGroupApi.md#volumegroupconfiguremetro) | **Post** /volume_group/{id}/configure_metro | Configure Metro
+*VolumeGroupApi* | [**VolumeGroupEndMetro**](docs/VolumeGroupApi.md#volumegroupendmetro) | **Post** /volume_group/{id}/end_metro | End Metro Configuration
 *VolumeGroupApi* | [**VolumeGroupRemoveMembers**](docs/VolumeGroupApi.md#volumegroupremovemembers) | **Post** /volume_group/{id}/remove_members | Remove Members
+*VolumeGroupApi* | [**VolumeGroupSnapshot**](docs/VolumeGroupApi.md#volumegroupsnapshot) | **Post** /volume_group/{id}/snapshot | Snapshot
 
 
 ## Documentation For Models
@@ -132,6 +161,19 @@ Class | Method | HTTP request | Description
  - [BondingModeEnum](docs/BondingModeEnum.md)
  - [BondingTypeEnum](docs/BondingTypeEnum.md)
  - [CGImportableCriteriaEnum](docs/CGImportableCriteriaEnum.md)
+ - [ChapCredentialsInstance](docs/ChapCredentialsInstance.md)
+ - [ClusterCreate](docs/ClusterCreate.md)
+ - [ClusterCreateAppliances](docs/ClusterCreateAppliances.md)
+ - [ClusterCreateCluster](docs/ClusterCreateCluster.md)
+ - [ClusterCreateErrorResponse](docs/ClusterCreateErrorResponse.md)
+ - [ClusterCreateNetworks](docs/ClusterCreateNetworks.md)
+ - [ClusterCreatePhysicalSwitchConnection](docs/ClusterCreatePhysicalSwitchConnection.md)
+ - [ClusterCreatePhysicalSwitches](docs/ClusterCreatePhysicalSwitches.md)
+ - [ClusterCreateSecurityConfig](docs/ClusterCreateSecurityConfig.md)
+ - [ClusterCreateVasaProviderCredentials](docs/ClusterCreateVasaProviderCredentials.md)
+ - [ClusterCreateVcenters](docs/ClusterCreateVcenters.md)
+ - [ClusterInstance](docs/ClusterInstance.md)
+ - [ClusterStateEnum](docs/ClusterStateEnum.md)
  - [CreateResponse](docs/CreateResponse.md)
  - [DataConnectionInstance](docs/DataConnectionInstance.md)
  - [DataConnectionStateEnum](docs/DataConnectionStateEnum.md)
@@ -154,6 +196,7 @@ Class | Method | HTTP request | Description
  - [FcPortProtocolEnum](docs/FcPortProtocolEnum.md)
  - [FcPortScsiModeEnum](docs/FcPortScsiModeEnum.md)
  - [FcPortSpeedEnum](docs/FcPortSpeedEnum.md)
+ - [FcTargetInstance](docs/FcTargetInstance.md)
  - [FileDNSTransportEnum](docs/FileDNSTransportEnum.md)
  - [FileDhsmConfigInstance](docs/FileDhsmConfigInstance.md)
  - [FileDnsInstance](docs/FileDnsInstance.md)
@@ -191,8 +234,10 @@ Class | Method | HTTP request | Description
  - [FileSystemInstance](docs/FileSystemInstance.md)
  - [FileSystemLockingPolicyEnum](docs/FileSystemLockingPolicyEnum.md)
  - [FileSystemModify](docs/FileSystemModify.md)
+ - [FileSystemSnapshot](docs/FileSystemSnapshot.md)
  - [FileSystemSnapshotAccessTypeEnum](docs/FileSystemSnapshotAccessTypeEnum.md)
  - [FileSystemSnapshotCreatorTypeEnum](docs/FileSystemSnapshotCreatorTypeEnum.md)
+ - [FileSystemSnapshotResponse](docs/FileSystemSnapshotResponse.md)
  - [FileSystemTypeEnum](docs/FileSystemTypeEnum.md)
  - [FileTreeQuotaInstance](docs/FileTreeQuotaInstance.md)
  - [FileUserQuotaInstance](docs/FileUserQuotaInstance.md)
@@ -275,6 +320,8 @@ Class | Method | HTTP request | Description
  - [NvmeTransportTypeEnum](docs/NvmeTransportTypeEnum.md)
  - [OSTypeEnum](docs/OSTypeEnum.md)
  - [PerformanceRuleInstance](docs/PerformanceRuleInstance.md)
+ - [PhysicalSwitchConnectMethodEnum](docs/PhysicalSwitchConnectMethodEnum.md)
+ - [PhysicalSwitchPurposeEnum](docs/PhysicalSwitchPurposeEnum.md)
  - [PolicyCreate](docs/PolicyCreate.md)
  - [PolicyInstance](docs/PolicyInstance.md)
  - [PolicyManagedByEnum](docs/PolicyManagedByEnum.md)
@@ -284,7 +331,9 @@ Class | Method | HTTP request | Description
  - [PostEventPolicyEnum](docs/PostEventPolicyEnum.md)
  - [PowerstoreDataNetworkGroup](docs/PowerstoreDataNetworkGroup.md)
  - [PowerstoreNetworkInfo](docs/PowerstoreNetworkInfo.md)
+ - [PpddStorageUnitDetailsCreate](docs/PpddStorageUnitDetailsCreate.md)
  - [PpddStorageUnitDetailsInstance](docs/PpddStorageUnitDetailsInstance.md)
+ - [PpddStorageUnitDetailsModify](docs/PpddStorageUnitDetailsModify.md)
  - [ProtectionDataInstance](docs/ProtectionDataInstance.md)
  - [RPOEnum](docs/RPOEnum.md)
  - [RecycleBinConfigInstance](docs/RecycleBinConfigInstance.md)
@@ -302,9 +351,12 @@ Class | Method | HTTP request | Description
  - [RemoteSnapshotSessionTypeEnum](docs/RemoteSnapshotSessionTypeEnum.md)
  - [RemoteSnapshotStateEnum](docs/RemoteSnapshotStateEnum.md)
  - [RemoteSystemChapModeEnum](docs/RemoteSystemChapModeEnum.md)
+ - [RemoteSystemCreate](docs/RemoteSystemCreate.md)
+ - [RemoteSystemCreateUniversalDetails](docs/RemoteSystemCreateUniversalDetails.md)
  - [RemoteSystemFileConnectionStateEnum](docs/RemoteSystemFileConnectionStateEnum.md)
  - [RemoteSystemInstance](docs/RemoteSystemInstance.md)
  - [RemoteSystemLatencyEnum](docs/RemoteSystemLatencyEnum.md)
+ - [RemoteSystemModify](docs/RemoteSystemModify.md)
  - [RemoteSystemStateEnum](docs/RemoteSystemStateEnum.md)
  - [RemoteSystemTypeEnum](docs/RemoteSystemTypeEnum.md)
  - [ReplicatedResourceTypeEnum](docs/ReplicatedResourceTypeEnum.md)
@@ -313,18 +365,27 @@ Class | Method | HTTP request | Description
  - [ReplicationResourceStateEnum](docs/ReplicationResourceStateEnum.md)
  - [ReplicationRoleEnum](docs/ReplicationRoleEnum.md)
  - [ReplicationRuleInstance](docs/ReplicationRuleInstance.md)
+ - [ReplicationSessionFailover](docs/ReplicationSessionFailover.md)
  - [ReplicationSessionInstance](docs/ReplicationSessionInstance.md)
+ - [ReplicationSessionModify](docs/ReplicationSessionModify.md)
+ - [ReplicationSessionReprotect](docs/ReplicationSessionReprotect.md)
+ - [ReplicationSessionStopFailoverTestResponse](docs/ReplicationSessionStopFailoverTestResponse.md)
  - [ReplicationSessionTypeEnum](docs/ReplicationSessionTypeEnum.md)
  - [ReplicationSessionWitnessDetails](docs/ReplicationSessionWitnessDetails.md)
  - [ReplicationSessionWitnessStateEnum](docs/ReplicationSessionWitnessStateEnum.md)
+ - [ReplicationStartFailoverTest](docs/ReplicationStartFailoverTest.md)
  - [ReplicationStateEnum](docs/ReplicationStateEnum.md)
+ - [ReplicationStopFailoverTest](docs/ReplicationStopFailoverTest.md)
  - [SMBShareOfflineAvailabilityEnum](docs/SMBShareOfflineAvailabilityEnum.md)
  - [SasPortInstance](docs/SasPortInstance.md)
  - [SasPortSpeedEnum](docs/SasPortSpeedEnum.md)
  - [SmbServerInstance](docs/SmbServerInstance.md)
  - [SmbShareInstance](docs/SmbShareInstance.md)
  - [SnapRuleIntervalEnum](docs/SnapRuleIntervalEnum.md)
+ - [SnapshotRuleCreate](docs/SnapshotRuleCreate.md)
+ - [SnapshotRuleDelete](docs/SnapshotRuleDelete.md)
  - [SnapshotRuleInstance](docs/SnapshotRuleInstance.md)
+ - [SnapshotRuleModify](docs/SnapshotRuleModify.md)
  - [SoftwareInstalledBuildFlavorEnum](docs/SoftwareInstalledBuildFlavorEnum.md)
  - [SoftwareInstalledBuildTypeEnum](docs/SoftwareInstalledBuildTypeEnum.md)
  - [SoftwareInstalledInstance](docs/SoftwareInstalledInstance.md)
@@ -335,9 +396,12 @@ Class | Method | HTTP request | Description
  - [StorageElementTypeEnum](docs/StorageElementTypeEnum.md)
  - [TimeZoneEnum](docs/TimeZoneEnum.md)
  - [TransitConnectionStatusEnum](docs/TransitConnectionStatusEnum.md)
+ - [UnityFileDetailsCreate](docs/UnityFileDetailsCreate.md)
  - [UnityFileDetailsInstance](docs/UnityFileDetailsInstance.md)
+ - [UnityFileDetailsModify](docs/UnityFileDetailsModify.md)
  - [VGPlacementRule](docs/VGPlacementRule.md)
  - [ValidUpgradeInstance](docs/ValidUpgradeInstance.md)
+ - [ValidateCreateIssue](docs/ValidateCreateIssue.md)
  - [VcenterInstance](docs/VcenterInstance.md)
  - [VendorProviderStatusEnum](docs/VendorProviderStatusEnum.md)
  - [VethPortInstance](docs/VethPortInstance.md)
@@ -350,17 +414,27 @@ Class | Method | HTTP request | Description
  - [VirtualVolumeUsageTypeEnum](docs/VirtualVolumeUsageTypeEnum.md)
  - [VmProtectionDataInstance](docs/VmProtectionDataInstance.md)
  - [VolumeBlockSizeEnum](docs/VolumeBlockSizeEnum.md)
+ - [VolumeConfigureMetro](docs/VolumeConfigureMetro.md)
+ - [VolumeConfigureMetroResponse](docs/VolumeConfigureMetroResponse.md)
  - [VolumeCreate](docs/VolumeCreate.md)
  - [VolumeDelete](docs/VolumeDelete.md)
+ - [VolumeEndMetro](docs/VolumeEndMetro.md)
  - [VolumeGroupAddMembers](docs/VolumeGroupAddMembers.md)
+ - [VolumeGroupConfigureMetro](docs/VolumeGroupConfigureMetro.md)
+ - [VolumeGroupConfigureMetroResponse](docs/VolumeGroupConfigureMetroResponse.md)
  - [VolumeGroupCreate](docs/VolumeGroupCreate.md)
  - [VolumeGroupDelete](docs/VolumeGroupDelete.md)
+ - [VolumeGroupEndMetro](docs/VolumeGroupEndMetro.md)
  - [VolumeGroupInstance](docs/VolumeGroupInstance.md)
  - [VolumeGroupModify](docs/VolumeGroupModify.md)
  - [VolumeGroupRemoveMembers](docs/VolumeGroupRemoveMembers.md)
+ - [VolumeGroupSnapshot](docs/VolumeGroupSnapshot.md)
+ - [VolumeGroupSnapshotResponse](docs/VolumeGroupSnapshotResponse.md)
  - [VolumeImportableCriteriaEnum](docs/VolumeImportableCriteriaEnum.md)
  - [VolumeInstance](docs/VolumeInstance.md)
  - [VolumeModify](docs/VolumeModify.md)
+ - [VolumeSnapshot](docs/VolumeSnapshot.md)
+ - [VolumeSnapshotResponse](docs/VolumeSnapshotResponse.md)
  - [VolumeStateEnum](docs/VolumeStateEnum.md)
  - [VolumeTypeEnum](docs/VolumeTypeEnum.md)
  - [VsphereHostInstance](docs/VsphereHostInstance.md)

@@ -729,6 +729,83 @@
 		"application/json"
 	],
 	"paths": {
+		"/cluster": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Query the details about the cluster. \nThis resource type collection query does not support filtering, sorting or pagination.",
+				"tags": [
+					"cluster"
+				],
+				"x-simple_get": true,
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/cluster_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of cluster instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/cluster_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_clusters",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"summary": "Create",
+				"description": "Create a Power Store or Power Store X Cluster of one or more appliances.\n * You can create a cluster of up to 4 appliances.\n * Except where explicitly noted, all parameters in **vcenters** object are mandatory when creating a PowerStoreX cluster.\n * When creating a multi-appliance cluster, the most capable appliance is chosen as the Primary appliance based on the appliance configuration type.\n * All of the appliances must have the 4-Port Card installed to be added into a multi-appliance cluster.\n * When creating a multi-appliance cluster, best effort is made to successfully create the cluster. The create operation:\n    * Fails, if the Primary appliance is not configured successfully.\n    * Succeeds, if one or more secondary appliances fail to configure.\n      * Any secondary appliance that is configured successfully will be added to the cluster.\n      * An alert is generated for any failed secondary appliance. Look for these alerts in the PowerStore Manager. Resolve issues on failed appliances before  adding the appliances to the cluster.\n * When creating a cluster asynchronously, wait for ~10 minutes until Job Service is initialized before querying the status of the running job.\n\nWas added in version 2.0.0.0.",
+				"tags": [
+					"cluster"
+				],
+				"x-added": "2.0.0.0",
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/cluster_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created\nWas added in version 2.0.0.0.",
+						"x-added": "2.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request\nWas added in version 2.0.0.0.",
+						"x-added": "2.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/cluster_create_error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed\nWas added in version 2.0.0.0.",
+						"x-added": "2.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_clusters"
+			}
+		},
 		"/policy": {
 			"get": {
 				"summary": "Collection Query",
@@ -920,6 +997,206 @@
 					}
 				},
 				"operationId": "delete_policy_by_id"
+			}
+		},
+		"/snapshot_rule": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Query all snapshot rules.",
+				"tags": [
+					"snapshot_rule"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/snapshot_rule_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of snapshot rule instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/snapshot_rule_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_snapshot_rules",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"summary": "Create",
+				"description": "Create a new snapshot rule.\n",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_snapshot_rules"
+			}
+		},
+		"/snapshot_rule/{id}": {
+			"get": {
+				"summary": "Instance Query",
+				"description": "Query a specific snapshot rule.",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the snapshot rule. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "snapshot_rule"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_snapshot_rule_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"summary": "Modify",
+				"description": "Modify a snapshot rule.\nIf the snapshot rule is associated with a policy that is currently applied to a storage resource, the modified rule is immediately applied to the associated storage resource.\n",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the snapshot rule. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "snapshot_rule"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_snapshot_rule_by_id"
+			},
+			"delete": {
+				"summary": "Delete",
+				"description": "Delete a snapshot rule.\n",
+				"tags": [
+					"snapshot_rule"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the snapshot rule. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "snapshot_rule"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/snapshot_rule_delete"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_snapshot_rule_by_id"
 			}
 		},
 		"/io_limit_rule": {
@@ -1455,6 +1732,175 @@
 				"operationId": "volume_group_remove_members"
 			}
 		},
+		"/volume_group/{id}/snapshot": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the volume group. name:{name} can be used instead of {id}.",
+					"required": true,
+					"type": "string",
+					"x-ref": "volume_group"
+				}
+			],
+			"post": {
+				"description": "Create a new snapshot set for a volume group.\n\nWhen a snapshot of a volume group is created, the resultant\nsnapshot volume group is referred to as a \"snapshot set\" and it\nrepresents a point-in-time copy of the members in the volume group.\nThe snapshot set will be created on the same appliance as the source\nvolume group.\n\nA snapshot of a volume group will result in a new volume\ngroup of __Snapshot__ type. The snapshot set will belong to the same\nfamily as the source volume group.\n\nWhen the source of a snapshot operation is a primary or clone\nvolume group, \n\n* __source_id__ of the snapshot set will be set to the identifier of the\nsource volume group. \n\n* __source_time__ of the snapshot set will be set to the time at which\nthe snapshot set will be created.\n\n\nThe __is_write_order_consistent__ property of the source volume\ngroup determines whether the snapshot set will be write-order\nconsistent.\n",
+				"summary": "Snapshot",
+				"tags": [
+					"volume_group"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_group_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_group_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_snapshot"
+			}
+		},
+		"/volume_group/{id}/configure_metro": {
+			"post": {
+				"description": "Configure a metro volume group so it exists in two PowerStore clusters.\n\nWas added in version 4.0.0.0.",
+				"summary": "Configure Metro",
+				"tags": [
+					"volume_group"
+				],
+				"x-added": "4.0.0.0",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of volume group to configure. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume_group"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_group_configure_metro"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_group_configure_metro_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_configure_metro"
+			}
+		},
+		"/volume_group/{id}/end_metro": {
+			"post": {
+				"description": "End a metro configuration from a volume group and keep both copies by default.\nThe local copy will retain its SCSI Identities while the remote volume group members will get new SCSI Identities if kept.\n\nWas added in version 4.0.0.0.",
+				"summary": "End Metro Configuration",
+				"tags": [
+					"volume_group"
+				],
+				"x-added": "4.0.0.0",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of volume group for which to end the metro configuration. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume_group"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": false,
+						"schema": {
+							"$ref": "#/definitions/volume_group_end_metro"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_group_end_metro"
+			}
+		},
 		"/volume": {
 			"get": {
 				"description": "Query volumes that are provisioned on the appliance.",
@@ -1659,6 +2105,821 @@
 				"operationId": "delete_volume_by_id"
 			}
 		},
+		"/volume/{id}/snapshot": {
+			"post": {
+				"description": "Create a snapshot of a volume or a clone.\nA snapshot is a point-in-time copy of a volume or clone.\n",
+				"summary": "Snapshot",
+				"tags": [
+					"volume"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of the volume or clone that is the source of the snapshot. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": false,
+						"schema": {
+							"$ref": "#/definitions/volume_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_snapshot"
+			}
+		},
+		"/volume/{id}/configure_metro": {
+			"post": {
+				"description": "Configure a metro volume so it exists in two PowerStore clusters.\n\nWas added in version 3.0.0.0.",
+				"summary": "Configure Metro",
+				"tags": [
+					"volume"
+				],
+				"x-added": "3.0.0.0",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of volume to configure. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/volume_configure_metro"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/volume_configure_metro_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_configure_metro"
+			}
+		},
+		"/volume/{id}/end_metro": {
+			"post": {
+				"description": "End a metro configuration from a volume and keep both copies.\nThe local copy will retain its SCSI Identity while the remote volume will get a new SCSI Identity.\n\nWas added in version 3.0.0.0.",
+				"summary": "End Metro Configuration",
+				"tags": [
+					"volume"
+				],
+				"x-added": "3.0.0.0",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Unique identifier of volume for which to end the metro configuration. name:{name} can be used instead of {id}.",
+						"in": "path",
+						"type": "string",
+						"required": true,
+						"x-ref": "volume"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": false,
+						"schema": {
+							"$ref": "#/definitions/volume_end_metro"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "volume_end_metro"
+			}
+		},
+		"/remote_system": {
+			"get": {
+				"description": "Query remote systems.\n",
+				"summary": "Collection Query",
+				"tags": [
+					"remote_system"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/remote_system_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of remote system instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/remote_system_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_remote_systems",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"description": "Create a new remote system relationship for the local PowerStore.\n\nFor PowerStore remote systems, the following parameters are required:\n* Management address - An IP address\n* Type of remote system\n* Data network latency type\n\nPowerStore remote systems will support Unified (Block and File) by default.  The relationship will be created for both directions, which enables remote replication capabilities for storage resources on either of the PowerStore systems.  Data connections are configured based on the local and remote storage networks that are defined to be used for replication data transfer.  When a remote system is created for a remote PowerStore, both systems automatically discover the available local and remote storage networks that are tagged for replication.   Then a default network group will be created with the local and remote storage networks tagged for replication use-cases.\n\nFor block import to PowerStore, remote systems can be created for PS_Equalogic, Storage_Center, XtremeIO, NetApp, PowerMax/VMAX, VNX, and some universal storage systems. For VNX and Unity, both block and file import are supported. Unity, Storage_Center, XtremeIO, and VNX remote systems can be created with data connection type of iSCSI or FC.  PS_Equalogic and NetApp can only be created with data connection type of iSCSI.  PowerMax/VMAX can only be created with data connection type of FC.\n\nFor VNX, Unity, PS_Equallogic, Storage_Center, XtremeIO, and NetApp remote systems with iSCSI as the data connection type, the following parameters are required:\n* Management address - Either an IP address or FQDN.\n* Type of remote system\n* Name\n* Description\n* Remote administrator credentials\n* iSCSI address - IPv4 address only\n* CHAP mode for discovery or session\n* CHAP secrets details\n\nFor VNX, Unity, Storage_Center, XtremeIO, and PowerMax/VMAX remote systems with FC as the data connection type, the following parameters are required:\n* Management address - Either an IP address or FQDN.\n* Type of remote system\n* Name\n* Description\n* Remote administrator credentials\n* Data Connection Type - FC\n* Management Port - Management port is applicable only for PowerMax/VMAX remote system.\n\nFor VNX remote systems for file import, include the following parameters along with above block parameters for both block and file import or only below file parameters for file import only cases:\n* File connection address - Control station IP address of the VNX.\n* VNX as type of remote system\n* NAS admin username\n* NAS admin password\n* Name\n* Description\n\nTo create unified (Block and File) Unity remote systems, the following parameters are required:\n* Management address - Either an IP address or FQDN.\n* Unity as type of remote system\n* Description\n* Remote administrator credentials\n* iSCSI address - IPv4 address only\n* Data Connection type - iSCSI\n* CHAP mode for discovery or session\n* CHAP secrets details\n* Unity file details\n\nTo create a Data Domain remote system, the following parameters are required:\n* Management address - Either an IP address or FQDN.\n* Type of remote system\n* Name\n* Description\n* Remote user name\n* Remote user password\n* Data Domain details\n\nTo create a universal remote system, the following parameters are required:\n* Management address - IP address or FQDN.\n* Universal as the type of remote system\n* Name\n* Description\n* Data Connection Type - iSCSI/FC\n* iSCSI address - IPv4 address applicable only for data connection type iSCSI\n* CHAP mode for discovery or session - applicable only for data connection type iSCSI\n* CHAP secrets details - applicable only for data connection type iSCSI\n* Universal details - applicable only for data connection type FC\n\nBased on the type of remote system and version of PowerStore software, the system will automatically determine the capabilities for that remote system.\nAfter the remote system relationship is created, the local system can communicate with the remote system, and open data connections for data transfer.\n",
+				"summary": "Create",
+				"tags": [
+					"remote_system"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Parameters to create a remote system.\n",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/remote_system_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_remote_systems"
+			}
+		},
+		"/remote_system/{id}": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the remote system.\n name:{name} can be used instead of {id}.",
+					"required": true,
+					"type": "string",
+					"x-ref": "remote_system"
+				}
+			],
+			"get": {
+				"description": "Query a remote system instance.\n",
+				"summary": "Instance Query",
+				"tags": [
+					"remote_system"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/remote_system_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_remote_system_by_id",
+				"x-flexible-query": "true"
+			},
+			"delete": {
+				"description": "Delete a remote system. Deleting the remote system deletes the management and data connections established with the remote system. You cannot delete a remote system if there are active import sessions or if there are remote protection policies in the system referencing the remote system instance.\n\nBy default for PowerStore remote systems, the relationship is deleted in both directions if the remote system is online and reachable.  If there is no management connectivity between the local and remote PowerStore systems then the remote system will only be deleted from the local PowerStore system. Once the remote PowerStore system is back online and reachable then the user can log in to the remote PowerStore system and delete its remote system.\n",
+				"summary": "Delete",
+				"tags": [
+					"remote_system"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Parameters to delete a remote system.\n",
+						"schema": {
+							"$ref": "#/definitions/remote_system_delete"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_remote_system_by_id"
+			},
+			"patch": {
+				"description": "Modify a remote system instance. The list of valid parameters depends on the type of remote system.\n\nFor PowerStore remote systems:\n\n * Description\n * Management address - An IP address\n * add_powerstore_data_network_groups\n * modify_powerstore_data_network_groups\n * remove_powerstore_data_network_group_ids\n * Data network latency type\n\nOnly one network group operation (add_powerstore_data_network_groups, modify_powerstore_data_network_groups, remove_powerstore_data_network_group_ids) is supported per request.\n\nFor VNX remote systems, file_connection_address, vnx_username and password may be provided during modify if they are not already set.\nFor VNX2 remote systems, mgmt_address, vnx_username and password are not necessary to modify the VNX2 remote system from block to unified if they are already set.\n\n* Description\n* Management address - IP address or FQDN.\n* Remote administrator credentials\n* File connection address - Control station IPv4 or IPv6 address of the VNX.\n* NAS admin username\n* NAS admin password\n\nIn Unity remote systems, for file import capability, service account credentials can be provided in unity file details during modify if it does not exist already. Otherwise only service_account_password is allowed to modify:\n* Description\n* Management address - IP address or FQDN.\n* Remote administrator credentials\n* unity file details\n\nFor Data Domain remote systems, the attributes that can be modified are:\n* Management address\n* Remote Password\n\nFor PowerMax/VMAX remote systems, the attributes that can be modified are:\n* Description\n* Management address - IP address or FQDN.\n* Remote administrator credentials\n* Management Port\n\nFor other non-PowerStore remote systems, the attributes that can be modified are:\n* Name\n* Description\n* Management address - IP address or FQDN.\n* Remote administrator credentials\n",
+				"summary": "Modify",
+				"tags": [
+					"remote_system"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Parameters to modify the remote system.\n",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/remote_system_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_remote_system_by_id"
+			}
+		},
+		"/replication_session": {
+			"get": {
+				"description": "Query replication sessions.\n",
+				"summary": "Collection Query",
+				"tags": [
+					"replication_session"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/replication_session_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of replication session instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/replication_session_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_replication_sessions",
+				"x-flexible-query": "true"
+			}
+		},
+		"/replication_session/{id}": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n",
+					"required": true,
+					"type": "string",
+					"x-ref": "replication_session"
+				}
+			],
+			"get": {
+				"description": "Query a replication session instance.\n",
+				"summary": "Instance Query",
+				"tags": [
+					"replication_session"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/replication_session_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_replication_session_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"description": "Modify a replication session instance.\n\nWas added in version 3.0.0.0.",
+				"x-added": "3.0.0.0",
+				"summary": "Modify",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/replication_session_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_replication_session_by_id"
+			}
+		},
+		"/replication_session/{id}/sync": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n",
+					"required": true,
+					"type": "string",
+					"x-ref": "replication_session"
+				}
+			],
+			"post": {
+				"description": "Supported for Asynchronous type replication sessions.\nSynchronize the destination resource with changes on source resource\nfrom the previous synchronization cycle.\n\n\n\n\nAlso synchronizes any size changes, membership changes, or both, on the\nsource resource. At the end of the synchronization cycle, the\ndestination resource reflects the state as it was when synchronization\nbegan. Any size changes, membership changes, or both, to source resource\ndone during the synchronization cycle are replicated in next\nsynchronization cycle.\n\n\n\n\n\nSynchronization is allowed when the replication session is in the\nfollowing states:\n\n* OK\n\n* System_Paused\n\n\n\n\n\nDuring synchronization, you can take the following actions:\n\n* Planned failover from the source system\n\n* Failover from the destination system\n\n* Pause replication sessions from the source or destination system\n\n* Delete a replication session by removing a protection policy\n\n\n\n\n\nSynchronization failure places the replication session in a\nSystem_Paused state. When the system recovers, the replication session\ncontinues from the same point as when the system paused, using the\nrestart address.\n",
+				"summary": "Synchronize",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_sync"
+			}
+		},
+		"/replication_session/{id}/pause": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n",
+					"required": true,
+					"type": "string",
+					"x-ref": "replication_session"
+				}
+			],
+			"post": {
+				"description": "Pause a replication session instance. You can pause a replication session\nfor maintenance activities on local or remote system.\n\nThe session can be paused when it is in the following states:\n* OK\n* Synchronizing\n* System_Paused\n* Fractured\n\nIn case of loss of network connectivity between two sites, the\nreplication session is paused only on the local system where it is\nissued. Pause the replication session again to pause both sites. The\nfollowing operations are not allowed while only the replication session\non the local system is paused:\n* Resume\n* Sync\n* Planned Failover\n\nThe following operations are allowed while only the replication session\non the local system is paused:\n* Pause - Use to place both sites into the **Paused** state\n* Failover - Use to get production access from the disaster recovery site\n* Promote - Use to get production access from local cluster\n* Demote - Use to remove production access from local cluster\n* Delete - Delete the replication session\n\nThe following system operations may also pause, and subsequently resume,\na replication session:\n* Non-disruptive upgrade\n* Intra-cluster migration\n\nLeaving replication session in a paused state results in change\naccumulations on the production mode system. Resuming a replication session\nthat has been paused for a long time can result in long synchronization times.\n",
+				"summary": "Pause",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_pause"
+			}
+		},
+		"/replication_session/{id}/resume": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n",
+					"required": true,
+					"type": "string",
+					"x-ref": "replication_session"
+				}
+			],
+			"post": {
+				"description": "Resume a replication session instance that is paused. Resuming the\nreplication session initiates a synchronization cycle if the session was\nin the following states when the session was paused:\n\n* Synchronizing\n\n* System_Paused\n\n* Fractured\n\n\n\n\n\nYou cannot resume replication sessions paused by the system. The\nfollowing system operations may also pause, and subsequently resume, a\nreplication session.\n\n* Paused_for_NDU\n\n* Paused_for_Migration\n",
+				"summary": "Resume",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_resume"
+			}
+		},
+		"/replication_session/{id}/failover": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n",
+					"required": true,
+					"type": "string",
+					"x-ref": "replication_session"
+				}
+			],
+			"post": {
+				"description": "Fail over a replication session instance of type Asynchronous.\nFailing over the replication session changes the role of the destination\nsystem. After a failover, the original destination system becomes the\nsource system, and production access is enabled for hosts and applications\nfor recovery. Failovers can be planned or unplanned.\n\n\n\n\n\nPlanned failovers are issued from the source system and are indicated by\nsetting the is_planned parameter to true. When you fail over a\nreplication session from the source system, the destination system is\nfully synchronized with the source to ensure that there is no data loss.\nDuring a planned failover, stop I/O operations for any applications and\nhosts. If a synchronization error occurs during a planned failover, the\nreplication session enters the System_Paused state. You cannot pause a\nreplication session during a planned failover. The following operations\ncan be performed during planned failover:\n\n* Unplanned failover\n\n* Delete the replication session by removing the protection policy on\nthe storage resource\n\n\n\n\n\nFailover (planned or unplanned) cannot be performed when a test failover is in progress.\n\n\n\n\n\nAfter a planned failover, the replication session is in an inactive\nstate. You can use the reprotect action to synchronize the destination\nstorage resource, and then resume the replication session. The\nauto-reprotect feature can also be used after a planned failover by\nusing the reverse parameter, which activates the session in the reverse\ndirection.\n\n\n\n\n\nUnplanned failures are events such as source system failure or an event\non the source system that leads to downtime for production access.\n\n\n\n\n\nUnplanned failovers are issued from the destination system, and are\nindicated by setting the is_planned parameter to false. Unplanned\nfailovers provide production access to the original destination resource\nfrom a preview synchronized point-in-time snapshot referred to as\nreplication common-base. After an unplanned failover, you can restore\nthe system from any point-in-time snapshots on the new source resource.\nUnplanned failovers place the original source resource into destination\nmode once it reestablishes a connection to the source system.  You can\nuse the reprotect action to synchronize the destination storage\nresource, and then resume the replication session.\n\n\n\n\n\nAfter the replication session has failed over, you can resize the\nvolume group or change the volume group membership on the new\nsource resource.\n",
+				"summary": "Failover",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/replication_session_failover"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_failover"
+			}
+		},
+		"/replication_session/{id}/reprotect": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n",
+					"required": true,
+					"type": "string",
+					"x-ref": "replication_session"
+				}
+			],
+			"post": {
+				"description": "Reprotect a replication session instance of type Asynchronous.\nActivates the replication session and starts synchronization. For session\nof type Asynchronous, this can only be used when the session has been\nfailed over and from the system that is reported as source.\n",
+				"summary": "Reprotect",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Parameters to reprotect a replication session.\nWas added in version 4.0.0.0.",
+						"x-added": "4.0.0.0",
+						"schema": {
+							"$ref": "#/definitions/replication_session_reprotect"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_reprotect"
+			}
+		},
+		"/replication_session/{id}/start_failover_test": {
+			"parameters": [
+				{
+					"name": "id",
+					"x-added": "2.0.0.0",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n\nWas added in version 2.0.0.0.",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"post": {
+				"x-added": "2.0.0.0",
+				"description": "Start a disaster recovery (DR) failover simulation test at the destination site of a replication session of type Asynchronous to simulate a failover and grant production access to the destination resource. This will enable DR site hosts to access the destination site resource and allow users to test their DR configuration and readiness without interrupting activity at the production site. Replication synchronization activity from the production site will continue to happen while the test is in progress except for the actual synchronization of the destination resource with the primary. Any changes made to the destination resource during the test, including resizing, can be optionally saved in a snapshot at the end of the test, at which point the destination resource will revert to its normal state and role.\n\nStarting of a DR failover simulation test is allowed only at the destination site of a replication session and only when the session is in the following states:\n* OK\n* Synchronizing\n* Paused\n* System_Paused\n\n\nThis operation is not allowed when a test failover is already in progress on the replication session or if the session is in the following states:\n* Planned_Failover_In_Progress\n* DR_Failover_In_Progress\n* Failed_Over\n* Paused_For_NDU\n* Paused_For_Migration\n\n\nDuring the test, the following restrictions apply:\n* Membership changes are not allowed for destination resources that belong to a volume group.\n* The session cannot be failed over (planned or unplanned).\n\nWas added in version 2.0.0.0.",
+				"summary": "Start DR Failover Simulation Test",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Parameters to start a DR failover simulation test on a replication session.",
+						"schema": {
+							"$ref": "#/definitions/replication_start_failover_test"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_start_failover_test"
+			}
+		},
+		"/replication_session/{id}/stop_failover_test": {
+			"parameters": [
+				{
+					"name": "id",
+					"x-added": "2.0.0.0",
+					"in": "path",
+					"description": "Unique identifier of the replication session.\n\nWas added in version 2.0.0.0.",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"post": {
+				"x-added": "2.0.0.0",
+				"description": "Stop a disaster recovery (DR) failover simulation test that is in progress at the destination site of a replication session of type Asynchronous and revert the destination resource to its normal state and role.\n\nStopping of a DR failover simulation test is allowed only at the destination site of a replication session and only when a test failover is in progress on the replication session.\n\nWas added in version 2.0.0.0.",
+				"summary": "Stop DR Failover Simulation Test",
+				"tags": [
+					"replication_session"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Parameters to stop a DR failover simulation test on a replication session.",
+						"schema": {
+							"$ref": "#/definitions/replication_stop_failover_test"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/replication_session_stop_failover_test_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "replication_session_stop_failover_test"
+			}
+		},
 		"/file_system": {
 			"get": {
 				"tags": [
@@ -1851,6 +3112,62 @@
 					}
 				},
 				"operationId": "delete_file_system_by_id"
+			}
+		},
+		"/file_system/{id}/snapshot": {
+			"post": {
+				"tags": [
+					"file_system"
+				],
+				"summary": "Snapshot",
+				"description": "Create a snapshot of a file system.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the file system. name:{name} can be used instead of {id}.",
+						"x-ref": "file_system"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/file_system_snapshot"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_system_snapshot_response"
+						}
+					},
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "file_system_snapshot"
 			}
 		},
 		"/recycle_bin": {
@@ -3718,6 +5035,30 @@
 				}
 			]
 		},
+		"PhysicalSwitchConnectMethodEnum": {
+			"type": "string",
+			"description": "Physical switch connect method type. Valid values are:\n  * SSH - Secure shell.\n  * SNMPv2c - SNMPv2 community string.\n",
+			"enum": [
+				"SSH",
+				"SNMPv2c"
+			],
+			"x-display_enum_text": {
+				"SSH": "SSH",
+				"SNMPv2c": "SNMP v2 community string"
+			}
+		},
+		"PhysicalSwitchPurposeEnum": {
+			"type": "string",
+			"description": "Physical switch purpose in network. Possible purposes are:\n  * Data_and_Management - Physical switch for all data and management networks.\n  * Management_Only - Physical switch for management network only.\n",
+			"enum": [
+				"Data_and_Management",
+				"Management_Only"
+			],
+			"x-display_enum_text": {
+				"Data_and_Management": "Data and Management",
+				"Management_Only": "Management Only"
+			}
+		},
 		"fsn_instance": {
 			"type": "object",
 			"description": "Properties of a fail-safe network (FSN).\nWas added in version 3.5.0.0.\nThis resource type has queriable associations from fsn, appliance, ip_port, bond, eth_port",
@@ -3962,6 +5303,540 @@
 				"node": {
 					"type": "object",
 					"description": "This is the embeddable reference form of node_id attribute."
+				}
+			}
+		},
+		"validate_create_issue": {
+			"type": "object",
+			"description": "An issue found during validation accompanied by the suggested resolution.\nWas added in version 2.0.0.0.",
+			"x-added": "2.0.0.0",
+			"properties": {
+				"reason": {
+					"$ref": "#/definitions/error_message"
+				},
+				"resolution": {
+					"$ref": "#/definitions/error_message"
+				},
+				"appliance_id": {
+					"description": "The appliance on which the issue was detected.",
+					"type": "string"
+				}
+			}
+		},
+		"cluster_instance": {
+			"type": "object",
+			"description": "Properties of a cluster.\nValues was added in 2.0.0.0: primary_appliance_id.\nValues was deprecated in 2.0.0.0: master_appliance_id.",
+			"x-added_value": {
+				"2.0.0.0": [
+					"primary_appliance_id"
+				]
+			},
+			"x-deprecated_value": {
+				"2.0.0.0": [
+					"master_appliance_id"
+				]
+			},
+			"x-select_cli": [
+				"name",
+				"management_address",
+				"storage_discovery_address",
+				"master_appliance_id",
+				"primary_appliance_id",
+				"appliance_count",
+				"state"
+			],
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "The unique identifier of the cluster.",
+					"example": "0"
+				},
+				"global_id": {
+					"type": "string",
+					"description": "The global unique identifier of the cluster.",
+					"example": "PS11AA22BB33CC"
+				},
+				"name": {
+					"type": "string",
+					"description": "The name of the cluster.",
+					"example": "Awesome storage cluster"
+				},
+				"management_address": {
+					"type": "string",
+					"description": "The floating management IP address for the cluster in IPv4 or IPv6 format.",
+					"format": "ip-address",
+					"example": "11.22.33.44"
+				},
+				"storage_discovery_address": {
+					"type": "string",
+					"description": "The floating storage discovery IP address for the cluster in IPv4 or IPv6 format.\nIf multiple storage discovery addresses are configured, this property will be set to 'null'.\nIn this case the storage network of interest should be used to retrieve the discovery address.\n",
+					"format": "ip-address",
+					"example": "11.22.33.45"
+				},
+				"master_appliance_id": {
+					"type": "string",
+					"description": "The unique identifier of the appliance acting as primary.\nWas deprecated in version 2.0.0.0.",
+					"x-deprecated": "2.0.0.0",
+					"example": "A1"
+				},
+				"primary_appliance_id": {
+					"type": "string",
+					"description": "The unique identifier of the appliance acting as primary.\nWas added in version 2.0.0.0.",
+					"x-added": "2.0.0.0",
+					"example": "A1"
+				},
+				"appliance_count": {
+					"type": "integer",
+					"description": "Number of appliances configured in this cluster.",
+					"example": 4,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"physical_mtu": {
+					"type": "integer",
+					"description": "The physical ethernet port (eth_port resource) MTU setting is global\nfor all ports in the cluster. This is the default MTU setting for IP traffic,\nand the upper limit on network-specific MTU settings (network resource),\nwhere this can be overridden for some specific kinds of traffic (management,\ndata, and vMotion).\n",
+					"example": 1500,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"is_encryption_enabled": {
+					"type": "boolean",
+					"description": "Whether or not Data at Rest Encryption is enabled on the cluster.",
+					"example": true
+				},
+				"compatibility_level": {
+					"type": "integer",
+					"description": "The behavioral version of the software version API, and it is used\nto ensure the compatibility across potentially different software versions.\n",
+					"example": 1,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"state": {
+					"$ref": "#/definitions/ClusterStateEnum"
+				},
+				"state_l10n": {
+					"type": "string",
+					"description": "Localized string corresponding to state."
+				},
+				"system_time": {
+					"description": "Current clock time for the system. System time and all the system reported\ntimes are in UTC (GMT+0:00) format. The system time is controlled via NTP.\nIt cannot be set directly.\n\nWas added in version 2.0.0.0.",
+					"type": "string",
+					"format": "date-time",
+					"x-added": "2.0.0.0"
+				},
+				"nvm_subsystem_nqn": {
+					"description": "NVMe Subsystem NQN for cluster. It cannot be set directly.\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"x-added": "3.0.0.0"
+				}
+			}
+		},
+		"cluster_create": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "Cluster create parameters.\nWas added in version 2.0.0.0.",
+			"required": [
+				"cluster",
+				"appliances",
+				"dns_servers",
+				"ntp_servers",
+				"networks"
+			],
+			"properties": {
+				"cluster": {
+					"$ref": "#/definitions/cluster_create_cluster"
+				},
+				"appliances": {
+					"type": "array",
+					"description": "The configuration settings for adding appliances during cluster creation.\nAt least one appliance is required.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_appliances"
+					}
+				},
+				"dns_servers": {
+					"type": "array",
+					"items": {
+						"description": "DNS server addresses in IPv4 or IPv6 format. At least one DNS server\nshould be provided.\n",
+						"type": "string",
+						"format": "ip-address",
+						"minItems": 1,
+						"maxItems": 3,
+						"uniqueItems": true
+					},
+					"example": [
+						"12.22.33.44",
+						"55.66.77.88"
+					]
+				},
+				"ntp_servers": {
+					"type": "array",
+					"items": {
+						"description": "NTP server addresses in IPv4 or IPv6 or hostname format. At least one\nNTP server should be provided.\n",
+						"type": "string",
+						"format": "ip-address",
+						"minItems": 1,
+						"maxItems": 3,
+						"uniqueItems": true
+					},
+					"example": [
+						"12.22.33.44",
+						"55.66.77.88"
+					]
+				},
+				"physical_switches": {
+					"type": "array",
+					"description": "Physical switch settings for a cluster.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_physical_switches"
+					}
+				},
+				"networks": {
+					"type": "array",
+					"description": "Configuration of one or more network(s) based on network type.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_networks"
+					}
+				},
+				"vcenters": {
+					"type": "array",
+					"description": "Configure vCenter settings when creating cluster. Parameters are required\nwhen creating PowerStore X cluster and optional for PowerStore cluster.\n * Note - Currently only single element is supported.\n",
+					"items": {
+						"$ref": "#/definitions/cluster_create_vcenters"
+					},
+					"maxItems": 1
+				},
+				"security_config": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/cluster_create_security_config",
+					"description": "\nWas added in version 3.0.0.0."
+				}
+			}
+		},
+		"cluster_create_cluster": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "The configuration settings of cluster during cluster creation.\n\nWas added in version 2.0.0.0.",
+			"required": [
+				"name"
+			],
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "The name of the cluster. The name can be up to 64 UTF-8 characters and cannot be an empty string.\n",
+					"minLength": 1,
+					"maxLength": 64,
+					"example": "Cluster-007"
+				},
+				"ignore_network_warnings": {
+					"type": "boolean",
+					"description": "Set to true to ignore network warnings about unreachable external network services discovered while cluster creation.\nThis can be useful for configuring a system before delivery into the intended deployment environment.\nThe default is false, and these warnings will cause cluster creation to fail.\n",
+					"default": false,
+					"example": true
+				}
+			}
+		},
+		"cluster_create_appliances": {
+			"description": "Appliance configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"link_local_address"
+			],
+			"properties": {
+				"link_local_address": {
+					"type": "string",
+					"description": "The link local address is a dynamically set local IPv4 address.\nIt is unique to this appliance and is set by Zeroconf. Use the PowerStore\nDiscovery Tool to get the link local addresses of available PowerStore appliances\non the local subnet.\n",
+					"format": "ip-address",
+					"example": "11.22.33.44"
+				},
+				"name": {
+					"type": "string",
+					"description": "The name of the new appliance. By default, the name is \"[cluster name]-appliance-[index number]\". The maximum size is 64 characters.\n",
+					"minLength": 1,
+					"maxLength": 64,
+					"example": "MyCluster-appliance-2",
+					"uniqueItems": true
+				},
+				"drive_failure_tolerance_level": {
+					"$ref": "#/definitions/DriveFailureToleranceLevelEnum"
+				}
+			}
+		},
+		"cluster_create_physical_switches": {
+			"description": "Physical switch configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"name",
+				"purpose",
+				"connections"
+			],
+			"properties": {
+				"name": {
+					"description": "Name of physical switch.",
+					"type": "string",
+					"example": "Cluster-Switch-1"
+				},
+				"purpose": {
+					"$ref": "#/definitions/PhysicalSwitchPurposeEnum"
+				},
+				"connections": {
+					"description": "Supported connections for a physical switch.",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/cluster_create_physical_switch_connection"
+					}
+				}
+			}
+		},
+		"cluster_create_physical_switch_connection": {
+			"description": "Physical switch connection configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"address",
+				"connect_method"
+			],
+			"properties": {
+				"address": {
+					"description": "Physical switch address in IPv4 or IPv6 or DNS hostname format.",
+					"type": "string",
+					"format": "ip-address",
+					"example": "10.244.244.244"
+				},
+				"port": {
+					"description": "Port used for connection to switch.",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 65535,
+					"example": 22
+				},
+				"connect_method": {
+					"$ref": "#/definitions/PhysicalSwitchConnectMethodEnum"
+				},
+				"username": {
+					"description": "Username to connect a physical switch for SSH connection method.",
+					"type": "string",
+					"example": "admin"
+				},
+				"ssh_password": {
+					"description": "SSH password to connect a physical switch if SSH connect method is specified.",
+					"type": "string",
+					"format": "password",
+					"example": "password"
+				},
+				"snmp_community_string": {
+					"description": "SNMPv2 community string, if SNMPv2c connect method is specified.",
+					"type": "string",
+					"format": "password",
+					"example": "passwordCommunityString"
+				}
+			}
+		},
+		"cluster_create_networks": {
+			"description": "Network configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"type",
+				"addresses",
+				"prefix_length"
+			],
+			"properties": {
+				"type": {
+					"$ref": "#/definitions/NetworkTypeEnum"
+				},
+				"vlan_id": {
+					"description": "VLAN identifier.\n",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 4094,
+					"example": 10,
+					"default": 0
+				},
+				"prefix_length": {
+					"description": "Network prefix length, used for both IPv4 and IPv6.\n",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 128,
+					"example": 64
+				},
+				"gateway": {
+					"description": "Network gateway in IPv4 or IPv6 format, corresponding to the network's IP version.\n",
+					"type": "string",
+					"format": "ip-address",
+					"example": "10.244.24.1",
+					"default": ""
+				},
+				"cluster_mgmt_address": {
+					"type": "string",
+					"description": "New cluster management IP address in IPv4 or IPv6 format, corresponding to the network's IP version.\nThis can only be specified only when configuring the management type network.\n",
+					"format": "ip-address",
+					"example": "11.22.33.44"
+				},
+				"storage_discovery_address": {
+					"type": "string",
+					"description": "New storage discovery IP address in IPv4 or IPv6 format, corresponding to the network's IP version.\nThis can only be specified only when configuring the storage type network.\n",
+					"format": "ip-address",
+					"example": "11.22.33.45"
+				},
+				"addresses": {
+					"description": "IP addresses in IPv4 or IPv6 format.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"format": "ip-address",
+						"uniqueItems": true,
+						"maxItems": 256
+					},
+					"example": [
+						"10.244.24.191",
+						"10.244.24.192"
+					]
+				},
+				"purposes": {
+					"x-added": "2.1.0.0",
+					"description": "Purposes of the network. Only applicable to storage networks. Omitting the property is equivalent to providing all applicable purposes, which are: ISCSI, NVMe/TCP. If provided, must include iSCSI to enable the internal host storage access.\nWas added in version 2.1.0.0.",
+					"type": "array",
+					"minItems": 0,
+					"maxItems": 32,
+					"uniqueItems": true,
+					"items": {
+						"$ref": "#/definitions/NetworkPurposeEnum"
+					},
+					"example": [
+						"ISCSI",
+						"NVMe_TCP"
+					]
+				}
+			}
+		},
+		"cluster_create_vcenters": {
+			"description": "vCenter configuration setting during cluster creation.\nWas added in version 2.0.0.0.",
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"required": [
+				"address",
+				"username",
+				"password",
+				"is_verify_server_cert",
+				"vasa_provider_credentials"
+			],
+			"properties": {
+				"address": {
+					"description": "IP address of vCenter in IPv4 or IPv6 or hostname format.\n",
+					"type": "string",
+					"format": "ip-address",
+					"example": "10.244.84.121"
+				},
+				"username": {
+					"description": "User name to login to vCenter.\n",
+					"type": "string",
+					"example": "administrator@vsphere.local"
+				},
+				"password": {
+					"description": "Password to login to vCenter.\n",
+					"type": "string",
+					"format": "password",
+					"example": "pass789!"
+				},
+				"is_verify_server_cert": {
+					"description": "Whether or not the connection will be secured with the vCenter SSL certificate.\n",
+					"type": "boolean",
+					"example": false
+				},
+				"data_center_id": {
+					"description": "VMWare ID of the datacenter. This should be specified when creating PowerStoreX cluster to join an existing datacenter.\ndata_center_name may not also be specified with this.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"example": "datacenter-42",
+					"x-added": "3.0.0.0"
+				},
+				"data_center_name": {
+					"description": "Name of the data center. This should be specified when creating PowerStoreX cluster in order to create and join a new datacenter in vCenter.\ndata_center_id may not also be specified with this.\nWhen data_center_create is false, then an existing datacenter will be used if the name matches, otherwise a new one will be created.\n",
+					"type": "string",
+					"example": "DataCenter-H3007"
+				},
+				"data_center_create": {
+					"description": "Along with data_center_name, indicates an intent to either create or use existing data center by name.\n\nWas added in version 3.0.0.0.\nWas deprecated in version 3.0.0.0.",
+					"type": "boolean",
+					"default": false,
+					"x-added": "3.0.0.0",
+					"x-deprecated": "3.0.0.0"
+				},
+				"esx_cluster_name": {
+					"description": "ESXi cluster name.\nThe default name is \"Cluster-\" followed by the PowerStore cluster name. This should be specified when creating PowerStore X cluster.\n",
+					"type": "string",
+					"example": "Cluster-H3007",
+					"default": "name"
+				},
+				"vasa_provider_credentials": {
+					"$ref": "#/definitions/cluster_create_vasa_provider_credentials"
+				}
+			}
+		},
+		"cluster_create_security_config": {
+			"type": "object",
+			"x-added": "3.0.0.0",
+			"description": "security configuration setting during cluster creation.\nWas added in version 3.0.0.0.",
+			"properties": {
+				"is_http_redirect_enabled": {
+					"x-added": "3.0.0.0",
+					"type": "boolean",
+					"default": true,
+					"description": "If true, redirecting HTTP requests to HTTPS is enabled. If false, HTTP redirection is disabled and only HTTPS is allowed.\nWas added in version 3.0.0.0."
+				},
+				"vasa_retain_certificate": {
+					"x-added": "3.5.0.0",
+					"type": "boolean",
+					"default": false,
+					"description": "If true, VASA server certificate will not be overwritten by the vCenter.\nWas added in version 3.5.0.0."
+				}
+			}
+		},
+		"cluster_create_vasa_provider_credentials": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "Storage system credentials for vCenter to use for communicating with the storage system using VASA.\nParameters are required when creating PowerStore X cluster and optional for PowerStore cluster.\n\nWas added in version 2.0.0.0.",
+			"required": [
+				"username",
+				"password"
+			],
+			"properties": {
+				"username": {
+					"description": "Username of the local user account which will be used by vSphere to register VASA provider.\n",
+					"type": "string",
+					"example": "user456"
+				},
+				"password": {
+					"description": "Password of the local user account which will be used by vSphere to register VASA provider.\n",
+					"type": "string",
+					"format": "password",
+					"example": "pass456!"
+				}
+			}
+		},
+		"cluster_create_error_response": {
+			"type": "object",
+			"description": "Error response for create operation. Contains a list of localized messages and a list of validation issues accompanied by the suggested resolution.\n\nWas added in version 2.0.0.0.",
+			"x-added": "2.0.0.0",
+			"properties": {
+				"messages": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/error_message"
+					}
+				},
+				"issues": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/validate_create_issue"
+					}
 				}
 			}
 		},
@@ -6343,12 +8218,16 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"description": "This is the embeddable reference form of remote_system_id attribute."
+					"$ref": "#/definitions/remote_system_instance",
+					"description": "This is the embeddable reference form of remote_system_id attribute.",
+					"x-ref": "remote_system",
+					"x-added": "3.5.0.0"
 				},
 				"remote_snapshot_sessions": {
 					"type": "array",
 					"items": {
-						"type": "object"
+						"$ref": "#/definitions/remote_snapshot_session_instance",
+						"x-ref": "remote_snapshot_session"
 					},
 					"description": "This is the inverse of the resource type remote_snapshot_session association.",
 					"x-added": "3.5.0.0"
@@ -6356,9 +8235,142 @@
 				"policies": {
 					"type": "array",
 					"items": {
-						"type": "object"
+						"$ref": "#/definitions/policy_instance",
+						"x-ref": "policy"
 					},
 					"description": "List of the policies that are associated with this snapshot_rule."
+				}
+			}
+		},
+		"snapshot_rule_create": {
+			"type": "object",
+			"description": "Create a new snapshot rule.",
+			"required": [
+				"name",
+				"desired_retention"
+			],
+			"properties": {
+				"name": {
+					"description": "Name of the snapshot rule.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"remote_system_id": {
+					"description": "Unique identifier for the Data Domain remote system. If present, the associated volume/volume group is backed up to specified data domain remote system, else a local snapshot is taken. name:{name} can be used instead of {id}. For example: 'remote_system_id':'name:remote_system_name'\nWas added in version 3.5.0.0.",
+					"type": "string",
+					"x-added": "3.5.0.0",
+					"x-ref": "remote_system"
+				},
+				"interval": {
+					"$ref": "#/definitions/SnapRuleIntervalEnum"
+				},
+				"time_of_day": {
+					"description": "Time of the day to take a daily snapshot, with format \"hh:mm\" using a 24 hour clock.\nEither the interval parameter or the time_of_day parameter will be set, but not both.\n",
+					"type": "string",
+					"example": "13:30"
+				},
+				"timezone": {
+					"$ref": "#/definitions/TimeZoneEnum",
+					"x-added": "2.0.0.0",
+					"description": "\nWas added in version 2.0.0.0."
+				},
+				"days_of_week": {
+					"description": "Days of the week when the snapshot rule should be applied.\nDays are determined based on the UTC time zone, unless the time_of_day and timezone properties are set.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/DaysOfWeekEnum"
+					}
+				},
+				"desired_retention": {
+					"description": "Desired snapshot retention period in hours. The system will retain snapshots for this time period.\nThe maximum retention is 70 years for remote snapshot rules and 1 year for local snapshot rules.\n",
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 613200,
+					"format": "int32"
+				},
+				"nas_access_type": {
+					"description": "The access type for file snapshots created by this snapshot rule.\n\nWas added in version 3.0.0.0.",
+					"$ref": "#/definitions/NASAccessTypeEnum",
+					"x-added": "3.0.0.0"
+				},
+				"is_read_only": {
+					"description": "Indicates whether this snapshot rule can be modified.\n\nWas added in version 3.0.0.0.",
+					"type": "boolean",
+					"default": false,
+					"x-added": "3.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Secure snapshots are created by the rule if this flag is true.\nThe snapshots cannot be deleted until the expiration time, and the expiration time cannot be reduced.\nSecure snapshots will only be created for block volumes, volume groups and file systems.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"snapshot_rule_modify": {
+			"type": "object",
+			"description": "Modify a snapshot rule.\nIf the snapshot rule is associated with a policy that is currently applied to a storage resource, the modified rule is immediately applied to the associated storage resource.\n",
+			"properties": {
+				"name": {
+					"description": "Snapshot rule name.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"remote_system_id": {
+					"description": "Unique identifier for the PowerProtect DD remote system. If present, the associated\nvolume/volume group is backed up to specified PowerProtect DD remote system, else\na local snapshot is taken. This attribute can be modified only if existing value\nis non null and the associated policy is not attached to a volume or a volume group.\nThe rule intended to take snapshots locally cannot be converted to take snapshots\non a PowerProtect DD remote system and vice versa.\n name:{name} can be used instead of {id}. For example: 'remote_system_id':'name:remote_system_name'\nWas added in version 3.5.0.0.",
+					"type": "string",
+					"x-ref": "remote_system",
+					"x-added": "3.5.0.0"
+				},
+				"interval": {
+					"$ref": "#/definitions/SnapRuleIntervalEnum"
+				},
+				"time_of_day": {
+					"description": "Time of the day to take a daily snapshot, with format \"hh:mm\" using a 24 hour clock.\nEither the interval parameter or the time_of_day parameter will be set, but not both.\n",
+					"type": "string",
+					"example": "13:30"
+				},
+				"timezone": {
+					"$ref": "#/definitions/TimeZoneEnum",
+					"x-added": "2.0.0.0",
+					"description": "\nWas added in version 2.0.0.0."
+				},
+				"days_of_week": {
+					"description": "Days of the week when the snapshot rule should be applied.\nDays are determined based on the UTC time zone, unless the time_of_day and timezone properties are set.\n",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/DaysOfWeekEnum"
+					}
+				},
+				"desired_retention": {
+					"description": "Desired snapshot retention period in hours. The system will retain snapshots for this time period.\nThe maximum retention is 70 years for remote snapshot rules and 1 year for local snapshot rules.\n",
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 613200,
+					"format": "int32"
+				},
+				"nas_access_type": {
+					"description": "The access type for file snapshots created by this snapshot rule.\nWas added in version 3.0.0.0.",
+					"$ref": "#/definitions/NASAccessTypeEnum",
+					"x-added": "3.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"description": "Secure snapshots are created by the rule if this flag is true.\nThe snapshots cannot be deleted until the expiration time, and the expiration time cannot be reduced.\nSecure snapshots will only be created for block volumes, volume groups and file systems.\nSnapshots already created by this rule will not have their is_secure attribute modified.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"snapshot_rule_delete": {
+			"type": "object",
+			"description": "Delete a snapshot rule.\nDeleting a snapshot rule is not allowed if the snapshot rule is associated with a protection policy that is currently assigned to one or more storage resources.\n",
+			"properties": {
+				"delete_snaps": {
+					"description": "Specify whether all snapshots previously created by this snapshot rule should also be deleted when this rule is removed.\n",
+					"type": "boolean",
+					"default": false
 				}
 			}
 		},
@@ -7768,6 +9780,53 @@
 					},
 					"description": "This is the inverse of the resource type host_virtual_volume_mapping association."
 				}
+			}
+		},
+		"ClusterStateEnum": {
+			"description": "Possible cluster states.\n* Unconfigured - This is a single appliance that is not in a cluster and is in factory state.\n* Unconfigured_Faulted - This is single appliance that is not in a cluster and Hardware is in faulted state.\n* Configuring - Cluster is in the process of initial setup.\n* Core_Initialization - Cluster is in the process of core initialization.\n* Configured - Cluster is configured and operational.\n* Expanding - Appliance(s) are being added to the cluster.\n* Removing - Appliance(s) are being removed from the cluster.\n* Clustering_Failed - This is a single appliance that failed an attempt to join a cluster.\n* Core_Initialization_Failed - This is a single appliance that failed an attempt to join a cluster, bad state.\n* Removed - Appliance has been removed from cluster.\n* Post_Core_Initialization - In the process of configuring post core containers.\n* Unknown - System is in unknown state.\n\nValues was added in 2.0.0.0: Core_Initialization, Core_Initialization_Failed, Post_Core_Initialization, Removed, Unknown.\nValues was deprecated in 2.0.0.0: Configuring, Clustering_Failed.",
+			"type": "string",
+			"x-added_value": {
+				"2.0.0.0": [
+					"Core_Initialization",
+					"Core_Initialization_Failed",
+					"Post_Core_Initialization",
+					"Removed",
+					"Unknown"
+				]
+			},
+			"x-deprecated_value": {
+				"2.0.0.0": [
+					"Configuring",
+					"Clustering_Failed"
+				]
+			},
+			"enum": [
+				"Unconfigured",
+				"Unconfigured_Faulted",
+				"Configuring",
+				"Core_Initialization",
+				"Configured",
+				"Expanding",
+				"Removing",
+				"Clustering_Failed",
+				"Core_Initialization_Failed",
+				"Removed",
+				"Post_Core_Initialization",
+				"Unknown"
+			],
+			"x-display_enum_text": {
+				"Unconfigured": "Unconfigured",
+				"Unconfigured_Faulted": "Unconfigured_Faulted",
+				"Configuring": "Configuring",
+				"Core_Initialization": "Core_Initialization",
+				"Configured": "Configured",
+				"Expanding": "Expanding",
+				"Removing": "Removing",
+				"Clustering_Failed": "Clustering_Failed",
+				"Core_Initialization_Failed": "Core_Initialization_Failed",
+				"Removed": "Removed",
+				"Post_Core_Initialization": "Post_Core_Initialization",
+				"Unknown": "Unknown"
 			}
 		},
 		"LocationHistoryReasonEnum": {
@@ -9187,6 +11246,95 @@
 				}
 			}
 		},
+		"volume_snapshot": {
+			"description": "Parameters for the volume snapshot operation.",
+			"properties": {
+				"name": {
+					"description": "Name of the snapshot to be created. This value must contain 128 or\nfewer printable Unicode characters. The default name of the volume\nsnapshot is the date and time when the snapshot is taken.\n",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Description of the snapshot. This value must contain 128 or fewer\nprintable Unicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"performance_policy_id": {
+					"description": "Unique identifier of the performance policy assigned to the snapshot. name:{name} can be used instead of {id}. For example: 'performance_policy_id':'name:policy_name'",
+					"type": "string",
+					"x-ref": "policy"
+				},
+				"expiration_timestamp": {
+					"description": "Time at which the snapshot will expire. Expired snapshots are deleted by the\nsnapshot aging service that runs periodically in the background. If\nnot specified, the snapshot never expires.\n\nUse a maximum timestamp value to set an expiration to never expire.\n",
+					"type": "string",
+					"format": "date-time"
+				},
+				"creator_type": {
+					"$ref": "#/definitions/StorageCreatorTypeEnum"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Create a secure snapshot. This parameter requires a valid expiration_timestamp to be set in the request.\nSecure snapshots can only be taken on block volumes.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_snapshot_response": {
+			"description": "Volume snapshot response definition.",
+			"properties": {
+				"id": {
+					"description": "Unique identifier of the new snapshot.",
+					"type": "string"
+				}
+			}
+		},
+		"volume_configure_metro": {
+			"x-added": "3.0.0.0",
+			"description": "Configure metro operation arguments.\nWas added in version 3.0.0.0.",
+			"properties": {
+				"remote_system_id": {
+					"type": "string",
+					"description": "The remote system with which the metro relationship will be established.\nThe remote system must support metro volumes.\n name:{name} can be used instead of {id}. For example: 'remote_system_id':'name:remote_system_name'",
+					"x-ref": "remote_system"
+				},
+				"remote_appliance_id": {
+					"type": "string",
+					"description": "A specific remote system appliance to which the volume will be assigned, if desired.\nBy default, the system will choose an appropriate appliance based on space, load, and connectivity.\n",
+					"x-ref": "#remote/appliance"
+				}
+			},
+			"required": [
+				"remote_system_id"
+			]
+		},
+		"volume_configure_metro_response": {
+			"x-added": "3.0.0.0",
+			"description": "Response information from a volume metro configuration operation.\nWas added in version 3.0.0.0.",
+			"properties": {
+				"metro_replication_session_id": {
+					"type": "string",
+					"description": "Unique metro replication session identifier of the newly configured volume."
+				}
+			}
+		},
+		"volume_end_metro": {
+			"x-added": "3.0.0.0",
+			"description": "End metro configuration operation arguments.\nWas added in version 3.0.0.0.",
+			"properties": {
+				"delete_remote_volume": {
+					"description": "Whether or not to delete the remote volume during the removal.\n",
+					"type": "boolean",
+					"default": false
+				},
+				"force": {
+					"description": "If the force option is specified, any errors returned while attempting to tear down the remote side of the\nmetro session will be ignored and the remote side may be left in an indeterminate state.\nIf any errors occur on the local side the operation can still fail.\nIt is not recommended to use this option unless the remote side is known to be down.\n",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
 		"AppTypeEnum": {
 			"description": "This attribute indicates the intended use of this volume.  It may be null.\n\nIf the Relational_Databases_Other, Big_Data_Analytics_Other, Business_Applications_Other,\nHealthcare_Other, Virtualization_Other or Other enum values are used the app_type_other attribute may be used to specify\nthe application being used.\n\n* Relational_Databases_Other - Relational Databases Other\n* Relational_Databases_Oracle - Oracle\n* Relational_Databases_SQL_Server - SQL Server\n* Relational_Databases_PostgreSQL - PostgreSQL\n* Relational_Databases_MySQL - MySQL\n* Relational_Databases_IBM_DB2 - IBM DB2\n* Big_Data_Analytics_Other - Big Data & Analytics Other\n* Big_Data_Analytics_MongoDB - MongoDB\n* Big_Data_Analytics_Cassandra - Cassandra\n* Big_Data_Analytics_SAP_HANA - SAP HANA\n* Big_Data_Analytics_Spark - Spark\n* Big_Data_Analytics_Splunk - Splunk\n* Big_Data_Analytics_ElasticSearch - ElasticSearch\n* Business_Applications_Exchange - Exchange\n* Business_Applications_Sharepoint - Sharepoint\n* Business_Applications_Other - Business Applications Other\n* Business_Applications_ERP_SAP - ERP / SAP\n* Business_Applications_CRM - CRM\n* Healthcare_Other - Healthcare Other\n* Healthcare_Epic - Epic\n* Healthcare_MEDITECH - MEDITECH\n* Healthcare_Allscripts - Allscripts\n* Healthcare_Cerner - Cerner\n* Virtualization_Other - Virtualization Other\n* Virtualization_Virtual_Servers_VSI - Virtual Servers (VSI)\n* Virtualization_Containers_Kubernetes - Containers/Kubernetes\n* Virtualization_Virtual_Desktops_VDI - Virtual Desktops (VDI)\n* Boot_Volume_Other - Boot Volume\n* Other - Other\n\nWas added in version 2.1.0.0.\nValues was added in 4.1.0.0: Boot_Volume_Other.",
 			"type": "string",
@@ -9623,6 +11771,90 @@
 						"description": " name:{name} can be used instead of {id}. For example: 'volume_ids':['name:volume_name']"
 					},
 					"description": "A list of volumes that need to be removed from the volume group.\nThis list cannot be empty.\n"
+				}
+			}
+		},
+		"volume_group_snapshot": {
+			"type": "object",
+			"description": "Snapshot volume group request.",
+			"required": [
+				"name"
+			],
+			"properties": {
+				"name": {
+					"description": "Unique name of the snapshot set to be created.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Optional description for the snapshot set.\n\nIf description is not specified, the description for the snapshot set\nwill not be set.\n",
+					"type": "string"
+				},
+				"expiration_timestamp": {
+					"description": "Time after which the snapshot set can be auto-purged. Time\nmust be specified in Zulu time zone. Expiration time cannot be prior\nto current time.\n\nUse a maximum timestamp value to set an expiration to never expire.\n\nValid format is yyyy-MM-dd'T'HH:mm:ssZ or yyyy-MM-dd'T'HH:mm:ss.SSSZ.\n\nBy default, expiration time will not be set.\n\nWas added in version 2.0.0.0.",
+					"type": "string",
+					"format": "date-time",
+					"x-added": "2.0.0.0"
+				},
+				"is_secure": {
+					"type": "boolean",
+					"default": false,
+					"description": "Create a secure snapshot. This parameter requires a valid\nexpiration_timestamp to be set in the request.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0"
+				}
+			}
+		},
+		"volume_group_snapshot_response": {
+			"description": "Unique identifier of the new snapshot volume.",
+			"properties": {
+				"id": {
+					"type": "string"
+				}
+			}
+		},
+		"volume_group_configure_metro": {
+			"x-added": "4.0.0.0",
+			"description": "Configure metro operation arguments.\nWas added in version 4.0.0.0.",
+			"properties": {
+				"remote_system_id": {
+					"type": "string",
+					"description": "The remote system with which the metro relationship will be established.\nThe remote system must support metro volumes.\n name:{name} can be used instead of {id}. For example: 'remote_system_id':'name:remote_system_name'",
+					"x-ref": "remote_system"
+				},
+				"remote_appliance_id": {
+					"type": "string",
+					"description": "A specific remote system appliance to which the volume group will be assigned, if desired.\nBy default, the system will choose an appropriate appliance based on space, load, and connectivity.\n",
+					"x-ref": "#remote/appliance"
+				}
+			},
+			"required": [
+				"remote_system_id"
+			]
+		},
+		"volume_group_configure_metro_response": {
+			"x-added": "4.0.0.0",
+			"description": "Response information from a volume group metro configuration operation.\nWas added in version 4.0.0.0.",
+			"properties": {
+				"metro_replication_session_id": {
+					"type": "string",
+					"description": "Unique metro replication session identifier of the newly configured metro volume group."
+				}
+			}
+		},
+		"volume_group_end_metro": {
+			"x-added": "4.0.0.0",
+			"description": "End metro configuration operation arguments.\nWas added in version 4.0.0.0.",
+			"properties": {
+				"delete_remote_volume_group": {
+					"description": "Whether or not to delete the remote volume group during the removal.\n",
+					"type": "boolean",
+					"default": false
+				},
+				"force": {
+					"description": "If the force option is specified, any errors returned while attempting to tear down the remote side of the\nmetro session will be ignored and the remote side may be left in an indeterminate state.\nIf any errors occur on the local side the operation can still fail.\nIt is not recommended to use this option unless the remote side is known to be down.\n",
+					"type": "boolean",
+					"default": false
 				}
 			}
 		},
@@ -11497,6 +13729,96 @@
 				}
 			}
 		},
+		"file_system_snapshot": {
+			"type": "object",
+			"description": "Parameters for the file system snapshot operation.",
+			"properties": {
+				"name": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 255,
+					"description": "Name of the snapshot. The default name of the snapshot is the date and time when the snapshot is taken."
+				},
+				"description": {
+					"type": "string",
+					"minLength": 0,
+					"maxLength": 255,
+					"description": "Description of the snapshot."
+				},
+				"expiration_timestamp": {
+					"type": "string",
+					"format": "date-time",
+					"description": "Time, when the snapshot will expire."
+				},
+				"is_auto_delete_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether the snapshot can be automatically deleted per threshold settings. Values are:\n* true - Snapshot can be automatically deleted per threshold settings.\n* false - Snapshot cannot be automatically deleted.\n"
+				},
+				"access_type": {
+					"$ref": "#/definitions/FileSystemSnapshotAccessTypeEnum"
+				},
+				"access_policy": {
+					"$ref": "#/definitions/FileSystemAccessPolicyEnum"
+				},
+				"locking_policy": {
+					"$ref": "#/definitions/FileSystemLockingPolicyEnum"
+				},
+				"folder_rename_policy": {
+					"$ref": "#/definitions/FileSystemFolderRenamePolicyEnum"
+				},
+				"is_smb_sync_writes_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether the synchronous writes option is enabled on the file system. Values are:\n* true - Synchronous writes option is enabled on the file system.\n* false - Synchronous writes option is disabled on the file system.\n"
+				},
+				"is_smb_no_notify_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether notifications of changes to a directory file structure are enabled.\n* true - Change directory notifications are disabled.\n* false - Change directory notifications are enabled.\n"
+				},
+				"is_smb_op_locks_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether opportunistic file locking is enabled on the file system. Values are:\n* true - Opportunistic file locking is enabled on the file system.\n* false - Opportunistic file locking is disabled on the file system.\n"
+				},
+				"is_smb_notify_on_access_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether file access notifications are enabled on the file system. Values are:\n* true - File access notifications are enabled on the file system.\n* false - File access notifications are disabled on the file system.\n"
+				},
+				"is_smb_notify_on_write_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether file writes notifications are enabled on the file system. Values are:\n* true - File writes notifications are enabled on the file system.\n* false - File writes notifications are disabled on the file system.\n"
+				},
+				"smb_notify_on_change_dir_depth": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Lowest directory level to which the enabled notifications apply, if any.",
+					"minimum": 1,
+					"maximum": 512
+				},
+				"is_async_MTime_enabled": {
+					"type": "boolean",
+					"description": "Indicates whether asynchronous MTIME is enabled on the protocol snaps that are mounted writeable. Values are:\n* true - Asynchronous MTIME is enabled on the file system.\n* false - Asynchronous MTIME is disabled on the file system.\n"
+				},
+				"file_events_publishing_mode": {
+					"x-added": "3.0.0.0",
+					"$ref": "#/definitions/FileEventsPublishingModeEnum",
+					"description": "\nWas added in version 3.0.0.0."
+				},
+				"is_secure": {
+					"type": "boolean",
+					"description": "Indicates whether a snapshot type filesystem is secure:\n* true - The snapshot is read-only and cannot be deleted until it has expired.\n  The expiration time of secure snapshot cannot be reduced and cannot be set to infinite.\n  The value of is_secure cannot be changed from true to false.\n* false - A normal snapshot.\n\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0"
+				}
+			}
+		},
+		"file_system_snapshot_response": {
+			"description": "Snapshot file system created.",
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "The unique identifier of the created snapshot."
+				}
+			}
+		},
 		"FileSystemTypeEnum": {
 			"type": "string",
 			"description": "Indicates the type of a file system.\n * Primary - Normal file system or clone.\n * Snapshot - Snapshot of a file system.\n",
@@ -13034,11 +15356,15 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"description": "This is the embeddable reference form of remote_system_id attribute."
+					"$ref": "#/definitions/remote_system_instance",
+					"description": "This is the embeddable reference form of remote_system_id attribute.",
+					"x-ref": "remote_system"
 				},
 				"migration_session": {
 					"type": "object",
-					"description": "This is the embeddable reference form of migration_session_id attribute."
+					"$ref": "#/definitions/migration_session_instance",
+					"description": "This is the embeddable reference form of migration_session_id attribute.",
+					"x-ref": "migration_session"
 				},
 				"replication_rule": {
 					"type": "object",
@@ -13049,7 +15375,8 @@
 				"volumes": {
 					"type": "array",
 					"items": {
-						"type": "object"
+						"$ref": "#/definitions/volume_instance",
+						"x-ref": "volume"
 					},
 					"description": "List of the volumes that are associated with this replication_session.",
 					"x-added": "4.0.0.0"
@@ -13057,10 +15384,69 @@
 				"volume_groups": {
 					"type": "array",
 					"items": {
-						"type": "object"
+						"$ref": "#/definitions/volume_group_instance",
+						"x-ref": "volume_group"
 					},
 					"description": "List of the volume_groups that are associated with this replication_session.",
 					"x-added": "4.0.0.0"
+				}
+			}
+		},
+		"replication_session_failover": {
+			"type": "object",
+			"description": "Parameters to fail over a replication session.\n",
+			"properties": {
+				"is_planned": {
+					"description": "Indicates whether the replication session failover is planned or\nunplanned. For planned failovers, the value is true. For unplanned\nfailovers, the value is false.\n",
+					"type": "boolean",
+					"default": true
+				},
+				"reverse": {
+					"description": "Indicates whether the system is auto-reprotected.\nAuto-reprotect is combination of failover and reprotect.\nThis is only allowed when issuing a planned failover.\n",
+					"type": "boolean",
+					"default": false
+				},
+				"use_test_copy": {
+					"x-added": "2.0.0.0",
+					"description": "When a failover test is in progress and an unplanned failover needs to be started,\nthis flag must be set to true. Setting this flag to true will keep the destination\nresources' data as is before starting the unplanned failover. Please stop the\nfailover test first if you do not wish to keep the test data before starting an\nunplanned failover.\n\nWas added in version 2.0.0.0.",
+					"type": "boolean",
+					"default": false
+				},
+				"failover_snapshot_id": {
+					"x-added": "2.0.0.0",
+					"description": "Optional identifier of a snapshot that the destination resource must\nbe restored to as part of an unplanned failover. If a failover_snapshot_id\nis not specified, the destination will be restored to the last common base\nsnapshot. This identifier is not supported when a failover test is in progress.\n\nWas added in version 2.0.0.0.",
+					"type": "string",
+					"x-ref": "#remote/resource"
+				},
+				"force": {
+					"description": "Indicates whether an unplanned failover needs to be performed for a session that\nis already in a failed over state.\n",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
+		"replication_session_modify": {
+			"type": "object",
+			"description": "Parameters to modify a replication session.\n\nWas added in version 3.0.0.0.",
+			"x-added": "3.0.0.0",
+			"properties": {
+				"role": {
+					"x-added": "3.0.0.0",
+					"description": "For metro type replication session only. Modify role of a metro non-preferred to preferred.\n\nWas added in version 3.0.0.0.",
+					"$ref": "#/definitions/ReplicationRoleEnum"
+				}
+			}
+		},
+		"replication_session_reprotect": {
+			"type": "object",
+			"description": "Parameters to reprotect a replication session.\n\nWas added in version 4.0.0.0.",
+			"x-added": "4.0.0.0",
+			"properties": {
+				"discard_changes_after_failover": {
+					"x-added": "4.0.0.0",
+					"description": "When set to true this option indicates that any data changes made after the failover\noccurred will be discarded and the reprotect operation will restart the replication from the\noriginal source replicating in the original direction before the failover. This option is only\nsupported for asynchronous replication of NAS Servers.\n\nWas added in version 4.0.0.0.",
+					"type": "boolean",
+					"default": false
 				}
 			}
 		},
@@ -13277,6 +15663,45 @@
 				"Active_Active": "Active Active",
 				"Faulted": "Faulted",
 				"Paused": "Paused"
+			}
+		},
+		"replication_start_failover_test": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "Parameter(s) to start a disaster recovery (DR) failover simulation test at the destination site of a replication session.\n\nWas added in version 2.0.0.0.",
+			"properties": {
+				"snapshot_id": {
+					"description": "Optional identifier of a local snapshot instance that will be used to set the data view of the destination resource at the begining of the test. If a snapshot_id is not specified, the destination resource will reflect the last synchronized state of the source resource.\n",
+					"type": "string",
+					"x-ref": "#resource"
+				}
+			}
+		},
+		"replication_stop_failover_test": {
+			"type": "object",
+			"x-added": "2.0.0.0",
+			"description": "Parameter(s) to stop a disaster recovery (DR) failover simulation test in progress at the destination site of a replication session. \n\nWas added in version 2.0.0.0.",
+			"properties": {
+				"create_end_of_test_snapshot": {
+					"description": "Indicates whether a snapshot of the destination resource should be created at the end of the test.  If set to true, the name of the created snapshot will contain a timestamp indicating its time of creation and will be of the format \"failover_test_STOPPED_&lt;timestamp&gt;\". The snapshot will be set to automatically expire after a system determined interval.\n",
+					"type": "boolean",
+					"default": false
+				},
+				"force": {
+					"description": "By default a failover test cannot be stopped if the remote system is not reachable. This option allows for stopping the test even if the remote system is down. The intention is to enable disaster recovery to a point in time different than the one under test.",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
+		"replication_session_stop_failover_test_response": {
+			"description": "Stop disaster recovery (DR) test response.\nWas added in version 2.0.0.0.",
+			"x-added": "2.0.0.0",
+			"properties": {
+				"snapshot_id": {
+					"description": "Identifier of the optional snapshot instance created at the end of the test. \n",
+					"type": "string"
+				}
 			}
 		},
 		"ReplicationResourceStateEnum": {
@@ -13581,7 +16006,8 @@
 				"storage_container_destinations": {
 					"type": "array",
 					"items": {
-						"type": "object"
+						"$ref": "#/definitions/storage_container_destination_instance",
+						"x-ref": "storage_container_destination"
 					},
 					"description": "This is the inverse of the resource type storage_container_destination association.",
 					"x-added": "3.0.0.0"
@@ -13666,6 +16092,272 @@
 					"type": "string",
 					"description": "Localized message string corresponding to data_connection_type\nWas added in version 3.0.0.0.",
 					"x-added": "3.0.0.0"
+				}
+			}
+		},
+		"remote_system_create": {
+			"type": "object",
+			"description": "Parameters to create a remote system.\n",
+			"properties": {
+				"management_address": {
+					"description": "Management address of the remote system instance. IPv4 and FQDN\nis supported for non-PowerStore remote systems. IPv4, IPv6 and FQDN\nare supported for DataDomain and PowerStore remote systems.\n",
+					"type": "string",
+					"format": "ip-address"
+				},
+				"management_port": {
+					"x-added": "3.0.0.0",
+					"description": "Management port is applicable only for creating PowerMax/VMAX remote\nsystem.\n\nWas added in version 3.0.0.0.",
+					"type": "integer",
+					"default": 5443,
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"name": {
+					"description": "User-specified name of the remote system. Used only for non-PowerStore\nsystems. This value must contain 128 or fewer printable Unicode\ncharacters.\n",
+					"type": "string",
+					"maxLength": 256
+				},
+				"description": {
+					"description": "User-specified description of the remote system.\n",
+					"type": "string",
+					"maxLength": 256
+				},
+				"type": {
+					"$ref": "#/definitions/RemoteSystemTypeEnum"
+				},
+				"remote_username": {
+					"description": "Username used to access the remote system. Used only for PowerProtect DD\nand non-PowerStore systems. For PowerProtect DD remote systems, provide\na user with role 'user'.\n",
+					"type": "string"
+				},
+				"remote_password": {
+					"description": "Password used to access the remote system. Used only for PowerProtect DD\nand non-PowerStore systems.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"data_connection_type": {
+					"x-added": "3.0.0.0",
+					"description": "\nWas added in version 3.0.0.0.",
+					"$ref": "#/definitions/DataConnectionTypeEnum"
+				},
+				"iscsi_addresses": {
+					"description": "iSCSI target IP addresses for the data connection to the remote\nsystem. Must be specified when creating a non-PowerStore remote\nsystem.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"format": "ip-address"
+					}
+				},
+				"universal_details": {
+					"x-added": "4.0.0.0",
+					"type": "object",
+					"properties": {
+						"fc_targets": {
+							"type": "array",
+							"maxItems": 2,
+							"minItems": 1,
+							"description": "FC target addresses for the data connection to the remote\nsystem. Must be specified when creating a Universal remote\n system.\n",
+							"items": {
+								"$ref": "#/definitions/fc_target_instance"
+							}
+						}
+					},
+					"description": "\nWas added in version 4.0.0.0."
+				},
+				"import_chap_info": {
+					"$ref": "#/definitions/chap_credentials_instance"
+				},
+				"discovery_chap_mode": {
+					"$ref": "#/definitions/RemoteSystemChapModeEnum"
+				},
+				"session_chap_mode": {
+					"$ref": "#/definitions/RemoteSystemChapModeEnum"
+				},
+				"data_network_latency": {
+					"$ref": "#/definitions/RemoteSystemLatencyEnum"
+				},
+				"file_connection_address": {
+					"description": "Control station address of the VNX to establish file management\nconnection from PowerStore. Not applicable for other remote systems.\nThis address can be modified. Provide IP aliasing address to\ntransparently handle connection failures from primary to secondary\ncontrol station.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"x-added": "3.0.0.0",
+					"format": "ip-address"
+				},
+				"vnx_file_username": {
+					"description": "User-specified VNX NAS administrator username. nasadmin account is\npreferred for file import.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"x-added": "3.0.0.0"
+				},
+				"vnx_file_password": {
+					"description": "Password used to access the control station.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"x-added": "3.0.0.0",
+					"format": "password"
+				},
+				"ppdd_storage_unit_details": {
+					"x-added": "3.5.0.0",
+					"$ref": "#/definitions/ppdd_storage_unit_details_create",
+					"description": "\nWas added in version 3.5.0.0."
+				},
+				"unity_file_details": {
+					"description": "Unity file details.\n\nWas added in version 4.0.0.0.",
+					"x-added": "4.0.0.0",
+					"$ref": "#/definitions/unity_file_details_create"
+				}
+			}
+		},
+		"remote_system_delete": {
+			"type": "object",
+			"description": "Delete a remote system and any associated x509 Replication HTTP certificates.\n",
+			"properties": {}
+		},
+		"remote_system_modify": {
+			"type": "object",
+			"description": "Modify the remote system.\n",
+			"properties": {
+				"name": {
+					"description": "User-specified name of the remote system. Used only for non-PowerStore\ntype remote systems. This value must contain 128 or fewer printable\nUnicode characters.\n",
+					"type": "string",
+					"maxLength": 128
+				},
+				"description": {
+					"description": "User-specified description of the remote system.\n",
+					"type": "string",
+					"maxLength": 256
+				},
+				"management_address": {
+					"description": "Management address of the remote system instance. IPv4 and FQDN is supported\nfor non-PowerStore remote systems. IPv4 and IPv6 are supported for\nPowerStore remote systems.\n",
+					"type": "string",
+					"format": "ip-address"
+				},
+				"management_port": {
+					"description": "Management port is applicable for PowerMax/VMAX remote system port.\n\nWas added in version 3.0.0.0.",
+					"x-added": "3.0.0.0",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 2147483647
+				},
+				"remote_username": {
+					"description": "Username used to access the remote system. Used only for PowerProtect DD\nand non-PowerStore systems. For PowerProtect DD remote systems, provide\na user with role 'user'.\n",
+					"type": "string"
+				},
+				"remote_password": {
+					"description": "Password used to access the remote system. Used only for PowerProtect\nDD and non-PowerStore systems.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"data_network_latency": {
+					"description": "Network latency for the PowerStore remote system.\n",
+					"$ref": "#/definitions/RemoteSystemLatencyEnum"
+				},
+				"file_connection_address": {
+					"description": "Control station address of the VNX to establish file management connection from PowerStore.\nNot applicable for other remote systems. This address can be modified.\nProvide IP aliasing address to transparently handle connection failures from primary to secondary control station.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"format": "ip-address",
+					"x-added": "3.0.0.0"
+				},
+				"vnx_file_username": {
+					"description": "User-specified VNX NAS administrator username. nasadmin account is preferred for file import.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"x-added": "3.0.0.0"
+				},
+				"vnx_file_password": {
+					"description": "Password used to access the control station.\n\nWas added in version 3.0.0.0.",
+					"type": "string",
+					"format": "password",
+					"x-added": "3.0.0.0"
+				},
+				"ppdd_storage_unit_details": {
+					"description": "PowerProtect DD details.\n\nWas added in version 3.5.0.0.",
+					"x-added": "3.5.0.0",
+					"$ref": "#/definitions/ppdd_storage_unit_details_modify"
+				},
+				"unity_file_details": {
+					"description": "Unity file details.\n\nWas added in version 4.0.0.0.",
+					"x-added": "4.0.0.0",
+					"$ref": "#/definitions/unity_file_details_modify"
+				},
+				"add_powerstore_data_network_groups": {
+					"description": "List of new data network groups.\n\nWas added in version 4.0.0.0.",
+					"x-added": "4.0.0.0",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/powerstore_data_network_group"
+					}
+				},
+				"modify_powerstore_data_network_groups": {
+					"description": "List of data network groups being modified.\n\nWas added in version 4.0.0.0.",
+					"x-added": "4.0.0.0",
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/powerstore_data_network_group"
+					}
+				},
+				"remove_powerstore_data_network_group_ids": {
+					"description": "List of data network groups to be deleted specified as list of group IDs.\n\nWas added in version 4.0.0.0.",
+					"x-added": "4.0.0.0",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "#null"
+					}
+				}
+			}
+		},
+		"chap_credentials_instance": {
+			"description": "Information about the iSCSI initiator, target session, or discovery CHAP\nsecrets.\n",
+			"type": "object",
+			"properties": {
+				"target_session_username": {
+					"description": "Username used by the target to authenticate the initiator during\nsession authentication. Single CHAP mode only.\n",
+					"type": "string"
+				},
+				"target_session_password": {
+					"description": "Password used by the target to authenticate the initiator during\nsession authentication. Single CHAP mode only.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"target_discovery_username": {
+					"description": "Username used by the target to authenticate the initiator during\ndiscovery authentication. Single CHAP mode only.\n",
+					"type": "string"
+				},
+				"target_discovery_password": {
+					"description": "Password used by the target to authenticate the initiator during\ndiscovery authentication. Single CHAP mode only.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"initiator_session_username": {
+					"description": "Username used by the initiator to authenticate the target during\nsession authentication. Mutual CHAP mode only.\n",
+					"type": "string"
+				},
+				"initiator_session_password": {
+					"description": "Password used by the initiator to authenticate the target during\nsession authentication. Mutual CHAP mode only.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"initiator_discovery_username": {
+					"description": "Username used by the initiator to authenticate the target during\ndiscovery authentication. Mutual CHAP mode only.\n",
+					"type": "string"
+				},
+				"initiator_discovery_password": {
+					"description": "Password used by the initiator to authenticate the target during\ndiscovery authentication. Mutual CHAP mode only.\n",
+					"type": "string",
+					"format": "password"
+				}
+			}
+		},
+		"fc_target_instance": {
+			"type": "object",
+			"x-added": "4.0.0.0",
+			"description": "Information about the FC targets.\n\nWas added in version 4.0.0.0.",
+			"properties": {
+				"wwnn": {
+					"description": "Unique identifier for World Wide Node Name.\n",
+					"type": "string"
+				},
+				"wwpn": {
+					"description": "Unique identifier for World Wide Port Name.\n",
+					"type": "string"
 				}
 			}
 		},
@@ -13949,6 +16641,69 @@
 			},
 			"x-no_filter": true
 		},
+		"ppdd_storage_unit_details_create": {
+			"type": "object",
+			"x-added": "3.5.0.0",
+			"description": "PowerProtect DD details to register with Powerstore as a remote system.\n\nWas added in version 3.5.0.0.",
+			"required": [
+				"dd_boost_address",
+				"storage_unit_name",
+				"dd_boost_username",
+				"dd_boost_password"
+			],
+			"properties": {
+				"dd_boost_address": {
+					"description": "DDBoost address of the PowerProtect DD remote system.\nIPv4 and FQDN is the supported DDBoost address.\n",
+					"type": "string",
+					"format": "ip-address"
+				},
+				"storage_unit_name": {
+					"description": "Name of the storage unit in the PowerProtect DD.",
+					"type": "string",
+					"maxLength": 256
+				},
+				"dd_boost_username": {
+					"description": "Username used to access the storage unit of a PowerProtect DD remote system.\n",
+					"type": "string"
+				},
+				"dd_boost_password": {
+					"description": "Password used to access the  storage unit of a PowerProtect DD remote system.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"is_data_encryption_enabled": {
+					"description": "Enable or Disable encryption for all backup session from Powerstore to a\nstorage unit in PowerProtect DD.\n",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
+		"ppdd_storage_unit_details_modify": {
+			"type": "object",
+			"x-added": "3.5.0.0",
+			"description": "PowerProtect DD details to register with Powerstore as a remote system.\n\nWas added in version 3.5.0.0.",
+			"properties": {
+				"dd_boost_address": {
+					"description": "DDBoost address of the PowerProtect DD remote system.\nIPv4 and FQDN is the supported DDBoost address.\n",
+					"type": "string",
+					"format": "ip-address"
+				},
+				"dd_boost_username": {
+					"description": "Username used to access the storage unit of a PowerProtect DD remote system.\n",
+					"type": "string"
+				},
+				"dd_boost_password": {
+					"description": "Password used to access the  storage unit of a PowerProtect DD remote system.\n",
+					"type": "string",
+					"format": "password"
+				},
+				"is_data_encryption_enabled": {
+					"description": "Enable or Disable encryption for all backup session from Powerstore to a\nstorage unit in PowerProtect DD.\n",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
 		"powerstore_network_info": {
 			"type": "object",
 			"x-added": "4.0.0.0",
@@ -14036,6 +16791,42 @@
 				}
 			},
 			"x-no_filter": true
+		},
+		"unity_file_details_create": {
+			"type": "object",
+			"x-added": "4.0.0.0",
+			"description": "Unity File details to register with Powerstore as a remote system for File import.\n\nWas added in version 4.0.0.0.",
+			"required": [
+				"service_account_username",
+				"service_account_password"
+			],
+			"properties": {
+				"service_account_username": {
+					"description": "User-specified Unity service account username. service account is preferred for file import.\n",
+					"type": "string"
+				},
+				"service_account_password": {
+					"description": "Unity service account password used to access the service account for Unity file import.\n",
+					"type": "string",
+					"format": "password"
+				}
+			}
+		},
+		"unity_file_details_modify": {
+			"type": "object",
+			"x-added": "4.0.0.0",
+			"description": "Unity File details to register with Powerstore as a remote system for File import.\n\nWas added in version 4.0.0.0.",
+			"properties": {
+				"service_account_username": {
+					"description": "User-specified Unity service account username. service account is preferred for file import.\n",
+					"type": "string"
+				},
+				"service_account_password": {
+					"description": "Unity service account password used to access the service account for Unity file import.\n",
+					"type": "string",
+					"format": "password"
+				}
+			}
 		},
 		"vcenter_instance": {
 			"type": "object",

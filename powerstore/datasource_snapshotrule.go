@@ -19,8 +19,13 @@ package powerstore
 
 import (
 	"context"
+	"net/url"
 
-	"github.com/dell/gopowerstore"
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -28,9 +33,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-
-	"terraform-provider-powerstore/client"
-	"terraform-provider-powerstore/models"
 )
 
 var (
@@ -44,7 +46,7 @@ func newSnapshotRuleDataSource() datasource.DataSource {
 }
 
 type snapshotRuleDataSource struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 type snapshotRuleDataSourceModel struct {
@@ -147,6 +149,11 @@ func (d *snapshotRuleDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 							MarkdownDescription: "Indicates whether this snapshot rule can be modified.",
 							Computed:            true,
 						},
+						"is_secure": schema.BoolAttribute{
+							Description:         "Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+							MarkdownDescription: "Indicates whether snapshots created by this rule should be secure. Secure snapshots cannot be deleted before the expiration time, and the expiration time cannot be reduced.",
+							Computed:            true,
+						},
 						"managed_by": schema.StringAttribute{
 							Description:         "The entity that owns and manages the instance.",
 							MarkdownDescription: "The entity that owns and manages the instance.",
@@ -218,34 +225,37 @@ func (d *snapshotRuleDataSource) Configure(_ context.Context, req datasource.Con
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	client := req.ProviderData.(*client.Client)
+	d.client = client.GenClient
 }
 
 func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state snapshotRuleDataSourceModel
-	var snapshotRules []gopowerstore.SnapshotRule
-	var snapshotRule gopowerstore.SnapshotRule
-	var err error
 
 	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	//Read the snapshot rules based on snapshot rule id/name and if nothing is mentioned, then it returns all the snapshot rules
-	if state.Name.ValueString() != "" {
-		snapshotRule, err = d.client.PStoreClient.GetSnapshotRuleByName(context.Background(), state.Name.ValueString())
-		snapshotRules = append(snapshotRules, snapshotRule)
-	} else if state.ID.ValueString() != "" {
-		snapshotRule, err = d.client.PStoreClient.GetSnapshotRule(context.Background(), state.ID.ValueString())
-		snapshotRules = append(snapshotRules, snapshotRule)
-	} else if state.Filters.ValueString() != "" {
-		filterMap := convertQueriesToMap(state.Filters.ValueQueries())
-		snapshotRules, err = d.client.GetSnapshotRuleByFilter(ctx, filterMap)
-	} else {
-		snapshotRules, err = d.client.PStoreClient.GetSnapshotRules(context.Background())
+
+	sel := "*,policies(*)"
+	queries := make(url.Values)
+	queries.Set("select", sel)
+
+	id := state.ID.ValueString()
+	if !state.Name.IsNull() {
+		queries.Set("name", "eq."+state.Name.ValueString())
 	}
-	//check if there is any error while getting the snapshot rule
+	if !state.Filters.IsNull() {
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
+	}
+
+	dsreq := helper.DsReq[clientgen.SnapshotRuleInstance, clientgen.ApiGetSnapshotRuleByIdRequest, clientgen.ApiGetAllSnapshotRulesRequest]{
+		Instance:   d.client.SnapshotRuleApi.GetSnapshotRuleById,
+		Collection: d.client.SnapshotRuleApi.GetAllSnapshotRules,
+	}
+
+	snapshotRules, err := dsreq.Execute(ctx, queries, id)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Read PowerStore Snapshot Rules",
@@ -254,14 +264,15 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	state.SnapshotRules, err = updateSnapshotRuleState(snapshotRules)
-	if err != nil {
+	if state.Name.ValueString() != "" && len(snapshotRules) == 0 {
 		resp.Diagnostics.AddError(
-			"Failed to update snapshot rule state",
-			err.Error(),
+			"Unable to Read PowerStore Snapshot Rule",
+			"There is no snapshot rule with name "+state.Name.ValueString(),
 		)
 		return
 	}
+
+	state.SnapshotRules = updateSnapshotRuleState(snapshotRules)
 	state.ID = types.StringValue("placeholder")
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
@@ -271,44 +282,46 @@ func (d *snapshotRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 }
 
 // updateSnapshotRuleState iterates over the snapshot rules list and update the state
-func updateSnapshotRuleState(SnapshotRules []gopowerstore.SnapshotRule) (response []models.SnapshotRuleDataSource, err error) {
-	for _, SnapshotRuleValue := range SnapshotRules {
-		daysOfWeekList := []attr.Value{}
-		for _, day := range SnapshotRuleValue.DaysOfWeek {
-			daysOfWeekList = append(daysOfWeekList, types.StringValue(string(day)))
+func updateSnapshotRuleState(snapshotRules []clientgen.SnapshotRuleInstance) []models.SnapshotRuleDataSource {
+	return helper.SliceTransform(snapshotRules, func(in clientgen.SnapshotRuleInstance) models.SnapshotRuleDataSource {
+		return models.SnapshotRuleDataSource{
+			ID:               helper.TfString(in.Id),
+			Name:             helper.TfString(in.Name),
+			Interval:         helper.TfString(in.Interval),
+			TimeOfDay:        helper.TfString(in.TimeOfDay),
+			TimeZone:         helper.TfString(in.Timezone),
+			DesiredRetention: helper.TfInt32AsInt64(in.DesiredRetention),
+			IsReplica:        helper.TfBool(in.IsReplica),
+			NASAccessType:    helper.TfString(in.NasAccessType),
+			IsReadOnly:       helper.TfBool(in.IsReadOnly),
+			IsSecure:         helper.TfBool(in.IsSecure),
+			ManagedBy:        helper.TfString(in.ManagedBy),
+			ManagedByID:      helper.TfString(in.ManagedById),
+			IntervalL10N:     helper.TfString(in.IntervalL10n),
+			TimeZoneL10N:     helper.TfString(in.TimezoneL10n),
+			NASAccessType10N: helper.TfString(in.NasAccessTypeL10n),
+			ManagedByID10N:   helper.TfString(in.ManagedByL10n),
+			DaysOfWeek: func() types.List {
+				slice := helper.SliceTransform(in.DaysOfWeek, func(in clientgen.DaysOfWeekEnum) attr.Value {
+					return types.StringValue(string(in))
+				})
+				list, _ := types.ListValue(types.StringType, slice)
+				return list
+			}(),
+			DaysOfWeek10N: func() types.List {
+				slice := helper.SliceTransform(in.DaysOfWeekL10n, func(in string) attr.Value {
+					return types.StringValue(in)
+				})
+				list, _ := types.ListValue(types.StringType, slice)
+				return list
+			}(),
+			Policies: helper.SliceTransform(in.Policies, func(in clientgen.PolicyInstance) models.Policies {
+				return models.Policies{
+					ID:          helper.TfString(in.Id),
+					Name:        helper.TfString(in.Name),
+					Description: helper.TfString(in.Description),
+				}
+			}),
 		}
-		daysOfWeekL10NList := []attr.Value{}
-		for _, day := range SnapshotRuleValue.DaysOfWeekL10n {
-			daysOfWeekL10NList = append(daysOfWeekL10NList, types.StringValue(day))
-		}
-		var snapshotRuleState = models.SnapshotRuleDataSource{
-			ID:               types.StringValue(SnapshotRuleValue.ID),
-			Name:             types.StringValue(SnapshotRuleValue.Name),
-			Interval:         types.StringValue(string(SnapshotRuleValue.Interval)),
-			TimeOfDay:        types.StringValue(SnapshotRuleValue.TimeOfDay),
-			TimeZone:         types.StringValue(string(SnapshotRuleValue.TimeZone)),
-			DesiredRetention: types.Int64Value(int64(SnapshotRuleValue.DesiredRetention)),
-			IsReplica:        types.BoolValue(SnapshotRuleValue.IsReplica),
-			NASAccessType:    types.StringValue(string(SnapshotRuleValue.NASAccessType)),
-			IsReadOnly:       types.BoolValue(SnapshotRuleValue.IsReadOnly),
-			ManagedBy:        types.StringValue(string(SnapshotRuleValue.ManagedBy)),
-			ManagedByID:      types.StringValue(SnapshotRuleValue.ManagedByID),
-			IntervalL10N:     types.StringValue(SnapshotRuleValue.IntervalL10n),
-			TimeZoneL10N:     types.StringValue(SnapshotRuleValue.TimezoneL10n),
-			NASAccessType10N: types.StringValue(SnapshotRuleValue.NASAccessTypeL10n),
-			ManagedByID10N:   types.StringValue(SnapshotRuleValue.ManagedNyL10n),
-		}
-		snapshotRuleState.DaysOfWeek, _ = types.ListValue(types.StringType, daysOfWeekList)
-		snapshotRuleState.DaysOfWeek10N, _ = types.ListValue(types.StringType, daysOfWeekL10NList)
-		for _, policy := range SnapshotRuleValue.Policies {
-			snapshotRuleState.Policies = append(snapshotRuleState.Policies, models.Policies{
-				ID:          types.StringValue(policy.ID),
-				Name:        types.StringValue(policy.Name),
-				Description: types.StringValue(policy.Description),
-			})
-		}
-
-		response = append(response, snapshotRuleState)
-	}
-	return response, nil
+	})
 }

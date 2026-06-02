@@ -65,6 +65,14 @@ func TfInt32(in *int32) types.Int32 {
 	return types.Int32Value(*in)
 }
 
+// TfInt32AsInt64 - Converts *int32 to types.Int64, returns types.Int64Null if input is nil
+func TfInt32AsInt64(in *int32) types.Int64 {
+	if in == nil {
+		return types.Int64Null()
+	}
+	return types.Int64Value(int64(*in))
+}
+
 // TfInt64 - Converts *int64 to types.Int64, returns types.Int64Null if input is nil
 func TfInt64(in *int64) types.Int64 {
 	if in == nil {
@@ -147,6 +155,26 @@ func ValueToEnumPointer[B bool | string | int32, E ~bool | ~string | ~int32, VT 
 	return &enumVal
 }
 
+// PointerStringEnum - Converts types.String to a pointer to a string-based enum type
+// Returns nil if input is null, unknown, or empty string
+// This is needed for custom enum types that are based on string (e.g., clientgen.NASAccessTypeEnum)
+func PointerStringEnum[T ~string, VT attr.Value](in VT) *T {
+	if in.IsNull() || in.IsUnknown() {
+		return nil
+	}
+	var strVal string
+	switch inv := any(in).(type) {
+	case types.String:
+		strVal = inv.ValueString()
+		if strVal == "" {
+			return nil
+		}
+		converted := T(strVal)
+		return &converted
+	}
+	return nil
+}
+
 // SliceTransform - Applies the transform function to each element in a slice
 func SliceTransform[tfT any, jT any](in []jT, transform func(jT) tfT) []tfT {
 	ret := make([]tfT, len(in))
@@ -162,4 +190,30 @@ func SetDefault[T any](in *T, defaultVal T) *T {
 		return in
 	}
 	return &defaultVal
+}
+
+// StringPtr - Converts a string to *string
+func StringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+// BoolPtr - Converts a bool to *bool
+func BoolPtr(b bool) *bool {
+	return &b
+}
+
+// Int32Ptr - Converts int32 to *int32
+func Int32Ptr(i int32) *int32 {
+	return &i
+}
+
+// Int32Value - Converts *int32 to int32 with default 0
+func Int32Value(i *int32) int32 {
+	if i == nil {
+		return 0
+	}
+	return *i
 }

@@ -37,7 +37,8 @@ var username = setDefault(os.Getenv("POWERSTORE_USERNAME"), "test")
 var password = setDefault(os.Getenv("POWERSTORE_PASSWORD"), "test")
 var nasServerID = setDefault(os.Getenv("NAS_SERVER_ID"), "tfacc_nas_server_id")
 var nasServerName = setDefault(os.Getenv("NAS_SERVER_NAME"), "tfacc_nas")
-var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "db11abb3-789e-47f9-96b5-84b5374cbcd2")
+var remoteSystemID = setDefault(os.Getenv("REMOTE_SYSTEM_ID"), "cd41130c-a751-4b39-bde1-b76f246c27b6")
+var replicationSessionID = setDefault(os.Getenv("REPLICATION_SESSION_ID"), "b5f699ec-45a2-4bac-8153-3d520bffa861")
 var FunctionMocker *mockey.Mocker
 
 var ProviderConfigForTesting = ``

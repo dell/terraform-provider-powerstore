@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2025-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -154,6 +154,7 @@ Read-Only:
 - `is_async_m_time_enabled` (Boolean) Is Async MTime Enabled of the File System
 - `is_modified` (Boolean) Is Modified of the File System
 - `is_quota_enabled` (Boolean) Is Quota Enabled of the File System
+- `is_secure` (Boolean) Indicates whether a snapshot type filesystem is secure
 - `is_smb_no_notify_enabled` (Boolean) Is Smb No Notify Enabled of the File System
 - `is_smb_notify_on_access_enabled` (Boolean) Is Smb Notify On Access Enabled of the File System
 - `is_smb_notify_on_write_enabled` (Boolean) Is Smb Notify On Write Enabled of the File System
