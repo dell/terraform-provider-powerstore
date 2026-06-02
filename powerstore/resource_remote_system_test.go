@@ -18,10 +18,16 @@ limitations under the License.
 package powerstore
 
 import (
+	"context"
+	"fmt"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
 	"testing"
+
+	"terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -50,6 +56,101 @@ var remoteManagementAddress = func() string {
 	return addr
 }()
 
+// remoteExchangeUsername is used for certificate exchange
+var remoteExchangeUsername = setDefault(os.Getenv("POWERSTORE_REMOTE_USERNAME"), "admin")
+
+// remoteExchangePassword is used for certificate exchange
+var remoteExchangePassword = setDefault(os.Getenv("POWERSTORE_REMOTE_PASSWORD"), "Password123!")
+
+// deleteExistingRemoteSystem deletes any existing remote system with the given management address
+func deleteExistingRemoteSystem(t *testing.T) {
+	if isMockServer() {
+		return // No cleanup needed for mock server
+	}
+	c, err := getClientForTest()
+	if err != nil {
+		t.Logf("Warning: Could not create client for cleanup: %v", err)
+		return
+	}
+	// Find remote system by management address using GenClient
+	queryParams := url.Values{}
+	queryParams.Set("select", "id,management_address")
+	remoteSystems, _, err := c.GenClient.RemoteSystemApi.GetAllRemoteSystems(context.Background()).Queries(queryParams).Execute()
+	if err != nil {
+		t.Logf("Warning: Could not list remote systems for cleanup: %v", err)
+		return
+	}
+	for _, rs := range remoteSystems {
+		if rs.ManagementAddress != nil && *rs.ManagementAddress == remoteManagementAddress {
+			deleteBody := map[string]interface{}{}
+			_, err := c.GenClient.RemoteSystemApi.DeleteRemoteSystemById(context.Background(), *rs.Id).Body(deleteBody).Execute()
+			if err != nil {
+				t.Logf("Warning: Could not delete existing remote system %s: %v", *rs.Id, err)
+			} else {
+				t.Logf("Deleted existing remote system %s (%s) for clean test state", *rs.Id, *rs.ManagementAddress)
+			}
+		}
+	}
+}
+
+// restoreRemoteSystem recreates the remote system after tests complete
+func restoreRemoteSystem(t *testing.T) {
+	if isMockServer() {
+		return // No restore needed for mock server
+	}
+	c, err := getClientForTest()
+	if err != nil {
+		t.Logf("Warning: Could not create client for restore: %v", err)
+		return
+	}
+	// Check if remote system already exists using GenClient
+	queryParams := url.Values{}
+	queryParams.Set("select", "id,management_address")
+	remoteSystems, _, err := c.GenClient.RemoteSystemApi.GetAllRemoteSystems(context.Background()).Queries(queryParams).Execute()
+	if err != nil {
+		t.Logf("Warning: Could not list remote systems for restore check: %v", err)
+		return
+	}
+	for _, rs := range remoteSystems {
+		if rs.ManagementAddress != nil && *rs.ManagementAddress == remoteManagementAddress {
+			t.Logf("Remote system %s already exists, no restore needed", *rs.ManagementAddress)
+			return
+		}
+	}
+	// Perform certificate exchange first using GenClient
+	exchangeBody := clientgen.X509CertificateExchange{
+		Service:  clientgen.X509CertificateServiceEnum("Replication_HTTP"),
+		Address:  remoteManagementAddress,
+		Port:     443,
+		Username: remoteExchangeUsername,
+		Password: remoteExchangePassword,
+	}
+	_, err = c.GenClient.X509CertificateApi.PostX509CertificateById(context.Background()).Body(exchangeBody).Execute()
+	if err != nil {
+		t.Logf("Warning: Certificate exchange failed during restore: %v", err)
+	}
+	// Create remote system using GenClient
+	latency := clientgen.RemoteSystemLatencyEnum("Low")
+	createBody := clientgen.RemoteSystemCreate{
+		ManagementAddress:  &remoteManagementAddress,
+		DataNetworkLatency: &latency,
+	}
+	_, _, err = c.GenClient.RemoteSystemApi.PostAllRemoteSystems(context.Background()).Body(createBody).Execute()
+	if err != nil {
+		t.Logf("Warning: Could not restore remote system: %v", err)
+	} else {
+		t.Logf("Restored remote system %s after tests", remoteManagementAddress)
+	}
+}
+
+// getClientForTest creates a PowerStore client for test cleanup/restore operations
+func getClientForTest() (*client.Client, error) {
+	if endpoint == "" {
+		return nil, fmt.Errorf("endpoint not set")
+	}
+	return client.NewClient(endpoint, username, password, true, 120)
+}
+
 // --- Acceptance Tests ---
 
 // TestAccRemoteSystemResource_CRUD covers Create, Read, Update (description + latency), ImportState, and Delete.
@@ -57,9 +158,8 @@ func TestAccRemoteSystemResource_CRUD(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	if !isMockServer() {
-		t.Skip("Skipping CRUD on real server - remote system to 10.230.45.71 already exists on 10.230.24.184 with active replication sessions. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
-	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -115,13 +215,16 @@ func TestAccRemoteSystemResource_CRUD(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_UpdateName covers the name field update path in Update.
+// Note: PowerStore API requires description or management_address to be modified - name-only update not supported.
 func TestAccRemoteSystemResource_UpdateName(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+		t.Skip("Skipping on real server - API requires description or management_address for update, name-only not supported")
 	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -146,9 +249,8 @@ func TestAccRemoteSystemResource_CreateWithCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
-	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -167,13 +269,16 @@ func TestAccRemoteSystemResource_CreateWithCredentials(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_UpdateCredentials covers remote_username and remote_password in Update.
+// Note: PowerStore API requires description or management_address to be modified - credentials-only update not supported.
 func TestAccRemoteSystemResource_UpdateCredentials(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system with credentials. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+		t.Skip("Skipping on real server - API requires description or management_address for update")
 	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -248,9 +353,8 @@ func TestAccRemoteSystemResource_CreateWithType(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
-	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -267,13 +371,16 @@ func TestAccRemoteSystemResource_CreateWithType(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_UpdateType covers Type field update path in Update.
+// Note: Mock-only test - "NonPowerStore" type is not a valid enum value on real server.
 func TestAccRemoteSystemResource_UpdateType(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+		t.Skip("Skipping on real server - NonPowerStore type is not a valid enum value")
 	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -297,7 +404,7 @@ func TestAccRemoteSystemResource_UpdateAddress(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+		t.Skip("Skipping on real server - address update requires different remote array")
 	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -317,13 +424,16 @@ func TestAccRemoteSystemResource_UpdateAddress(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_CreateWithDataConnectionType covers DataConnectionType field in Create.
+// Note: data_connection_type is not valid for PowerStore-to-PowerStore remote systems.
 func TestAccRemoteSystemResource_CreateWithDataConnectionType(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+		t.Skip("Skipping on real server - data_connection_type not valid for PowerStore remote systems")
 	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -340,13 +450,16 @@ func TestAccRemoteSystemResource_CreateWithDataConnectionType(t *testing.T) {
 }
 
 // TestAccRemoteSystemResource_CreateWithIscsiAddresses covers IscsiAddresses field in Create.
+// Note: iscsi_addresses is not valid for PowerStore-to-PowerStore remote systems.
 func TestAccRemoteSystemResource_CreateWithIscsiAddresses(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
+		t.Skip("Skipping on real server - iscsi_addresses not valid for PowerStore remote systems")
 	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -368,9 +481,8 @@ func TestAccRemoteSystemResource_NoChangeUpdate(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
-	if !isMockServer() {
-		t.Skip("Skipping on real server - requires creating a remote system. Use mock server or set POWERSTORE_REMOTE_ENDPOINT to a different array without active sessions.")
-	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
@@ -393,6 +505,8 @@ func TestAccRemoteSystemResource_NoChangeUpdate(t *testing.T) {
 var RemoteSystemCreateConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	description          = "Terraform acceptance test remote system"
 	data_network_latency = "Low"
 }
@@ -401,6 +515,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemUpdateDescConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	description          = "Updated description"
 	data_network_latency = "Low"
 }
@@ -409,6 +525,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemUpdateLatencyConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	description          = "Updated description"
 	data_network_latency = "High"
 }
@@ -417,6 +535,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemUpdateNameConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	name                 = "Updated Name"
 	description          = "Terraform acceptance test remote system"
 	data_network_latency = "Low"
@@ -445,6 +565,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemCreateWithCredentialsConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	remote_username      = "admin"
 	remote_password      = "Password123!"
 	data_network_latency = "Low"
@@ -454,6 +576,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemUpdateCredentialsConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	remote_username      = "newuser"
 	remote_password      = "NewPassword123!"
 	data_network_latency = "Low"
@@ -463,6 +587,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemCreateWithTypeConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	type                 = "PowerStore"
 	data_network_latency = "Low"
 }
@@ -471,6 +597,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemUpdateTypeConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	type                 = "NonPowerStore"
 	data_network_latency = "Low"
 }
@@ -486,7 +614,9 @@ resource "powerstore_remote_system" "test" {
 
 var RemoteSystemCreateWithDataConnectionTypeConfig = `
 resource "powerstore_remote_system" "test" {
-	management_address    = "` + remoteManagementAddress + `"
+	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	data_connection_type = "iSCSI"
 	data_network_latency = "Low"
 }
@@ -495,6 +625,8 @@ resource "powerstore_remote_system" "test" {
 var RemoteSystemCreateWithIscsiAddressesConfig = `
 resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
+	exchange_username    = "` + remoteExchangeUsername + `"
+	exchange_password    = "` + remoteExchangePassword + `"
 	iscsi_addresses      = ["192.168.1.1", "192.168.1.2"]
 	data_network_latency = "Low"
 }
