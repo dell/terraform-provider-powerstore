@@ -56,4 +56,5 @@ RequiredAPIs = [
     '/remote_system',
     '/remote_system/{id}',
     '/security_config/generate_temp_credentials',
+    '/x509_certificate/exchange',
 ]

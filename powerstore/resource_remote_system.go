@@ -160,6 +160,17 @@ func (r *resourceRemoteSystem) Schema(ctx context.Context, req resource.SchemaRe
 				Description:         "List of supported remote protection capabilities.",
 				MarkdownDescription: "List of supported remote protection capabilities.",
 			},
+			"exchange_username": schema.StringAttribute{
+				Optional:            true,
+				Description:         "Username for certificate exchange with remote PowerStore system. Required for PowerStore-to-PowerStore connections. Can be the admin username or a temporary client_id from generate_temp_credentials API.",
+				MarkdownDescription: "Username for certificate exchange with remote PowerStore system. Required for PowerStore-to-PowerStore connections. Can be the admin username or a temporary `client_id` from `generate_temp_credentials` API.",
+			},
+			"exchange_password": schema.StringAttribute{
+				Optional:            true,
+				Sensitive:           true,
+				Description:         "Password for certificate exchange with remote PowerStore system. Required for PowerStore-to-PowerStore connections. Can be the admin password or a temporary secret from generate_temp_credentials API.",
+				MarkdownDescription: "Password for certificate exchange with remote PowerStore system. Required for PowerStore-to-PowerStore connections. Can be the admin password or a temporary `secret` from `generate_temp_credentials` API.",
+			},
 		},
 	}
 }
@@ -191,6 +202,29 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 
 	log.Printf("Started Create Remote System")
 
+	// Step 1: Exchange certificates if credentials are provided (for PowerStore-to-PowerStore)
+	if !plan.ExchangeUsername.IsNull() && !plan.ExchangeUsername.IsUnknown() &&
+		!plan.ExchangePassword.IsNull() && !plan.ExchangePassword.IsUnknown() {
+		log.Printf("Exchanging certificates with remote system")
+		exchangeBody := clientgen.X509CertificateExchange{
+			Service:  clientgen.X509CertificateServiceEnum("Replication_HTTP"),
+			Address:  plan.ManagementAddress.ValueString(),
+			Port:     443,
+			Username: plan.ExchangeUsername.ValueString(),
+			Password: plan.ExchangePassword.ValueString(),
+		}
+		_, err := r.client.GenClient.X509CertificateApi.PostX509CertificateById(ctx).Body(exchangeBody).Execute()
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error exchanging certificates",
+				"Could not exchange certificates with remote system: "+err.Error(),
+			)
+			return
+		}
+		log.Printf("Certificate exchange successful")
+	}
+
+	// Step 2: Create remote system
 	createBody := clientgen.RemoteSystemCreate{
 		ManagementAddress: helper.ValueToPointer[string](plan.ManagementAddress),
 	}

@@ -147,6 +147,7 @@ Class | Method | HTTP request | Description
 *VolumeGroupApi* | [**VolumeGroupEndMetro**](docs/VolumeGroupApi.md#volumegroupendmetro) | **Post** /volume_group/{id}/end_metro | End Metro Configuration
 *VolumeGroupApi* | [**VolumeGroupRemoveMembers**](docs/VolumeGroupApi.md#volumegroupremovemembers) | **Post** /volume_group/{id}/remove_members | Remove Members
 *VolumeGroupApi* | [**VolumeGroupSnapshot**](docs/VolumeGroupApi.md#volumegroupsnapshot) | **Post** /volume_group/{id}/snapshot | Snapshot
+*X509CertificateApi* | [**PostX509CertificateById**](docs/X509CertificateApi.md#postx509certificatebyid) | **Post** /x509_certificate/exchange | Exchange Certificates
 
 
 ## Documentation For Models
@@ -441,6 +442,8 @@ Class | Method | HTTP request | Description
  - [VolumeTypeEnum](docs/VolumeTypeEnum.md)
  - [VsphereHostInstance](docs/VsphereHostInstance.md)
  - [VsphereHostLicenseAssignmentInstance](docs/VsphereHostLicenseAssignmentInstance.md)
+ - [X509CertificateExchange](docs/X509CertificateExchange.md)
+ - [X509CertificateServiceEnum](docs/X509CertificateServiceEnum.md)
 
 
 ## Documentation For Authorization

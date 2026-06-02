@@ -75,6 +75,8 @@ type APIClient struct {
 	VolumeApi *VolumeApiService
 
 	VolumeGroupApi *VolumeGroupApiService
+
+	X509CertificateApi *X509CertificateApiService
 }
 
 type service struct {
@@ -107,6 +109,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.SnapshotRuleApi = (*SnapshotRuleApiService)(&c.common)
 	c.VolumeApi = (*VolumeApiService)(&c.common)
 	c.VolumeGroupApi = (*VolumeGroupApiService)(&c.common)
+	c.X509CertificateApi = (*X509CertificateApiService)(&c.common)
 
 	return c
 }

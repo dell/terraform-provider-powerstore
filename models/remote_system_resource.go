@@ -36,4 +36,7 @@ type RemoteSystemResource struct {
 	DataConnectionState types.String `tfsdk:"data_connection_state"`
 	Version             types.String `tfsdk:"version"`
 	Capabilities        types.List   `tfsdk:"capabilities"`
+	// Certificate exchange credentials for PowerStore-to-PowerStore
+	ExchangeUsername types.String `tfsdk:"exchange_username"`
+	ExchangePassword types.String `tfsdk:"exchange_password"`
 }

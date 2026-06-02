@@ -13,6 +13,7 @@ api_security_config.go
 api_snapshot_rule.go
 api_volume.go
 api_volume_group.go
+api_x509_certificate.go
 client.go
 configuration.go
 docs/ClusterApi.md
@@ -26,6 +27,7 @@ docs/SecurityConfigApi.md
 docs/SnapshotRuleApi.md
 docs/VolumeApi.md
 docs/VolumeGroupApi.md
+docs/X509CertificateApi.md
 model_active_session_instance.go
 model_app_type_enum.go
 model_appliance_instance.go
@@ -316,5 +318,7 @@ model_volume_state_enum.go
 model_volume_type_enum.go
 model_vsphere_host_instance.go
 model_vsphere_host_license_assignment_instance.go
+model_x509_certificate_exchange.go
+model_x509_certificate_service_enum.go
 response.go
 utils.go
