@@ -159,6 +159,7 @@ Read-Only:
 
 - `creator_type` (String)
 - `expiration_timestamp` (String)
+- `is_secure` (Boolean)
 - `source_id` (String)
 
 

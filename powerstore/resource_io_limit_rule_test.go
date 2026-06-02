@@ -19,12 +19,15 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"regexp"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/powerstore/helper"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -37,13 +40,38 @@ func TestAccIoLimitRuleRes(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
+	var mockCreateApi, mockReadApi, mockDeleteApi, mockUpdateApi *mockey.Mocker
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
+				// Create mock error
+				PreConfig: func() {
+					mockCreateApi = mockey.Mock((*clientgen.IoLimitRuleApiService).PostAllIoLimitRulesExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + IoLimitRuleParamsCreate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				// read after create mock error
+				PreConfig: func() {
+					mockCreateApi.UnPatch()
+					mockCreateApi = mockey.Mock((*clientgen.IoLimitRuleApiService).PostAllIoLimitRulesExecute).Return(&clientgen.CreateResponse{
+						Id: helper.StringPtr("1"),
+					}, nil, nil).Build()
+					mockReadApi = mockey.Mock((*clientgen.IoLimitRuleApiService).GetIoLimitRuleByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + IoLimitRuleParamsCreate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
 				Config: ProviderConfigForTesting + IoLimitRuleParamsCreate,
+				PreConfig: func() {
+					mockReadApi.UnPatch()
+					mockCreateApi.UnPatch()
+				},
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "name", "tf_acc_io_limit_rule"),
 					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "type", "Absolute"),
@@ -51,6 +79,37 @@ func TestAccIoLimitRuleRes(t *testing.T) {
 				),
 			},
 			{
+				// read refresh error
+				PreConfig: func() {
+					mockReadApi = mockey.Mock((*clientgen.IoLimitRuleApiService).GetIoLimitRuleByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + IoLimitRuleParamsCreate,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				// delete error
+				PreConfig: func() {
+					mockReadApi.UnPatch()
+					mockDeleteApi = mockey.Mock((*clientgen.IoLimitRuleApiService).DeleteIoLimitRuleByIdExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Destroy:     true,
+				Config:      ProviderConfigForTesting + IoLimitRuleParamsUpdate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				// update error
+				PreConfig: func() {
+					mockDeleteApi.UnPatch()
+					mockUpdateApi = mockey.Mock((*clientgen.IoLimitRuleApiService).PatchIoLimitRuleByIdExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + IoLimitRuleParamsUpdate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				PreConfig: func() {
+					mockUpdateApi.UnPatch()
+				},
 				Config: ProviderConfigForTesting + IoLimitRuleParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_io_limit_rule.test", "max_iops", "2000"),

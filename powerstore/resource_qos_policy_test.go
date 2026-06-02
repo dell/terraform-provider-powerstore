@@ -19,12 +19,15 @@ package powerstore
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"regexp"
 	"terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
+	"terraform-provider-powerstore/powerstore/helper"
 	"testing"
 
+	"github.com/bytedance/mockey"
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -115,18 +118,74 @@ func TestAccQosPolicy_Update(t *testing.T) {
 	if os.Getenv("TF_ACC") == "" {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
+	var mockCreateApi, mockReadApi, mockDeleteApi, mockUpdateApi *mockey.Mocker
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
+				// Create mock error
+				PreConfig: func() {
+					mockCreateApi = mockey.Mock((*clientgen.PolicyApiService).PostAllPolicysExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + QosPolicyParamsCreate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				// read after create mock error
+				PreConfig: func() {
+					mockCreateApi.UnPatch()
+					mockCreateApi = mockey.Mock((*clientgen.PolicyApiService).PostAllPolicysExecute).Return(&clientgen.CreateResponse{
+						Id: helper.StringPtr("1"),
+					}, nil, nil).Build()
+					mockReadApi = mockey.Mock((*clientgen.PolicyApiService).GetPolicyByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + QosPolicyParamsCreate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
 				Config: ProviderConfigForTesting + QosPolicyParamsCreate,
+				PreConfig: func() {
+					mockReadApi.UnPatch()
+					mockCreateApi.UnPatch()
+				},
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_qos_policy.test", "name", "tf_acc_qos_policy"),
 				),
 			},
 			{
+				// read refresh error
+				PreConfig: func() {
+					mockReadApi = mockey.Mock((*clientgen.PolicyApiService).GetPolicyByIdExecute).Return(nil, nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + QosPolicyParamsCreate,
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				// delete error
+				PreConfig: func() {
+					mockReadApi.UnPatch()
+					mockDeleteApi = mockey.Mock((*clientgen.PolicyApiService).DeletePolicyByIdExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Destroy:     true,
+				Config:      ProviderConfigForTesting + QosPolicyParamsUpdate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				// update error
+				PreConfig: func() {
+					mockDeleteApi.UnPatch()
+					mockUpdateApi = mockey.Mock((*clientgen.PolicyApiService).PatchPolicyByIdExecute).Return(nil, fmt.Errorf("mock error")).Build()
+				},
+				Config:      ProviderConfigForTesting + QosPolicyParamsUpdate,
+				ExpectError: regexp.MustCompile("mock error"),
+			},
+			{
+				PreConfig: func() {
+					mockUpdateApi.UnPatch()
+				},
 				Config: ProviderConfigForTesting + QosPolicyParamsUpdate,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("powerstore_qos_policy.test", "description", "Updated description"),

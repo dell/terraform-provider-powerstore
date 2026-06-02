@@ -98,6 +98,7 @@ After the execution of above resource block, volume would have been created on t
 - `performance_policy_id` (String) The performance_policy_id of the volume.
 - `protection_policy_id` (String) The protection_policy_id of the volume.
 - `protection_policy_name` (String) The protection policy name of the volume.
+- `qos_performance_policy_id` (String) The unique identifier of the QoS performance policy assigned to the volume.
 - `sector_size` (Number) The sector size of the volume.
 - `volume_group_id` (String) The volume group id of the volume.
 - `volume_group_name` (String) The volume group name of the volume.
