@@ -215,7 +215,6 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 		}
 		_, err := r.client.GenClient.X509CertificateApi.PostX509CertificateById(ctx).Body(exchangeBody).Execute()
 		if err != nil {
-			// Coverage: defensive error handling - cannot reliably test API failures in acceptance tests
 			resp.Diagnostics.AddError(
 				"Error exchanging certificates",
 				"Could not exchange certificates with remote system: "+err.Error(),
@@ -266,7 +265,6 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 
 	createRes, _, err := r.client.GenClient.RemoteSystemApi.PostAllRemoteSystems(ctx).Body(createBody).Execute()
 	if err != nil {
-		// Coverage: defensive error handling - cannot reliably test API failures in acceptance tests
 		resp.Diagnostics.AddError(
 			"Error creating remote system",
 			"Could not create remote system: "+err.Error(),
@@ -280,7 +278,6 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	if rsID == "" {
-		// Coverage: defensive error handling - API contract violation, cannot test in acceptance tests
 		resp.Diagnostics.AddError(
 			"Error creating remote system",
 			"Create succeeded but no ID was returned",
@@ -293,7 +290,6 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 	// Read back to populate computed fields
 	rsInstance, err := r.getRemoteSystem(ctx, rsID)
 	if err != nil {
-		// Coverage: defensive error handling - cannot reliably test read failures in acceptance tests
 		resp.Diagnostics.AddError(
 			"Error reading remote system after creation",
 			"Could not read remote system "+rsID+": "+err.Error(),
@@ -384,7 +380,6 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 	if changed {
 		_, err := r.client.GenClient.RemoteSystemApi.PatchRemoteSystemById(ctx, rsID).Body(modifyBody).Execute()
 		if err != nil {
-			// Coverage: defensive error handling - cannot reliably test API failures in acceptance tests
 			resp.Diagnostics.AddError(
 				"Error updating remote system",
 				fmt.Sprintf("Could not update remote system %s: %s", rsID, err.Error()),
@@ -396,7 +391,6 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 	// Read back to refresh state
 	rsInstance, err := r.getRemoteSystem(ctx, rsID)
 	if err != nil {
-		// Coverage: defensive error handling - cannot reliably test read failures in acceptance tests
 		resp.Diagnostics.AddError(
 			"Error reading remote system after update",
 			"Could not read remote system "+rsID+": "+err.Error(),
@@ -425,7 +419,6 @@ func (r *resourceRemoteSystem) Delete(ctx context.Context, req resource.DeleteRe
 
 	_, err := r.client.GenClient.RemoteSystemApi.DeleteRemoteSystemById(ctx, rsID).Body(map[string]interface{}{}).Execute()
 	if err != nil {
-		// Coverage: defensive error handling - cannot reliably test API failures in acceptance tests
 		resp.Diagnostics.AddError(
 			"Error deleting remote system",
 			"Could not delete remote system "+rsID+": "+err.Error(),
