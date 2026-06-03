@@ -25,7 +25,7 @@ limitations under the License.
 
 # Example 1: PowerStore-to-PowerStore remote system
 resource "powerstore_remote_system" "ps_to_ps" {
-  management_address   = "10.230.45.71"
+  management_address   = "192.168.1.100"
   description          = "Remote PowerStore for replication"
   data_network_latency = "Low"
 }
@@ -33,12 +33,12 @@ resource "powerstore_remote_system" "ps_to_ps" {
 # Example 2: Non-PowerStore remote system (e.g., PowerProtect DD)
 # Uncomment below to use non-PowerStore remote system
 # resource "powerstore_remote_system" "ppdd" {
-#   management_address   = "10.230.50.100"
+#   management_address   = "192.168.1.200"
 #   name                 = "PPDD-System"
 #   description          = "PowerProtect DD for backup"
 #   type                 = "DD"
 #   remote_username      = "admin"
 #   remote_password      = "password123"
 #   data_connection_type = "iSCSI"
-#   iscsi_addresses      = ["10.230.50.101", "10.230.50.102"]
+#   iscsi_addresses      = ["192.168.1.201", "192.168.1.202"]
 # }
