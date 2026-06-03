@@ -25,7 +25,7 @@ limitations under the License.
 
 # Example: PowerStore-to-PowerStore remote system
 resource "powerstore_remote_system" "ps_to_ps" {
-  management_address   = "192.168.1.100"
+  management_address   = "100.1.1.1"
   description          = "Remote PowerStore for replication"
   data_network_latency = "Low"
 }

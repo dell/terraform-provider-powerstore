@@ -56,7 +56,7 @@ limitations under the License.
 
 # Example: PowerStore-to-PowerStore remote system
 resource "powerstore_remote_system" "ps_to_ps" {
-  management_address   = "192.168.1.100"
+  management_address   = "100.1.1.1"
   description          = "Remote PowerStore for replication"
   data_network_latency = "Low"
 }
@@ -115,11 +115,11 @@ Import is supported using the following syntax:
 # Below are the steps to import remote system:
 # Step 1 - To import a remote system, we need the id of that remote system
 # Step 2 - To check the id of the remote system, we can make GET request to remote_system endpoint.
-#          eg. https://10.0.0.1/api/rest/remote_system which will return list of all remote system ids.
+#          eg. https://100.1.1.1/api/rest/remote_system which will return list of all remote system ids.
 # Step 3 - Add empty resource block in tf file.
 # eg.
 # resource "powerstore_remote_system" "resource_block_name" {
-#   management_address = "10.230.45.71"
+#   management_address = "100.1.1.1"
 #   description        = "Imported remote system"
 #   data_network_latency = "Low"
 # }
