@@ -50,9 +50,15 @@ type APIClient struct {
 
 	ClusterApi *ClusterApiService
 
+	FileIoLimitRuleApi *FileIoLimitRuleApiService
+
 	FileSystemApi *FileSystemApiService
 
+	IoLimitRuleApi *IoLimitRuleApiService
+
 	LoginSessionApi *LoginSessionApiService
+
+	PolicyApi *PolicyApiService
 
 	RecycleBinApi *RecycleBinApiService
 
@@ -90,8 +96,11 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 
 	// API Services
 	c.ClusterApi = (*ClusterApiService)(&c.common)
+	c.FileIoLimitRuleApi = (*FileIoLimitRuleApiService)(&c.common)
 	c.FileSystemApi = (*FileSystemApiService)(&c.common)
+	c.IoLimitRuleApi = (*IoLimitRuleApiService)(&c.common)
 	c.LoginSessionApi = (*LoginSessionApiService)(&c.common)
+	c.PolicyApi = (*PolicyApiService)(&c.common)
 	c.RecycleBinApi = (*RecycleBinApiService)(&c.common)
 	c.RecycleBinConfigApi = (*RecycleBinConfigApiService)(&c.common)
 	c.RemoteSystemApi = (*RemoteSystemApiService)(&c.common)

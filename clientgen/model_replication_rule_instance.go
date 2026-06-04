@@ -31,10 +31,11 @@ type ReplicationRuleInstance struct {
 	// Localized message string corresponding to rpo
 	RpoL10n *string `json:"rpo_l10n,omitempty"`
 	// Localized message string corresponding to managed_by Was added in version 3.0.0.0.
-	ManagedByL10n *string               `json:"managed_by_l10n,omitempty"`
-	RemoteSystem  *RemoteSystemInstance `json:"remote_system,omitempty"`
+	ManagedByL10n *string `json:"managed_by_l10n,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
 	// This is the inverse of the resource type replication_session association.
-	ReplicationSessions []ReplicationSessionInstance `json:"replication_sessions,omitempty"`
+	ReplicationSessions []map[string]interface{} `json:"replication_sessions,omitempty"`
 	// List of the policies that are associated with this replication_rule.
 	Policies []map[string]interface{} `json:"policies,omitempty"`
 }

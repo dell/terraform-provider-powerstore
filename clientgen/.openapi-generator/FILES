@@ -1,7 +1,10 @@
 README.md
 api_cluster.go
+api_file_io_limit_rule.go
 api_file_system.go
+api_io_limit_rule.go
 api_login_session.go
+api_policy.go
 api_recycle_bin.go
 api_recycle_bin_config.go
 api_remote_system.go
@@ -74,7 +77,9 @@ model_file_interface_role_enum.go
 model_file_interface_route_instance.go
 model_file_interface_route_operational_status_enum.go
 model_file_interface_source_parameters.go
+model_file_io_limit_rule_create.go
 model_file_io_limit_rule_instance.go
+model_file_io_limit_rule_modify.go
 model_file_kerberos_instance.go
 model_file_ldap_authentication_type_enum.go
 model_file_ldap_instance.go
@@ -143,7 +148,9 @@ model_import_universal_consistency_group_instance.go
 model_import_universal_volume_instance.go
 model_initiator_instance.go
 model_initiator_protocol_type_enum.go
+model_io_limit_rule_create.go
 model_io_limit_rule_instance.go
+model_io_limit_rule_modify.go
 model_io_priority_enum.go
 model_ip_pool_address_instance.go
 model_ip_port_instance.go
@@ -181,8 +188,10 @@ model_os_type_enum.go
 model_performance_rule_instance.go
 model_physical_switch_connect_method_enum.go
 model_physical_switch_purpose_enum.go
+model_policy_create.go
 model_policy_instance.go
 model_policy_managed_by_enum.go
+model_policy_modify.go
 model_policy_type_enum.go
 model_port_stale_state_enum.go
 model_post_event_policy_enum.go
