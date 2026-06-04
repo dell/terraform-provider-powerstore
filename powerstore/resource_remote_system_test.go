@@ -42,9 +42,9 @@ func isMockServer() bool {
 	return strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1")
 }
 
-// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT or uses the default
+// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT
 var remoteManagementAddress = func() string {
-	addr := setDefault(os.Getenv("POWERSTORE_REMOTE_ENDPOINT"), "10.230.45.71")
+	addr := os.Getenv("POWERSTORE_REMOTE_ENDPOINT")
 	for _, prefix := range []string{"https://", "http://"} {
 		if len(addr) > len(prefix) && addr[:len(prefix)] == prefix {
 			addr = addr[len(prefix):]
@@ -60,10 +60,30 @@ var remoteManagementAddress = func() string {
 }()
 
 // remoteExchangeUsername is used for certificate exchange
-var remoteExchangeUsername = setDefault(os.Getenv("POWERSTORE_REMOTE_USERNAME"), "admin")
+var remoteExchangeUsername = os.Getenv("POWERSTORE_REMOTE_USERNAME")
 
 // remoteExchangePassword is used for certificate exchange
-var remoteExchangePassword = setDefault(os.Getenv("POWERSTORE_REMOTE_PASSWORD"), "Password123!")
+var remoteExchangePassword = os.Getenv("POWERSTORE_REMOTE_PASSWORD")
+
+// testAccPreCheckRemoteSystem verifies required environment variables are set for remote system tests
+func testAccPreCheckRemoteSystem(t *testing.T) {
+	// For mock server, these are not required
+	if isMockServer() {
+		return
+	}
+
+	if remoteManagementAddress == "" {
+		t.Fatal("POWERSTORE_REMOTE_ENDPOINT must be set for remote system acceptance tests")
+	}
+
+	if remoteExchangeUsername == "" {
+		t.Fatal("POWERSTORE_REMOTE_USERNAME must be set for remote system acceptance tests")
+	}
+
+	if remoteExchangePassword == "" {
+		t.Fatal("POWERSTORE_REMOTE_PASSWORD must be set for remote system acceptance tests")
+	}
+}
 
 // deleteExistingRemoteSystem deletes any existing remote system with the given management address
 func deleteExistingRemoteSystem(t *testing.T) {
@@ -165,7 +185,7 @@ func TestAccRemoteSystemResource_CRUD(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Step 1: Create
@@ -226,7 +246,7 @@ func TestAccRemoteSystemResource_UpdateDescription(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -254,7 +274,7 @@ func TestAccRemoteSystemResource_UpdateLatency(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -282,7 +302,7 @@ func TestAccRemoteSystemResource_Import(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -307,7 +327,7 @@ func TestAccRemoteSystemResource_CreateWithCredentials(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -331,7 +351,7 @@ func TestAccRemoteSystemResource_UpdateCredentials(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -353,7 +373,7 @@ func TestAccRemoteSystemResource_MissingAddress(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -370,7 +390,7 @@ func TestAccRemoteSystemResource_EmptyAddress(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -387,7 +407,7 @@ func TestAccRemoteSystemResource_InvalidLatency(t *testing.T) {
 		t.Skip("Dont run with units tests because it will try to create the context")
 	}
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -406,7 +426,7 @@ func TestAccRemoteSystemResource_CreateWithType(t *testing.T) {
 	deleteExistingRemoteSystem(t)
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -428,7 +448,7 @@ func TestAccRemoteSystemResource_NoChangeUpdate(t *testing.T) {
 	deleteExistingRemoteSystem(t)
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -453,7 +473,7 @@ func TestAccRemoteSystemResource_CreateWithAllFields(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -478,7 +498,7 @@ func TestAccRemoteSystemResource_CreateWithDescription(t *testing.T) {
 	t.Cleanup(func() { restoreRemoteSystem(t) })
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			{
@@ -513,7 +533,7 @@ func TestAccRemoteSystemResource_CreateError(t *testing.T) {
 	}()
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Test create error - mock PostAllRemoteSystems to return error
@@ -547,7 +567,7 @@ func TestAccRemoteSystemResource_ReadAfterCreateError(t *testing.T) {
 	}()
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Test read error after create - mock create to succeed but read to fail
@@ -585,7 +605,7 @@ func TestAccRemoteSystemResource_UpdateError(t *testing.T) {
 	}()
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Create first
@@ -623,7 +643,7 @@ func TestAccRemoteSystemResource_CertificateExchangeError(t *testing.T) {
 	}()
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
 		ProtoV6ProviderFactories: testProviderFactory,
 		Steps: []resource.TestStep{
 			// Test certificate exchange error
