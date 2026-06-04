@@ -29,6 +29,7 @@ type SmbServerInstance struct {
 	// Indicates whether the SMB server is standalone. Values are: - true - SMB server is standalone. - false - SMB server is a domain SMB server to be joined to the Active Directory.
 	IsStandalone *bool `json:"is_standalone,omitempty"`
 	// Indicates whether the SMB server is joined to the Active Directory. Always false for standalone SMB servers.
-	IsJoined  *bool              `json:"is_joined,omitempty"`
-	NasServer *NasServerInstance `json:"nas_server,omitempty"`
+	IsJoined *bool `json:"is_joined,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

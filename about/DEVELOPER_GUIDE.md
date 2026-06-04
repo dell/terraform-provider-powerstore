@@ -27,9 +27,10 @@ The `clientgen_utils` folder contains everything required to generate the client
 The file `clientgen_utils/spec_4_1.json` is the PowerStore 4.1 OpenAPI specification. This file is processed to generate the file `clientgen/spec_4_1_filetered.json`.
 The following types of processing is carried out:
 
-1. We filter the spec to include only the APIs and models that we need. This keeps our client code size small.
-2. We add the value `x-flexible-query` of `true` to every GET API. This allows us to inject query parameters of any key and value to such API calls. This is required as the data-sources in the Terraform Provider for PowerStore accepts any type of query parameters from users.
-3. We add operation ids to every API. This allows for consistency of method names.
+1. We filter the spec to include only the APIs and models that we need.
+2. We break circular references in non-priority (3 level deep) model definitions to prevent the generator from OOM on complex specs. Priority definitions (directly referenced by API paths) are preserved with all their types intact.
+3. We add the value `x-flexible-query` of `true` to every GET API. This allows us to inject query parameters of any key and value to such API calls. This is required as the data-sources in the Terraform Provider for PowerStore accepts any type of query parameters from users.
+4. We add operation ids to every API. This allows for consistency of method names.
 
 The required APIs are specified in the `clientgen_utils/requiredApis.py` file.
 Processing of the OpenAPI spec is carried out by all the other python files in the `clientgen_utils` folder.

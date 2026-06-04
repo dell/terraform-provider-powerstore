@@ -34,11 +34,13 @@ type FsnInstance struct {
 	// Localized message string corresponding to status Was added in version 3.5.0.0.
 	StatusL10n *string `json:"status_l10n,omitempty"`
 	// This is the inverse of the resource type ip_port association.
-	IpPorts []IpPortInstance `json:"ip_ports,omitempty"`
+	IpPorts []map[string]interface{} `json:"ip_ports,omitempty"`
 	// This is the inverse of the resource type bond association.
-	Bonds     []BondInstance     `json:"bonds,omitempty"`
-	Partner   *FsnInstance       `json:"partner,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
+	Bonds []map[string]interface{} `json:"bonds,omitempty"`
+	// This is the embeddable reference form of partner_id attribute.
+	Partner map[string]interface{} `json:"partner,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
 	// This is the inverse of the resource type eth_port association.
-	EthPorts []EthPortInstance `json:"eth_ports,omitempty"`
+	EthPorts []map[string]interface{} `json:"eth_ports,omitempty"`
 }

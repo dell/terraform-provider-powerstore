@@ -88,6 +88,96 @@ def _get_all_required_models(all_models: dict, top_level_models: set) -> dict:
     
     return all_models
 
+def _find_back_edges(definitions: dict, priority_roots: set) -> set:
+    """
+    Finds back-edges in the definition reference graph using DFS.
+    A back-edge is an edge (source, target) where target is an ancestor
+    of source in the DFS tree, indicating a cycle.
+
+    priority_roots are DFS'd first so that their direct references become
+    tree edges (preserved), and back-edges are found at the deep end of
+    cycles instead.
+
+    Returns:
+        set of (source_def, target_def) tuples representing back-edges.
+    """
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {name: WHITE for name in definitions}
+    back_edges = set()
+
+    def dfs(node):
+        color[node] = GRAY
+        for neighbor in sorted(_get_refs(definitions[node])):
+            if neighbor not in color:
+                continue
+            if color[neighbor] == GRAY:
+                back_edges.add((node, neighbor))
+            elif color[neighbor] == WHITE:
+                dfs(neighbor)
+        color[node] = BLACK
+
+    # DFS from priority roots first to protect their direct references
+    for name in sorted(priority_roots):
+        if name in color and color[name] == WHITE:
+            dfs(name)
+    for name in definitions:
+        if color[name] == WHITE:
+            dfs(name)
+    return back_edges
+
+def _replace_refs(json_obj, target_ref: str):
+    """
+    Recursively replaces {"$ref": "#/definitions/<target_ref>"} with {"type": "object"},
+    preserving "description" if present. Vendor extensions (x-ref, x-added, etc.) are
+    dropped — they expand the serialized schema and cause the Java generator to OOM.
+    Returns the modified object.
+    """
+    ref_value = "#/definitions/" + target_ref
+    if isinstance(json_obj, dict):
+        if json_obj.get("$ref") == ref_value:
+            result = {"type": "object"}
+            if "description" in json_obj:
+                result["description"] = json_obj["description"]
+            return result
+        return {k: _replace_refs(v, target_ref) for k, v in json_obj.items()}
+    elif isinstance(json_obj, list):
+        return [_replace_refs(item, target_ref) for item in json_obj]
+    return json_obj
+
+def _break_circular_refs(definitions: dict, dfs_roots: set, protected_defs: set) -> dict:
+    """
+    Detects circular references in definitions and breaks them by replacing
+    cycle-causing $ref entries with {"type": "object"}.
+    This prevents the OpenAPI generator's YAML serializer and ExampleGenerator
+    from exploding on circular object graphs.
+
+    dfs_roots: all path-referenced defs (GET + non-GET); DFS'd first so their
+               direct references become tree edges (preserved).
+    protected_defs: definitions never modified — both GET response models and
+                    non-GET request bodies. Only deeply-nested non-path-referenced
+                    definitions have their circular back-refs broken.
+    """
+    back_edges = _find_back_edges(definitions, dfs_roots)
+    safe_edges = {(s, t) for s, t in back_edges if s not in protected_defs}
+    if safe_edges:
+        print("Breaking", len(safe_edges), "circular references in deeply-nested definitions (skipped", len(back_edges) - len(safe_edges), "in path-referenced models)")
+        for src, tgt in sorted(safe_edges):
+            print("  ", src, "->", tgt)
+    for source, target in safe_edges:
+        definitions[source] = _replace_refs(definitions[source], target)
+    return definitions
+
+def _get_get_refs(paths_obj: dict) -> set:
+    """
+    Gets all model references from GET method definitions only.
+    These are the response models we actually read and use.
+    """
+    result = set()
+    for path, methods in paths_obj.items():
+        if 'get' in methods:
+            result |= _get_refs(methods['get'])
+    return result
+
 def ProcessOpenapiSpec(file_path, paths):
     with open(file_path, 'r') as file:
         json_obj = json.load(file)
@@ -98,5 +188,11 @@ def ProcessOpenapiSpec(file_path, paths):
 
     _get_all_required_models(json_obj['definitions'], top_level_refs)
     print("The number of models is: ", len(json_obj['definitions'].keys()))
+
+    get_refs = _get_get_refs(json_obj['paths'])
+    non_get_refs = top_level_refs - get_refs
+    print("GET response models:", get_refs)
+    print("Non-GET request models:", non_get_refs)
+    _break_circular_refs(json_obj['definitions'], top_level_refs, top_level_refs)
 
     return json_obj

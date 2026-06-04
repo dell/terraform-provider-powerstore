@@ -23,6 +23,7 @@ type MaintenanceWindowInstance struct {
 	// Whether the maintenance window is active.
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// Time when the maintenance window will close (or did close).
-	EndTime   *time.Time         `json:"end_time,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
+	EndTime *time.Time `json:"end_time,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
 }

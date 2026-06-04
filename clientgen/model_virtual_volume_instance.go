@@ -69,18 +69,22 @@ type VirtualVolumeInstance struct {
 	// Localized message string corresponding to io_priority
 	IoPriorityL10n *string `json:"io_priority_l10n,omitempty"`
 	// Localized message string corresponding to creator_type
-	CreatorTypeL10n  *string                   `json:"creator_type_l10n,omitempty"`
-	Appliance        *ApplianceInstance        `json:"appliance,omitempty"`
+	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance        map[string]interface{}    `json:"appliance,omitempty"`
 	StorageContainer *StorageContainerInstance `json:"storage_container,omitempty"`
 	ReplicationGroup *ReplicationGroupInstance `json:"replication_group,omitempty"`
 	MigrationSession *MigrationSessionInstance `json:"migration_session,omitempty"`
-	Parent           *VirtualVolumeInstance    `json:"parent,omitempty"`
+	// This is the embeddable reference form of parent_id attribute.
+	Parent map[string]interface{} `json:"parent,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	ChildVirtualVolumes []VirtualVolumeInstance `json:"child_virtual_volumes,omitempty"`
-	Source              *VirtualVolumeInstance  `json:"source,omitempty"`
+	ChildVirtualVolumes []map[string]interface{} `json:"child_virtual_volumes,omitempty"`
+	// This is the embeddable reference form of source_id attribute.
+	Source map[string]interface{} `json:"source,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	TargetVirtualVolumes []VirtualVolumeInstance `json:"target_virtual_volumes,omitempty"`
-	ProtectionPolicy     *PolicyInstance         `json:"protection_policy,omitempty"`
+	TargetVirtualVolumes []map[string]interface{} `json:"target_virtual_volumes,omitempty"`
+	// This is the embeddable reference form of protection_policy_id attribute.
+	ProtectionPolicy map[string]interface{} `json:"protection_policy,omitempty"`
 	// This is the inverse of the resource type host_virtual_volume_mapping association.
 	HostVirtualVolumeMappings []HostVirtualVolumeMappingInstance `json:"host_virtual_volume_mappings,omitempty"`
 	// List of the virtual_machines that are associated with this virtual_volume.

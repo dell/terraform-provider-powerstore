@@ -59,6 +59,7 @@ type ImportSessionInstance struct {
 	// Localized message string corresponding to destination_resource_type
 	DestinationResourceTypeL10n *string `json:"destination_resource_type_l10n,omitempty"`
 	// Localized message string corresponding to state
-	StateL10n    *string               `json:"state_l10n,omitempty"`
-	RemoteSystem *RemoteSystemInstance `json:"remote_system,omitempty"`
+	StateL10n *string `json:"state_l10n,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
 }

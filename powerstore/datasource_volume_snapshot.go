@@ -469,7 +469,7 @@ func updateVolumeSnapshotState(volumes []clientgen.VolumeInstance) []models.Volu
 			LogicalUsed:               helper.TfInt64(in.LogicalUsed),
 			AppType:                   helper.TfString(in.AppType),
 			AppTypeOther:              helper.TfString(in.AppTypeOther),
-			Nsid:                      helper.TfInt32(in.Nsid),
+			Nsid:                      helper.TfInt32AsInt64(in.Nsid),
 			Nguid:                     helper.TfString(in.Nguid),
 			MigrationSessionID:        helper.TfString(in.MigrationSessionId),
 			MetroReplicationSessionID: helper.TfString(in.MetroReplicationSessionId),

@@ -25,5 +25,6 @@ type InitiatorInstance struct {
 	ChapMutualUsername *string `json:"chap_mutual_username,omitempty"`
 	// Array of active login sessions between an initiator and a target port.  Filtering on the fields of this embedded resource is not supported.
 	ActiveSessions []ActiveSessionInstance `json:"active_sessions,omitempty"`
-	Host           *HostInstance           `json:"host,omitempty"`
+	// This is the embeddable reference form of host_id attribute.
+	Host map[string]interface{} `json:"host,omitempty"`
 }

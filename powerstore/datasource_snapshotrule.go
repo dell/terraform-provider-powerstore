@@ -290,7 +290,7 @@ func updateSnapshotRuleState(snapshotRules []clientgen.SnapshotRuleInstance) []m
 			Interval:         helper.TfString(in.Interval),
 			TimeOfDay:        helper.TfString(in.TimeOfDay),
 			TimeZone:         helper.TfString(in.Timezone),
-			DesiredRetention: helper.TfInt32(in.DesiredRetention),
+			DesiredRetention: helper.TfInt32AsInt64(in.DesiredRetention),
 			IsReplica:        helper.TfBool(in.IsReplica),
 			NASAccessType:    helper.TfString(in.NasAccessType),
 			IsReadOnly:       helper.TfBool(in.IsReadOnly),

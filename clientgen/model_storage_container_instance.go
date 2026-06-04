@@ -22,11 +22,11 @@ type StorageContainerInstance struct {
 	// Localized message string corresponding to storage_protocol Was added in version 3.0.0.0.
 	StorageProtocolL10n *string `json:"storage_protocol_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	VirtualVolumes []VirtualVolumeInstance `json:"virtual_volumes,omitempty"`
+	VirtualVolumes []map[string]interface{} `json:"virtual_volumes,omitempty"`
 	// This is the inverse of the resource type replication_group association.
 	ReplicationGroups []ReplicationGroupInstance `json:"replication_groups,omitempty"`
 	// This is the inverse of the resource type datastore association.
-	Datastores []DatastoreInstance `json:"datastores,omitempty"`
+	Datastores []map[string]interface{} `json:"datastores,omitempty"`
 	// This is the inverse of the resource type storage_container_destination association.
 	Destinations []StorageContainerDestinationInstance `json:"destinations,omitempty"`
 }

@@ -66,12 +66,16 @@ type RemoteSnapshotSessionInstance struct {
 	// Localized message string corresponding to state Was added in version 3.5.0.0.
 	StateL10n *string `json:"state_l10n,omitempty"`
 	// Localized message string corresponding to creator_type Was added in version 3.5.0.0.
-	CreatorTypeL10n          *string                 `json:"creator_type_l10n,omitempty"`
-	RemoteSystem             *RemoteSystemInstance   `json:"remote_system,omitempty"`
-	Volume                   *VolumeInstance         `json:"volume,omitempty"`
-	VolumeGroup              *VolumeGroupInstance    `json:"volume_group,omitempty"`
-	RemoteSnapshot           *RemoteSnapshotInstance `json:"remote_snapshot,omitempty"`
-	Rule                     *SnapshotRuleInstance   `json:"rule,omitempty"`
-	LocalVolumeSnapshot      *VolumeInstance         `json:"local_volume_snapshot,omitempty"`
-	LocalVolumeGroupSnapshot *VolumeGroupInstance    `json:"local_volume_group_snapshot,omitempty"`
+	CreatorTypeL10n *string `json:"creator_type_l10n,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
+	// This is the embeddable reference form of volume_id attribute.
+	Volume      map[string]interface{} `json:"volume,omitempty"`
+	VolumeGroup *VolumeGroupInstance   `json:"volume_group,omitempty"`
+	// This is the embeddable reference form of remote_snapshot_id attribute.
+	RemoteSnapshot map[string]interface{} `json:"remote_snapshot,omitempty"`
+	Rule           *SnapshotRuleInstance  `json:"rule,omitempty"`
+	// This is the embeddable reference form of local_volume_snapshot_id attribute.
+	LocalVolumeSnapshot      map[string]interface{} `json:"local_volume_snapshot,omitempty"`
+	LocalVolumeGroupSnapshot *VolumeGroupInstance   `json:"local_volume_group_snapshot,omitempty"`
 }

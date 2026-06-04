@@ -29,6 +29,7 @@ type ImportUniversalVolumeInstance struct {
 	// Localized message string corresponding to block_size Was added in version 4.0.0.0.
 	BlockSizeL10n *string `json:"block_size_l10n,omitempty"`
 	// Localized message string corresponding to importable_criteria Was added in version 4.0.0.0.
-	ImportableCriteriaL10n *string               `json:"importable_criteria_l10n,omitempty"`
-	RemoteSystem           *RemoteSystemInstance `json:"remote_system,omitempty"`
+	ImportableCriteriaL10n *string `json:"importable_criteria_l10n,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
 }

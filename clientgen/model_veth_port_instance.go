@@ -39,8 +39,11 @@ type VethPortInstance struct {
 	// Name of the virtual switch port associated with the virtual Ethernet port. Only applies to PowerStoreX deployments.   This property supports case-insensitive filtering.
 	VswitchPortName *string `json:"vswitch_port_name,omitempty"`
 	// This is the inverse of the resource type ip_port association.
-	IpPorts   []IpPortInstance   `json:"ip_ports,omitempty"`
-	Partner   *VethPortInstance  `json:"partner,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
-	Node      *NodeInstance      `json:"node,omitempty"`
+	IpPorts []map[string]interface{} `json:"ip_ports,omitempty"`
+	// This is the embeddable reference form of partner_id attribute.
+	Partner map[string]interface{} `json:"partner,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
+	// This is the embeddable reference form of node_id attribute.
+	Node map[string]interface{} `json:"node,omitempty"`
 }

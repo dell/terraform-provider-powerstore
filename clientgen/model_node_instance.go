@@ -17,10 +17,11 @@ type NodeInstance struct {
 	// Slot number of the node.
 	Slot *int32 `json:"slot,omitempty"`
 	// Unique identifier of the appliance to which the node belongs.
-	ApplianceId *string            `json:"appliance_id,omitempty"`
-	Appliance   *ApplianceInstance `json:"appliance,omitempty"`
+	ApplianceId *string `json:"appliance_id,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
 	// This is the inverse of the resource type ip_pool_address association.
-	IpPoolAddresses []IpPoolAddressInstance `json:"ip_pool_addresses,omitempty"`
+	IpPoolAddresses []map[string]interface{} `json:"ip_pool_addresses,omitempty"`
 	// This is the inverse of the resource type veth_port association.
 	VethPorts []VethPortInstance `json:"veth_ports,omitempty"`
 }

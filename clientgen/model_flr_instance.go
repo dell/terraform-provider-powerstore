@@ -10,10 +10,6 @@ API version: 4.1.0.0
 
 package clientgen
 
-import (
-	"time"
-)
-
 // FlrInstance  Was added in version 3.0.0.0.  Filtering on the fields of this embedded resource is not supported.
 type FlrInstance struct {
 	Mode *FileSystemFLRModeEnum `json:"mode,omitempty"`
@@ -32,9 +28,9 @@ type FlrInstance struct {
 	// Indicates whether FLR file system has protected files.  This setting is significant only when flr mode is not None.
 	HasProtectedFiles *bool `json:"has_protected_files,omitempty"`
 	// Per file system clock used to track the retention date. It is initialized when an FLR-enabled file system is first mounted on a NAS Server. It does not advance when a file system is not mounted.  This setting is significant only when flr mode is not None.
-	ClockTime *time.Time `json:"clock_time,omitempty"`
+	ClockTime *string `json:"clock_time,omitempty"`
 	// Maximum date and time that has been set on any locked file in an FLR-enabled file system, which means that the file system itself will be protected until this date and time. This value is compared to the FLR Clock Time to determine whether the date and time have passed. Value is null if the maximum locked date is infinite, or a specific time.  This setting is significant only when flr mode is not None.
-	MaximumRetentionDate *time.Time `json:"maximum_retention_date,omitempty"`
+	MaximumRetentionDate *string `json:"maximum_retention_date,omitempty"`
 	// Localized message string corresponding to mode Was added in version 3.0.0.0.
 	ModeL10n *string `json:"mode_l10n,omitempty"`
 }

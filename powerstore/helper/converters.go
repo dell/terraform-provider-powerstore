@@ -18,6 +18,7 @@ limitations under the License.
 package helper
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -28,6 +29,14 @@ import (
 func TfString[T ~string](in *T) types.String {
 	if in == nil {
 		return types.StringNull()
+	}
+	return types.StringValue(string(*in))
+}
+
+// TfStringNN - Converts *string to non-null types.String, returns empty string if input is nil
+func TfStringNN[T ~string](in *T) types.String {
+	if in == nil {
+		return types.StringValue("")
 	}
 	return types.StringValue(string(*in))
 }
@@ -48,8 +57,16 @@ func TfBool(in *bool) types.Bool {
 	return types.BoolValue(*in)
 }
 
-// TfInt32 - Converts *int32 to types.Int64, returns types.Int64Null if input is nil
-func TfInt32(in *int32) types.Int64 {
+// TfInt32 - Converts *int32 to types.Int32, returns types.Int32Null if input is nil
+func TfInt32(in *int32) types.Int32 {
+	if in == nil {
+		return types.Int32Null()
+	}
+	return types.Int32Value(*in)
+}
+
+// TfInt32AsInt64 - Converts *int32 to types.Int64, returns types.Int64Null if input is nil
+func TfInt32AsInt64(in *int32) types.Int64 {
 	if in == nil {
 		return types.Int64Null()
 	}
@@ -73,15 +90,11 @@ func TfObject[tfT any, jT any](in *jT, transform func(jT) tfT) tfT {
 	return transform(*in)
 }
 
-// GoTypes defines the supported Go types for ValueToPointer
-type GoTypes interface {
-	~bool | ~string | ~int64 | ~int32
-}
-
-// ValueToPointer - Extracts Go value pointer from attr.Value
+// ValueToPointer - Extracts Go value pointer from attr.Value. Supports bool, string, int32, int64.
 // Returns nil if input is not known
-// Supported types: types.String, types.Bool, types.Int64, types.Int32
-func ValueToPointer[T GoTypes, VT attr.Value](in VT) *T {
+// Supported types: types.String, types.Bool, types.Int32, types.Int64
+// We can add more types in the future when required
+func ValueToPointer[T bool | string | int32 | int64, VT attr.Value](in VT) *T {
 	if in.IsNull() || in.IsUnknown() {
 		return nil
 	}
@@ -91,10 +104,10 @@ func ValueToPointer[T GoTypes, VT attr.Value](in VT) *T {
 		ret = inv.ValueString()
 	case types.Bool:
 		ret = inv.ValueBool()
-	case types.Int64:
-		ret = inv.ValueInt64()
 	case types.Int32:
 		ret = inv.ValueInt32()
+	case types.Int64:
+		ret = inv.ValueInt64()
 	}
 
 	switch retv := ret.(type) {
@@ -102,6 +115,44 @@ func ValueToPointer[T GoTypes, VT attr.Value](in VT) *T {
 		return &retv
 	}
 	return nil
+}
+
+// ValueToPointerNE - Like ValueToPointer but also returns nil for empty strings and zero values.
+// Use for optional ID fields where empty string or zero is not a valid API value.
+func ValueToPointerNE[T bool | string | int32 | int64, VT attr.Value](in VT) *T {
+	p := ValueToPointer[T](in)
+	if p == nil {
+		return nil
+	}
+	if s, ok := any(*p).(string); ok && s == "" {
+		return nil
+	}
+	if i, ok := any(*p).(int64); ok && i == 0 {
+		return nil
+	}
+	if i, ok := any(*p).(int32); ok && i == 0 {
+		return nil
+	}
+	return p
+}
+
+// ValueToEnumPointer - Converts attr.Value to *E where E is an enum type.
+// B is the underlying/basic type extracted from Terraform value.
+// Returns nil if input is null/unknown, unsupported, or not convertible to enum type E.
+func ValueToEnumPointer[B bool | string | int32, E ~bool | ~string | ~int32, VT attr.Value](in VT) *E {
+	basicVal := ValueToPointer[B](in)
+	if basicVal == nil {
+		return nil
+	}
+
+	var enumVal E
+	enumRV := reflect.ValueOf(&enumVal).Elem()
+	basicRV := reflect.ValueOf(*basicVal)
+	if !basicRV.Type().ConvertibleTo(enumRV.Type()) {
+		return nil
+	}
+	enumRV.Set(basicRV.Convert(enumRV.Type()))
+	return &enumVal
 }
 
 // PointerStringEnum - Converts types.String to a pointer to a string-based enum type

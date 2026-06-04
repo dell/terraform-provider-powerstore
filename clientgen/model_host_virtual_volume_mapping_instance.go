@@ -19,8 +19,9 @@ type HostVirtualVolumeMappingInstance struct {
 	// Unique identifier of a host group attached to a virtual volume. The host_id and host_group_id cannot both be set.
 	HostGroupId *string `json:"host_group_id,omitempty"`
 	// Unique identifier of the virtual volume to which the host is attached.
-	VirtualVolumeId *string                `json:"virtual_volume_id,omitempty"`
-	Host            *HostInstance          `json:"host,omitempty"`
-	HostGroup       *HostGroupInstance     `json:"host_group,omitempty"`
-	VirtualVolume   *VirtualVolumeInstance `json:"virtual_volume,omitempty"`
+	VirtualVolumeId *string            `json:"virtual_volume_id,omitempty"`
+	Host            *HostInstance      `json:"host,omitempty"`
+	HostGroup       *HostGroupInstance `json:"host_group,omitempty"`
+	// This is the embeddable reference form of virtual_volume_id attribute.
+	VirtualVolume map[string]interface{} `json:"virtual_volume,omitempty"`
 }

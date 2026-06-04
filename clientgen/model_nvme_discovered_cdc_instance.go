@@ -24,6 +24,7 @@ type NvmeDiscoveredCdcInstance struct {
 	NvmeCdcNqn             *string                     `json:"nvme_cdc_nqn,omitempty"`
 	NvmeCdcConnectionState *NvmeCdcConnectionStateEnum `json:"nvme_cdc_connection_state,omitempty"`
 	// Localized message string corresponding to nvme_cdc_connection_state Was added in version 3.0.0.0.
-	NvmeCdcConnectionStateL10n *string                `json:"nvme_cdc_connection_state_l10n,omitempty"`
-	IpPoolAddress              *IpPoolAddressInstance `json:"ip_pool_address,omitempty"`
+	NvmeCdcConnectionStateL10n *string `json:"nvme_cdc_connection_state_l10n,omitempty"`
+	// This is the embeddable reference form of ip_pool_address_id attribute.
+	IpPoolAddress map[string]interface{} `json:"ip_pool_address,omitempty"`
 }

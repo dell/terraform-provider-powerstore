@@ -34,8 +34,9 @@ type FileTreeQuotaInstance struct {
 	// Grace period of soft limit (seconds). This will override the default grace period set at filesystem level.  * -1: Infinite grace period (Windows policy).  *  0: Use default grace period of 1 week (default).  * Positive: Grace period after which the soft limit is treated as a hard limit (seconds).  Was added in version 2.0.0.0.
 	GracePeriod *int32 `json:"grace_period,omitempty"`
 	// Localized message string corresponding to state
-	StateL10n  *string             `json:"state_l10n,omitempty"`
-	FileSystem *FileSystemInstance `json:"file_system,omitempty"`
+	StateL10n *string `json:"state_l10n,omitempty"`
+	// This is the embeddable reference form of file_system_id attribute.
+	FileSystem map[string]interface{} `json:"file_system,omitempty"`
 	// This is the inverse of the resource type file_user_quota association.
 	FileUserTreeQuotas []FileUserQuotaInstance `json:"file_user_tree_quotas,omitempty"`
 }

@@ -27,6 +27,7 @@ type VsphereHostLicenseAssignmentInstance struct {
 	// License type.
 	EditionKey *string `json:"edition_key,omitempty"`
 	// License expiration date.
-	ExpirationDate *time.Time           `json:"expiration_date,omitempty"`
-	VsphereHost    *VsphereHostInstance `json:"vsphere_host,omitempty"`
+	ExpirationDate *time.Time `json:"expiration_date,omitempty"`
+	// This is the embeddable reference form of vsphere_host_id attribute.
+	VsphereHost map[string]interface{} `json:"vsphere_host,omitempty"`
 }

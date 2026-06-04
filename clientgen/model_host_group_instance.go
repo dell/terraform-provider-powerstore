@@ -26,5 +26,5 @@ type HostGroupInstance struct {
 	// This is the inverse of the resource type host_volume_mapping association.
 	MappedHostGroups []HostVolumeMappingInstance `json:"mapped_host_groups,omitempty"`
 	// This is the inverse of the resource type host_virtual_volume_mapping association.
-	HostVirtualVolumeMappings []HostVirtualVolumeMappingInstance `json:"host_virtual_volume_mappings,omitempty"`
+	HostVirtualVolumeMappings []map[string]interface{} `json:"host_virtual_volume_mappings,omitempty"`
 }

@@ -43,11 +43,11 @@ type MigrationSessionInstance struct {
 	// Localized message string corresponding to state
 	StateL10n *string `json:"state_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	VirtualVolumes []VirtualVolumeInstance `json:"virtual_volumes,omitempty"`
+	VirtualVolumes []map[string]interface{} `json:"virtual_volumes,omitempty"`
 	// This is the inverse of the resource type volume association.
-	Volumes []VolumeInstance `json:"volumes,omitempty"`
+	Volumes []map[string]interface{} `json:"volumes,omitempty"`
 	// This is the inverse of the resource type volume_group association.
-	VolumeGroups []VolumeGroupInstance `json:"volume_groups,omitempty"`
+	VolumeGroups []map[string]interface{} `json:"volume_groups,omitempty"`
 	// This is the inverse of the resource type replication_session association.
 	ReplicationSessions []ReplicationSessionInstance `json:"replication_sessions,omitempty"`
 }

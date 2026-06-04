@@ -37,9 +37,10 @@ type FileInterfaceInstance struct {
 	// True when the associated nas_server has been created as a clone with the is_dr_test option set to true. Disaster Recovery Testing provides following functionalities   1. The ability to create a DR Test (DRT) enabled nas_server by cloning a replicated nas_server on destination PowerStore.   2. The ability to create the necessary isolated networking environment on the destination PowerStore.   3. With isolated network, DRT-enabled nas_server can operate with same IP address(es) as the the production      nas_server on the source PowerStore.   4. DRT-enabled nas_servers can run without IP address conflicts even if failover/failback of the replication occurs.   5. If isolated network is configured, do not configure production nas_servers with isolated network interfaces      on destination PowerStore.  Was added in version 3.6.0.0.
 	IsDrTest *bool `json:"is_dr_test,omitempty"`
 	// Localized message string corresponding to role
-	RoleL10n  *string            `json:"role_l10n,omitempty"`
-	NasServer *NasServerInstance `json:"nas_server,omitempty"`
-	IpPort    *IpPortInstance    `json:"ip_port,omitempty"`
+	RoleL10n *string `json:"role_l10n,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
+	IpPort    *IpPortInstance        `json:"ip_port,omitempty"`
 	// This is the inverse of the resource type file_interface_route association.
 	FileInterfaceRoutes []FileInterfaceRouteInstance `json:"file_interface_routes,omitempty"`
 }

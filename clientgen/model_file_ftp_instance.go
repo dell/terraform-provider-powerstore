@@ -51,6 +51,7 @@ type FileFtpInstance struct {
 	// Indicates whether the users attribute contains allowed or denied users. Values are: - true - Users contains allowed users. - false - Users contains denied users.
 	IsAllowedUsers *bool `json:"is_allowed_users,omitempty"`
 	// Indicates whether the groups attribute contains allowed or denied user groups. Values are: - true - Groups contains allowed user groups. - false - Groups contains denied user groups.
-	IsAllowedGroups *bool              `json:"is_allowed_groups,omitempty"`
-	NasServer       *NasServerInstance `json:"nas_server,omitempty"`
+	IsAllowedGroups *bool `json:"is_allowed_groups,omitempty"`
+	// This is the embeddable reference form of nas_server_id attribute.
+	NasServer map[string]interface{} `json:"nas_server,omitempty"`
 }

@@ -39,6 +39,8 @@ testlogfile
 
 # .tfvars file
 *.tfvars
+powerstore/powerstore.env
+powerstore/powerstore.sh
 
 # Local .terraform directories
 **/.terraform/*

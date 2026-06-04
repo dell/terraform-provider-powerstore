@@ -806,6 +806,199 @@
 				"operationId": "post_all_clusters"
 			}
 		},
+		"/policy": {
+			"get": {
+				"summary": "Collection Query",
+				"description": "Query protection and performance policies.\n\nThe following REST query is an example of how to retrieve protection policies along with their rules and associated storage resources:\n\n`https://{{cluster_ip}}/api/rest/policy?select=name,id,type,replication_rules(id,name,rpo,remote_system(id,name,management_address)),snapshot_rules(id,name,interval,time_of_day,days_of_week),volumes(id,name),volume_groups(id,name)&type=eq.Protection`\n\nThe following REST query is an example of how to retrieve performance policies along with their associated resources:\n  \n`https://{{cluster_ip}}/api/rest/policy?select=name,id,type,volumes(id,name),volume_groups(id,name)&type=eq.Performance`\n",
+				"tags": [
+					"policy"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/policy_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of policy instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/policy_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_policys",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"summary": "Create",
+				"description": "Create a new protectionor QoS policy.\n",
+				"tags": [
+					"policy"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/policy_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_policys"
+			}
+		},
+		"/policy/{id}": {
+			"get": {
+				"summary": "Instance Query",
+				"description": "Query a specific policy.",
+				"tags": [
+					"policy"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the policy. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "policy"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/policy_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_policy_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"summary": "Modify",
+				"description": "Modify a protectionor QoS policy.\n",
+				"tags": [
+					"policy"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the protectionor QoS policy to be modified. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "policy"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"$ref": "#/definitions/policy_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_policy_by_id"
+			},
+			"delete": {
+				"summary": "Delete",
+				"description": "Delete a protectionor QoS policy.\n\nPolicies cannot be deleted if they are assigned to a storage resource.\n",
+				"tags": [
+					"policy"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "Unique identifier of the protectionor QoS policy to be deleted. name:{name} can be used instead of {id}.",
+						"type": "string",
+						"required": true,
+						"x-ref": "policy"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_policy_by_id"
+			}
+		},
 		"/snapshot_rule": {
 			"get": {
 				"summary": "Collection Query",
@@ -1004,6 +1197,213 @@
 					}
 				},
 				"operationId": "delete_snapshot_rule_by_id"
+			}
+		},
+		"/io_limit_rule": {
+			"get": {
+				"description": "Query io_limit_rules.\nWas added in version 4.0.0.0.",
+				"summary": "Collection Query",
+				"x-added": "4.0.0.0",
+				"tags": [
+					"io_limit_rule"
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/io_limit_rule_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of io limit rule instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/io_limit_rule_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_io_limit_rules",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"description": "Create an io_limit_rule.\n\nWas added in version 4.0.0.0.",
+				"summary": "Create",
+				"x-added": "4.0.0.0",
+				"tags": [
+					"io_limit_rule"
+				],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"description": "Create request arguments.",
+						"schema": {
+							"$ref": "#/definitions/io_limit_rule_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_io_limit_rules"
+			}
+		},
+		"/io_limit_rule/{id}": {
+			"get": {
+				"tags": [
+					"io_limit_rule"
+				],
+				"summary": "Instance Query",
+				"x-added": "4.0.0.0",
+				"description": "Query a specific io_limit_rule.\nWas added in version 4.0.0.0.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the io_limit_rule. name:{name} can be used instead of {id}.",
+						"x-ref": "io_limit_rule"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/io_limit_rule_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_io_limit_rule_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"tags": [
+					"io_limit_rule"
+				],
+				"summary": "Modify",
+				"x-added": "4.0.0.0",
+				"description": "Modify an io_limit_rule.\nWas added in version 4.0.0.0.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the io_limit_rule. name:{name} can be used instead of {id}.",
+						"x-ref": "io_limit_rule"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/io_limit_rule_modify"
+						},
+						"description": "Modify request arguments."
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_io_limit_rule_by_id"
+			},
+			"delete": {
+				"tags": [
+					"io_limit_rule"
+				],
+				"summary": "Delete",
+				"x-added": "4.0.0.0",
+				"description": "Remove an io_limit_rule. The I/O limit rule cannot be deleted if it is used in a\npolicy that is associated with any volumes or volume groups.\n\nWas added in version 4.0.0.0.",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Unique identifier of the io_limit_rule. name:{name} can be used instead of {id}.",
+						"x-ref": "io_limit_rule"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_io_limit_rule_by_id"
 			}
 		},
 		"/login_session": {
@@ -3042,6 +3442,188 @@
 				},
 				"operationId": "patch_recycle_bin_config_by_id"
 			}
+		},
+		"/file_io_limit_rule": {
+			"get": {
+				"tags": [
+					"file_io_limit_rule"
+				],
+				"x-added": "4.1.0.0",
+				"summary": "Collection Query",
+				"description": "Query file_io_limit_rule instances.\nWas added in version 4.1.0.0.",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_io_limit_rule_instance"
+							}
+						}
+					},
+					"206": {
+						"description": "Partial content of file io limit rule instance objects",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/file_io_limit_rule_instance"
+							}
+						}
+					}
+				},
+				"operationId": "get_all_file_io_limit_rules",
+				"x-flexible-query": "true"
+			},
+			"post": {
+				"tags": [
+					"file_io_limit_rule"
+				],
+				"x-added": "4.1.0.0",
+				"summary": "Create",
+				"description": "Create a file_io_limit_rule.\nWas added in version 4.1.0.0.",
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/file_io_limit_rule_create"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created",
+						"schema": {
+							"$ref": "#/definitions/create_response"
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "post_all_file_io_limit_rules"
+			}
+		},
+		"/file_io_limit_rule/{id}": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"required": true,
+					"type": "string",
+					"description": "Unique identifier of the file_io_limit_rule instance. name:{name} can be used instead of {id}.\nWas added in version 4.1.0.0.",
+					"x-added": "4.1.0.0",
+					"x-ref": "file_io_limit_rule"
+				}
+			],
+			"get": {
+				"tags": [
+					"file_io_limit_rule"
+				],
+				"x-added": "4.1.0.0",
+				"summary": "Instance Query",
+				"description": "Query a specific file_io_limit_rule.\nWas added in version 4.1.0.0.",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"schema": {
+							"$ref": "#/definitions/file_io_limit_rule_instance"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "get_file_io_limit_rule_by_id",
+				"x-flexible-query": "true"
+			},
+			"patch": {
+				"tags": [
+					"file_io_limit_rule"
+				],
+				"x-added": "4.1.0.0",
+				"summary": "Modify",
+				"description": "Modify a file_io_limit_rule.\nWas added in version 4.1.0.0.",
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/file_io_limit_rule_modify"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "patch_file_io_limit_rule_by_id"
+			},
+			"delete": {
+				"tags": [
+					"file_io_limit_rule"
+				],
+				"x-added": "4.1.0.0",
+				"summary": "Delete",
+				"description": "Remove a file_io_limit_rule. A file_io_limit_rule cannot be deleted if it is used in a policy that is associated with any nas_server or file_system.\n\nWas added in version 4.1.0.0.",
+				"responses": {
+					"204": {
+						"description": "Success"
+					},
+					"400": {
+						"description": "Invalid Request",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					},
+					"422": {
+						"description": "Operation Failed",
+						"schema": {
+							"$ref": "#/definitions/error_response"
+						}
+					}
+				},
+				"operationId": "delete_file_io_limit_rule_by_id"
+			}
 		}
 	},
 	"definitions": {
@@ -3511,8 +4093,7 @@
 				"eth_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_port_instance",
-						"x-ref": "eth_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_port association."
 				},
@@ -3578,15 +4159,12 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"ip_pool_addresses": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/ip_pool_address_instance",
-						"x-ref": "ip_pool_address"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type ip_pool_address association."
 				},
@@ -3747,10 +4325,7 @@
 				},
 				"ip_pool_address": {
 					"type": "object",
-					"$ref": "#/definitions/ip_pool_address_instance",
-					"description": "This is the embeddable reference form of ip_pool_address_id attribute.",
-					"x-ref": "ip_pool_address",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of ip_pool_address_id attribute."
 				}
 			},
 			"example": {
@@ -3890,8 +4465,7 @@
 				"ip_pool_addresses": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/ip_pool_address_instance",
-						"x-ref": "ip_pool_address"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type ip_pool_address association."
 				}
@@ -4072,15 +4646,11 @@
 				},
 				"ip_port": {
 					"type": "object",
-					"$ref": "#/definitions/ip_port_instance",
-					"description": "This is the embeddable reference form of ip_port_id attribute.",
-					"x-ref": "ip_port"
+					"description": "This is the embeddable reference form of ip_port_id attribute."
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"node": {
 					"type": "object",
@@ -4229,9 +4799,7 @@
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/ip_port_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "ip_port"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				},
 				"fsn": {
 					"type": "object",
@@ -4261,8 +4829,7 @@
 				"file_interfaces": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/file_interface_instance",
-						"x-ref": "file_interface"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type file_interface association.",
 					"x-added": "3.0.0.0"
@@ -4421,17 +4988,13 @@
 				"ip_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/ip_port_instance",
-						"x-ref": "ip_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type ip_port association."
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/bond_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "bond",
-					"x-added": "2.0.0.0"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				},
 				"fsn": {
 					"type": "object",
@@ -4567,8 +5130,7 @@
 				"ip_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/ip_port_instance",
-						"x-ref": "ip_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type ip_port association.",
 					"x-added": "3.5.0.0"
@@ -4576,31 +5138,23 @@
 				"bonds": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/bond_instance",
-						"x-ref": "bond"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type bond association.",
 					"x-added": "3.5.0.0"
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/fsn_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "fsn",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"eth_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_port_instance",
-						"x-ref": "eth_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_port association.",
 					"x-added": "3.5.0.0"
@@ -4734,29 +5288,21 @@
 				"ip_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/ip_port_instance",
-						"x-ref": "ip_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type ip_port association."
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/veth_port_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "veth_port",
-					"x-added": "2.0.0.0"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"node": {
 					"type": "object",
-					"$ref": "#/definitions/node_instance",
-					"description": "This is the embeddable reference form of node_id attribute.",
-					"x-ref": "node"
+					"description": "This is the embeddable reference form of node_id attribute."
 				}
 			}
 		},
@@ -5335,8 +5881,7 @@
 				"virtual_volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_volume_instance",
-						"x-ref": "virtual_volume"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_volume association."
 				},
@@ -5352,8 +5897,7 @@
 				"datastores": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/datastore_instance",
-						"x-ref": "datastore"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type datastore association.",
 					"x-added": "3.0.0.0"
@@ -5540,9 +6084,7 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"storage_container": {
 					"type": "object",
@@ -5565,38 +6107,29 @@
 				},
 				"parent": {
 					"type": "object",
-					"$ref": "#/definitions/virtual_volume_instance",
-					"description": "This is the embeddable reference form of parent_id attribute.",
-					"x-ref": "virtual_volume"
+					"description": "This is the embeddable reference form of parent_id attribute."
 				},
 				"child_virtual_volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_volume_instance",
-						"x-ref": "virtual_volume"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_volume association."
 				},
 				"source": {
 					"type": "object",
-					"$ref": "#/definitions/virtual_volume_instance",
-					"description": "This is the embeddable reference form of source_id attribute.",
-					"x-ref": "virtual_volume"
+					"description": "This is the embeddable reference form of source_id attribute."
 				},
 				"target_virtual_volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_volume_instance",
-						"x-ref": "virtual_volume"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_volume association."
 				},
 				"protection_policy": {
 					"type": "object",
-					"$ref": "#/definitions/policy_instance",
-					"description": "This is the embeddable reference form of protection_policy_id attribute.",
-					"x-ref": "policy",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of protection_policy_id attribute."
 				},
 				"host_virtual_volume_mappings": {
 					"type": "array",
@@ -5682,8 +6215,7 @@
 				"policies": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/policy_instance",
-						"x-ref": "policy"
+						"type": "object"
 					},
 					"description": "List of the policies that are associated with this performance_rule."
 				}
@@ -5755,6 +6287,92 @@
 				}
 			}
 		},
+		"io_limit_rule_create": {
+			"type": "object",
+			"description": "Parameters to an I/O limit rule create operation.\nWas added in version 4.0.0.0.",
+			"x-added": "4.0.0.0",
+			"required": [
+				"name",
+				"type"
+			],
+			"properties": {
+				"name": {
+					"description": "Name of the I/O limit rule.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"type": {
+					"$ref": "#/definitions/BandwidthLimitTypeEnum"
+				},
+				"max_iops": {
+					"description": "Maximum I/O operations in either I/O operations per second (IOPS) or I/O operations per second per GB.\nThe specification of the type attribute determines which measurement is used. If type is set to absolute,\nmax_iops is specified in IOPS. If type is set to density, max_iops is specified in IOPS per GB.\nIf both max_iops and max_bw are specified, the system will limit I/O if either value is exceeded.\n",
+					"type": "integer",
+					"format": "int32",
+					"x-units": "IO/sec",
+					"minimum": 1,
+					"maximum": 2147483646
+				},
+				"max_bw": {
+					"description": "Maximum I/O bandwidth measured in either Kilobytes per second or kilobtyes per second / per GB.\nThe specification of the type attribute determines which measurement is used. If type is set to absolute,\nmax_bw is specified in Kilobytes per second. If type is set to density max_bw is specified in Kilobytes\nper second / per GB. If both max_iops and max_bw are specified, the system will limit I/O if either value\nis exceeded.\n",
+					"type": "integer",
+					"format": "int32",
+					"x-units": "KB/sec",
+					"minimum": 2000,
+					"maximum": 2147483646
+				},
+				"burst_percentage": {
+					"description": "Percentage indicating by how much the limit may be exceeded. If I/O normally runs below the specified limit, then\nthe volume or volume_group will accumulate burst credits that can be used to exceed the limit for a short period\n(a few seconds, but will not exceed the burst limit). This burst percentage applies to both max_iops and max_bw and\nis independent of the type setting.\n",
+					"type": "integer",
+					"x-units": "percent",
+					"minimum": 0,
+					"maximum": 100,
+					"format": "int32"
+				}
+			}
+		},
+		"io_limit_rule_modify": {
+			"type": "object",
+			"description": "Parameters to an I/O limit rule modify operation.\nWas added in version 4.0.0.0.",
+			"x-added": "4.0.0.0",
+			"properties": {
+				"name": {
+					"description": "New name of the I/O limit rule.\n",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"type": {
+					"$ref": "#/definitions/BandwidthLimitTypeEnum"
+				},
+				"max_iops": {
+					"description": "New max_iops value. New values for both max_iops and max_bw may be specified, if they are, the system\nwill limit I/O based upon whatever limit is exceeded first.\n",
+					"type": "integer",
+					"format": "int32",
+					"x-pstore-nullable": true,
+					"x-units": "IO/sec",
+					"minimum": 1,
+					"maximum": 2147483646
+				},
+				"max_bw": {
+					"description": "New max_bw value. New values for both max_iops and max_bw may be specified, if they are, the system\nwill limit I/O based upon whatever limit is exceeded first.\n",
+					"type": "integer",
+					"format": "int32",
+					"x-pstore-nullable": true,
+					"x-units": "KB/sec",
+					"minimum": 2000,
+					"maximum": 2147483646
+				},
+				"burst_percentage": {
+					"description": "Percentage indicating by how much the limit may be exceeded. If I/O normally runs below the specified limit, then\nthe volume or volume_group will accumulate burst credits that can be used to exceed the limit for a short period\n(a few seconds, but will not exceed the burst limit). This burst percentage applies to both max_iops and max_bw and\nis independent of the type setting.\n",
+					"type": "integer",
+					"x-units": "percent",
+					"minimum": 0,
+					"maximum": 100,
+					"format": "int32"
+				}
+			}
+		},
 		"BandwidthLimitTypeEnum": {
 			"description": "This type setting determines how the max_iops and max_bw attributes are used.\n* Absolute - Limits are absolute values specified, either I/O operations per second or bandwidth\n* Density - Limits specified are per GB, e.g. I/O operations per second per GB\n\nWas added in version 4.0.0.0.",
 			"x-added": "4.0.0.0",
@@ -5796,9 +6414,7 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from appliance"
@@ -6021,41 +6637,27 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"node": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of node_id attribute.",
-					"x-ref": "hardware"
+					"description": "This is the embeddable reference form of node_id attribute."
 				},
 				"sfp": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of sfp_id attribute.",
-					"x-ref": "hardware"
+					"description": "This is the embeddable reference form of sfp_id attribute."
 				},
 				"io_module": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of io_module_id attribute.",
-					"x-ref": "hardware",
-					"x-deprecated": "2.0.0.0"
+					"description": "This is the embeddable reference form of io_module_id attribute."
 				},
 				"hardware_parent": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of hardware_parent_id attribute.",
-					"x-ref": "hardware",
-					"x-added": "2.0.0.0"
+					"description": "This is the embeddable reference form of hardware_parent_id attribute."
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/fc_port_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "fc_port"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				}
 			},
 			"example": {
@@ -6186,41 +6788,27 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"node": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of node_id attribute.",
-					"x-ref": "hardware"
+					"description": "This is the embeddable reference form of node_id attribute."
 				},
 				"sfp": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of sfp_id attribute.",
-					"x-ref": "hardware"
+					"description": "This is the embeddable reference form of sfp_id attribute."
 				},
 				"io_module": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of io_module_id attribute.",
-					"x-ref": "hardware",
-					"x-deprecated": "2.0.0.0"
+					"description": "This is the embeddable reference form of io_module_id attribute."
 				},
 				"hardware_parent": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of hardware_parent_id attribute.",
-					"x-ref": "hardware",
-					"x-added": "2.0.0.0"
+					"description": "This is the embeddable reference form of hardware_parent_id attribute."
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/sas_port_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "sas_port"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				}
 			},
 			"example": {
@@ -6445,8 +7033,7 @@
 				"ip_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/ip_port_instance",
-						"x-ref": "ip_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type ip_port association."
 				},
@@ -6464,9 +7051,7 @@
 				},
 				"bond": {
 					"type": "object",
-					"$ref": "#/definitions/bond_instance",
-					"description": "This is the embeddable reference form of bond_id attribute.",
-					"x-ref": "bond"
+					"description": "This is the embeddable reference form of bond_id attribute."
 				},
 				"fsn": {
 					"type": "object",
@@ -6497,9 +7082,7 @@
 				},
 				"partner": {
 					"type": "object",
-					"$ref": "#/definitions/eth_port_instance",
-					"description": "This is the embeddable reference form of partner_id attribute.",
-					"x-ref": "eth_port"
+					"description": "This is the embeddable reference form of partner_id attribute."
 				}
 			},
 			"example": {
@@ -6691,10 +7274,7 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				},
 				"node": {
 					"type": "object",
@@ -6719,17 +7299,11 @@
 				},
 				"expected_peer": {
 					"type": "object",
-					"$ref": "#/definitions/eth_be_port_instance",
-					"description": "This is the embeddable reference form of expected_peer_id attribute.",
-					"x-ref": "eth_be_port",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of expected_peer_id attribute."
 				},
 				"actual_peer": {
 					"type": "object",
-					"$ref": "#/definitions/eth_be_port_instance",
-					"description": "This is the embeddable reference form of actual_peer_id attribute.",
-					"x-ref": "eth_be_port",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of actual_peer_id attribute."
 				}
 			},
 			"example": {
@@ -6884,9 +7458,7 @@
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				}
 			}
 		},
@@ -6996,24 +7568,21 @@
 				"virtual_volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_volume_instance",
-						"x-ref": "virtual_volume"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_volume association."
 				},
 				"volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/volume_instance",
-						"x-ref": "volume"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type volume association."
 				},
 				"volume_groups": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/volume_group_instance",
-						"x-ref": "volume_group"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type volume_group association."
 				},
@@ -7339,6 +7908,137 @@
 					},
 					"description": "List of the replication_groups that are associated with this policy.",
 					"x-added": "4.0.0.0"
+				}
+			}
+		},
+		"policy_create": {
+			"type": "object",
+			"description": "Policy create request.",
+			"required": [
+				"name"
+			],
+			"properties": {
+				"name": {
+					"description": "Policy name.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Policy description.",
+					"type": "string"
+				},
+				"snapshot_rule_ids": {
+					"description": "Snapshot rule identifiers included in this policy.\nAt least one snapshot rule or one replication rule must be specified\nto create a protection policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "snapshot_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'snapshot_rule_ids':['name:snapshot_rule_name']"
+					}
+				},
+				"replication_rule_ids": {
+					"description": "Replication rule identifiers included in this policy.\nAt least one snapshot rule or one replication rule must be specified\nto create a protection policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "replication_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'replication_rule_ids':['name:replication_rule_name']"
+					}
+				},
+				"io_limit_rule_id": {
+					"description": "I/O limit rule identifier included in this policy. This attribute is only used for the QoS Performance Policy type.\n name:{name} can be used instead of {id}. For example: 'io_limit_rule_id':'name:io_limit_rule_name'\nWas added in version 4.0.0.0.",
+					"type": "string",
+					"x-added": "4.0.0.0",
+					"x-ref": "io_limit_rule"
+				},
+				"file_io_limit_rule_id": {
+					"description": "The unique identifier of the file_io_limit_rule included in this policy, if any. This attribute is only valid, and required, for the File_Performance Policy type.\n name:{name} can be used instead of {id}. For example: 'file_io_limit_rule_id':'name:file_io_limit_rule_name'\nWas added in version 4.1.0.0.",
+					"type": "string",
+					"x-ref": "file_io_limit_rule",
+					"x-added": "4.1.0.0"
+				}
+			}
+		},
+		"policy_modify": {
+			"type": "object",
+			"description": "Policy modify request.",
+			"properties": {
+				"name": {
+					"description": "Policy name.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"description": {
+					"description": "Policy description.",
+					"type": "string"
+				},
+				"snapshot_rule_ids": {
+					"description": "Snapshot rule identifiers that should replace the current\nlist of snapshot rule identifiers in this policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "snapshot_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'snapshot_rule_ids':['name:snapshot_rule_name']"
+					}
+				},
+				"replication_rule_ids": {
+					"description": "Replication rule identifiers that should replace the current\nlist of replication rule identifiers in this policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "replication_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'replication_rule_ids':['name:replication_rule_name']"
+					}
+				},
+				"add_snapshot_rule_ids": {
+					"description": "Snapshot rule identifiers to be added to this policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "snapshot_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'add_snapshot_rule_ids':['name:snapshot_rule_name']"
+					}
+				},
+				"add_replication_rule_ids": {
+					"description": "Replication rule identifiers to be added to this policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "replication_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'add_replication_rule_ids':['name:replication_rule_name']"
+					}
+				},
+				"remove_snapshot_rule_ids": {
+					"description": "Snapshot rule identifiers to be removed from this policy.\n",
+					"type": "array",
+					"items": {
+						"type": "string",
+						"x-ref": "snapshot_rule",
+						"description": " name:{name} can be used instead of {id}. For example: 'remove_snapshot_rule_ids':['name:snapshot_rule_name']"
+					}
+				},
+				"remove_replication_rule_ids": {
+					"description": "Replication rule identifiers to be removed from this policy.\n",
+					"type": "array",
+					"items": {
+						"x-ref": "replication_rule",
+						"type": "string",
+						"description": " name:{name} can be used instead of {id}. For example: 'remove_replication_rule_ids':['name:replication_rule_name']"
+					}
+				},
+				"io_limit_rule_id": {
+					"description": "Change the I/O limit rule. Performance policies can only be modified\nwhen they are not associated with a volume or volume group.\nThis attribute is only used for the QoS Performance Policy type.\n name:{name} can be used instead of {id}. For example: 'io_limit_rule_id':'name:io_limit_rule_name'\nWas added in version 4.0.0.0.",
+					"type": "string",
+					"x-added": "4.0.0.0",
+					"x-ref": "io_limit_rule"
+				},
+				"file_io_limit_rule_id": {
+					"description": "Change the file_io_limit_rule. Performance policies can only be modified\nwhen they are not associated with a nas_server or file_system.\nThis attribute is only valid for the File_Performance policy type.\n name:{name} can be used instead of {id}. For example: 'file_io_limit_rule_id':'name:file_io_limit_rule_name'\nWas added in version 4.1.0.0.",
+					"type": "string",
+					"x-ref": "file_io_limit_rule",
+					"x-added": "4.1.0.0"
 				}
 			}
 		},
@@ -7782,23 +8482,19 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"$ref": "#/definitions/remote_system_instance",
-					"description": "This is the embeddable reference form of remote_system_id attribute.",
-					"x-ref": "remote_system"
+					"description": "This is the embeddable reference form of remote_system_id attribute."
 				},
 				"replication_sessions": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/replication_session_instance",
-						"x-ref": "replication_session"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type replication_session association."
 				},
 				"policies": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/policy_instance",
-						"x-ref": "policy"
+						"type": "object"
 					},
 					"description": "List of the policies that are associated with this replication_rule."
 				}
@@ -7999,8 +8695,7 @@
 				"hosts": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/host_instance",
-						"x-ref": "host"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type host association."
 				}
@@ -8108,47 +8803,35 @@
 				"virtual_volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_volume_instance",
-						"x-ref": "virtual_volume"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_volume association.",
 					"x-added": "3.0.0.0"
 				},
 				"storage_container": {
 					"type": "object",
-					"$ref": "#/definitions/storage_container_instance",
-					"description": "This is the embeddable reference form of storage_container_id attribute.",
-					"x-ref": "storage_container",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of storage_container_id attribute."
 				},
 				"parent": {
 					"type": "object",
-					"$ref": "#/definitions/replication_group_instance",
-					"description": "This is the embeddable reference form of parent_id attribute.",
-					"x-ref": "replication_group",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of parent_id attribute."
 				},
 				"child_replication_groups": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/replication_group_instance",
-						"x-ref": "replication_group"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type replication_group association.",
 					"x-added": "3.0.0.0"
 				},
 				"source": {
 					"type": "object",
-					"$ref": "#/definitions/replication_group_instance",
-					"description": "This is the embeddable reference form of source_id attribute.",
-					"x-ref": "replication_group",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of source_id attribute."
 				},
 				"target_replication_groups": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/replication_group_instance",
-						"x-ref": "replication_group"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type replication_group association.",
 					"x-added": "3.0.0.0"
@@ -8165,8 +8848,7 @@
 				"policies": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/policy_instance",
-						"x-ref": "policy"
+						"type": "object"
 					},
 					"description": "List of the policies that are associated with this replication_group.",
 					"x-added": "4.0.0.0"
@@ -8372,28 +9054,20 @@
 				},
 				"protection_policy": {
 					"type": "object",
-					"$ref": "#/definitions/policy_instance",
-					"description": "This is the embeddable reference form of protection_policy_id attribute.",
-					"x-ref": "policy"
+					"description": "This is the embeddable reference form of protection_policy_id attribute."
 				},
 				"replication_group": {
 					"type": "object",
-					"$ref": "#/definitions/replication_group_instance",
-					"description": "This is the embeddable reference form of replication_group_id attribute.",
-					"x-ref": "replication_group",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of replication_group_id attribute."
 				},
 				"parent": {
 					"type": "object",
-					"$ref": "#/definitions/virtual_machine_instance",
-					"description": "This is the embeddable reference form of parent_id attribute.",
-					"x-ref": "virtual_machine"
+					"description": "This is the embeddable reference form of parent_id attribute."
 				},
 				"children": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_machine_instance",
-						"x-ref": "virtual_machine"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_machine association."
 				},
@@ -8407,8 +9081,7 @@
 				"virtual_volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_volume_instance",
-						"x-ref": "virtual_volume"
+						"type": "object"
 					},
 					"description": "List of the virtual_volumes that are associated with this virtual_machine.",
 					"x-added": "2.0.0.0"
@@ -8416,8 +9089,7 @@
 				"datastores": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/datastore_instance",
-						"x-ref": "datastore"
+						"type": "object"
 					},
 					"description": "List of the datastores that are associated with this virtual_machine.",
 					"x-added": "3.0.0.0"
@@ -8562,9 +9234,7 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"$ref": "#/definitions/remote_system_instance",
-					"description": "This is the embeddable reference form of remote_system_id attribute.",
-					"x-ref": "remote_system"
+					"description": "This is the embeddable reference form of remote_system_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from remote_system"
@@ -8758,10 +9428,7 @@
 				},
 				"host": {
 					"type": "object",
-					"$ref": "#/definitions/host_instance",
-					"description": "This is the embeddable reference form of host_id attribute.",
-					"x-ref": "host",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of host_id attribute."
 				}
 			},
 			"description": "\nWas added in version 3.0.0.0.\nThis resource type has queriable association from host"
@@ -8846,9 +9513,7 @@
 				},
 				"host_group": {
 					"type": "object",
-					"$ref": "#/definitions/host_group_instance",
-					"description": "This is the embeddable reference form of host_group_id attribute.",
-					"x-ref": "host_group"
+					"description": "This is the embeddable reference form of host_group_id attribute."
 				},
 				"import_host_system": {
 					"type": "object",
@@ -8867,8 +9532,7 @@
 				"host_virtual_volume_mappings": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/host_virtual_volume_mapping_instance",
-						"x-ref": "host_virtual_volume_mapping"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type host_virtual_volume_mapping association."
 				},
@@ -9112,8 +9776,7 @@
 				"host_virtual_volume_mappings": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/host_virtual_volume_mapping_instance",
-						"x-ref": "host_virtual_volume_mapping"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type host_virtual_volume_mapping association."
 				}
@@ -10036,24 +10699,21 @@
 				"node_eth_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_port_instance",
-						"x-ref": "eth_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_port association."
 				},
 				"sfp_eth_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_port_instance",
-						"x-ref": "eth_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_port association."
 				},
 				"io_module_eth_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_port_instance",
-						"x-ref": "eth_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_port association.",
 					"x-deprecated": "2.0.0.0"
@@ -10061,8 +10721,7 @@
 				"hardware_parent_eth_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_port_instance",
-						"x-ref": "eth_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_port association.",
 					"x-added": "2.0.0.0"
@@ -10070,8 +10729,7 @@
 				"node_eth_be_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_be_port_instance",
-						"x-ref": "eth_be_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_be_port association.",
 					"x-added": "3.0.0.0"
@@ -10079,8 +10737,7 @@
 				"sfp_eth_be_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_be_port_instance",
-						"x-ref": "eth_be_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_be_port association.",
 					"x-added": "3.0.0.0"
@@ -10088,31 +10745,25 @@
 				"hardware_parent_eth_be_ports": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/eth_be_port_instance",
-						"x-ref": "eth_be_port"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type eth_be_port association.",
 					"x-added": "3.0.0.0"
 				},
 				"parent": {
 					"type": "object",
-					"$ref": "#/definitions/hardware_instance",
-					"description": "This is the embeddable reference form of parent_id attribute.",
-					"x-ref": "hardware"
+					"description": "This is the embeddable reference form of parent_id attribute."
 				},
 				"children": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/hardware_instance",
-						"x-ref": "hardware"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type hardware association."
 				},
 				"appliance": {
 					"type": "object",
-					"$ref": "#/definitions/appliance_instance",
-					"description": "This is the embeddable reference form of appliance_id attribute.",
-					"x-ref": "appliance"
+					"description": "This is the embeddable reference form of appliance_id attribute."
 				}
 			}
 		},
@@ -10791,15 +11442,11 @@
 				},
 				"host": {
 					"type": "object",
-					"$ref": "#/definitions/host_instance",
-					"description": "This is the embeddable reference form of host_id attribute.",
-					"x-ref": "host"
+					"description": "This is the embeddable reference form of host_id attribute."
 				},
 				"host_group": {
 					"type": "object",
-					"$ref": "#/definitions/host_group_instance",
-					"description": "This is the embeddable reference form of host_group_id attribute.",
-					"x-ref": "host_group"
+					"description": "This is the embeddable reference form of host_group_id attribute."
 				},
 				"volume": {
 					"type": "object",
@@ -11336,17 +11983,11 @@
 				},
 				"protection_policy": {
 					"type": "object",
-					"$ref": "#/definitions/policy_instance",
-					"description": "This is the embeddable reference form of protection_policy_id attribute.",
-					"x-ref": "policy",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of protection_policy_id attribute."
 				},
 				"performance_policy": {
 					"type": "object",
-					"$ref": "#/definitions/policy_instance",
-					"description": "This is the embeddable reference form of performance_policy_id attribute.",
-					"x-ref": "policy",
-					"x-added": "4.1.0.0"
+					"description": "This is the embeddable reference form of performance_policy_id attribute."
 				},
 				"file_interfaces": {
 					"type": "array",
@@ -11431,8 +12072,7 @@
 				"file_systems": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/file_system_instance",
-						"x-ref": "file_system"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type file_system association."
 				},
@@ -11583,9 +12223,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				},
 				"ip_port": {
 					"type": "object",
@@ -11691,9 +12329,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			}
 		},
@@ -11869,9 +12505,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from nas_server"
@@ -11955,9 +12589,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			}
 		},
@@ -12011,9 +12643,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from nas_server"
@@ -12083,9 +12713,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from nas_server"
@@ -12240,9 +12868,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			}
 		},
@@ -12293,9 +12919,7 @@
 				},
 				"file_interface": {
 					"type": "object",
-					"$ref": "#/definitions/file_interface_instance",
-					"description": "This is the embeddable reference form of file_interface_id attribute.",
-					"x-ref": "file_interface"
+					"description": "This is the embeddable reference form of file_interface_id attribute."
 				}
 			}
 		},
@@ -12358,9 +12982,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from nas_server"
@@ -12488,9 +13110,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from nas_server"
@@ -12594,9 +13214,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from nas_server"
@@ -13369,12 +13987,10 @@
 				},
 				"clock_time": {
 					"type": "string",
-					"format": "date-time",
 					"description": "Per file system clock used to track the retention date.\nIt is initialized when an FLR-enabled file system is first mounted on a NAS Server.\nIt does not advance when a file system is not mounted.\n\nThis setting is significant only when flr mode is not None.\n"
 				},
 				"maximum_retention_date": {
 					"type": "string",
-					"format": "date-time",
 					"description": "Maximum date and time that has been set on any locked file in an FLR-enabled file system, which means that the file system itself will be protected until this date and time.\nThis value is compared to the FLR Clock Time to determine whether the date and time have passed.\nValue is null if the maximum locked date is infinite, or a specific time.\n\nThis setting is significant only when flr mode is not None.\n"
 				},
 				"mode_l10n": {
@@ -13547,9 +14163,7 @@
 				},
 				"file_system": {
 					"type": "object",
-					"$ref": "#/definitions/file_system_instance",
-					"description": "This is the embeddable reference form of file_system_id attribute.",
-					"x-ref": "file_system"
+					"description": "This is the embeddable reference form of file_system_id attribute."
 				},
 				"file_user_tree_quotas": {
 					"type": "array",
@@ -13662,15 +14276,11 @@
 				},
 				"file_system": {
 					"type": "object",
-					"$ref": "#/definitions/file_system_instance",
-					"description": "This is the embeddable reference form of file_system_id attribute.",
-					"x-ref": "file_system"
+					"description": "This is the embeddable reference form of file_system_id attribute."
 				},
 				"tree_quota": {
 					"type": "object",
-					"$ref": "#/definitions/file_tree_quota_instance",
-					"description": "This is the embeddable reference form of tree_quota_id attribute.",
-					"x-ref": "file_tree_quota"
+					"description": "This is the embeddable reference form of tree_quota_id attribute."
 				}
 			},
 			"description": "This resource type has queriable associations from file_system, file_tree_quota"
@@ -13790,15 +14400,12 @@
 				},
 				"file_system": {
 					"type": "object",
-					"$ref": "#/definitions/file_system_instance",
-					"description": "This is the embeddable reference form of file_system_id attribute.",
-					"x-ref": "file_system"
+					"description": "This is the embeddable reference form of file_system_id attribute."
 				},
 				"datastores": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/datastore_instance",
-						"x-ref": "datastore"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type datastore association.",
 					"x-added": "3.0.0.0"
@@ -13903,9 +14510,7 @@
 				},
 				"file_system": {
 					"type": "object",
-					"$ref": "#/definitions/file_system_instance",
-					"description": "This is the embeddable reference form of file_system_id attribute.",
-					"x-ref": "file_system"
+					"description": "This is the embeddable reference form of file_system_id attribute."
 				}
 			},
 			"description": "This resource type has queriable association from file_system"
@@ -13966,9 +14571,7 @@
 				},
 				"virtual_volume": {
 					"type": "object",
-					"$ref": "#/definitions/virtual_volume_instance",
-					"description": "This is the embeddable reference form of virtual_volume_id attribute.",
-					"x-ref": "virtual_volume"
+					"description": "This is the embeddable reference form of virtual_volume_id attribute."
 				}
 			}
 		},
@@ -14055,8 +14658,7 @@
 				"volumes": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/volume_instance",
-						"x-ref": "volume"
+						"type": "object"
 					},
 					"description": "List of the volumes that are associated with this datastore.",
 					"x-added": "3.0.0.0"
@@ -14144,8 +14746,7 @@
 				"file_events_publishers": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/file_events_publisher_instance",
-						"x-ref": "file_events_publisher"
+						"type": "object"
 					},
 					"description": "List of the file_events_publishers that are associated with this file_events_pool.",
 					"x-added": "3.0.0.0"
@@ -14366,8 +14967,7 @@
 				"nas_servers": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/nas_server_instance",
-						"x-ref": "nas_server"
+						"type": "object"
 					},
 					"description": "List of the nas_servers that are associated with this file_events_publisher.",
 					"x-added": "3.0.0.0"
@@ -14448,10 +15048,7 @@
 				},
 				"vcenter": {
 					"type": "object",
-					"$ref": "#/definitions/vcenter_instance",
-					"description": "This is the embeddable reference form of vcenter_id attribute.",
-					"x-ref": "vcenter",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of vcenter_id attribute."
 				},
 				"license_assignments": {
 					"type": "array",
@@ -14465,8 +15062,7 @@
 				"virtual_machines": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_machine_instance",
-						"x-ref": "virtual_machine"
+						"type": "object"
 					},
 					"description": "List of the virtual_machines that are associated with this vsphere_host.",
 					"x-added": "3.0.0.0"
@@ -14474,8 +15070,7 @@
 				"datastores": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/datastore_instance",
-						"x-ref": "datastore"
+						"type": "object"
 					},
 					"description": "List of the datastores that are associated with this vsphere_host.",
 					"x-added": "3.0.0.0"
@@ -14483,8 +15078,7 @@
 				"hosts": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/host_instance",
-						"x-ref": "host"
+						"type": "object"
 					},
 					"description": "List of the hosts that are associated with this vsphere_host.",
 					"x-added": "3.0.0.0"
@@ -14531,10 +15125,7 @@
 				},
 				"vsphere_host": {
 					"type": "object",
-					"$ref": "#/definitions/vsphere_host_instance",
-					"description": "This is the embeddable reference form of vsphere_host_id attribute.",
-					"x-ref": "vsphere_host",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of vsphere_host_id attribute."
 				}
 			}
 		},
@@ -14564,10 +15155,7 @@
 				},
 				"nas_server": {
 					"type": "object",
-					"$ref": "#/definitions/nas_server_instance",
-					"description": "This is the embeddable reference form of nas_server_id attribute.",
-					"x-ref": "nas_server",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of nas_server_id attribute."
 				}
 			},
 			"description": "\nWas added in version 3.0.0.0.\nThis resource type has queriable association from nas_server"
@@ -14601,10 +15189,7 @@
 				},
 				"storage_container": {
 					"type": "object",
-					"$ref": "#/definitions/storage_container_instance",
-					"description": "This is the embeddable reference form of storage_container_id attribute.",
-					"x-ref": "storage_container",
-					"x-added": "3.0.0.0"
+					"description": "This is the embeddable reference form of storage_container_id attribute."
 				},
 				"remote_system": {
 					"type": "object",
@@ -16293,8 +16878,7 @@
 				"virtual_machines": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/virtual_machine_instance",
-						"x-ref": "virtual_machine"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type virtual_machine association.",
 					"x-added": "2.0.0.0"
@@ -16302,8 +16886,7 @@
 				"datastores": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/datastore_instance",
-						"x-ref": "datastore"
+						"type": "object"
 					},
 					"description": "This is the inverse of the resource type datastore association.",
 					"x-added": "3.0.0.0"
@@ -16597,17 +17180,11 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"$ref": "#/definitions/remote_system_instance",
-					"description": "This is the embeddable reference form of remote_system_id attribute.",
-					"x-ref": "remote_system",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of remote_system_id attribute."
 				},
 				"volume": {
 					"type": "object",
-					"$ref": "#/definitions/volume_instance",
-					"description": "This is the embeddable reference form of volume_id attribute.",
-					"x-ref": "volume",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of volume_id attribute."
 				},
 				"volume_group": {
 					"type": "object",
@@ -16618,10 +17195,7 @@
 				},
 				"remote_snapshot": {
 					"type": "object",
-					"$ref": "#/definitions/remote_snapshot_instance",
-					"description": "This is the embeddable reference form of remote_snapshot_id attribute.",
-					"x-ref": "remote_snapshot",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of remote_snapshot_id attribute."
 				},
 				"rule": {
 					"type": "object",
@@ -16632,10 +17206,7 @@
 				},
 				"local_volume_snapshot": {
 					"type": "object",
-					"$ref": "#/definitions/volume_instance",
-					"description": "This is the embeddable reference form of local_volume_snapshot_id attribute.",
-					"x-ref": "volume",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of local_volume_snapshot_id attribute."
 				},
 				"local_volume_group_snapshot": {
 					"type": "object",
@@ -16848,10 +17419,7 @@
 				},
 				"volume": {
 					"type": "object",
-					"$ref": "#/definitions/volume_instance",
-					"description": "This is the embeddable reference form of volume_id attribute.",
-					"x-ref": "volume",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of volume_id attribute."
 				},
 				"volume_group": {
 					"type": "object",
@@ -16862,10 +17430,7 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"$ref": "#/definitions/remote_system_instance",
-					"description": "This is the embeddable reference form of remote_system_id attribute.",
-					"x-ref": "remote_system",
-					"x-added": "3.5.0.0"
+					"description": "This is the embeddable reference form of remote_system_id attribute."
 				}
 			}
 		},
@@ -16974,10 +17539,7 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"$ref": "#/definitions/remote_system_instance",
-					"description": "This is the embeddable reference form of remote_system_id attribute.",
-					"x-ref": "remote_system",
-					"x-added": "4.0.0.0"
+					"description": "This is the embeddable reference form of remote_system_id attribute."
 				}
 			}
 		},
@@ -17016,10 +17578,7 @@
 				},
 				"remote_system": {
 					"type": "object",
-					"$ref": "#/definitions/remote_system_instance",
-					"description": "This is the embeddable reference form of remote_system_id attribute.",
-					"x-ref": "remote_system",
-					"x-added": "4.0.0.0"
+					"description": "This is the embeddable reference form of remote_system_id attribute."
 				}
 			}
 		},
@@ -17060,6 +17619,52 @@
 					},
 					"description": "This is the inverse of the resource type policy association.",
 					"x-added": "4.1.0.0"
+				}
+			}
+		},
+		"file_io_limit_rule_create": {
+			"type": "object",
+			"description": "Parameters of the file_io_limit_rule create operation.\nWas added in version 4.1.0.0.",
+			"x-added": "4.1.0.0",
+			"required": [
+				"name",
+				"max_bw"
+			],
+			"properties": {
+				"name": {
+					"description": "Name of the file_io_limit_rule.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"max_bw": {
+					"description": "Maximum allowable bandwidth in MB/second for the file_system or nas_server resource.\nWhen applied to a nas_server, all the file_system of the nas_server share the maximum bandwidth.\n",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 1,
+					"maximum": 1000000,
+					"x-units": "MB/sec"
+				}
+			}
+		},
+		"file_io_limit_rule_modify": {
+			"type": "object",
+			"description": "Parameters of the file_io_limit_rule modify operation.\nWas added in version 4.1.0.0.",
+			"x-added": "4.1.0.0",
+			"properties": {
+				"name": {
+					"description": "New name of the file_io_limit_rule.",
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 128
+				},
+				"max_bw": {
+					"description": "New maximum allowable bandwidth in MB/second for the file_system or nas_server resource.\nWhen applied to a nas_server, all the file_systems of the nas_server share the maximum bandwidth.\n",
+					"type": "integer",
+					"format": "int32",
+					"minimum": 1,
+					"maximum": 1000000,
+					"x-units": "MB/sec"
 				}
 			}
 		}

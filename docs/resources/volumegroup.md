@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2023-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2023-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ After the execution of above resource block, volume group would have been create
 - `is_write_order_consistent` (Boolean) Determines whether snapshot sets of the group will be write order consistent.
 - `protection_policy_id` (String) Unique identifier of the protection policy assigned to the volume group. Give empty string to remove policy. Conflicts with `protection_policy_name`.
 - `protection_policy_name` (String) Unique name of the protection policy assigned to the volume group. Conflicts with `protection_policy_id`.
+- `qos_performance_policy_id` (String) Unique identifier of the QoS performance policy assigned to the volume group.
 - `volume_ids` (Set of String) A list of identifiers of existing volumes that should be added to the volume group. Conflicts with `volume_names`.
 - `volume_names` (Set of String) A list of names of existing volumes that should be added to the volume group. Conflicts with `volume_ids`.
 

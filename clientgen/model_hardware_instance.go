@@ -60,21 +60,23 @@ type HardwareInstance struct {
 	// This is the inverse of the resource type sas_port association.
 	HardwareParentSasPorts []SasPortInstance `json:"hardware_parent_sas_ports,omitempty"`
 	// This is the inverse of the resource type eth_port association.
-	NodeEthPorts []EthPortInstance `json:"node_eth_ports,omitempty"`
+	NodeEthPorts []map[string]interface{} `json:"node_eth_ports,omitempty"`
 	// This is the inverse of the resource type eth_port association.
-	SfpEthPorts []EthPortInstance `json:"sfp_eth_ports,omitempty"`
+	SfpEthPorts []map[string]interface{} `json:"sfp_eth_ports,omitempty"`
 	// This is the inverse of the resource type eth_port association.
-	IoModuleEthPorts []EthPortInstance `json:"io_module_eth_ports,omitempty"`
+	IoModuleEthPorts []map[string]interface{} `json:"io_module_eth_ports,omitempty"`
 	// This is the inverse of the resource type eth_port association.
-	HardwareParentEthPorts []EthPortInstance `json:"hardware_parent_eth_ports,omitempty"`
+	HardwareParentEthPorts []map[string]interface{} `json:"hardware_parent_eth_ports,omitempty"`
 	// This is the inverse of the resource type eth_be_port association.
-	NodeEthBePorts []EthBePortInstance `json:"node_eth_be_ports,omitempty"`
+	NodeEthBePorts []map[string]interface{} `json:"node_eth_be_ports,omitempty"`
 	// This is the inverse of the resource type eth_be_port association.
-	SfpEthBePorts []EthBePortInstance `json:"sfp_eth_be_ports,omitempty"`
+	SfpEthBePorts []map[string]interface{} `json:"sfp_eth_be_ports,omitempty"`
 	// This is the inverse of the resource type eth_be_port association.
-	HardwareParentEthBePorts []EthBePortInstance `json:"hardware_parent_eth_be_ports,omitempty"`
-	Parent                   *HardwareInstance   `json:"parent,omitempty"`
+	HardwareParentEthBePorts []map[string]interface{} `json:"hardware_parent_eth_be_ports,omitempty"`
+	// This is the embeddable reference form of parent_id attribute.
+	Parent map[string]interface{} `json:"parent,omitempty"`
 	// This is the inverse of the resource type hardware association.
-	Children  []HardwareInstance `json:"children,omitempty"`
-	Appliance *ApplianceInstance `json:"appliance,omitempty"`
+	Children []map[string]interface{} `json:"children,omitempty"`
+	// This is the embeddable reference form of appliance_id attribute.
+	Appliance map[string]interface{} `json:"appliance,omitempty"`
 }

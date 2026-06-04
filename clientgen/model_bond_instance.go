@@ -36,9 +36,10 @@ type BondInstance struct {
 	// Localized message string corresponding to type Was added in version 2.0.0.0.
 	TypeL10n *string `json:"type_l10n,omitempty"`
 	// This is the inverse of the resource type ip_port association.
-	IpPorts []IpPortInstance `json:"ip_ports,omitempty"`
-	Partner *BondInstance    `json:"partner,omitempty"`
-	Fsn     *FsnInstance     `json:"fsn,omitempty"`
+	IpPorts []map[string]interface{} `json:"ip_ports,omitempty"`
+	// This is the embeddable reference form of partner_id attribute.
+	Partner map[string]interface{} `json:"partner,omitempty"`
+	Fsn     *FsnInstance           `json:"fsn,omitempty"`
 	// This is the inverse of the resource type eth_port association.
 	EthPorts []EthPortInstance `json:"eth_ports,omitempty"`
 }

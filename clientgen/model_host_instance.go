@@ -34,13 +34,14 @@ type HostInstance struct {
 	// Localized message string corresponding to host_connectivity Was added in version 3.0.0.0.
 	HostConnectivityL10n *string `json:"host_connectivity_l10n,omitempty"`
 	// This is the inverse of the resource type initiator association.
-	Initiators       []InitiatorInstance       `json:"initiators,omitempty"`
-	HostGroup        *HostGroupInstance        `json:"host_group,omitempty"`
+	Initiators []InitiatorInstance `json:"initiators,omitempty"`
+	// This is the embeddable reference form of host_group_id attribute.
+	HostGroup        map[string]interface{}    `json:"host_group,omitempty"`
 	ImportHostSystem *ImportHostSystemInstance `json:"import_host_system,omitempty"`
 	// This is the inverse of the resource type host_volume_mapping association.
 	MappedHosts []HostVolumeMappingInstance `json:"mapped_hosts,omitempty"`
 	// This is the inverse of the resource type host_virtual_volume_mapping association.
-	HostVirtualVolumeMappings []HostVirtualVolumeMappingInstance `json:"host_virtual_volume_mappings,omitempty"`
+	HostVirtualVolumeMappings []map[string]interface{} `json:"host_virtual_volume_mappings,omitempty"`
 	// List of the vsphere_hosts that are associated with this host.
 	VsphereHosts []VsphereHostInstance `json:"vsphere_hosts,omitempty"`
 }

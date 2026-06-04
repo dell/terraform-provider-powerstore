@@ -21,21 +21,25 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"strings"
 	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 
 	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-const defaultSectorSize = 512
+const defaultSectorSize int32 = 512
 
 type volumeResource struct {
 	client *client.Client
@@ -126,7 +130,7 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					stringvalidator.ConflictsWith(path.MatchRoot("host_group_id")),
 				},
 			},
-			"logical_unit_number": schema.Int64Attribute{
+			"logical_unit_number": schema.Int32Attribute{
 				Computed:            true,
 				Optional:            true,
 				Description:         "The current amount of data written to the volume.",
@@ -151,13 +155,13 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Description:         "The minimum size  of the volume.",
 				MarkdownDescription: "The minimum size of the volume.",
 			},
-			"sector_size": schema.Int64Attribute{
+			"sector_size": schema.Int32Attribute{
 				Optional:            true,
 				Computed:            true,
 				Description:         "The sector size of the volume.",
 				MarkdownDescription: "The sector size of the volume.",
-				PlanModifiers: []planmodifier.Int64{
-					DefaultAttribute(int64(defaultSectorSize)),
+				PlanModifiers: []planmodifier.Int32{
+					int32planmodifier.UseStateForUnknown(),
 				},
 			},
 			"description": schema.StringAttribute{
@@ -209,6 +213,12 @@ func (r volumeResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"default_high",
 					}...),
 				},
+			},
+			"qos_performance_policy_id": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				Description:         "The unique identifier of the QoS performance policy assigned to the volume.",
+				MarkdownDescription: "The unique identifier of the QoS performance policy assigned to the volume.",
 			},
 			"creation_timestamp": schema.StringAttribute{
 				Computed:            true,
@@ -376,26 +386,6 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 		)
 		return
 	}
-	name := plan.Name.ValueString()
-	sectorSize := plan.SectorSize.ValueInt64()
-
-	volumeCreate := &gopowerstore.VolumeCreate{
-		Name:                &name,
-		Description:         plan.Description.ValueString(),
-		Size:                &valInBytes,
-		ApplianceID:         plan.ApplianceID.ValueString(),
-		VolumeGroupID:       plan.VolumeGroupID.ValueString(),
-		SectorSize:          &sectorSize,
-		ProtectionPolicyID:  plan.ProtectionPolicyID.ValueString(),
-		PerformancePolicyID: plan.PerformancePolicyID.ValueString(),
-		AppType:             gopowerstore.AppTypeEnum(plan.AppType.ValueString()),
-		AppTypeOther:        plan.AppTypeOther.ValueString(),
-		MinimumSize:         plan.MinimumSize.ValueInt64(),
-		HostID:              plan.HostID.ValueString(),
-		HostGroupID:         plan.HostGroupID.ValueString(),
-		LogicalUnitNumber:   plan.LogicalUnitNumber.ValueInt64(),
-	}
-
 	// Add validation
 	valid, validErr := creationValidation(context.Background(), plan)
 	if !valid {
@@ -406,9 +396,31 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
+	// Set default sector_size if not provided
+	if plan.SectorSize.IsNull() || plan.SectorSize.IsUnknown() {
+		plan.SectorSize = types.Int32Value(defaultSectorSize)
+	}
+
+	volumeCreate := clientgen.VolumeCreate{
+		Name:                   plan.Name.ValueString(),
+		Size:                   valInBytes,
+		Description:            helper.ValueToPointerNE[string](plan.Description),
+		ApplianceId:            helper.ValueToPointerNE[string](plan.ApplianceID),
+		VolumeGroupId:          helper.ValueToPointerNE[string](plan.VolumeGroupID),
+		SectorSize:             helper.ValueToPointerNE[int32](plan.SectorSize),
+		ProtectionPolicyId:     helper.ValueToPointerNE[string](plan.ProtectionPolicyID),
+		PerformancePolicyId:    helper.ValueToPointerNE[string](plan.PerformancePolicyID),
+		QosPerformancePolicyId: helper.ValueToPointerNE[string](plan.QosPerformancePolicyID),
+		AppType:                helper.ValueToEnumPointer[string, clientgen.AppTypeEnum](plan.AppType),
+		AppTypeOther:           helper.ValueToPointerNE[string](plan.AppTypeOther),
+		MinSize:                helper.ValueToPointerNE[int64](plan.MinimumSize),
+		HostId:                 helper.ValueToPointerNE[string](plan.HostID),
+		HostGroupId:            helper.ValueToPointerNE[string](plan.HostGroupID),
+		LogicalUnitNumber:      helper.ValueToPointerNE[int32](plan.LogicalUnitNumber),
+	}
+
 	// Create New Volume
-	// The function returns only ID of the newly created Volume
-	volCreateResponse, err := r.client.PStoreClient.CreateVolume(context.Background(), volumeCreate)
+	volCreateResponse, _, err := r.client.GenClient.VolumeApi.PostAllVolumes(context.Background()).Body(volumeCreate).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating volume",
@@ -418,36 +430,18 @@ func (r volumeResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Get Volume Details using ID retrieved above
-	volResponse, err1 := r.client.PStoreClient.GetVolume(context.Background(), volCreateResponse.ID)
-	if err1 != nil {
-		resp.Diagnostics.AddError(
-			"Error getting volume after creation",
-			"Could not get volume, unexpected error: "+err1.Error(),
-		)
-		return
-	}
-	// Get Host Mapping from volume ID
-	hostMapping, err1 := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volCreateResponse.ID)
-	if err1 != nil {
-		resp.Diagnostics.AddError(
-			"Error fetching volume host mapping",
-			"Could not create volume, unexpected error: "+err1.Error(),
-		)
-		return
-	}
-	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volCreateResponse.ID)
+	volResponse, err := r.ReadAPI(context.Background(), *volCreateResponse.Id)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error fetching volume group mapping",
-			"Could not create volume, unexpected error: "+err.Error(),
+			"Error getting volume after creation",
+			"Could not get volume, unexpected error: "+err.Error(),
 		)
 		return
 	}
 	log.Printf("After Volume create call")
 
 	result := models.Volume{}
-	updateVolState(&result, volResponse, hostMapping, volGroupMapping, &plan, operationCreate)
+	updateVolState(&result, volResponse, &plan, operationCreate)
 
 	log.Printf("Added to result: %v", result)
 
@@ -525,7 +519,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		)
 		return
 	}
-	// Get vg ID from state
+	// Get vol ID from state
 	volID := state.ID.ValueString()
 
 	if len(errMessages) > 0 || len(updateFailedParameters) > 0 {
@@ -536,7 +530,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Get volume details from volume ID
-	volResponse, err := r.client.PStoreClient.GetVolume(context.Background(), volID)
+	volResponse, err := r.ReadAPI(context.Background(), volID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting volume after update",
@@ -545,27 +539,7 @@ func (r volumeResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	// Get Host Mapping from volume ID
-	hostMapping, err := r.client.PStoreClient.GetHostVolumeMappingByVolumeID(context.Background(), volResponse.ID)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error fetching volume host mapping",
-			"Could not update volume, unexpected error: "+err.Error(),
-		)
-		return
-	}
-
-	// Get Volume Group Mapping details from API
-	volGroupMapping, err := r.client.PStoreClient.GetVolumeGroupsByVolumeID(context.Background(), volResponse.ID)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error fetching volume host mapping",
-			"Could not create volume, unexpected error: "+err.Error(),
-		)
-		return
-	}
-
-	updateVolState(&state, volResponse, hostMapping, volGroupMapping, &plan, operationUpdate)
+	updateVolState(&state, volResponse, &plan, operationUpdate)
 
 	//Set State
 	diags = resp.State.Set(ctx, &state)
@@ -602,8 +576,9 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	// Detach protection policy from volume
 	if state.ProtectionPolicyID.ValueString() != "" {
-		state.ProtectionPolicyID = types.StringNull()
-		err := modifyVolume(state, 0, volID, *r.client)
+		_, err = r.client.GenClient.VolumeApi.PatchVolumeById(ctx, volID).Body(clientgen.VolumeModify{
+			ProtectionPolicyId: helper.GetPointer(""),
+		}).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Cannot detach protection policy",
@@ -637,7 +612,7 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete volume by calling API
-	_, err = r.client.PStoreClient.DeleteVolume(context.Background(), nil, volID)
+	_, err = r.client.GenClient.VolumeApi.DeleteVolumeById(ctx, volID).Body(clientgen.VolumeDelete{}).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting volume",
@@ -655,4 +630,12 @@ func (r volumeResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 func (r volumeResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+// ReadAPI reads volume details from the PowerStore API using clientgen
+func (r volumeResource) ReadAPI(ctx context.Context, id string) (*clientgen.VolumeInstance, error) {
+	queries := make(url.Values)
+	queries.Set("select", "id,name,description,size,type,wwn,nsid,nguid,appliance_id,state,logical_used,creation_timestamp,protection_policy_id,performance_policy_id,qos_performance_policy_id,is_replication_destination,node_affinity,app_type,app_type_other,mapped_volumes(id,host_id,host_group_id,logical_unit_number),volume_groups(id)")
+	response, _, err := r.client.GenClient.VolumeApi.GetVolumeById(ctx, id).Queries(queries).Execute()
+	return response, err
 }

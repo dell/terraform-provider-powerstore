@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2024-2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2024-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,6 +115,7 @@ After the execution of above resource block, filesystem would have been created 
 - `is_smb_op_locks_enabled` (Boolean) Indicates whether opportunistic file locking is enabled on the file system.
 - `is_smb_sync_writes_enabled` (Boolean) Indicates whether the synchronous writes option is enabled on the file system.
 - `locking_policy` (String) File system locking policies.
+- `performance_policy_id` (String) Unique identifier of the File_Performance type QoS policy applied to the file system.
 - `protection_policy_id` (String) Unique identifier of the protection policy applied to the file system.
 - `smb_notify_on_change_dir_depth` (Number) Lowest directory level to which the enabled notifications apply, if any.
 

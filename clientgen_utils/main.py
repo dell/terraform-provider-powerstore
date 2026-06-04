@@ -18,7 +18,7 @@ import json
 
 from requiredApis import RequiredAPIs
 from commonUtils import ProcessOpenapiSpec
-from powerStoreUtils import AddPowerStoreOpIds, AddPowerStoreFlexibleQuery
+from powerStoreUtils import AddPowerStoreOpIds, AddPowerStoreFlexibleQuery, NormalizePowerStoreDateTimeFields
 
 parser = argparse.ArgumentParser(description='Process PowerStore OpenAPI spec.')
 parser.add_argument('--input', help='Input PowerStore OpenAPI spec file path.', required=True)
@@ -32,6 +32,7 @@ filtered_json = ProcessOpenapiSpec(args.input, RequiredAPIs)
 # powerstore specific processing
 filtered_json = AddPowerStoreOpIds(filtered_json)
 filtered_json = AddPowerStoreFlexibleQuery(filtered_json)
+filtered_json = NormalizePowerStoreDateTimeFields(filtered_json)
 
 # write to file
 with open(args.output, 'w') as outfile:

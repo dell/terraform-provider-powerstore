@@ -72,13 +72,15 @@ type EthPortInstance struct {
 	// Localized message string corresponding to stale_state Was added in version 2.0.0.0.
 	StaleStateL10n *string `json:"stale_state_l10n,omitempty"`
 	// This is the inverse of the resource type ip_port association.
-	IpPorts        []IpPortInstance   `json:"ip_ports,omitempty"`
-	Appliance      *ApplianceInstance `json:"appliance,omitempty"`
-	Node           *HardwareInstance  `json:"node,omitempty"`
-	Bond           *BondInstance      `json:"bond,omitempty"`
-	Fsn            *FsnInstance       `json:"fsn,omitempty"`
-	Sfp            *HardwareInstance  `json:"sfp,omitempty"`
-	IoModule       *HardwareInstance  `json:"io_module,omitempty"`
-	HardwareParent *HardwareInstance  `json:"hardware_parent,omitempty"`
-	Partner        *EthPortInstance   `json:"partner,omitempty"`
+	IpPorts   []map[string]interface{} `json:"ip_ports,omitempty"`
+	Appliance *ApplianceInstance       `json:"appliance,omitempty"`
+	Node      *HardwareInstance        `json:"node,omitempty"`
+	// This is the embeddable reference form of bond_id attribute.
+	Bond           map[string]interface{} `json:"bond,omitempty"`
+	Fsn            *FsnInstance           `json:"fsn,omitempty"`
+	Sfp            *HardwareInstance      `json:"sfp,omitempty"`
+	IoModule       *HardwareInstance      `json:"io_module,omitempty"`
+	HardwareParent *HardwareInstance      `json:"hardware_parent,omitempty"`
+	// This is the embeddable reference form of partner_id attribute.
+	Partner map[string]interface{} `json:"partner,omitempty"`
 }

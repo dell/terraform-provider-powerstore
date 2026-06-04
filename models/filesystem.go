@@ -33,6 +33,7 @@ type FileSystem struct {
 	FolderRenamePolicy         types.String  `tfsdk:"folder_rename_policy"`
 	IsAsyncMTimeEnabled        types.Bool    `tfsdk:"is_async_mtime_enabled"`
 	ProtectionPolicyID         types.String  `tfsdk:"protection_policy_id"`
+	PerformancePolicyID        types.String  `tfsdk:"performance_policy_id"`
 	FileEventsPublishingMode   types.String  `tfsdk:"file_events_publishing_mode"`
 	HostIOSize                 types.String  `tfsdk:"host_io_size"`
 	IsSmbSyncWritesEnabled     types.Bool    `tfsdk:"is_smb_sync_writes_enabled"`

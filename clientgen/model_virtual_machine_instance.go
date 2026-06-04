@@ -51,17 +51,20 @@ type VirtualMachineInstance struct {
 	// Localized message string corresponding to status
 	StatusL10n *string `json:"status_l10n,omitempty"`
 	// Localized message string corresponding to power_state Was added in version 3.0.0.0.
-	PowerStateL10n   *string                   `json:"power_state_l10n,omitempty"`
-	ProtectionPolicy *PolicyInstance           `json:"protection_policy,omitempty"`
-	ReplicationGroup *ReplicationGroupInstance `json:"replication_group,omitempty"`
-	Parent           *VirtualMachineInstance   `json:"parent,omitempty"`
+	PowerStateL10n *string `json:"power_state_l10n,omitempty"`
+	// This is the embeddable reference form of protection_policy_id attribute.
+	ProtectionPolicy map[string]interface{} `json:"protection_policy,omitempty"`
+	// This is the embeddable reference form of replication_group_id attribute.
+	ReplicationGroup map[string]interface{} `json:"replication_group,omitempty"`
+	// This is the embeddable reference form of parent_id attribute.
+	Parent map[string]interface{} `json:"parent,omitempty"`
 	// This is the inverse of the resource type virtual_machine association.
-	Children []VirtualMachineInstance `json:"children,omitempty"`
+	Children []map[string]interface{} `json:"children,omitempty"`
 	Vcenter  *VcenterInstance         `json:"vcenter,omitempty"`
 	// List of the virtual_volumes that are associated with this virtual_machine.
-	VirtualVolumes []VirtualVolumeInstance `json:"virtual_volumes,omitempty"`
+	VirtualVolumes []map[string]interface{} `json:"virtual_volumes,omitempty"`
 	// List of the datastores that are associated with this virtual_machine.
-	Datastores []DatastoreInstance `json:"datastores,omitempty"`
+	Datastores []map[string]interface{} `json:"datastores,omitempty"`
 	// List of the vsphere_host that are associated with this virtual_machine.
 	VsphereHost []VsphereHostInstance `json:"vsphere_host,omitempty"`
 }
