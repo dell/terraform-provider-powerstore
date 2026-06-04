@@ -83,8 +83,7 @@ type VirtualVolumeInstance struct {
 	Source map[string]interface{} `json:"source,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
 	TargetVirtualVolumes []map[string]interface{} `json:"target_virtual_volumes,omitempty"`
-	// This is the embeddable reference form of protection_policy_id attribute.
-	ProtectionPolicy map[string]interface{} `json:"protection_policy,omitempty"`
+	ProtectionPolicy     *PolicyInstance          `json:"protection_policy,omitempty"`
 	// This is the inverse of the resource type host_virtual_volume_mapping association.
 	HostVirtualVolumeMappings []HostVirtualVolumeMappingInstance `json:"host_virtual_volume_mappings,omitempty"`
 	// List of the virtual_machines that are associated with this virtual_volume.

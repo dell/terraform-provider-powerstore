@@ -50,5 +50,5 @@ type ReplicationGroupInstance struct {
 	// This is the inverse of the resource type virtual_machine association.
 	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
 	// List of the policies that are associated with this replication_group.
-	Policies []map[string]interface{} `json:"policies,omitempty"`
+	Policies []PolicyInstance `json:"policies,omitempty"`
 }

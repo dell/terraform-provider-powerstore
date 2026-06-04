@@ -22,5 +22,6 @@ type StorageContainerDestinationInstance struct {
 	RemoteStorageContainerId *string `json:"remote_storage_container_id,omitempty"`
 	// This is the embeddable reference form of storage_container_id attribute.
 	StorageContainer map[string]interface{} `json:"storage_container,omitempty"`
-	RemoteSystem     *RemoteSystemInstance  `json:"remote_system,omitempty"`
+	// This is the embeddable reference form of remote_system_id attribute.
+	RemoteSystem map[string]interface{} `json:"remote_system,omitempty"`
 }
