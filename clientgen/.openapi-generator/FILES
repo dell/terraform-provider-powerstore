@@ -17,8 +17,11 @@ api_x509_certificate.go
 client.go
 configuration.go
 docs/ClusterApi.md
+docs/FileIoLimitRuleApi.md
 docs/FileSystemApi.md
+docs/IoLimitRuleApi.md
 docs/LoginSessionApi.md
+docs/PolicyApi.md
 docs/RecycleBinApi.md
 docs/RecycleBinConfigApi.md
 docs/RemoteSystemApi.md
