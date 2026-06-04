@@ -43,8 +43,13 @@ func isMockServer() bool {
 }
 
 // remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT
+// For mock server, uses a dummy address
 var remoteManagementAddress = func() string {
 	addr := os.Getenv("POWERSTORE_REMOTE_ENDPOINT")
+	// For mock server, use a dummy address
+	if addr == "" || strings.Contains(addr, "localhost") || strings.Contains(addr, "127.0.0.1") {
+		return "100.1.1.1"
+	}
 	for _, prefix := range []string{"https://", "http://"} {
 		if len(addr) > len(prefix) && addr[:len(prefix)] == prefix {
 			addr = addr[len(prefix):]
@@ -60,10 +65,24 @@ var remoteManagementAddress = func() string {
 }()
 
 // remoteExchangeUsername is used for certificate exchange
-var remoteExchangeUsername = os.Getenv("POWERSTORE_REMOTE_USERNAME")
+// For mock server, uses a dummy username
+var remoteExchangeUsername = func() string {
+	username := os.Getenv("POWERSTORE_REMOTE_USERNAME")
+	if username == "" || isMockServer() {
+		return "mock_exchange_user"
+	}
+	return username
+}()
 
 // remoteExchangePassword is used for certificate exchange
-var remoteExchangePassword = os.Getenv("POWERSTORE_REMOTE_PASSWORD")
+// For mock server, uses a dummy password
+var remoteExchangePassword = func() string {
+	password := os.Getenv("POWERSTORE_REMOTE_PASSWORD")
+	if password == "" || isMockServer() {
+		return "mock_exchange_password"
+	}
+	return password
+}()
 
 // testAccPreCheckRemoteSystem verifies required environment variables are set for remote system tests
 func testAccPreCheckRemoteSystem(t *testing.T) {
