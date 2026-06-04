@@ -123,6 +123,7 @@ Class | Method | HTTP request | Description
 *ReplicationSessionApi* | [**ReplicationSessionStartFailoverTest**](docs/ReplicationSessionApi.md#replicationsessionstartfailovertest) | **Post** /replication_session/{id}/start_failover_test | Start DR Failover Simulation Test
 *ReplicationSessionApi* | [**ReplicationSessionStopFailoverTest**](docs/ReplicationSessionApi.md#replicationsessionstopfailovertest) | **Post** /replication_session/{id}/stop_failover_test | Stop DR Failover Simulation Test
 *ReplicationSessionApi* | [**ReplicationSessionSync**](docs/ReplicationSessionApi.md#replicationsessionsync) | **Post** /replication_session/{id}/sync | Synchronize
+*SecurityConfigApi* | [**PostSecurityConfigById**](docs/SecurityConfigApi.md#postsecurityconfigbyid) | **Post** /security_config/generate_temp_credentials | Generate a temporary credential to access the Powerstore system.
 *SnapshotRuleApi* | [**DeleteSnapshotRuleById**](docs/SnapshotRuleApi.md#deletesnapshotrulebyid) | **Delete** /snapshot_rule/{id} | Delete
 *SnapshotRuleApi* | [**GetAllSnapshotRules**](docs/SnapshotRuleApi.md#getallsnapshotrules) | **Get** /snapshot_rule | Collection Query
 *SnapshotRuleApi* | [**GetSnapshotRuleById**](docs/SnapshotRuleApi.md#getsnapshotrulebyid) | **Get** /snapshot_rule/{id} | Instance Query
@@ -146,6 +147,7 @@ Class | Method | HTTP request | Description
 *VolumeGroupApi* | [**VolumeGroupEndMetro**](docs/VolumeGroupApi.md#volumegroupendmetro) | **Post** /volume_group/{id}/end_metro | End Metro Configuration
 *VolumeGroupApi* | [**VolumeGroupRemoveMembers**](docs/VolumeGroupApi.md#volumegroupremovemembers) | **Post** /volume_group/{id}/remove_members | Remove Members
 *VolumeGroupApi* | [**VolumeGroupSnapshot**](docs/VolumeGroupApi.md#volumegroupsnapshot) | **Post** /volume_group/{id}/snapshot | Snapshot
+*X509CertificateApi* | [**PostX509CertificateById**](docs/X509CertificateApi.md#postx509certificatebyid) | **Post** /x509_certificate/exchange | Exchange Certificates
 
 
 ## Documentation For Models
@@ -379,6 +381,7 @@ Class | Method | HTTP request | Description
  - [SMBShareOfflineAvailabilityEnum](docs/SMBShareOfflineAvailabilityEnum.md)
  - [SasPortInstance](docs/SasPortInstance.md)
  - [SasPortSpeedEnum](docs/SasPortSpeedEnum.md)
+ - [SecurityConfigGenerateTempCredentialsResponse](docs/SecurityConfigGenerateTempCredentialsResponse.md)
  - [SmbServerInstance](docs/SmbServerInstance.md)
  - [SmbShareInstance](docs/SmbShareInstance.md)
  - [SnapRuleIntervalEnum](docs/SnapRuleIntervalEnum.md)
@@ -439,6 +442,8 @@ Class | Method | HTTP request | Description
  - [VolumeTypeEnum](docs/VolumeTypeEnum.md)
  - [VsphereHostInstance](docs/VsphereHostInstance.md)
  - [VsphereHostLicenseAssignmentInstance](docs/VsphereHostLicenseAssignmentInstance.md)
+ - [X509CertificateExchange](docs/X509CertificateExchange.md)
+ - [X509CertificateServiceEnum](docs/X509CertificateServiceEnum.md)
 
 
 ## Documentation For Authorization

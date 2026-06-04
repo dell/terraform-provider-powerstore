@@ -9,9 +9,11 @@ api_recycle_bin.go
 api_recycle_bin_config.go
 api_remote_system.go
 api_replication_session.go
+api_security_config.go
 api_snapshot_rule.go
 api_volume.go
 api_volume_group.go
+api_x509_certificate.go
 client.go
 configuration.go
 model_active_session_instance.go
@@ -242,6 +244,7 @@ model_replication_stop_failover_test_.go
 model_rpo_enum.go
 model_sas_port_instance.go
 model_sas_port_speed_enum.go
+model_security_config_generate_temp_credentials_response.go
 model_smb_server_instance.go
 model_smb_share_instance.go
 model_smb_share_offline_availability_enum.go
@@ -303,5 +306,7 @@ model_volume_state_enum.go
 model_volume_type_enum.go
 model_vsphere_host_instance.go
 model_vsphere_host_license_assignment_instance.go
+model_x509_certificate_exchange.go
+model_x509_certificate_service_enum.go
 response.go
 utils.go

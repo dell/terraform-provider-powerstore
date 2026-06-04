@@ -68,11 +68,15 @@ type APIClient struct {
 
 	ReplicationSessionApi *ReplicationSessionApiService
 
+	SecurityConfigApi *SecurityConfigApiService
+
 	SnapshotRuleApi *SnapshotRuleApiService
 
 	VolumeApi *VolumeApiService
 
 	VolumeGroupApi *VolumeGroupApiService
+
+	X509CertificateApi *X509CertificateApiService
 }
 
 type service struct {
@@ -101,9 +105,11 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.RecycleBinConfigApi = (*RecycleBinConfigApiService)(&c.common)
 	c.RemoteSystemApi = (*RemoteSystemApiService)(&c.common)
 	c.ReplicationSessionApi = (*ReplicationSessionApiService)(&c.common)
+	c.SecurityConfigApi = (*SecurityConfigApiService)(&c.common)
 	c.SnapshotRuleApi = (*SnapshotRuleApiService)(&c.common)
 	c.VolumeApi = (*VolumeApiService)(&c.common)
 	c.VolumeGroupApi = (*VolumeGroupApiService)(&c.common)
+	c.X509CertificateApi = (*X509CertificateApiService)(&c.common)
 
 	return c
 }
