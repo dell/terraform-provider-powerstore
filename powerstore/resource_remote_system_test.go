@@ -84,46 +84,6 @@ var remoteExchangePassword = func() string {
 	return password
 }()
 
-// remoteSystemUsername is the username set on the remote system resource
-// For mock server, uses a dummy username
-var remoteSystemUsername = func() string {
-	username := os.Getenv("POWERSTORE_REMOTE_SYSTEM_USERNAME")
-	if username == "" || isMockServer() {
-		return "mock_remote_user"
-	}
-	return username
-}()
-
-// remoteSystemPassword is the password set on the remote system resource
-// For mock server, uses a dummy password
-var remoteSystemPassword = func() string {
-	password := os.Getenv("POWERSTORE_REMOTE_SYSTEM_PASSWORD")
-	if password == "" || isMockServer() {
-		return "mock_remote_password"
-	}
-	return password
-}()
-
-// remoteSystemNewUsername is the new username used in update tests
-// For mock server, uses a dummy username
-var remoteSystemNewUsername = func() string {
-	username := os.Getenv("POWERSTORE_REMOTE_SYSTEM_NEW_USERNAME")
-	if username == "" || isMockServer() {
-		return "mock_new_remote_user"
-	}
-	return username
-}()
-
-// remoteSystemNewPassword is the new password used in update tests
-// For mock server, uses a dummy password
-var remoteSystemNewPassword = func() string {
-	password := os.Getenv("POWERSTORE_REMOTE_SYSTEM_NEW_PASSWORD")
-	if password == "" || isMockServer() {
-		return "mock_new_remote_password"
-	}
-	return password
-}()
-
 // testAccPreCheckRemoteSystem verifies required environment variables are set for remote system tests
 func testAccPreCheckRemoteSystem(t *testing.T) {
 	// For mock server, these are not required
@@ -141,22 +101,6 @@ func testAccPreCheckRemoteSystem(t *testing.T) {
 
 	if remoteExchangePassword == "" {
 		t.Fatal("POWERSTORE_REMOTE_PASSWORD must be set for remote system acceptance tests")
-	}
-
-	if remoteSystemUsername == "" {
-		t.Fatal("POWERSTORE_REMOTE_SYSTEM_USERNAME must be set for remote system acceptance tests")
-	}
-
-	if remoteSystemPassword == "" {
-		t.Fatal("POWERSTORE_REMOTE_SYSTEM_PASSWORD must be set for remote system acceptance tests")
-	}
-
-	if remoteSystemNewUsername == "" {
-		t.Fatal("POWERSTORE_REMOTE_SYSTEM_NEW_USERNAME must be set for remote system acceptance tests")
-	}
-
-	if remoteSystemNewPassword == "" {
-		t.Fatal("POWERSTORE_REMOTE_SYSTEM_NEW_PASSWORD must be set for remote system acceptance tests")
 	}
 }
 
@@ -410,7 +354,6 @@ func TestAccRemoteSystemResource_CreateWithCredentials(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
 					resource.TestCheckResourceAttr("powerstore_remote_system.test", "management_address", remoteManagementAddress),
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "remote_username", remoteSystemUsername),
 				),
 			},
 		},
@@ -435,7 +378,7 @@ func TestAccRemoteSystemResource_UpdateCredentials(t *testing.T) {
 			{
 				Config: ProviderConfigForTesting + RemoteSystemUpdateCredentialsConfig,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("powerstore_remote_system.test", "remote_username", remoteSystemNewUsername),
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.test", "id"),
 				),
 			},
 		},
@@ -789,8 +732,6 @@ resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
 	exchange_username    = "` + remoteExchangeUsername + `"
 	exchange_password    = "` + remoteExchangePassword + `"
-	remote_username      = "` + remoteSystemUsername + `"
-	remote_password      = "` + remoteSystemPassword + `"
 	data_network_latency = "Low"
 }
 `
@@ -800,8 +741,6 @@ resource "powerstore_remote_system" "test" {
 	management_address   = "` + remoteManagementAddress + `"
 	exchange_username    = "` + remoteExchangeUsername + `"
 	exchange_password    = "` + remoteExchangePassword + `"
-	remote_username      = "` + remoteSystemNewUsername + `"
-	remote_password      = "` + remoteSystemNewPassword + `"
 	description          = "Updated with credentials change"
 	data_network_latency = "Low"
 }
@@ -834,7 +773,6 @@ resource "powerstore_remote_system" "test" {
 	exchange_username    = "` + remoteExchangeUsername + `"
 	exchange_password    = "` + remoteExchangePassword + `"
 	remote_username      = ""
-	remote_password      = "` + remoteSystemPassword + `"
 	data_network_latency = "Low"
 }
 `
