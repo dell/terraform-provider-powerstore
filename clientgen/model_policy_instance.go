@@ -33,9 +33,9 @@ type PolicyInstance struct {
 	// Localized message string corresponding to managed_by Was added in version 3.0.0.0.
 	ManagedByL10n *string `json:"managed_by_l10n,omitempty"`
 	// This is the inverse of the resource type virtual_volume association.
-	VirtualVolumes  []VirtualVolumeInstance  `json:"virtual_volumes,omitempty"`
-	IoLimitRule     *IoLimitRuleInstance     `json:"io_limit_rule,omitempty"`
-	FileIoLimitRule *FileIoLimitRuleInstance `json:"file_io_limit_rule,omitempty"`
+	VirtualVolumes  []VirtualVolumeInstance `json:"virtual_volumes,omitempty"`
+	IoLimitRule     map[string]interface{}  `json:"io_limit_rule,omitempty"`
+	FileIoLimitRule map[string]interface{}  `json:"file_io_limit_rule,omitempty"`
 	// This is the inverse of the resource type virtual_machine association.
 	VirtualMachines []VirtualMachineInstance `json:"virtual_machines,omitempty"`
 	// This is the inverse of the resource type volume association.

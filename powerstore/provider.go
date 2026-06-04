@@ -201,9 +201,6 @@ func (p *Pstoreprovider) Resources(ctx context.Context) []func() resource.Resour
 		newNFSExportResource,
 		newSMBShareResource,
 		newRecycleBinResource,
-		newIoLimitRuleResource,
-		newFileIoLimitRuleResource,
-		newQosPolicyResource,
 		newMetroVolumeResource,
 		newMetroVolumeGroupResource,
 		newReplicationSessionActionResource,
@@ -230,9 +227,6 @@ func (p *Pstoreprovider) DataSources(ctx context.Context) []func() datasource.Da
 		newSmbShareDatasource,
 		newRemoteSystemDatasource,
 		newRecycleBinDataSource,
-		newIoLimitRuleDataSource,
-		newFileIoLimitRuleDataSource,
-		newQosPolicyDataSource,
 		newReplicationSessionDataSource,
 	}
 }
