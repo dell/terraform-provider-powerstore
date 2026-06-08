@@ -5,7 +5,6 @@ go 1.25.0
 require (
 	github.com/bytedance/mockey v1.2.14
 	github.com/dell/gopowerstore v1.18.0
-	github.com/go-git/go-git/v5 v5.19.1 // Direct dependency for security compliance - forces v5.19.1 for all transitive uses
 	github.com/hashicorp/terraform-plugin-framework v1.13.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.15.0
 	github.com/hashicorp/terraform-plugin-go v0.25.0
@@ -35,6 +34,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
+	github.com/go-git/go-git/v5 v5.19.1 // indirect
 	github.com/go-openapi/errors v0.22.0 // indirect
 	github.com/go-openapi/strfmt v0.23.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -92,3 +92,4 @@ require (
 )
 
 replace github.com/go-jose/go-jose/v4 => github.com/go-jose/go-jose/v4 v4.1.4
+replace github.com/go-git/go-git/v5 => github.com/go-git/go-git/v5 v5.19.1
