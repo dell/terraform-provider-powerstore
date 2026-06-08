@@ -92,3 +92,4 @@ require (
 )
 
 replace github.com/go-jose/go-jose/v4 => github.com/go-jose/go-jose/v4 v4.1.4
+replace github.com/go-git/go-git/v5 => github.com/go-git/go-git/v5 v5.19.1
