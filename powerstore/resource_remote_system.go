@@ -20,7 +20,6 @@ package powerstore
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/url"
 
 	client "terraform-provider-powerstore/client"
@@ -200,12 +199,9 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	log.Printf("Started Create Remote System")
-
 	// Step 1: Exchange certificates if credentials are provided (for PowerStore-to-PowerStore)
 	if !plan.ExchangeUsername.IsNull() && !plan.ExchangeUsername.IsUnknown() &&
 		!plan.ExchangePassword.IsNull() && !plan.ExchangePassword.IsUnknown() {
-		log.Printf("Exchanging certificates with remote system")
 		exchangeBody := clientgen.X509CertificateExchange{
 			Service:  clientgen.X509CertificateServiceEnum("Replication_HTTP"),
 			Address:  plan.ManagementAddress.ValueString(),
@@ -221,7 +217,6 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 			)
 			return
 		}
-		log.Printf("Certificate exchange successful")
 	}
 
 	// Step 2: Create remote system
@@ -301,7 +296,6 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 
 	diags = resp.State.Set(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
-	log.Printf("Successfully created Remote System: %s", rsID)
 }
 
 // Read - reads the remote system state
@@ -346,7 +340,6 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	rsID := state.ID.ValueString()
-	log.Printf("Started Update Remote System: %s", rsID)
 
 	modifyBody := clientgen.RemoteSystemModify{}
 	changed := false
@@ -402,7 +395,6 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 
 	diags = resp.State.Set(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
-	log.Printf("Successfully updated Remote System: %s", rsID)
 }
 
 // Delete - deletes the remote system
@@ -415,7 +407,6 @@ func (r *resourceRemoteSystem) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	rsID := state.ID.ValueString()
-	log.Printf("Started Delete Remote System: %s", rsID)
 
 	_, err := r.client.GenClient.RemoteSystemApi.DeleteRemoteSystemById(ctx, rsID).Body(map[string]interface{}{}).Execute()
 	if err != nil {
@@ -425,8 +416,6 @@ func (r *resourceRemoteSystem) Delete(ctx context.Context, req resource.DeleteRe
 		)
 		return
 	}
-
-	log.Printf("Successfully deleted Remote System: %s", rsID)
 }
 
 // ImportState - imports an existing remote system by ID
