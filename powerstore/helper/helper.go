@@ -19,6 +19,7 @@ package helper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"time"
@@ -27,6 +28,33 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// apiErrorBody represents the JSON error response from PowerStore API
+type apiErrorBody struct {
+	Messages []struct {
+		MessageL10n string `json:"message_l10n"`
+	} `json:"messages"`
+}
+
+// ExtractErrorMessage extracts the human-readable message_l10n from a clientgen
+// GenericOpenAPIError. If extraction fails, it falls back to err.Error().
+func ExtractErrorMessage(err error) string {
+	// Try pointer receiver first (clientgen returns &GenericOpenAPIError{})
+	if oaErr, ok := err.(*clientgen.GenericOpenAPIError); ok {
+		var body apiErrorBody
+		if jsonErr := json.Unmarshal(oaErr.Body(), &body); jsonErr == nil && len(body.Messages) > 0 && body.Messages[0].MessageL10n != "" {
+			return body.Messages[0].MessageL10n
+		}
+	}
+	// Try value receiver
+	if oaErr, ok := err.(clientgen.GenericOpenAPIError); ok {
+		var body apiErrorBody
+		if jsonErr := json.Unmarshal(oaErr.Body(), &body); jsonErr == nil && len(body.Messages) > 0 && body.Messages[0].MessageL10n != "" {
+			return body.Messages[0].MessageL10n
+		}
+	}
+	return err.Error()
+}
 
 func GetKnownBoolPointer(in types.Bool) *bool {
 	if in.IsUnknown() {

@@ -54,11 +54,32 @@ limitations under the License.
 # For PowerStore-to-PowerStore connections, only management_address and data_network_latency are required
 # For non-PowerStore remote systems, additional parameters like type, remote_username, remote_password are required
 
-# Example: PowerStore-to-PowerStore remote system
+# Example: PowerStore-to-PowerStore remote system (TCP)
 resource "powerstore_remote_system" "ps_to_ps" {
   management_address   = "100.1.1.1"
   description          = "Remote PowerStore for replication"
   data_network_latency = "Low"
+}
+
+# Example: Universal FC remote system
+resource "powerstore_remote_system" "fc_universal" {
+  management_address   = "100.2.2.2"
+  description          = "Universal FC remote system for block replication"
+  type                 = "Universal"
+  data_connection_type = "FC"
+  data_network_latency = "Low"
+  universal_details = {
+    fc_targets = [
+      {
+        wwnn = "58:cc:f0:98:49:21:07:00"
+        wwpn = "58:cc:f0:98:49:21:07:01"
+      },
+      {
+        wwnn = "58:cc:f0:98:49:21:07:00"
+        wwpn = "58:cc:f0:98:49:21:07:02"
+      }
+    ]
+  }
 }
 ```
 
@@ -71,7 +92,7 @@ resource "powerstore_remote_system" "ps_to_ps" {
 
 ### Optional
 
-- `data_connection_type` (String) Data connection type. Valid values: `iSCSI`, `FC`.
+- `data_connection_type` (String) Data connection type. Valid values: `iSCSI`, `TCP`, `FC`, `DD_Boost`.
 - `data_network_latency` (String) Network latency for the remote system. Valid values: `Low`, `High`.
 - `description` (String) User-specified description of the remote system.
 - `exchange_password` (String, Sensitive) Password for certificate exchange with remote PowerStore system. Required for PowerStore-to-PowerStore connections. Can be the admin password or a temporary `secret` from `generate_temp_credentials` API.
@@ -81,15 +102,35 @@ resource "powerstore_remote_system" "ps_to_ps" {
 - `remote_password` (String, Sensitive) Password used to access the remote system. Used only for PowerProtect DD and non-PowerStore systems.
 - `remote_username` (String) Username used to access the remote system. Used only for PowerProtect DD and non-PowerStore systems.
 - `type` (String) Type of the remote system. For PowerStore-to-PowerStore, this is auto-detected.
+- `universal_details` (Attributes) FC target configuration for Universal-type remote systems. Required when `type` is `Universal` and `data_connection_type` is `FC`. Contains FC target WWNN/WWPN pairs for manual FC target specification. (see [below for nested schema](#nestedatt--universal_details))
 
 ### Read-Only
 
 - `capabilities` (List of String) List of supported remote protection capabilities.
 - `data_connection_state` (String) Data connection state of the remote system.
+- `fc_target_wwns` (List of String) FC target World Wide Names discovered for the data connection. Populated by the system after creation.
 - `id` (String) Unique identifier of the remote system.
 - `serial_number` (String) Serial number of the remote system.
 - `state` (String) Current state of the remote system.
 - `version` (String) Version of the remote system.
+
+<a id="nestedatt--universal_details"></a>
+### Nested Schema for `universal_details`
+
+Required:
+
+- `fc_targets` (Attributes List) List of FC targets with World Wide Node Name and World Wide Port Name pairs. (see [below for nested schema](#nestedatt--universal_details--fc_targets))
+
+<a id="nestedatt--universal_details--fc_targets"></a>
+### Nested Schema for `universal_details.fc_targets`
+
+Required:
+
+- `wwpn` (String) World Wide Port Name of the FC target.
+
+Optional:
+
+- `wwnn` (String) World Wide Node Name of the FC target.
 
 ## Import
 

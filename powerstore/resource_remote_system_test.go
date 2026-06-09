@@ -42,49 +42,79 @@ func isMockServer() bool {
 	return strings.Contains(endpoint, "localhost") || strings.Contains(endpoint, "127.0.0.1")
 }
 
-// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT
-// For mock server, uses a dummy address
+// remoteManagementAddress extracts the host from POWERSTORE_REMOTE_ENDPOINT.
+// Returns empty string when not set (tests that need it will be skipped).
+// For mock server, uses a dummy address.
 var remoteManagementAddress = func() string {
-	addr := os.Getenv("POWERSTORE_REMOTE_ENDPOINT")
-	// For mock server, use a dummy address
-	if addr == "" || strings.Contains(addr, "localhost") || strings.Contains(addr, "127.0.0.1") {
+	if isMockServer() {
 		return "100.1.1.1"
 	}
-	for _, prefix := range []string{"https://", "http://"} {
-		if len(addr) > len(prefix) && addr[:len(prefix)] == prefix {
-			addr = addr[len(prefix):]
-		}
+	addr := os.Getenv("POWERSTORE_REMOTE_ENDPOINT")
+	if addr == "" {
+		return ""
 	}
-	for i, c := range addr {
-		if c == '/' {
-			addr = addr[:i]
-			break
-		}
+	u, err := url.Parse(addr)
+	if err == nil && u.Hostname() != "" {
+		return u.Hostname()
 	}
 	return addr
 }()
 
-// remoteExchangeUsername is used for certificate exchange
-// For mock server, uses a dummy username
+// remoteExchangeUsername is used for certificate exchange.
+// For mock server, uses a dummy username.
 var remoteExchangeUsername = func() string {
-	username := os.Getenv("POWERSTORE_REMOTE_USERNAME")
-	if username == "" || isMockServer() {
+	if isMockServer() {
 		return "mock_exchange_user"
 	}
-	return username
+	return os.Getenv("POWERSTORE_REMOTE_USERNAME")
 }()
 
-// remoteExchangePassword is used for certificate exchange
-// For mock server, uses a dummy password
+// remoteExchangePassword is used for certificate exchange.
+// For mock server, uses a dummy password.
 var remoteExchangePassword = func() string {
-	password := os.Getenv("POWERSTORE_REMOTE_PASSWORD")
-	if password == "" || isMockServer() {
+	if isMockServer() {
 		return "mock_exchange_password"
 	}
-	return password
+	return os.Getenv("POWERSTORE_REMOTE_PASSWORD")
 }()
 
-// testAccPreCheckRemoteSystem verifies required environment variables are set for remote system tests
+// FC target WWN values for FC remote system tests.
+// For mock server, uses dummy values. For real array, read from env vars.
+var fcTargetWWNN = func() string {
+	if isMockServer() {
+		return "58:cc:f0:98:49:21:07:00"
+	}
+	v := os.Getenv("POWERSTORE_FC_TARGET_WWNN")
+	if v == "" {
+		return "58:cc:f0:98:49:21:07:00" // default for mock
+	}
+	return v
+}()
+
+var fcTargetWWPN1 = func() string {
+	if isMockServer() {
+		return "58:cc:f0:98:49:21:07:01"
+	}
+	v := os.Getenv("POWERSTORE_FC_TARGET_WWPN1")
+	if v == "" {
+		return "58:cc:f0:98:49:21:07:01"
+	}
+	return v
+}()
+
+var fcTargetWWPN2 = func() string {
+	if isMockServer() {
+		return "58:cc:f0:98:49:21:07:02"
+	}
+	v := os.Getenv("POWERSTORE_FC_TARGET_WWPN2")
+	if v == "" {
+		return "58:cc:f0:98:49:21:07:02"
+	}
+	return v
+}()
+
+// testAccPreCheckRemoteSystem verifies required environment variables are set for remote system tests.
+// Skips tests that require a real remote system when env vars are not configured.
 func testAccPreCheckRemoteSystem(t *testing.T) {
 	// For mock server, these are not required
 	if isMockServer() {
@@ -92,15 +122,15 @@ func testAccPreCheckRemoteSystem(t *testing.T) {
 	}
 
 	if remoteManagementAddress == "" {
-		t.Fatal("POWERSTORE_REMOTE_ENDPOINT must be set for remote system acceptance tests")
+		t.Skip("Skipping: POWERSTORE_REMOTE_ENDPOINT must be set for remote system acceptance tests")
 	}
 
 	if remoteExchangeUsername == "" {
-		t.Fatal("POWERSTORE_REMOTE_USERNAME must be set for remote system acceptance tests")
+		t.Skip("Skipping: POWERSTORE_REMOTE_USERNAME must be set for remote system acceptance tests")
 	}
 
 	if remoteExchangePassword == "" {
-		t.Fatal("POWERSTORE_REMOTE_PASSWORD must be set for remote system acceptance tests")
+		t.Skip("Skipping: POWERSTORE_REMOTE_PASSWORD must be set for remote system acceptance tests")
 	}
 }
 
@@ -676,6 +706,172 @@ func TestAccRemoteSystemResource_CertificateExchangeError(t *testing.T) {
 	})
 }
 
+// --- FC (Fibre Channel) Tests ---
+
+// TestAccRemoteSystemResource_FCRUD covers Create, Read, Update (description + latency), and Delete for FC remote system.
+func TestAccRemoteSystemResource_FCRUD(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	deleteExistingRemoteSystem(t)
+	t.Cleanup(func() { restoreRemoteSystem(t) })
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			// Step 1: Create FC remote system
+			{
+				Config: ProviderConfigForTesting + RemoteSystemFCCreateConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.fc_test", "id"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "management_address", remoteManagementAddress),
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "description", "FC Universal remote system"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "type", "Universal"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "data_connection_type", "FC"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "data_network_latency", "Low"),
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.fc_test", "fc_target_wwns.#"),
+					resource.TestCheckResourceAttrSet("powerstore_remote_system.fc_test", "state"),
+				),
+			},
+			// Step 2: Update description
+			{
+				Config: ProviderConfigForTesting + RemoteSystemFCUpdateDescConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "description", "Updated FC description"),
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "data_connection_type", "FC"),
+				),
+			},
+			// Step 3: Update latency
+			{
+				Config: ProviderConfigForTesting + RemoteSystemFCUpdateLatencyConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("powerstore_remote_system.fc_test", "data_network_latency", "High"),
+				),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_UniversalDetailsWrongType validates that universal_details requires type=Universal.
+func TestAccRemoteSystemResource_UniversalDetailsWrongType(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + RemoteSystemUniversalDetailsWrongTypeConfig,
+				ExpectError: regexp.MustCompile(`.*universal_details can only be specified when type is set to "Universal".*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_UniversalDetailsWrongDCT validates that universal_details requires data_connection_type=FC.
+func TestAccRemoteSystemResource_UniversalDetailsWrongDCT(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + RemoteSystemUniversalDetailsWrongDCTConfig,
+				ExpectError: regexp.MustCompile(`(?s).*universal_details can only be specified when data_connection_type is set to.*FC.*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_InvalidDataConnectionType validates that invalid data_connection_type is rejected.
+func TestAccRemoteSystemResource_InvalidDataConnectionType(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				Config:      ProviderConfigForTesting + RemoteSystemInvalidDataConnectionTypeConfig,
+				ExpectError: regexp.MustCompile(`.*value must be one of.*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_CreateFCError tests FC create API error handling.
+func TestAccRemoteSystemResource_CreateFCError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - this test requires mocked API responses")
+	}
+
+	defer func() {
+		if rsYesMocker != nil {
+			rsYesMocker.UnPatch()
+		}
+		if rsNoMocker != nil {
+			rsNoMocker.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					rsNoMocker = mockey.Mock((*clientgen.RemoteSystemApiService).PostAllRemoteSystemsExecute).Return(nil, nil, fmt.Errorf("mock FC create error")).Build()
+				},
+				Config:      ProviderConfigForTesting + RemoteSystemFCCreateConfig,
+				ExpectError: regexp.MustCompile(`.*Could not create remote system.*`),
+			},
+		},
+	})
+}
+
+// TestAccRemoteSystemResource_CreateFCReadError tests read error after FC create.
+func TestAccRemoteSystemResource_CreateFCReadError(t *testing.T) {
+	if os.Getenv("TF_ACC") == "" {
+		t.Skip("Dont run with units tests because it will try to create the context")
+	}
+	if !isMockServer() {
+		t.Skip("Skipping on real server - this test requires mocked API responses")
+	}
+
+	defer func() {
+		if rsYesMocker != nil {
+			rsYesMocker.UnPatch()
+		}
+		if rsNoMocker != nil {
+			rsNoMocker.UnPatch()
+		}
+	}()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t); testAccPreCheckRemoteSystem(t) },
+		ProtoV6ProviderFactories: testProviderFactory,
+		Steps: []resource.TestStep{
+			{
+				PreConfig: func() {
+					testID := "fc-test-remote-system-id"
+					rsYesMocker = mockey.Mock((*clientgen.RemoteSystemApiService).PostAllRemoteSystemsExecute).Return(&clientgen.CreateResponse{Id: &testID}, nil, nil).Build()
+					rsNoMocker = mockey.Mock((*clientgen.RemoteSystemApiService).GetRemoteSystemByIdExecute).Return(nil, nil, fmt.Errorf("mock FC read error")).Build()
+				},
+				Config:      ProviderConfigForTesting + RemoteSystemFCCreateConfig,
+				ExpectError: regexp.MustCompile(`.*Could not read remote system.*`),
+			},
+		},
+	})
+}
+
 // --- Test Config Strings ---
 
 var RemoteSystemCreateConfig = `
@@ -793,5 +989,105 @@ resource "powerstore_remote_system" "test" {
 	exchange_username    = "` + remoteExchangeUsername + `"
 	exchange_password    = "` + remoteExchangePassword + `"
 	description          = "Description only test"
+}
+`
+
+// --- FC Remote System Config Strings ---
+
+var RemoteSystemFCCreateConfig = `
+resource "powerstore_remote_system" "fc_test" {
+	management_address   = "` + remoteManagementAddress + `"
+	description          = "FC Universal remote system"
+	type                 = "Universal"
+	data_connection_type = "FC"
+	data_network_latency = "Low"
+	universal_details = {
+		fc_targets = [
+			{
+				wwnn = "` + fcTargetWWNN + `"
+				wwpn = "` + fcTargetWWPN1 + `"
+			},
+			{
+				wwnn = "` + fcTargetWWNN + `"
+				wwpn = "` + fcTargetWWPN2 + `"
+			}
+		]
+	}
+}
+`
+
+var RemoteSystemFCUpdateDescConfig = `
+resource "powerstore_remote_system" "fc_test" {
+	management_address   = "` + remoteManagementAddress + `"
+	description          = "Updated FC description"
+	type                 = "Universal"
+	data_connection_type = "FC"
+	data_network_latency = "Low"
+	universal_details = {
+		fc_targets = [
+			{
+				wwnn = "` + fcTargetWWNN + `"
+				wwpn = "` + fcTargetWWPN1 + `"
+			},
+			{
+				wwnn = "` + fcTargetWWNN + `"
+				wwpn = "` + fcTargetWWPN2 + `"
+			}
+		]
+	}
+}
+`
+
+var RemoteSystemFCUpdateLatencyConfig = `
+resource "powerstore_remote_system" "fc_test" {
+	management_address   = "` + remoteManagementAddress + `"
+	description          = "Updated FC description"
+	type                 = "Universal"
+	data_connection_type = "FC"
+	data_network_latency = "High"
+	universal_details = {
+		fc_targets = [
+			{
+				wwnn = "` + fcTargetWWNN + `"
+				wwpn = "` + fcTargetWWPN1 + `"
+			},
+			{
+				wwnn = "` + fcTargetWWNN + `"
+				wwpn = "` + fcTargetWWPN2 + `"
+			}
+		]
+	}
+}
+`
+
+var RemoteSystemUniversalDetailsWrongTypeConfig = `
+resource "powerstore_remote_system" "fc_test" {
+	management_address   = "` + remoteManagementAddress + `"
+	type                 = "PowerStore"
+	data_connection_type = "FC"
+	universal_details = {
+		fc_targets = [
+			{
+				wwnn = "58:cc:f0:98:49:21:07:00"
+				wwpn = "58:cc:f0:98:49:21:07:01"
+			}
+		]
+	}
+}
+`
+
+var RemoteSystemUniversalDetailsWrongDCTConfig = `
+resource "powerstore_remote_system" "fc_test" {
+	management_address   = "` + remoteManagementAddress + `"
+	type                 = "Universal"
+	data_connection_type = "TCP"
+	universal_details = {
+		fc_targets = [
+			{
+				wwnn = "58:cc:f0:98:49:21:07:00"
+				wwpn = "58:cc:f0:98:49:21:07:01"
+			}
+		]
+	}
 }
 `

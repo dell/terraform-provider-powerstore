@@ -1,5 +1,5 @@
 ---
-# Copyright (c) 2025 Dell Inc., or its subsidiaries. All Rights Reserved.
+# Copyright (c) 2025-2026 Dell Inc., or its subsidiaries. All Rights Reserved.
 # 
 # Licensed under the Mozilla Public License Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -113,10 +113,15 @@ Read-Only:
 
 - `capabilities` (List of String) List of supported remote protection capabilities.
 - `data_connection_state` (String) Data connection state of the remote system.
+- `data_connection_type` (String) Data connection type of the remote system. Values: iSCSI, FC, TCP, DD_Boost.
 - `data_network_latency` (String) Data network latency of the remote system.
 - `description` (String) Description of the remote system instance.
+- `fc_target_wwns` (List of String) FC target World Wide Names for the data connection.
 - `id` (String) Unique identifier of the remote system instance.
+- `iscsi_addresses` (List of String) iSCSI target IP addresses for the data connection.
 - `management_address` (String) Management IP address of the remote system instance.
 - `name` (String) Name of the remote system instance.
 - `serial_number` (String) Serial number of the remote system instance.
+- `state` (String) Current state of the remote system.
 - `type` (String) Type of the remote system instance.
+- `version` (String) Version of the remote system.
