@@ -23,9 +23,30 @@ limitations under the License.
 # For PowerStore-to-PowerStore connections, only management_address and data_network_latency are required
 # For non-PowerStore remote systems, additional parameters like type, remote_username, remote_password are required
 
-# Example: PowerStore-to-PowerStore remote system
+# Example: PowerStore-to-PowerStore remote system (TCP)
 resource "powerstore_remote_system" "ps_to_ps" {
   management_address   = "100.1.1.1"
   description          = "Remote PowerStore for replication"
   data_network_latency = "Low"
+}
+
+# Example: Universal FC remote system
+resource "powerstore_remote_system" "fc_universal" {
+  management_address   = "100.2.2.2"
+  description          = "Universal FC remote system for block replication"
+  type                 = "Universal"
+  data_connection_type = "FC"
+  data_network_latency = "Low"
+  universal_details = {
+    fc_targets = [
+      {
+        wwnn = "58:cc:f0:98:49:21:07:00"
+        wwpn = "58:cc:f0:98:49:21:07:01"
+      },
+      {
+        wwnn = "58:cc:f0:98:49:21:07:00"
+        wwpn = "58:cc:f0:98:49:21:07:02"
+      }
+    ]
+  }
 }

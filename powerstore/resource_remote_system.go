@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"sort"
 
 	client "terraform-provider-powerstore/client"
 	"terraform-provider-powerstore/clientgen"
@@ -29,13 +30,17 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 // newRemoteSystemResource returns new remote system resource instance
@@ -119,19 +124,63 @@ func (r *resourceRemoteSystem) Schema(ctx context.Context, req resource.SchemaRe
 			"data_connection_type": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Description:         "Data connection type. Valid values: iSCSI, FC.",
-				MarkdownDescription: "Data connection type. Valid values: `iSCSI`, `FC`.",
+				Description:         "Data connection type. Valid values: iSCSI, TCP, FC, DD_Boost.",
+				MarkdownDescription: "Data connection type. Valid values: `iSCSI`, `TCP`, `FC`, `DD_Boost`.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("iSCSI", "TCP", "FC", "DD_Boost"),
 				},
 			},
 			"iscsi_addresses": schema.ListAttribute{
 				ElementType:         types.StringType,
 				Optional:            true,
+				Computed:            true,
 				Description:         "iSCSI target IP addresses for the data connection. Required for non-PowerStore remote systems with iSCSI.",
 				MarkdownDescription: "iSCSI target IP addresses for the data connection. Required for non-PowerStore remote systems with iSCSI.",
-				PlanModifiers:       []planmodifier.List{},
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"fc_target_wwns": schema.ListAttribute{
+				ElementType:         types.StringType,
+				Computed:            true,
+				Description:         "FC target World Wide Names discovered for the data connection. Populated by the system after creation.",
+				MarkdownDescription: "FC target World Wide Names discovered for the data connection. Populated by the system after creation.",
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"universal_details": schema.SingleNestedAttribute{
+				Optional:            true,
+				Description:         "FC target configuration for Universal-type remote systems. Required when type is Universal and data_connection_type is FC. Contains FC target WWNN/WWPN pairs for manual FC target specification.",
+				MarkdownDescription: "FC target configuration for Universal-type remote systems. Required when `type` is `Universal` and `data_connection_type` is `FC`. Contains FC target WWNN/WWPN pairs for manual FC target specification.",
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
+				},
+				Attributes: map[string]schema.Attribute{
+					"fc_targets": schema.ListNestedAttribute{
+						Required:            true,
+						Description:         "List of FC targets with World Wide Node Name and World Wide Port Name pairs.",
+						MarkdownDescription: "List of FC targets with World Wide Node Name and World Wide Port Name pairs.",
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"wwnn": schema.StringAttribute{
+									Optional:            true,
+									Description:         "World Wide Node Name of the FC target.",
+									MarkdownDescription: "World Wide Node Name of the FC target.",
+								},
+								"wwpn": schema.StringAttribute{
+									Required:            true,
+									Description:         "World Wide Port Name of the FC target.",
+									MarkdownDescription: "World Wide Port Name of the FC target.",
+								},
+							},
+						},
+					},
+				},
 			},
 			"serial_number": schema.StringAttribute{
 				Computed:            true,
@@ -171,6 +220,43 @@ func (r *resourceRemoteSystem) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "Password for certificate exchange with remote PowerStore system. Required for PowerStore-to-PowerStore connections. Can be the admin password or a temporary `secret` from `generate_temp_credentials` API.",
 			},
 		},
+	}
+}
+
+// ModifyPlan - forces replacement when updating a Universal-type remote system,
+// since the PowerStore API does not support PATCH on Universal-type remote systems.
+func (r *resourceRemoteSystem) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	// Skip during create (no state) or destroy (no plan)
+	if req.State.Raw.IsNull() || req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var stateType types.String
+	diags := req.State.GetAttribute(ctx, path.Root("type"), &stateType)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Only Universal-type remote systems are affected
+	if stateType.ValueString() != "Universal" {
+		return
+	}
+
+	// Check each modifiable field — if changed, force replacement
+	modifiableFields := []string{"description", "name", "data_network_latency", "management_address"}
+	for _, field := range modifiableFields {
+		var stateVal, planVal types.String
+		diags = req.State.GetAttribute(ctx, path.Root(field), &stateVal)
+		resp.Diagnostics.Append(diags...)
+		diags = req.Plan.GetAttribute(ctx, path.Root(field), &planVal)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		if !planVal.IsUnknown() && stateVal.ValueString() != planVal.ValueString() {
+			resp.RequiresReplace = append(resp.RequiresReplace, path.Root(field))
+		}
 	}
 }
 
@@ -257,6 +343,14 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 		}
 		createBody.IscsiAddresses = addrs
 	}
+	if !plan.UniversalDetails.IsNull() && !plan.UniversalDetails.IsUnknown() {
+		ud, udDiags := parseUniversalDetails(ctx, plan.UniversalDetails)
+		resp.Diagnostics.Append(udDiags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		createBody.UniversalDetails = ud
+	}
 
 	createRes, _, err := r.client.GenClient.RemoteSystemApi.PostAllRemoteSystems(ctx).Body(createBody).Execute()
 	if err != nil {
@@ -296,6 +390,9 @@ func (r *resourceRemoteSystem) Create(ctx context.Context, req resource.CreateRe
 
 	diags = resp.State.Set(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 // Read - reads the remote system state
@@ -321,6 +418,9 @@ func (r *resourceRemoteSystem) Read(ctx context.Context, req resource.ReadReques
 
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 // Update - updates the remote system
@@ -344,11 +444,11 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 	modifyBody := clientgen.RemoteSystemModify{}
 	changed := false
 
-	if !plan.Description.IsNull() && plan.Description.ValueString() != state.Description.ValueString() {
+	if !plan.Description.IsNull() && !plan.Description.IsUnknown() && plan.Description.ValueString() != state.Description.ValueString() {
 		modifyBody.Description = helper.ValueToPointer[string](plan.Description)
 		changed = true
 	}
-	if !plan.ManagementAddress.IsNull() && plan.ManagementAddress.ValueString() != state.ManagementAddress.ValueString() {
+	if !plan.ManagementAddress.IsNull() && !plan.ManagementAddress.IsUnknown() && plan.ManagementAddress.ValueString() != state.ManagementAddress.ValueString() {
 		modifyBody.ManagementAddress = helper.ValueToPointer[string](plan.ManagementAddress)
 		changed = true
 	}
@@ -361,11 +461,11 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 		modifyBody.DataNetworkLatency = &l
 		changed = true
 	}
-	if !plan.RemoteUsername.IsNull() && !plan.RemoteUsername.IsUnknown() {
+	if !plan.RemoteUsername.IsNull() && !plan.RemoteUsername.IsUnknown() && plan.RemoteUsername.ValueString() != state.RemoteUsername.ValueString() {
 		modifyBody.RemoteUsername = helper.ValueToPointer[string](plan.RemoteUsername)
 		changed = true
 	}
-	if !plan.RemotePassword.IsNull() && !plan.RemotePassword.IsUnknown() {
+	if !plan.RemotePassword.IsNull() && !plan.RemotePassword.IsUnknown() && plan.RemotePassword.ValueString() != state.RemotePassword.ValueString() {
 		modifyBody.RemotePassword = helper.ValueToPointer[string](plan.RemotePassword)
 		changed = true
 	}
@@ -395,6 +495,9 @@ func (r *resourceRemoteSystem) Update(ctx context.Context, req resource.UpdateRe
 
 	diags = resp.State.Set(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 // Delete - deletes the remote system
@@ -461,14 +564,106 @@ func (r *resourceRemoteSystem) updateState(ctx context.Context, state *models.Re
 		state.DataConnectionType = types.StringValue(string(*rs.DataConnectionType))
 	}
 
-	// Map capabilities
+	// Map iscsi_addresses
+	if rs.IscsiAddresses != nil {
+		iscsiVals := make([]attr.Value, len(rs.IscsiAddresses))
+		for i, a := range rs.IscsiAddresses {
+			iscsiVals[i] = types.StringValue(a)
+		}
+		state.IscsiAddresses, _ = types.ListValue(types.StringType, iscsiVals)
+	} else {
+		state.IscsiAddresses = types.ListNull(types.StringType)
+	}
+
+	// Map fc_target_wwns
+	if rs.FcTargetWwns != nil {
+		fcVals := make([]attr.Value, len(rs.FcTargetWwns))
+		for i, w := range rs.FcTargetWwns {
+			fcVals[i] = types.StringValue(w)
+		}
+		state.FcTargetWwns, _ = types.ListValue(types.StringType, fcVals)
+	} else {
+		state.FcTargetWwns = types.ListNull(types.StringType)
+	}
+
+	// Map capabilities (sorted for deterministic ordering)
 	if rs.Capabilities != nil {
-		capVals := make([]attr.Value, len(rs.Capabilities))
+		capStrings := make([]string, len(rs.Capabilities))
 		for i, c := range rs.Capabilities {
-			capVals[i] = types.StringValue(string(c))
+			capStrings[i] = string(c)
+		}
+		sort.Strings(capStrings)
+		capVals := make([]attr.Value, len(capStrings))
+		for i, c := range capStrings {
+			capVals[i] = types.StringValue(c)
 		}
 		state.Capabilities, _ = types.ListValue(types.StringType, capVals)
 	} else {
 		state.Capabilities = types.ListNull(types.StringType)
+	}
+}
+
+// parseUniversalDetails converts the Terraform universal_details object into the API struct
+func parseUniversalDetails(ctx context.Context, obj types.Object) (*clientgen.RemoteSystemCreateUniversalDetails, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var udModel models.UniversalDetailsModel
+
+	d := obj.As(ctx, &udModel, basetypes.ObjectAsOptions{UnhandledNullAsEmpty: true, UnhandledUnknownAsEmpty: true})
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	var fcTargetModels []models.FcTargetModel
+	d = udModel.FcTargets.ElementsAs(ctx, &fcTargetModels, false)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	fcTargets := make([]clientgen.FcTargetInstance, 0, len(fcTargetModels))
+	for _, t := range fcTargetModels {
+		ft := clientgen.FcTargetInstance{}
+		if !t.Wwnn.IsNull() && !t.Wwnn.IsUnknown() {
+			ft.Wwnn = helper.ValueToPointer[string](t.Wwnn)
+		}
+		if !t.Wwpn.IsNull() && !t.Wwpn.IsUnknown() {
+			ft.Wwpn = helper.ValueToPointer[string](t.Wwpn)
+		}
+		fcTargets = append(fcTargets, ft)
+	}
+
+	return &clientgen.RemoteSystemCreateUniversalDetails{
+		FcTargets: fcTargets,
+	}, diags
+}
+
+// ValidateConfig implements cross-field validation for the remote system resource.
+// Ensures universal_details is only specified when type=Universal and data_connection_type=FC.
+func (r *resourceRemoteSystem) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var config models.RemoteSystemResource
+	diags := req.Config.Get(ctx, &config)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// If universal_details is set, validate that type is Universal and data_connection_type is FC
+	if !config.UniversalDetails.IsNull() && !config.UniversalDetails.IsUnknown() {
+		if !config.Type.IsNull() && !config.Type.IsUnknown() && config.Type.ValueString() != "Universal" {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("universal_details"),
+				"Invalid universal_details configuration",
+				"universal_details can only be specified when type is set to \"Universal\". "+
+					"For PowerStore-to-PowerStore FC connections, FC targets are auto-discovered and universal_details should not be used.",
+			)
+		}
+		if !config.DataConnectionType.IsNull() && !config.DataConnectionType.IsUnknown() && config.DataConnectionType.ValueString() != "FC" {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("universal_details"),
+				"Invalid universal_details configuration",
+				"universal_details can only be specified when data_connection_type is set to \"FC\".",
+			)
+		}
 	}
 }

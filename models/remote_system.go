@@ -19,7 +19,7 @@ package models
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// RemoteSystemDs
+// RemoteSystemDs - datasource model wrapper
 type RemoteSystemDs struct {
 	ID      types.String          `tfsdk:"id"`
 	Name    types.String          `tfsdk:"name"`
@@ -27,15 +27,20 @@ type RemoteSystemDs struct {
 	Items   []RemoteSystemDsItem  `tfsdk:"remote_systems"`
 }
 
-// RemoteSystem - RemoteSystem properties
+// RemoteSystemDsItem - Remote System datasource item properties
 type RemoteSystemDsItem struct {
-	ID                  string   `tfsdk:"id"`
-	Name                string   `tfsdk:"name"`
-	Description         string   `tfsdk:"description"`
-	SerialNumber        string   `tfsdk:"serial_number"`
-	Type                string   `tfsdk:"type"`
-	ManagementAddress   string   `tfsdk:"management_address"`
-	DataConnectionState string   `tfsdk:"data_connection_state"`
-	DataNetworkLatency  string   `tfsdk:"data_network_latency"`
-	Capabilities        []string `tfsdk:"capabilities"`
+	ID                  types.String `tfsdk:"id"`
+	Name                types.String `tfsdk:"name"`
+	Description         types.String `tfsdk:"description"`
+	SerialNumber        types.String `tfsdk:"serial_number"`
+	Type                types.String `tfsdk:"type"`
+	ManagementAddress   types.String `tfsdk:"management_address"`
+	DataConnectionType  types.String `tfsdk:"data_connection_type"`
+	DataConnectionState types.String `tfsdk:"data_connection_state"`
+	DataNetworkLatency  types.String `tfsdk:"data_network_latency"`
+	State               types.String `tfsdk:"state"`
+	Version             types.String `tfsdk:"version"`
+	FcTargetWwns        types.List   `tfsdk:"fc_target_wwns"`
+	IscsiAddresses      types.List   `tfsdk:"iscsi_addresses"`
+	Capabilities        types.List   `tfsdk:"capabilities"`
 }

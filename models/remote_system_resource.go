@@ -31,6 +31,8 @@ type RemoteSystemResource struct {
 	RemotePassword      types.String `tfsdk:"remote_password"`
 	DataConnectionType  types.String `tfsdk:"data_connection_type"`
 	IscsiAddresses      types.List   `tfsdk:"iscsi_addresses"`
+	FcTargetWwns        types.List   `tfsdk:"fc_target_wwns"`
+	UniversalDetails    types.Object `tfsdk:"universal_details"`
 	SerialNumber        types.String `tfsdk:"serial_number"`
 	State               types.String `tfsdk:"state"`
 	DataConnectionState types.String `tfsdk:"data_connection_state"`
@@ -39,4 +41,15 @@ type RemoteSystemResource struct {
 	// Certificate exchange credentials for PowerStore-to-PowerStore
 	ExchangeUsername types.String `tfsdk:"exchange_username"`
 	ExchangePassword types.String `tfsdk:"exchange_password"`
+}
+
+// UniversalDetailsModel - Nested model for FC target configuration on Universal-type remote systems
+type UniversalDetailsModel struct {
+	FcTargets types.List `tfsdk:"fc_targets"`
+}
+
+// FcTargetModel - Model for an individual FC target (WWNN/WWPN pair)
+type FcTargetModel struct {
+	Wwnn types.String `tfsdk:"wwnn"`
+	Wwpn types.String `tfsdk:"wwpn"`
 }

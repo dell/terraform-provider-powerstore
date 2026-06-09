@@ -20,17 +20,21 @@ package powerstore
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"sort"
 
-	"github.com/dell/gopowerstore"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"terraform-provider-powerstore/client"
+	client "terraform-provider-powerstore/client"
+	"terraform-provider-powerstore/clientgen"
 	"terraform-provider-powerstore/models"
+	"terraform-provider-powerstore/powerstore/helper"
 )
 
 // newRemoteSystemDatasource returns new remote system datasource instance
@@ -39,7 +43,7 @@ func newRemoteSystemDatasource() datasource.DataSource {
 }
 
 type datasourceRemoteSystem struct {
-	client *client.Client
+	client *clientgen.APIClient
 }
 
 // Metadata defines datasource interface Metadata method
@@ -90,14 +94,15 @@ func (r *datasourceRemoteSystem) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "List of Remote Systems fetched from PowerStore array.",
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
-					Attributes: r.RemoteSystemDsSchema()},
+					Attributes: remoteSystemDsSchema(),
+				},
 			},
 		},
 	}
 }
 
-// RemoteSystemDsSchema defines datasource interface Schema method
-func (r *datasourceRemoteSystem) RemoteSystemDsSchema() map[string]schema.Attribute {
+// remoteSystemDsSchema defines the nested schema for individual remote system items
+func remoteSystemDsSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"id": schema.StringAttribute{
 			Computed:            true,
@@ -129,6 +134,11 @@ func (r *datasourceRemoteSystem) RemoteSystemDsSchema() map[string]schema.Attrib
 			MarkdownDescription: "Management IP address of the remote system instance.",
 			Description:         "Management IP address of the remote system instance.",
 		},
+		"data_connection_type": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "Data connection type of the remote system. Values: iSCSI, FC, TCP, DD_Boost.",
+			Description:         "Data connection type of the remote system. Values: iSCSI, FC, TCP, DD_Boost.",
+		},
 		"data_connection_state": schema.StringAttribute{
 			Computed:            true,
 			MarkdownDescription: "Data connection state of the remote system.",
@@ -138,6 +148,28 @@ func (r *datasourceRemoteSystem) RemoteSystemDsSchema() map[string]schema.Attrib
 			Computed:            true,
 			MarkdownDescription: "Data network latency of the remote system.",
 			Description:         "Data network latency of the remote system.",
+		},
+		"state": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "Current state of the remote system.",
+			Description:         "Current state of the remote system.",
+		},
+		"version": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: "Version of the remote system.",
+			Description:         "Version of the remote system.",
+		},
+		"fc_target_wwns": schema.ListAttribute{
+			ElementType:         types.StringType,
+			Computed:            true,
+			MarkdownDescription: "FC target World Wide Names for the data connection.",
+			Description:         "FC target World Wide Names for the data connection.",
+		},
+		"iscsi_addresses": schema.ListAttribute{
+			ElementType:         types.StringType,
+			Computed:            true,
+			MarkdownDescription: "iSCSI target IP addresses for the data connection.",
+			Description:         "iSCSI target IP addresses for the data connection.",
 		},
 		"capabilities": schema.ListAttribute{
 			ElementType:         types.StringType,
@@ -150,111 +182,141 @@ func (r *datasourceRemoteSystem) RemoteSystemDsSchema() map[string]schema.Attrib
 
 // Configure - defines configuration for Remote System datasource
 func (r *datasourceRemoteSystem) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	c, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			"Unexpected Datasource Configure Type",
+			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = c.GenClient
 }
 
 // Read - reads Remote System datasource information
 func (r *datasourceRemoteSystem) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-
-	var conf models.RemoteSystemDs
-	diags := req.Config.Get(ctx, &conf)
+	var state models.RemoteSystemDs
+	diags := req.Config.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var remoteSystems []gopowerstore.RemoteSystem
+	queries := make(url.Values)
+	id := state.ID.ValueString()
 
-	if !conf.ID.IsNull() && !conf.ID.IsUnknown() {
-		remoteSystemID := conf.ID.ValueString()
+	sel := "*"
+	queries.Set("select", sel)
 
-		// Get remoteSystem details from API and then update what is in state from what the API returns
-		remoteSystemResponse, err := r.client.PStoreClient.GetRemoteSystem(context.Background(), remoteSystemID)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error reading Remote System",
-				"Could not read Remote System with id "+remoteSystemID+": "+err.Error(),
-			)
-			return
-		}
-
-		remoteSystems = append(remoteSystems, remoteSystemResponse)
-		conf.Name = types.StringValue(remoteSystemResponse.Name)
-	} else if !conf.Name.IsNull() && !conf.Name.IsUnknown() {
-		remoteSystemResponse, err := r.client.PStoreClient.GetRemoteSystem(context.Background(), "name:"+conf.Name.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error reading Remote System",
-				"Could not read Remote System with name "+conf.Name.ValueString()+": "+err.Error(),
-			)
-			return
-		}
-		remoteSystems = append(remoteSystems, remoteSystemResponse)
-		conf.ID = types.StringValue(remoteSystemResponse.ID)
-	} else {
-		filters := make(map[string]string)
-		if !conf.Filters.IsNull() {
-			filters = convertQueriesToMap(conf.Filters.ValueQueries())
-		}
-
-		remoteSystemResponse, err := r.client.PStoreClient.GetRemoteSystems(ctx, filters)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error reading Remote Systems",
-				"Could not read Remote Systems with error "+err.Error(),
-			)
-			return
-		}
-		remoteSystems = append(remoteSystems, remoteSystemResponse...)
-		conf.ID = types.StringValue("dummy id")
+	if !state.Name.IsNull() {
+		queries.Set("name", "eq."+state.Name.ValueString())
+	} else if !state.Filters.IsNull() {
+		queries = helper.MergeValues(queries, state.Filters.ValueQueries())
 	}
 
-	// Set state
-	diags = resp.State.Set(ctx, r.getState(conf, remoteSystems))
+	dsreq := helper.DsReq[clientgen.RemoteSystemInstance, clientgen.ApiGetRemoteSystemByIdRequest, clientgen.ApiGetAllRemoteSystemsRequest]{
+		Instance:   r.client.RemoteSystemApi.GetRemoteSystemById,
+		Collection: r.client.RemoteSystemApi.GetAllRemoteSystems,
+	}
+
+	remoteSystems, err := dsreq.Execute(ctx, queries, id)
+	if err != nil {
+		errMsg := helper.ExtractErrorMessage(err)
+		if id != "" {
+			resp.Diagnostics.AddError(
+				"Error reading Remote System",
+				"Could not read Remote System with id "+id+": "+errMsg,
+			)
+		} else if !state.Name.IsNull() {
+			resp.Diagnostics.AddError(
+				"Error reading Remote System",
+				"Could not read Remote System with name "+state.Name.ValueString()+": "+errMsg,
+			)
+		} else {
+			resp.Diagnostics.AddError(
+				"Error reading Remote Systems",
+				"Could not read Remote Systems with error "+errMsg,
+			)
+		}
+		return
+	}
+
+	// check that there is at least one remote system if name or id is provided
+	if id != "" && len(remoteSystems) == 0 {
+		resp.Diagnostics.AddError(
+			"Error reading Remote System",
+			"Could not read Remote System with id "+id+": no results found",
+		)
+		return
+	}
+	if !state.Name.IsNull() && len(remoteSystems) == 0 {
+		resp.Diagnostics.AddError(
+			"Error reading Remote System",
+			"Could not read Remote System with name "+state.Name.ValueString()+": no results found",
+		)
+		return
+	}
+
+	state.Items = updateRemoteSystemDsState(remoteSystems)
+	state.ID = types.StringValue("placeholder")
+	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 }
 
-// getState - method to update terraform state
-func (r *datasourceRemoteSystem) getState(cfg models.RemoteSystemDs, input []gopowerstore.RemoteSystem) *models.RemoteSystemDs {
-	ret := models.RemoteSystemDs{
-		ID:      cfg.ID,
-		Name:    cfg.Name,
-		Filters: cfg.Filters,
-		Items:   make([]models.RemoteSystemDsItem, 0, len(input)),
-	}
-	for _, remoteSystem := range input {
-		ret.Items = append(ret.Items, r.getItemState(remoteSystem))
-	}
-	return &ret
+// updateRemoteSystemDsState converts API responses to terraform state
+func updateRemoteSystemDsState(remoteSystems []clientgen.RemoteSystemInstance) []models.RemoteSystemDsItem {
+	return helper.SliceTransform(remoteSystems, func(in clientgen.RemoteSystemInstance) models.RemoteSystemDsItem {
+		return models.RemoteSystemDsItem{
+			ID:                  helper.TfString(in.Id),
+			Name:                helper.TfString(in.Name),
+			Description:         helper.TfString(in.Description),
+			SerialNumber:        helper.TfString(in.SerialNumber),
+			Type:                helper.TfString(in.Type),
+			ManagementAddress:   helper.TfString(in.ManagementAddress),
+			DataConnectionType:  helper.TfString(in.DataConnectionType),
+			DataConnectionState: helper.TfString(in.DataConnectionState),
+			DataNetworkLatency:  helper.TfString(in.DataNetworkLatency),
+			State:               helper.TfString(in.State),
+			Version:             helper.TfString(in.Version),
+			FcTargetWwns:        stringSliceToTfList(in.FcTargetWwns),
+			IscsiAddresses:      stringSliceToTfList(in.IscsiAddresses),
+			Capabilities:        capabilitiesToSortedTfList(in.Capabilities),
+		}
+	})
 }
 
-// RemoteSystemDsState - method to update terraform state
-func (r *datasourceRemoteSystem) getItemState(input gopowerstore.RemoteSystem) models.RemoteSystemDsItem {
-	return models.RemoteSystemDsItem{
-		ID:                  input.ID,
-		Name:                input.Name,
-		Description:         input.Description,
-		SerialNumber:        input.SerialNumber,
-		Type:                input.Type,
-		ManagementAddress:   input.ManagementAddress,
-		DataConnectionState: input.DataConnectionState,
-		DataNetworkLatency:  input.DataNetworkLatency,
-		Capabilities:        input.Capabilities,
+// stringSliceToTfList converts a Go string slice to a types.List of StringType
+func stringSliceToTfList(in []string) types.List {
+	if in == nil {
+		return types.ListNull(types.StringType)
 	}
+	vals := make([]attr.Value, len(in))
+	for i, v := range in {
+		vals[i] = types.StringValue(v)
+	}
+	list, _ := types.ListValue(types.StringType, vals)
+	return list
+}
+
+// capabilitiesToSortedTfList converts capabilities enum slice to a sorted types.List
+func capabilitiesToSortedTfList(in []clientgen.RemoteProtectionCapabilityEnum) types.List {
+	if in == nil {
+		return types.ListNull(types.StringType)
+	}
+	strs := make([]string, len(in))
+	for i, c := range in {
+		strs[i] = string(c)
+	}
+	sort.Strings(strs)
+	vals := make([]attr.Value, len(strs))
+	for i, s := range strs {
+		vals[i] = types.StringValue(s)
+	}
+	list, _ := types.ListValue(types.StringType, vals)
+	return list
 }
