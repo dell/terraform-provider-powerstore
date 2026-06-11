@@ -1,10 +1,10 @@
-# Dell Terraform Providers — Architecture
+# Architecture: terraform-provider-powerstore
 
 ## Metadata
 
 <!-- yaml-metadata-start -->
 scope_paths: ["./"]
-capture_git_sha: "cde5b6552e4f8c5c77942b2c5f20ed44eeac11a1"
+capture_git_sha: "3d3c6ee5f4a1eeeedb5f2dc055b4d74d0e7a7c06"
 status: "current"
 auto_update: false
 preview_before_apply: true
@@ -13,385 +13,127 @@ scaffold_version: "1.0"
 
 ---
 
-## Overview
+## Purpose and Structure
 
-This repository contains seven Terraform providers that bring infrastructure-
-as-code to Dell storage arrays and server management platforms. Each provider
-is a standalone Go binary communicating with Terraform Core over gRPC,
-exposing Dell hardware resources through HashiCorp's Terraform Plugin
-Framework.
+Terraform provider for Dell PowerStore block and file storage arrays.
+Implements 21 managed resources and 20 data sources using HashiCorp's
+Terraform Plugin Framework, enabling infrastructure-as-code management
+of PowerStore arrays via their REST API.
 
----
-
-## Repository Layout
-
-```
-terraform-providers/
-├── terraform-provider-powerstore/   # PowerStore block storage
-├── terraform-provider-powerflex/    # PowerFlex (VxFlex OS) software-defined
-├── terraform-provider-powerscale/   # PowerScale / Isilon scale-out NAS
-├── terraform-provider-powermax/     # PowerMax enterprise arrays
-├── terraform-provider-objectscale/  # ObjectScale S3-compatible object storage
-├── terraform-provider-redfish/      # iDRAC server management (Redfish API)
-└── terraform-provider-ome/          # OpenManage Enterprise fleet management
-```
-
-Each provider directory follows identical structure:
-
-```
-terraform-provider-<name>/
-├── main.go                    # Entry point
-├── go.mod / go.sum            # Go module definition
-├── Makefile                   # Build, test, install targets
-├── .goreleaser.yaml           # Cross-platform release config
-├── <name>/                    # Provider implementation
-│   ├── provider.go            # Provider schema and Configure()
-│   ├── resource_*.go          # Managed resources (CRUD)
-│   ├── datasource_*.go        # Data sources (read-only)
-│   └── *_test.go              # Unit tests
-├── client/                    # SDK client wrapper (if applicable)
-├── models/                    # Terraform ↔ SDK type mappings
-├── docs/                      # Generated documentation
-├── examples/                  # Example HCL configurations
-└── about/                     # Metadata files
-```
+The provider is a standalone Go binary that communicates with Terraform
+Core over gRPC (go-plugin protocol). It uses two SDK clients: the
+public `gopowerstore` SDK for core operations and an OpenAPI-generated
+client (`clientgen/`) for additional API coverage.
 
 ---
 
-## System Context
+## Components
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         User Workflow                                    │
-│                                                                         │
-│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                │
-│   │ main.tf     │    │ main.tf     │    │ main.tf     │                │
-│   │ (Storage)   │    │ (Servers)   │    │ (Fleet)     │                │
-│   └──────┬──────┘    └──────┬──────┘    └──────┬──────┘                │
-│          │                  │                  │                        │
-│          └──────────────────┼──────────────────┘                        │
-│                             │                                           │
-│                      ┌──────▼──────┐                                    │
-│                      │  Terraform  │                                    │
-│                      │    Core     │                                    │
-│                      └──────┬──────┘                                    │
-│                             │ gRPC (go-plugin)                          │
-└─────────────────────────────┼───────────────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────────────┐
-│                    Dell Terraform Providers                              │
-│                                                                         │
-│  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │ Storage Providers                                                │   │
-│  │  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐        │   │
-│  │  │powerstore │ │powerflex  │ │powerscale │ │powermax   │        │   │
-│  │  │           │ │           │ │           │ │           │        │   │
-│  │  │gopowersto.│ │goscaleio  │ │vendored   │ │vendored   │        │   │
-│  │  └─────┬─────┘ └─────┬─────┘ └─────┬─────┘ └─────┬─────┘        │   │
-│  └────────┼─────────────┼─────────────┼─────────────┼──────────────┘   │
-│           │             │             │             │                   │
-│  ┌────────┼─────────────┼─────────────┼─────────────┼──────────────┐   │
-│  │ Infrastructure Providers           │             │               │   │
-│  │  ┌───────────┐ ┌───────────┐ ┌─────┴─────┐       │               │   │
-│  │  │objectscale│ │redfish    │ │ome        │       │               │   │
-│  │  │           │ │           │ │           │       │               │   │
-│  │  │internal   │ │gofish     │ │internal   │       │               │   │
-│  │  └─────┬─────┘ └─────┬─────┘ └─────┬─────┘       │               │   │
-│  └────────┼─────────────┼─────────────┼─────────────┼──────────────┘   │
-└───────────┼─────────────┼─────────────┼─────────────┼───────────────────┘
-            │             │             │             │
-            ▼             ▼             ▼             ▼
-┌───────────────────────────────────────────────────────────────────────┐
-│                         Dell Hardware                                  │
-│                                                                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
-│  │ PowerStore  │  │ PowerFlex   │  │ PowerScale  │  │ PowerMax    │  │
-│  │ REST API    │  │ Gateway API │  │ Platform API│  │ Unisphere   │  │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘  │
-│                                                                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                    │
-│  │ ObjectScale │  │ iDRAC       │  │ OpenManage  │                    │
-│  │ IAM/S3 API  │  │ Redfish API │  │ Enterprise  │                    │
-│  └─────────────┘  └─────────────┘  └─────────────┘                    │
-└───────────────────────────────────────────────────────────────────────┘
-```
+| Component | Path | Responsibility |
+|-----------|------|---------------|
+| Entry point | `main.go` | `providerserver.Serve` — starts gRPC server |
+| Provider | `powerstore/provider.go` | Schema, Configure, resource/datasource registration |
+| Resources | `powerstore/resource_*.go` | CRUD lifecycle for 21 managed resources |
+| Data sources | `powerstore/datasource_*.go` | Read-only queries for 20 data sources |
+| Helpers | `powerstore/helper/` | Type converters, diag helpers, list utilities |
+| Custom types | `powerstore/customtypes/` | Custom Terraform types (e.g. nfshostset) |
+| Client wrapper | `client/` | Wraps `gopowerstore` SDK + OpenAPI-generated client |
+| Models | `models/` | Terraform state model structs (`tfsdk` tags) |
+| JSON models | `models/jsonmodel/` | JSON serialization model structs |
+| OpenAPI client | `clientgen/` | Auto-generated REST client code |
+| OpenAPI specs | `clientgen_utils/openapi_specs/` | OpenAPI JSON specifications |
+| Examples | `examples/` | HCL configurations for resources and data sources |
+| Docs | `docs/` | Generated provider documentation |
 
 ---
 
-## Provider Inventory
+## Key Behaviors
 
-| Provider | Go | SDK | Version | Strategy |
-|----------|-----|-----|---------|----------|
-| powerstore | 1.25.0 | `github.com/dell/gopowerstore` | v1.18.0 | Public |
-| powerflex | 1.24 | `github.com/dell/goscaleio` | v1.19.0 | Public |
-| powerscale | 1.25.4 | `dell/powerscale-go-client` | local | Vendored |
-| powermax | 1.25.8 | `dell/powermax-go-client` | local | Vendored |
-| objectscale | 1.25.4 | Internal client | — | None |
-| redfish | 1.25.8 | `github.com/stmcginnis/gofish` | v0.20.0 | Third-party |
-| ome | 1.25.8 | Internal client | — | None |
+### Authentication
 
----
+**GIVEN** a user configures the provider with endpoint, username,
+and password (via HCL block or environment variables)
+**WHEN** `Configure()` runs
+**THEN** (1) env vars `POWERSTORE_ENDPOINT`, `POWERSTORE_USERNAME`,
+`POWERSTORE_PASSWORD`, `POWERSTORE_INSECURE`, `POWERSTORE_TIMEOUT`
+override HCL values, (2) SDK clients are initialized with a default
+120-second timeout, (3) a dummy `GetVolumes()` call validates
+authentication before any resource operations proceed
 
-## Component Architecture
+### Resource CRUD Lifecycle
 
-### Provider Structure
+**GIVEN** a resource definition in HCL
+**WHEN** `terraform apply` runs
+**THEN** the resource's `Create()` reads the plan into a model struct,
+calls the SDK to create the resource, maps the API response back to
+Terraform state, and sets `resp.State`
 
-Every provider implements the Terraform Plugin Framework interfaces:
+### Drift Detection
 
-```go
-type Provider struct {
-    client  *client.Client    // SDK client instance
-    version string            // Provider version
-}
+**GIVEN** a resource exists in Terraform state
+**WHEN** `terraform plan` or `terraform refresh` runs
+**THEN** `Read()` calls the SDK to fetch current state from the array,
+compares it with stored state, and updates the state if drifted
 
-// Schema — defines provider configuration (endpoint, credentials)
-func (p *Provider) Schema(ctx, req, resp)
+### Import
 
-// Configure — initializes SDK client, validates auth
-func (p *Provider) Configure(ctx, req, resp)
-
-// Resources — returns list of managed resource constructors
-func (p *Provider) Resources(ctx) []func() resource.Resource
-
-// DataSources — returns list of data source constructors
-func (p *Provider) DataSources(ctx) []func() datasource.DataSource
-```
-
-### Resource Lifecycle
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Terraform Resource Lifecycle                      │
-│                                                                     │
-│  terraform plan          terraform apply         terraform destroy  │
-│        │                       │                       │            │
-│        ▼                       ▼                       ▼            │
-│  ┌──────────┐            ┌──────────┐            ┌──────────┐      │
-│  │  Read()  │            │ Create() │            │ Delete() │      │
-│  │          │            │ Update() │            │          │      │
-│  └────┬─────┘            └────┬─────┘            └────┬─────┘      │
-│       │                       │                       │            │
-│       ▼                       ▼                       ▼            │
-│  ┌──────────────────────────────────────────────────────────┐      │
-│  │                      SDK Layer                            │      │
-│  │  GET /resource        POST /resource        DELETE /resource   │
-│  │                       PUT /resource                        │      │
-│  └──────────────────────────────────────────────────────────┘      │
-│       │                       │                       │            │
-│       ▼                       ▼                       ▼            │
-│  ┌──────────────────────────────────────────────────────────┐      │
-│  │                    Dell REST API                          │      │
-│  └──────────────────────────────────────────────────────────┘      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### SDK Strategies
-
-**Public SDKs** — Versioned Go modules on GitHub:
-```go
-require github.com/dell/gopowerstore v1.18.0
-```
-
-**Vendored SDKs** — Local directory with replace directive:
-```go
-require dell/powerscale-go-client v0.0.0
-replace dell/powerscale-go-client => ./powerscale-go-client
-```
-
-**Internal Clients** — REST calls implemented in provider code (no SDK).
-
-**Third-Party** — Community library (gofish for Redfish).
+**GIVEN** a resource exists on the array but not in Terraform state
+**WHEN** `terraform import powerstore_<resource>.<name> <id>` runs
+**THEN** `ImportState()` fetches the resource by ID and populates state
 
 ---
 
-## Data Flow
+## Interfaces
 
-### Create Resource
+### Provider Configuration Schema
 
-```
-HCL Config
-    │
-    ▼
-Terraform Core (parse, validate, plan)
-    │
-    ▼
-Provider.Create(ctx, req, resp)
-    │
-    ├─► Read plan into Go struct (types.String → string)
-    │
-    ├─► SDK.CreateResource(params)
-    │       │
-    │       ▼
-    │   POST /api/rest/resource
-    │       │
-    │       ▼
-    │   Dell Array (create resource, return ID)
-    │
-    ├─► Map response to Terraform state
-    │
-    └─► resp.State.Set(ctx, model)
-            │
-            ▼
-        State file updated
-```
+| Attribute | Type | Env Var | Default | Description |
+|-----------|------|---------|---------|-------------|
+| `endpoint` | string | `POWERSTORE_ENDPOINT` | — | IP or FQDN (must end with `/api/rest`) |
+| `username` | string | `POWERSTORE_USERNAME` | — | API username |
+| `password` | string (sensitive) | `POWERSTORE_PASSWORD` | — | API password |
+| `insecure` | bool | `POWERSTORE_INSECURE` | `false` | Skip TLS verification |
+| `timeout` | int64 | `POWERSTORE_TIMEOUT` | `120` | Request timeout (seconds) |
 
-### Read Resource (Drift Detection)
+### SDK Client Layer
 
-```
-State file
-    │
-    ▼
-Terraform Core (refresh)
-    │
-    ▼
-Provider.Read(ctx, req, resp)
-    │
-    ├─► Read state into Go struct
-    │
-    ├─► SDK.GetResource(id)
-    │       │
-    │       ▼
-    │   GET /api/rest/resource/{id}
-    │       │
-    │       ▼
-    │   Dell Array (return current state)
-    │
-    ├─► Compare API response with state
-    │
-    └─► resp.State.Set(ctx, model)  // Updates if drifted
-```
-
----
-
-## Testing Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Test Pyramid                                 │
-│                                                                     │
-│                        ┌─────────────┐                              │
-│                        │ Acceptance  │  make testacc                │
-│                        │   Tests     │  (live hardware)             │
-│                        └──────┬──────┘                              │
-│                               │                                     │
-│                    ┌──────────▼──────────┐                          │
-│                    │    Unit Tests       │  make test               │
-│                    │   (mockey mocks)    │  (no hardware)           │
-│                    └──────────┬──────────┘                          │
-│                               │                                     │
-│              ┌────────────────▼────────────────┐                    │
-│              │      Static Analysis            │  make check        │
-│              │  (gofmt, golangci-lint, go vet) │  make gosec        │
-│              └─────────────────────────────────┘                    │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**Unit Tests** — Use `bytedance/mockey` for runtime function patching:
-```go
-mockey.Mock((*client.Client).CreateVolume).Return(&Volume{ID: "123"}, nil).Build()
-```
-
-**Acceptance Tests** — Use `terraform-plugin-testing` against live hardware:
-```go
-resource.Test(t, resource.TestCase{
-    Steps: []resource.TestStep{{Config: testConfig, Check: checkFunc}},
-})
-```
-
----
-
-## Build & Release
-
-### Makefile Targets
-
-| Target | Purpose |
-|--------|---------|
-| `make build` | Compile provider binary |
-| `make install` | Install to `~/.terraform.d/plugins/` |
-| `make test` | Run unit tests |
-| `make testacc` | Run acceptance tests (requires hardware) |
-| `make check` | Format, lint, vet |
-| `make gosec` | Security scan |
-| `make cover` | Generate coverage report |
-| `make generate` | Generate documentation |
-
-### GoReleaser
-
-All providers use identical release configuration:
-
-- **CGO_ENABLED=0** — Static binaries, no C dependencies
-- **Platforms:** freebsd, windows, linux, darwin
-- **Architectures:** amd64, 386, arm, arm64
-- **Output:** `terraform-provider-<name>_v<version>_<os>_<arch>.zip`
-
----
-
-## Security Model
-
-| Aspect | Implementation |
-|--------|----------------|
-| Credential injection | HCL provider block or environment variables |
-| Sensitive attributes | `Sensitive: true` in schema (redacted from output) |
-| Transport security | HTTPS with TLS verification (default) |
-| Insecure mode | `insecure = true` disables TLS verification (lab only) |
-| State file | Contains secrets — use encrypted remote backends |
-| Binary integrity | Registry binaries signed with HashiCorp GPG key |
+The `client.Client` struct wraps two clients:
+- `PStoreClient` (`*gopowerstore.ClientIMPL`) — primary SDK
+- `GenClient` (`*clientgen.APIClient`) — OpenAPI-generated fallback
 
 ---
 
 ## Dependencies
 
-### Common (all providers)
-
-| Package | Purpose |
-|---------|---------|
-| `hashicorp/terraform-plugin-framework` | Core provider interfaces |
+| Depends On | For |
+|------------|-----|
+| `github.com/dell/gopowerstore` v1.18.0 | PowerStore REST API SDK |
+| `clientgen/` (local) | OpenAPI-generated client for extended API |
+| `hashicorp/terraform-plugin-framework` v1.13.0 | Core provider interfaces |
 | `hashicorp/terraform-plugin-framework-validators` | Attribute validation |
-| `hashicorp/terraform-plugin-go` | Low-level protocol types |
 | `hashicorp/terraform-plugin-log` | Structured logging |
 | `hashicorp/terraform-plugin-testing` | Acceptance test harness |
-| `bytedance/mockey` | Unit test mocking |
+| `bytedance/mockey` | Unit test function-level mocking |
 | `stretchr/testify` | Test assertions |
 
-### Provider-Specific
+---
 
-| Provider | SDK Dependency |
-|----------|----------------|
-| powerstore | `github.com/dell/gopowerstore` |
-| powerflex | `github.com/dell/goscaleio` |
-| powerscale | `./powerscale-go-client` (vendored) |
-| powermax | `./powermax-go-client-100` (vendored) |
-| redfish | `github.com/stmcginnis/gofish` |
+## Known Constraints
+
+1. **Terraform Plugin Framework only** — no SDK v2 code.
+2. **CGO_ENABLED=0** — static binaries for all platforms.
+3. **Sensitive attributes marked** — credentials never in plan output.
+4. **ImportState required** — all resources support `terraform import`.
+5. **Environment variable fallback** — all credentials support env vars.
+6. **Acceptance tests gated** — never run without `TF_ACC=1`.
+7. **Endpoint format** — must end with `/api/rest`.
+8. **Dual SDK strategy** — `gopowerstore` for primary ops,
+   `clientgen` for endpoints not yet in the SDK.
 
 ---
 
-## Constraints
+## Change History
 
-1. **All providers use Terraform Plugin Framework** — No new SDK v2 code.
-
-2. **CGO disabled** — Static binaries for all platforms.
-
-3. **Sensitive attributes marked** — Credentials never in plan output.
-
-4. **ImportState required** — All resources support `terraform import`.
-
-5. **Environment variable fallback** — All credentials support env vars.
-
-6. **Acceptance tests gated** — Never run without `TF_ACC=1`.
-
-7. **Vendored SDKs co-versioned** — SDK and provider release together.
-
----
-
-## Navigation
-
-| I need to... | Go to |
-|--------------|-------|
-| Understand a specific provider | `terraform-provider-<name>/` |
-| See provider configuration | `<provider>/<name>/provider.go` |
-| See resource implementation | `<provider>/<name>/resource_*.go` |
-| See data source implementation | `<provider>/<name>/datasource_*.go` |
-| Run tests | `make test` or `make testacc` |
-| Build locally | `make install` |
-| See examples | `<provider>/examples/` |
-| Read generated docs | `<provider>/docs/` |
+| Date | Feature | What Changed | Author |
+|------|---------|-------------|--------|
+| 2026-06-10 | Initial architecture | Provider-specific architecture extracted from generic multi-provider doc | architecture-agent |
