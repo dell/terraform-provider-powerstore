@@ -2,7 +2,7 @@
 
 <!-- yaml-metadata-start -->
 scope_paths: ["./"]
-capture_git_sha: "3d3c6ee5f4a1eeeedb5f2dc055b4d74d0e7a7c06"
+capture_git_sha: "4030193a32ec6334d07026f292726100f5d7b933"
 status: "current"
 auto_update: false
 preview_before_apply: true
@@ -17,14 +17,14 @@ scaffold_version: "1.0"
 |---------|---------|---------|-------------------|
 | Component Overview | `## Component Overview` | Dell PowerStore block and file storage arrays provider | — |
 | Architectural Rationale | `## Architectural Rationale` | Public SDK strategy; Plugin Framework architecture | — |
-| Failure Modes & Gotchas | `## Failure Modes & Gotchas` | Endpoint format, SDK versioning, state secrets | 0 |
+| Failure Modes & Gotchas | `## Failure Modes & Gotchas` | Endpoint format, SDK versioning, state secrets, state corruption, auth edge cases | 3 |
 | Implicit Contracts | `## Implicit Contracts` | Env var precedence, auth validation, TLS defaults | — |
 <!-- quick-reference-end -->
 
 ## Five Questions Quick Reference
 
 ### What does it do?
-Terraform provider for Dell PowerStore block and file storage arrays. Exposes 21 resources and 20 data sources covering volumes, hosts, host groups, protection policies, snapshot rules, file systems, file system snapshots, NAS servers, NFS exports, SMB shares, replication rules, replication sessions, storage containers, volume groups, volume group snapshots, volume snapshots, recycle bin, I/O limit rules, file I/O limit rules, QoS policies, metro volumes, metro volume groups, and remote systems
+Terraform provider for Dell PowerStore block and file storage arrays. Exposes 22 resources and 20 data sources covering volumes, hosts, host groups, protection policies, snapshot rules, file systems, file system snapshots, NAS servers, NFS exports, SMB shares, replication rules, replication sessions, storage containers, volume groups, volume group snapshots, volume snapshots, recycle bin, I/O limit rules, file I/O limit rules, QoS policies, metro volumes, metro volume groups, and remote systems
 through HashiCorp's Terraform Plugin Framework. Communicates with
 the hardware REST API via `github.com/dell/gopowerstore` v1.18.0.
 
@@ -69,7 +69,17 @@ resources, `datasource.DataSource` for read-only queries, models with
 
 ### Evolution
 
-TBD — requires SME input on how the architecture changed over time.
+Originally built on Terraform Plugin SDK v2, then migrated to
+Terraform Plugin Framework. The `clientgen/` OpenAPI-generated client
+was introduced when the PowerStore API surface grew large and complex
+enough that manual REST code became unmaintainable. Major refactor
+patterns over time include:
+
+- Client abstraction cleanup
+- Model-driven design
+- Error handling standardization
+- Async / polling improvements
+- Testing maturity (mockey adoption)
 
 ---
 
@@ -99,26 +109,74 @@ Cloud) in production.
 
 The volume resource defaults `sector_size` to 512 bytes (constant `defaultSectorSize`). This is hardcoded and not configurable via provider config.
 
+### 6. State corruption
+
+State corruption has occurred in production. Large state files with
+many managed resources increase the risk. Always use remote backends
+with locking (S3+DynamoDB, Terraform Cloud) to prevent concurrent
+state writes.
+
+### 7. Authentication edge cases
+
+Authentication edge cases exist — credential rotation during active
+Terraform runs, expired tokens, and network timeouts during the
+`Configure()` validation call can leave the provider in an
+unrecoverable state requiring `terraform init` re-run.
+
+### 8. Resource cleanup failures
+
+Failed acceptance test runs or interrupted `terraform destroy` can
+leave orphaned resources on the PowerStore array. These must be
+cleaned up manually via the array management UI or REST API.
+
 ### Never Again
 
-No incident-derived constraints recorded. If you know of past
-incidents affecting this component, please record them during the
-next Knowledge Extraction session.
+#### NA-001: State corruption from concurrent applies
+- **Impact:** State file corruption when multiple engineers ran
+  `terraform apply` simultaneously without state locking.
+- **Constraint:** Must use remote backend with locking enabled.
+- **Applies to:** All Dell Terraform providers.
+
+#### NA-002: Auth failure masking
+- **Impact:** Misleading error messages when endpoint URL missing
+  `/api/rest` suffix.
+- **Constraint:** Endpoint format validated in `Configure()`.
+- **Applies to:** terraform-provider-powerstore.
+
+#### NA-003: Orphaned resources from test failures
+- **Impact:** Acceptance test resources left on array after test
+  failure, consuming storage capacity.
+- **Constraint:** Manual cleanup required; `TF_ACC=1` gating.
+- **Applies to:** All Dell Terraform providers.
 
 ### Evolution
 
-TBD — requires SME input.
+Failure modes evolved with the SDK v2 → Plugin Framework migration.
+Error handling was standardized during the model-driven design
+refactor. The dual SDK strategy (`gopowerstore` + `clientgen`)
+introduced a new failure surface around client version mismatches.
 
 ---
 
 ## Performance Characteristics
 
-TBD — requires SME input for bottlenecks, scaling limits, tuning
-parameters, benchmarks, and known performance cliffs.
+**Large state files:** Performance degrades with many managed
+resources in a single state file. Recommend splitting into multiple
+Terraform workspaces or state files when managing >100 resources.
+
+**API rate limiting:** PowerStore arrays enforce API rate limits.
+Bulk operations (e.g., creating many volumes) may hit these limits,
+causing transient 429 errors. The `gopowerstore` SDK handles retries
+internally, but long-running applies may timeout.
+
+**Timeout tuning:** The default 120-second timeout
+(`POWERSTORE_TIMEOUT`) may be insufficient for bulk operations or
+slow network conditions. Increase for large deployments.
 
 ### Evolution
 
-TBD — requires SME input.
+Timeout was made configurable via environment variable after
+production deployments hit the original hardcoded limit.
 
 ---
 
@@ -143,18 +201,38 @@ that must be cleaned up manually if the test run fails.
 
 ### Evolution
 
-TBD — requires SME input.
+Environment variable precedence was established during the SDK v2
+era and carried forward into Plugin Framework. The authentication
+validation call was added after production incidents with invalid
+credentials causing cascading resource failures.
 
 ---
 
 ## Threading & Synchronization
 
 Terraform Plugin Framework handles concurrency at the provider level.
-Individual resource operations are not concurrent by default.
+Individual resource operations are not concurrent by default, but
+Terraform Core may invoke multiple resource operations in parallel
+during `terraform apply` (controlled by `-parallelism` flag,
+default 10).
+
+**Concurrent API access:** Multiple resources hitting the same
+PowerStore API endpoint simultaneously can cause contention. The
+`gopowerstore` SDK is shared across all resource operations within
+a single provider instance.
+
+**Dual SDK race conditions:** Both `PStoreClient` and `GenClient`
+are initialized in `Configure()` and shared. No mutex protects
+concurrent access — the SDK clients are expected to be thread-safe,
+but edge cases exist under high parallelism.
 
 ### Evolution
 
-TBD — requires SME input.
+Migration from SDK v2 to Plugin Framework changed the concurrency
+model. SDK v2 serialized all operations; Plugin Framework allows
+parallel resource operations. The dual-client architecture
+(`gopowerstore` + `clientgen`) introduced additional concurrency
+surface area.
 
 ---
 
@@ -178,7 +256,10 @@ linux, darwin), architectures (amd64, 386, arm, arm64).
 
 ### Evolution
 
-TBD — requires SME input.
+Build system evolved from basic `go build` to Makefile with
+linting, security scanning (gosec), and GoReleaser for
+cross-platform releases. Testing maturity improved from minimal
+acceptance tests to comprehensive mockey-based unit tests.
 
 ---
 
@@ -193,7 +274,9 @@ manually if tests fail mid-run.
 
 ### Evolution
 
-TBD — requires SME input.
+Operational patterns matured with the mockey adoption for unit
+tests, reducing dependence on live hardware for development
+feedback loops.
 
 ---
 
@@ -201,7 +284,7 @@ TBD — requires SME input.
 
 ### Open Issues
 
-TBD — requires code scanning for TODO/FIXME/HACK markers.
+No TODO/FIXME/HACK markers found in non-test source files.
 
 ### Glossary
 

@@ -4,7 +4,7 @@
 
 <!-- yaml-metadata-start -->
 scope_paths: ["./"]
-capture_git_sha: "3d3c6ee5f4a1eeeedb5f2dc055b4d74d0e7a7c06"
+capture_git_sha: "4030193a32ec6334d07026f292726100f5d7b933"
 status: "current"
 auto_update: false
 preview_before_apply: true
@@ -16,7 +16,7 @@ scaffold_version: "1.0"
 ## Purpose and Structure
 
 Terraform provider for Dell PowerStore block and file storage arrays.
-Implements 21 managed resources and 20 data sources using HashiCorp's
+Implements 22 managed resources and 20 data sources using HashiCorp's
 Terraform Plugin Framework, enabling infrastructure-as-code management
 of PowerStore arrays via their REST API.
 
@@ -33,7 +33,7 @@ client (`clientgen/`) for additional API coverage.
 |-----------|------|---------------|
 | Entry point | `main.go` | `providerserver.Serve` — starts gRPC server |
 | Provider | `powerstore/provider.go` | Schema, Configure, resource/datasource registration |
-| Resources | `powerstore/resource_*.go` | CRUD lifecycle for 21 managed resources |
+| Resources | `powerstore/resource_*.go` | CRUD lifecycle for 22 managed resources |
 | Data sources | `powerstore/datasource_*.go` | Read-only queries for 20 data sources |
 | Helpers | `powerstore/helper/` | Type converters, diag helpers, list utilities |
 | Custom types | `powerstore/customtypes/` | Custom Terraform types (e.g. nfshostset) |
