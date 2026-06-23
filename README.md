@@ -55,7 +55,7 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.2.1 | 3.5/3.6/4.0/4.1 | Ubuntu 22.04 <br> RHEL 9.x | 1.9.x <br> 1.10.x <br> | 1.24.x
+| v1.3.0 | 3.5/3.6/4.0/4.1 | Ubuntu 22.04 <br> RHEL 9.x | 1.14.x <br> 1.15.x <br> | 1.25.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
 
@@ -64,6 +64,8 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 * [Volume](docs/resources/volume.md)
 * [Volume Group](docs/resources/volumegroup.md)
 * [Storage Container](docs/resources/storagecontainer.md)
+* [Metro Volume](docs/resources/metro_volume.md)
+* [Metro Volume Group](docs/resources/metro_volume_group.md)
 
 ### File Storage Management
 
@@ -78,12 +80,21 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 * [File System Snapshot](docs/resources/filesystem_snapshot.md)
 * [Protection Policy](docs/resources/protectionpolicy.md)
 * [Replication Rule](docs/resources/replication_rule.md)
+* [Replication Session Action](docs/resources/replication_session_action.md)
 * [Snapshot Rule](docs/resources/snapshotrule.md)
+* [Remote System](docs/resources/remote_system.md)
+* [Recycle Bin](docs/resources/recycle_bin.md)
 
 ### Host Access Management
 
 * [Host](docs/resources/host.md)
 * [Host Group](docs/resources/hostgroup.md)
+
+### Performance Management
+
+* [QoS Policy](docs/resources/qos_policy.md)
+* [IO Limit Rule](docs/resources/io_limit_rule.md)
+* [File IO Limit Rule](docs/resources/file_io_limit_rule.md)
 
 ## List of DataSources in Terraform Provider for Dell PowerStore
 
@@ -105,14 +116,22 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 * [Volume Group Snapshot](docs/data-sources/volumegroup_snapshot.md)
 * [File System Snapshot](docs/data-sources/filesystem_snapshot.md)
 * [Replication Rule](docs/data-sources/replication_rule.md)
+* [Replication Session](docs/data-sources/replication_session.md)
 * [Snapshot Rule](docs/data-sources/snapshotrule.md)
 * [Protection Policy](docs/data-sources/protectionpolicy.md)
 * [Remote System](docs/data-sources/remote_system.md)
+* [Recycle Bin](docs/data-sources/recycle_bin.md)
 
 ### Host Access Management
 
 * [Host](docs/data-sources/host.md)
 * [Host Group](docs/data-sources/hostgroup.md)
+
+### Performance Management
+
+* [QoS Policy](docs/data-sources/qos_policy.md)
+* [IO Limit Rule](docs/data-sources/io_limit_rule.md)
+* [File IO Limit Rule](docs/data-sources/file_io_limit_rule.md)
 
 ## Installation of Terraform Provider for Dell PowerStore
 
@@ -125,7 +144,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.2.1"
+      version = "1.3.0"
       source = "registry.terraform.io/dell/powerstore"
     }
   }
@@ -136,7 +155,7 @@ Then, in that workspace, run
 terraform init
 ```
 
-If you are upgrading from a previous version, set the version of powerstore in the required providers block to "1.1.0" as shown above.
+If you are upgrading from a previous version, set the version of powerstore in the required providers block to "1.3.0" as shown above.
 Then, in your workspace, run
 ```
 terraform init -upgrade
@@ -145,7 +164,7 @@ For more details on how to upgrade provider versions, please check out https://d
 
 ## Installation from source code
 
-Dependencies: Go 1.22.x, make, Terraform 1.5.x/1.6.x
+Dependencies: Go 1.25.x, make, Terraform 1.14.x/1.15.x
 <br>
 <br>
 Run

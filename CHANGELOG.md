@@ -1,3 +1,37 @@
+# v1.3.0
+
+## Release Summary
+The release adds RecycleBin support, security fixes, and various bug fixes for snapshot and resource handling.
+
+## Features
+
+### Data Sources
+
+NA
+
+### Resources
+
+NA
+
+### Others
+* Added support for RecycleBin functionality ([#174](https://github.com/dell/terraform-provider-powerstore/pull/174))
+* Migrated datasources and resources with `is_secure` parameter support
+
+## Enhancements
+* Updated documentation
+* Fixed static-check errors ([#171](https://github.com/dell/terraform-provider-powerstore/pull/171))
+
+## Bug Fixes
+
+* Fixed volume snapshot and volume group snapshot resources
+* Fixed filesystem snapshot and snapshot rule resources
+* Fixed iteration over hosts resource ([#170](https://github.com/dell/terraform-provider-powerstore/pull/170))
+* Handled auto-deletion based on snapshot expiration timestamp
+* Fixed client errors
+
+## Security
+* Security vulnerability fixes ([#173](https://github.com/dell/terraform-provider-powerstore/pull/173))
+
 # v1.2.1
 
 ## Release Summary
