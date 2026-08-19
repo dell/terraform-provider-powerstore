@@ -26,6 +26,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
+	"os"
+	"strconv"
 	"strings"
 	"terraform-provider-powerstore/clientgen"
 	"time"
@@ -117,11 +119,14 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 	url, _ := strings.CutSuffix(endpoint, "/")
 	basicAuthString := basicAuth(username, password)
 
+	// Debug mode is disabled by default for security. Enable via TF_POWERSTORE_DEBUG=true environment variable.
+	debug, _ := strconv.ParseBool(os.Getenv("TF_POWERSTORE_DEBUG"))
+
 	cfg := &clientgen.Configuration{
 		HTTPClient:    httpclient,
 		DefaultHeader: make(map[string]string),
 		UserAgent:     userAgent,
-		Debug:         true,
+		Debug:         debug,
 		Servers: clientgen.ServerConfigurations{
 			{
 				URL:         url,
