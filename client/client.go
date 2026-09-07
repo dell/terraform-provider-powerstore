@@ -24,9 +24,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
+	"net/http/httputil"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"terraform-provider-powerstore/clientgen"
@@ -122,11 +125,19 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 	// Debug mode is disabled by default for security. Enable via TF_POWERSTORE_DEBUG=true environment variable.
 	debug, _ := strconv.ParseBool(os.Getenv("TF_POWERSTORE_DEBUG"))
 
+	// Wrap transport with custom debug logging that redacts sensitive headers
+	if debug {
+		httpclient.Transport = &debugTransport{
+			transport: httpclient.Transport,
+			debug:     true,
+		}
+	}
+
 	cfg := &clientgen.Configuration{
 		HTTPClient:    httpclient,
 		DefaultHeader: make(map[string]string),
 		UserAgent:     userAgent,
-		Debug:         debug,
+		Debug:         false, // Always false - custom transport handles debug logging with redaction
 		Servers: clientgen.ServerConfigurations{
 			{
 				URL:         url,
@@ -161,6 +172,44 @@ func newClientGen(ctx context.Context, endpoint string, username string, passwor
 func basicAuth(username, password string) string {
 	auth := username + ":" + password
 	return base64.StdEncoding.EncodeToString([]byte(auth))
+}
+
+// debugTransport wraps an http.RoundTripper and adds debug logging with sensitive header redaction
+type debugTransport struct {
+	transport http.RoundTripper
+	debug     bool
+}
+
+func (t *debugTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if t.debug {
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err == nil {
+			redacted := replaceSensitiveHeadersPowerStore(dump)
+			log.Printf("\n%s\n", redacted)
+		}
+	}
+
+	resp, err := t.transport.RoundTrip(req)
+	if err != nil {
+		return resp, err
+	}
+
+	if t.debug {
+		dump, err := httputil.DumpResponse(resp, true)
+		if err == nil {
+			redacted := replaceSensitiveHeadersPowerStore(dump)
+			log.Printf("\n%s\n", redacted)
+		}
+	}
+	return resp, err
+}
+
+// replaceSensitiveHeadersPowerStore redacts sensitive headers from HTTP dumps for PowerStore
+func replaceSensitiveHeadersPowerStore(dump []byte) string {
+	// Redact Authorization, DELL-EMC-TOKEN, and Cookie headers
+	sensitiveDataRegexp := regexp.MustCompile(
+		`(?m)(Authorization: |Dell-Emc-Token: )([^\n]+)|(auth_cookie=)([^;]+)`)
+	return sensitiveDataRegexp.ReplaceAllString(string(dump), "$1$3******")
 }
 
 // method allow to read paginated data from backend
