@@ -28,7 +28,7 @@ permissions:
 env:
   # Go language version to use for building. This value should also be updated
   # in the testing workflow if changed.
-  GO_VERSION: '1.24'
+  GO_VERSION: '1.26.0'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -38,10 +38,21 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-      - name: Run the formatter, and vetter
-        uses: dell/common-github-actions/go-code-formatter-vetter@main
+      - name: Set up Go
+        uses: actions/setup-go@v3
         with:
-          directories: ./...
+          go-version: ${{ env.GO_VERSION }}
+      - name: Check formatting
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "The following files are not formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
+          echo "Formatting check passed."
+      - name: Run vetting
+        run: go vet ./...
   sanitize:
     name: Check for forbidden words
     runs-on: ubuntu-latest
