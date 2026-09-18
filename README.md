@@ -55,7 +55,7 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 
 | **Terraform Provider** | **PowerStore Version** | **OS** | **Terraform** | **Golang**
 |---------------------|-----------------------|-------|--------------------|--------------------------|
-| v1.3.0 | 3.5/3.6/4.0/4.1 | Ubuntu 22.04 <br> RHEL 9.x | 1.14.x <br> 1.15.x <br> | 1.25.x
+| v1.3.1 | 4.2, 4.3, 4.4 | Ubuntu 22.04 <br> RHEL 9.x | 1.14.x <br> 1.15.x | 1.26.x
 
 ## List of Resources in Terraform Provider for Dell PowerStore
 
@@ -83,7 +83,7 @@ The Terraform Provider for PowerStore is released and licensed under the MPL-2.0
 * [Replication Session Action](docs/resources/replication_session_action.md)
 * [Snapshot Rule](docs/resources/snapshotrule.md)
 * [Remote System](docs/resources/remote_system.md)
-* [Recycle Bin](docs/resources/recycle_bin.md)
+* [Recycle Bin Config](docs/resources/recycle_bin_config.md)
 
 ### Host Access Management
 
@@ -144,7 +144,7 @@ Create a file called `main.tf` in your workspace with the following contents
 terraform {
   required_providers {
     powerstore = {
-      version = "1.3.0"
+      version = "1.3.1"
       source = "registry.terraform.io/dell/powerstore"
     }
   }
@@ -155,7 +155,7 @@ Then, in that workspace, run
 terraform init
 ```
 
-If you are upgrading from a previous version, set the version of powerstore in the required providers block to "1.3.0" as shown above.
+If you are upgrading from a previous version, set the version of powerstore in the required providers block to "1.3.1" as shown above.
 Then, in your workspace, run
 ```
 terraform init -upgrade
@@ -164,7 +164,7 @@ For more details on how to upgrade provider versions, please check out https://d
 
 ## Installation from source code
 
-Dependencies: Go 1.25.x, make, Terraform 1.14.x/1.15.x
+Dependencies: Go 1.26.x, make, Terraform 1.14.x/1.15.x
 <br>
 <br>
 Run

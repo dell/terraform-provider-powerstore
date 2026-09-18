@@ -18,7 +18,7 @@ limitations under the License.
 terraform {
   required_providers {
     powerstore = {
-      version = "1.2.1"
+      version = "1.3.1"
       source  = "registry.terraform.io/dell/powerstore"
     }
   }
