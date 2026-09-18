@@ -1,3 +1,34 @@
+# v1.3.1
+
+## Release Summary
+This release improves credential protection and updates dependencies to address security vulnerabilities.
+
+## Features
+
+### Data Sources
+
+NA
+
+### Resources
+
+NA
+
+### Others
+
+NA
+
+## Enhancements
+* Updated Go to 1.26 and remediated vulnerable dependencies ([#188](https://github.com/dell/terraform-provider-powerstore/pull/188))
+* Updated the CI formatting and vetting workflow for Go 1.26 compatibility ([#188](https://github.com/dell/terraform-provider-powerstore/pull/188))
+
+## Bug Fixes
+
+NA
+
+## Security
+* Disabled debug logging by default and added opt-in debug logging through `TF_POWERSTORE_DEBUG` ([#186](https://github.com/dell/terraform-provider-powerstore/pull/186))
+* Added redaction for authorization, token, and cookie headers in debug output ([#187](https://github.com/dell/terraform-provider-powerstore/pull/187))
+
 # v1.3.0
 
 ## Release Summary
